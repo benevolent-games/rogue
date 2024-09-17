@@ -51,10 +51,6 @@ jobs:
     - name: 🎠 converting assets
       run: bin/assets-convert
 
-    - uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.REGIS_DIRECTOR_DEPLOYER_SSH_PRIVATE_KEY }}
-
     - name: 🗃️ reconstitute node_modules for production
       run: npm ci --omit=dev
 
