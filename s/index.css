@@ -1,0 +1,43 @@
+
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	color-scheme: dark;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	font-size: 16px;
+
+	color: #fffc;
+	background: #222;
+	font-family: sans-serif;
+
+	scrollbar-gutter: stable;
+	scrollbar-width: thin;
+}
+
+game-app {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	max-width: 100%;
+	max-height: 100%;
+
+	&[restrict-aspect-ratio] {
+		aspect-ratio: 16 / 9;
+	}
+
+	.loading, .exhibit {
+		position: absolute;
+		inset: 0;
+	}
+}
+
