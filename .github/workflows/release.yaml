@@ -1,0 +1,71 @@
+
+name: 🚀 full release deployment
+on:
+  push:
+    branches: ["release"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+    - uses: actions/configure-pages@v3
+    - name: set-up s5cmd, for downloading assets
+      uses: peak/action-setup-s5cmd@main
+      with:
+        version: v2.2.2
+
+    - run: npm ci
+    - run: npm run build
+    - run: npm test
+
+    - name: 🗑️ delete dev symlinks
+      run: |
+        rm x/assets
+        rm x/node_modules
+        rm x/s
+
+    - name: 🌎 download assets sources
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        S3_ENDPOINT_URL: "https://sfo2.digitaloceanspaces.com"
+      run: |
+        s5cmd cp "s3://benev-storage/righteous-fury/assets/*" assets/s/
+
+    - name: 🎠 converting assets
+      run: bin/assets-convert
+
+    - name: 🗃️ reconstitute node_modules for production
+      run: npm ci --omit=dev
+
+    - name: 🍞 moving files into x
+      run: |
+        mv node_modules x/node_modules
+        mv s x/s
+        mv assets/x x/assets
+
+    - name: 📤 upload pages artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: 'x'
+
+    - name: 🚀 deploy to github pages
+      id: deployment
+      uses: actions/deploy-pages@v2
+
