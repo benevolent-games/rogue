@@ -1,5 +1,5 @@
 
-import {Context as SlateContext, signal} from "@benev/slate"
+import {Context as SlateContext} from "@benev/slate"
 
 import {theme} from "./theme.js"
 

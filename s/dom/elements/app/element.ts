@@ -4,16 +4,15 @@ import {Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox
 
 import styles from "./styles.js"
 import {nexus} from "../../nexus.js"
+import {constants} from "../../../constants.js"
 
 export const GameApp = nexus.shadowComponent(use => {
 	use.styles(styles)
 
-	return html`hello world`
+	return html`
+		<img class=logo src="${constants.urls.benevLogo}" alt=""/>
+	`
 
-	// use.mount(
-	// 	detectInputMethod(document, use.context.inputMethod)
-	// )
-	//
 	// // preload the benev logo
 	// use.load(async() => await loadImage(
 	// 	constants.urls.benevLogo,

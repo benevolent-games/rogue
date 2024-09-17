@@ -13,7 +13,10 @@
 	],
 	"scripts": {
 		"build": "rm -rf x && turtle build --out=x -v && turtle ssg --in=s,x --out=x --exclude=bin -v && run-s links",
-		"links": "mkdir -p assets/x && ln -s \"$(realpath assets/x)\" x/assets && ln -s \"$(realpath s)\" x/s",
+		"links": "run-s links-s links-assets links-benev-storage",
+		"links-s": "ln -s \"$(realpath s)\" x/s",
+		"links-assets": "mkdir -p assets/x && ln -s \"$(realpath assets/x)\" x/assets",
+		"links-benev-storage": "rm -f assets/benev-storage && ln -s \"$(realpath ~/mnt/benev-storage)\" assets/benev-storage",
 		"http": "http-server x",
 		"watch": "turtle watch --in=s,x --out=x --exclude=bin -v",
 		"start": "run-p http watch",

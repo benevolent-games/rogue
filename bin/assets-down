@@ -1,0 +1,13 @@
+#!/bin/bash
+
+banner() {
+	echo "";
+	echo "### $1";
+}
+
+banner "initialize the assets area";
+mkdir -p assets/s;
+
+banner "download all asset sources";
+rsync --delete -vham --progress assets/benev-storage/righteous-fury/assets/ assets/s;
+
