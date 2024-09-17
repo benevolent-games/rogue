@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p assets/s
+rm -f assets/benev-storage
+ln -s "$(realpath ~/mnt/benev-storage)" assets/benev-storage
+
