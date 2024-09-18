@@ -1,16 +1,15 @@
 
+import {Vec2} from "@benev/toolbox"
 import {PlayerData} from "./data.js"
-import {Simula} from "../../simulation/types.js"
+import {simula} from "../../simulation/types.js"
 
-export const playerSimula: Simula<PlayerData> = (id, simulator) => {
-	void id
-	void simulator
-
+export const playerSimula = simula<PlayerData>(() => (id, simulator) => {
 	return {
-		simulate(data) {
-			void data
+		data: {
+			position: [1, 2] as Vec2,
 		},
+		simulate(data) {},
 		dispose() {},
 	}
-}
+})
 

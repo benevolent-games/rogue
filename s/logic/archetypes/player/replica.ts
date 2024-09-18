@@ -1,16 +1,11 @@
 
+import {replica} from "../../replication/types.js"
 import {PlayerData} from "./data.js"
-import {Replica} from "../../replication/types.js"
 
-export const playerReplica: Replica<PlayerData> = (id, replicator) => {
-	void id
-	void replicator
-
+export const playerReplica = replica<PlayerData>((id, replicator) => {
 	return {
-		replicate(data) {
-			void data
-		},
+		replicate(data) {},
 		dispose() {},
 	}
-}
+})
 
