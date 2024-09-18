@@ -9,8 +9,8 @@ export type Simulant<D> = {
 
 export type Simulan<D> = (id: number, simulator: Simulator) => Simulant<D>
 
-export type Simula<D> = (...a: any[]) => Simulan<D>
-export type Simulas = Record<string, Simula<any>>
-export const simula = <D>(s: Simula<D>) => s
+export type Simula<A extends any[], D> = (...a: A) => Simulan<D>
+export type Simulas = Record<string, Simula<any, any>>
+export const simula = <D>() => <S extends Simula<any, D>>(s: S) => s
 export const asSimulas = <S extends Simulas>(s: S) => s
 
