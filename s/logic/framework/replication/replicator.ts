@@ -1,20 +1,21 @@
 
+import {ReplicatorId} from "../types.js"
 import {Feed} from "../simulation/types.js"
 import {Map2} from "../../../tools/map2.js"
 import {FeedbackHelper} from "./feedback-helper.js"
 import {Replicas, ReplicatorFeedback, Replon} from "./types.js"
 
-export class Replicator {
+export class Replicator<Re> {
 	#replons = new Map2<number, Replon>
-	#feedbackHelpers: WeakMap<Replon, FeedbackHelper> = new WeakMap()
+	#feedbackHelpers: WeakMap<Replon, FeedbackHelper<any>> = new WeakMap()
 
-	constructor(public id: number, public replicas: Replicas) {}
+	constructor(public realm: Re, public replicas: Replicas, public id: ReplicatorId) {}
 
 	replicate(feed: Feed): ReplicatorFeedback {
 		for (const [id, state] of feed.created) {
 			const replica = this.replicas[state.kind]
 			const feedback = new FeedbackHelper()
-			const replicant = replica({id, replicator: this})
+			const replicant = replica({id, realm: this.realm, replicator: this})
 			const replon: Replon = {state, replicant}
 			this.#replons.set(id, replon)
 			this.#feedbackHelpers.set(replon, feedback)

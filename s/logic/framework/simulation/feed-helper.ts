@@ -1,11 +1,12 @@
 
 import {Scribe} from "./scribe.js"
+import {Archetype} from "../types.js"
 
-export class FeedHelper<F> {
+export class FeedHelper<Ar extends Archetype> {
 	#scribe: Scribe
-	#facts: F
+	#facts: Ar["facts"]
 
-	constructor(public id: number, scribe: Scribe, facts: F) {
+	constructor(public id: number, scribe: Scribe, facts: Ar["facts"]) {
 		this.#scribe = scribe
 		this.#facts = facts
 	}
@@ -14,12 +15,12 @@ export class FeedHelper<F> {
 		return this.#facts
 	}
 
-	set facts(f: F) {
+	set facts(f: Ar["facts"]) {
 		this.#facts = f
 		this.#scribe.updated.push([this.id, f])
 	}
 
-	broadcast(message: any) {
+	broadcast(message: Ar["broadcast"]) {
 		this.#scribe.broadcasted.push([this.id, message])
 	}
 }

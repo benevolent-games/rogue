@@ -2,37 +2,38 @@
 import {Replicator} from "./replicator.js"
 import {Simulas} from "../simulation/types.js"
 import {FeedbackHelper} from "./feedback-helper.js"
-import {EntityId, ReplicatorId, State} from "../types.js"
+import {Archetype, EntityId, ReplicatorId, State} from "../types.js"
 
-export type Replon<F = any> = {
-	state: State<F>
-	replicant: Replicant<F>
+export type Replon<Ar extends Archetype = any> = {
+	state: State<Ar["facts"]>
+	replicant: Replicant<Ar>
 }
 
-export type ReplicaPack = {
+export type ReplicaPack<Re> = {
 	id: number
-	replicator: Replicator
+	realm: Re
+	replicator: Replicator<Re>
 }
 
-export type ReplicaImmediate<F> = {
-	feedback: FeedbackHelper
+export type ReplicaImmediate<Ar extends Archetype> = {
+	feedback: FeedbackHelper<Ar>
 	feed: {
-		facts: F
-		broadcasts: any[]
+		facts: Ar["facts"]
+		broadcasts: Ar["broadcast"][]
 	}
 }
 
-export type Replicant<F> = {
-	replicate: (immediate: ReplicaImmediate<F>) => void
+export type Replicant<Ar extends Archetype> = {
+	replicate: (immediate: ReplicaImmediate<Ar>) => void
 	dispose: () => void
 }
 
-export type Replica<F> = (pack: ReplicaPack) => Replicant<F>
-export type Replicas = Record<string, Replica<any>>
-export const replica = <F>(r: Replica<F>) => r
-export const asReplicas = <S extends Simulas>(r: Record<keyof S, Replica<any>>) => r
+export type Replica<Re, Ar extends Archetype> = (pack: ReplicaPack<Re>) => Replicant<Ar>
+export type Replicas = Record<string, Replica<any, any>>
+export const replica = <Re>() => <Ar extends Archetype>(r: Replica<Re, Ar>) => r
+export const asReplicas = <Re, S extends Simulas<Re>>(r: Record<keyof S, Replica<Re, any>>) => r
 
-export type SpecificFeedback = {data: any, memos: any[]}
-export type ReplicatorFeedback = [EntityId, SpecificFeedback][]
+export type SpecificFeedback<Ar extends Archetype> = {data: Ar["data"], memos: Ar["memo"][]}
+export type ReplicatorFeedback = [EntityId, SpecificFeedback<any>][]
 export type Feedback = [ReplicatorId, ReplicatorFeedback][]
 

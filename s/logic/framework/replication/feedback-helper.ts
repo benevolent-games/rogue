@@ -1,7 +1,8 @@
 
+import {Archetype} from "../types.js"
 import {SpecificFeedback} from "./types.js"
 
-export class FeedbackHelper {
+export class FeedbackHelper<Ar extends Archetype> {
 	#data: any
 	#memos: any[] = []
 
@@ -17,7 +18,7 @@ export class FeedbackHelper {
 		this.#memos.push(memo)
 	}
 
-	extract(): SpecificFeedback {
+	extract(): SpecificFeedback<Ar> {
 		const memos = this.#memos
 		this.#memos = []
 		return {memos, data: this.#data}

@@ -1,9 +1,9 @@
 
-import {PlayerData} from "./data.js"
-import {replica} from "../../framework/replication/types.js"
+import {Realm} from "../../realm.js"
+import {PlayerArchetype} from "./types.js"
 
-export const playerReplica = replica<PlayerData>(
-	({id, replicator}) => {
+export const playerReplica = Realm.replica<PlayerArchetype>(
+	({id, replicator, realm}) => {
 
 	return {
 		replicate({feed, feedback}) {
@@ -16,10 +16,11 @@ export const playerReplica = replica<PlayerData>(
 
 			// update the lossy channel
 			feedback.data = {thumbstick: [1, 2]}
-			
+
 			// send a message on the lossless channel
 			feedback.memo({action: "respawn"})
 		},
+
 		dispose() {},
 	}
 })

@@ -2,35 +2,36 @@
 import {Simulator} from "./simulator.js"
 import {FeedHelper} from "./feed-helper.js"
 import {SpecificFeedback} from "../replication/types.js"
-import {EntityId, ReplicatorId, State} from "../types.js"
+import {Archetype, EntityId, ReplicatorId, State} from "../types.js"
 
-export type Simulant<F> = {
-	facts: F
-	simulate: (immediate: SimulaImmediate<F>) => void
+export type Simulant<Ar extends Archetype> = {
+	facts: Ar["facts"]
+	simulate: (immediate: SimulaImmediate<Ar>) => void
 	dispose: () => void
 }
 
-export type SimulaPack = {
+export type SimulaPack<St> = {
 	id: EntityId
-	simulator: Simulator
+	station: St
+	simulator: Simulator<St>
 }
 
-export type SimulaImmediate<F> = {
-	feed: FeedHelper<F>
-	feedback: [ReplicatorId, SpecificFeedback][]
+export type SimulaImmediate<Ar extends Archetype> = {
+	feed: FeedHelper<Ar>
+	feedback: [ReplicatorId, SpecificFeedback<Ar>][]
 }
 
-export type Simulan<F> = (pack: SimulaPack) => Simulant<F>
+export type Simulan<St, Ar extends Archetype> = (pack: SimulaPack<St>) => Simulant<Ar>
 
-export type Simula<A extends any[], F> = (...a: A) => Simulan<F>
-export type Simulas = Record<string, Simula<any, any>>
-export const simula = <F>() => <S extends Simula<any, F>>(s: S) => s
-export const asSimulas = <S extends Simulas>(s: S) => s
+export type Simula<St, A extends any[], Ar extends Archetype> = (...a: A) => Simulan<St, Ar>
+export type Simulas<St> = Record<string, Simula<St, any, any>>
+export const simula = <St>() => <Ar extends Archetype>() => <S extends Simula<St, any, Ar>>(s: S) => s
+export const asSimulas = <St, S extends Simulas<St>>(s: S) => s
 
-export type Simulon<F> = {
-	state: State<F>
-	simulant: Simulant<F>
-	feed: FeedHelper<F>
+export type Simulon<Ar extends Archetype> = {
+	state: State<Ar>
+	simulant: Simulant<Ar>
+	feed: FeedHelper<Ar>
 }
 
 export type Feed = {
