@@ -1,7 +1,7 @@
 
 import {Vec2} from "@benev/toolbox"
 import {PlayerData} from "./data.js"
-import {simula} from "../../simulation/types.js"
+import {simula} from "../../framework/simulation/types.js"
 
 export const playerSimula = simula<PlayerData>(() => (id, simulator) => {
 	return {

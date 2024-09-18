@@ -1,8 +1,8 @@
 
 import {State} from "../types.js"
-import {Map2} from "../../tools/map2.js"
+import {Map2} from "../../../tools/map2.js"
 import {Simulant, Simulas} from "./types.js"
-import {IdCounter} from "../../tools/id-counter.js"
+import {IdCounter} from "../../../tools/id-counter.js"
 
 export type Simulon<D> = {
 	state: State<D>

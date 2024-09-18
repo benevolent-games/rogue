@@ -1,7 +1,7 @@
 
 import {simulas} from "./simulas.js"
-import {asReplicas} from "../types.js"
 import {playerReplica} from "./player/replica.js"
+import {asReplicas} from "../framework/replication/types.js"
 
 export const replicas = asReplicas<typeof simulas>({
 	player: playerReplica,
