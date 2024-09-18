@@ -17,7 +17,8 @@ body {
 	font-size: 16px;
 
 	color: #fffc;
-	background: #222;
+	background: #200000;
+	background: linear-gradient(to bottom, #200000, #000);
 	font-family: sans-serif;
 
 	scrollbar-gutter: stable;
@@ -25,8 +26,10 @@ body {
 }
 
 game-app {
+	overflow: auto;
 	position: absolute;
 	inset: 0;
+
 	margin: auto;
 	max-width: 100%;
 	max-height: 100%;

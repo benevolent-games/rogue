@@ -6,6 +6,8 @@ import styles from "./styles.js"
 import {nexus} from "../../nexus.js"
 import {constants} from "../../../constants.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
+import {LoadingScreen} from "../../views/loading-screen/view.js"
+import { MainMenu } from "../../views/main-menu/view.js"
 
 export const GameApp = nexus.shadowComponent(use => {
 	use.styles(styles)
@@ -17,10 +19,11 @@ export const GameApp = nexus.shadowComponent(use => {
 	const orchestrator = use.once(() => {
 		const mainMenu = Orchestrator.makeExhibit({
 			dispose: () => {},
-			template: () => html`
-				<h1>main menu</h1>
-				<button @click="${() => goExhibit.solo()}">play solo</button>
-			`,
+			template: () => MainMenu([{
+				nav: {
+					solo: () => goExhibit.solo(),
+				},
+			}]),
 		})
 
 		const orchestrator = new Orchestrator({
@@ -29,9 +32,7 @@ export const GameApp = nexus.shadowComponent(use => {
 		})
 
 		const loadingScreen = Orchestrator.makeLoadingScreen({
-			render: ({active}) => html`
-				<img class=logo src="${constants.urls.benevLogo}" alt=""/>
-			`,
+			render: ({active}) => LoadingScreen([active]),
 		})
 
 		const goExhibit = {
