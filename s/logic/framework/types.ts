@@ -1,8 +1,9 @@
 
-export type StateId = number
+export type EntityId = number
+export type ReplicatorId = number
 
-export type State<D = any> = {
+export type State<F = any> = {
 	kind: string
-	data: D
+	facts: F
 }
 

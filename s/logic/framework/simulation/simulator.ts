@@ -1,54 +1,36 @@
 
-import {State} from "../types.js"
+import {Scribe} from "./scribe.js"
 import {Map2} from "../../../tools/map2.js"
-import {Simulant, Simulas} from "./types.js"
+import {ReplicatorId, State} from "../types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
-
-export type Simulon<D> = {
-	state: State<D>
-	simulant: Simulant<D>
-}
-
-export class Scribe {
-	created: [number, State][] = []
-	updated: [number, State][] = []
-	destroyed: number[] = []
-	extract() {
-		const {created, updated, destroyed} = this
-		this.created = []
-		this.updated = []
-		this.destroyed = []
-		return {created, updated, destroyed}
-	}
-}
+import {SimulaPack, Simulas, Simulon} from "./types.js"
+import {Feedback, SpecificFeedback} from "../replication/types.js"
+import { FeedHelper } from "./feed-helper.js"
 
 export class Simulator<S extends Simulas = Simulas> {
-	#map = new Map2<number, Simulon<any>>
+	#simulons = new Map2<number, Simulon<any>>
 	#idCounter = new IdCounter()
 	#scribe = new Scribe()
 
 	constructor(public simulas: S) {}
 
-	*all() {
-		for (const simulant of this.#map.values())
-			yield simulant
-	}
-
 	create<K extends keyof S>(kind: K, ...a: Parameters<S[K]>) {
 		const id = this.#idCounter.next()
-		const simulant = this.simulas[kind](...a)(id, this)
-		const state: State<any> = {kind: kind as string, data: simulant.data}
-		this.#map.set(id, {state, simulant})
+		const pack: SimulaPack = {id, simulator: this}
+		const simulant = this.simulas[kind](...a)(pack)
+		const state: State<any> = {kind: kind as string, facts: simulant.facts}
+		const feed = new FeedHelper(id, this.#scribe, simulant.facts)
+		this.#simulons.set(id, {state, simulant, feed})
 		this.#scribe.created.push([id, state])
 		return simulant as ReturnType<ReturnType<S[K]>>
 	}
 
 	get(id: number) {
-		this.#map.get(id)
+		this.#simulons.get(id)
 	}
 
 	require(id: number) {
-		this.#map.require(id)
+		this.#simulons.require(id)
 	}
 
 	update(id: number, state: any) {
@@ -59,9 +41,21 @@ export class Simulator<S extends Simulas = Simulas> {
 		this.#scribe.destroyed.push(id)
 	}
 
-	simulate() {
-		for (const {state, simulant} of this.all())
-			simulant.simulate(state.data)
+	simulate(feedback: Feedback) {
+		for (const [id, {simulant, feed}] of this.#simulons) {
+			const fb: [ReplicatorId, SpecificFeedback][] = []
+
+			for (const [replicatorId, feeds] of feedback) {
+				for (const [entityId, specific] of feeds)
+					if (entityId === id)
+						fb.push([replicatorId, specific])
+			}
+
+			simulant.simulate({
+				feed,
+				feedback: fb,
+			})
+		}
 		return this.#scribe.extract()
 	}
 }
