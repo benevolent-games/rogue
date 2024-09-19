@@ -5,9 +5,9 @@ import {Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox
 import styles from "./styles.js"
 import {nexus} from "../../nexus.js"
 import {constants} from "../../../constants.js"
+import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
-import { MainMenu } from "../../views/main-menu/view.js"
 
 export const GameApp = nexus.shadowComponent(use => {
 	use.styles(styles)
@@ -41,11 +41,14 @@ export const GameApp = nexus.shadowComponent(use => {
 			}),
 
 			solo: orchestrator.makeNavFn(loadingScreen, async() => {
+				const {soloFlow} = await import("../../../flows/solo.js")
+				const {world, dispose} = await soloFlow()
 				return {
-					dispose: () => {},
+					dispose,
 					template: () => html`
 						<h1>solo gameplay mode</h1>
 						<button @click="${() => goExhibit.mainMenu()}">back to menu</button>
+						${world.canvas}
 					`,
 				}
 			}),

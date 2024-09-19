@@ -3,14 +3,18 @@ import {Archetype} from "../types.js"
 import {SpecificFeedback} from "./types.js"
 
 export class FeedbackHelper<Ar extends Archetype> {
-	#data: any
-	#memos: any[] = []
+	#data: Ar["data"]
+	#memos: Ar["memo"][] = []
+
+	constructor(data: Ar["data"]) {
+		this.#data = data
+	}
 
 	get data() {
 		return this.#data
 	}
 
-	set data(data: any) {
+	set data(data: Ar["data"]) {
 		this.#data = data
 	}
 

@@ -18,12 +18,13 @@ export type ReplicaPack<Re> = {
 export type ReplicaImmediate<Ar extends Archetype> = {
 	feedback: FeedbackHelper<Ar>
 	feed: {
-		facts: Ar["facts"]
-		broadcasts: Ar["broadcast"][]
+		readonly facts: Ar["facts"]
+		readonly broadcasts: Ar["broadcast"][]
 	}
 }
 
 export type Replicant<Ar extends Archetype> = {
+	data: Ar["data"]
 	replicate: (immediate: ReplicaImmediate<Ar>) => void
 	dispose: () => void
 }
@@ -33,7 +34,11 @@ export type Replicas = Record<string, Replica<any, any>>
 export const replica = <Re>() => <Ar extends Archetype>(r: Replica<Re, Ar>) => r
 export const asReplicas = <Re, S extends Simulas<Re>>(r: Record<keyof S, Replica<Re, any>>) => r
 
-export type SpecificFeedback<Ar extends Archetype> = {data: Ar["data"], memos: Ar["memo"][]}
+export type SpecificFeedback<Ar extends Archetype> = {
+	readonly data: Ar["data"],
+	readonly memos: Ar["memo"][],
+}
+
 export type ReplicatorFeedback = [EntityId, SpecificFeedback<any>][]
 export type Feedback = [ReplicatorId, ReplicatorFeedback][]
 

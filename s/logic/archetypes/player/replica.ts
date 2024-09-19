@@ -6,19 +6,10 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 	({id, replicator, realm}) => {
 
 	return {
+		data: {movement: [0, 0]},
+
 		replicate({feed, feedback}) {
-
-			// facts from the simulation
-			feed.facts
-
-			// broadcasts from the simulation
-			feed.broadcasts
-
-			// update the lossy channel
-			feedback.data = {thumbstick: [1, 2]}
-
-			// send a message on the lossless channel
-			feedback.memo({action: "respawn"})
+			feedback.data = {movement: [1, 1]}
 		},
 
 		dispose() {},
