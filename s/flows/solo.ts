@@ -17,6 +17,7 @@ export async function soloFlow() {
 
 	const world = await World.load()
 	const realm = new Realm(world)
+
 	const replicator = new Replicator(realm, replicas, 0)
 
 	simulator.create("player", {owner: replicator.id, position: [0, 0]})
@@ -29,8 +30,11 @@ export async function soloFlow() {
 		feedback = [[replicator.id, replicatorFeedback]]
 	})
 
+	world.rendering.setCamera(realm.env.camera)
+	world.gameloop.start()
+
 	return {
-		world,
+		realm,
 		dispose: () => {
 			stopInterval()
 			world.dispose()

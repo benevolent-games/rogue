@@ -8,6 +8,7 @@ import {constants} from "../../../constants.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
+import { Gameplay } from "../../views/gameplay/view.js"
 
 export const GameApp = nexus.shadowComponent(use => {
 	use.styles(styles)
@@ -42,17 +43,19 @@ export const GameApp = nexus.shadowComponent(use => {
 
 			solo: orchestrator.makeNavFn(loadingScreen, async() => {
 				const {soloFlow} = await import("../../../flows/solo.js")
-				const {world, dispose} = await soloFlow()
+				const {realm, dispose} = await soloFlow()
 				return {
 					dispose,
-					template: () => html`
-						<h1>solo gameplay mode</h1>
-						<button @click="${() => goExhibit.mainMenu()}">back to menu</button>
-						${world.canvas}
-					`,
+					template: () => Gameplay([{
+						realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
 				}
 			}),
 		}
+
+		// TODO hack
+		goExhibit.solo()
 
 		return orchestrator
 	})

@@ -22,7 +22,7 @@ export class World {
 		})
 
 		const scaler = Iron.canvasScaler(canvas)
-		const scene = Iron.scene({engine, background: [.1, .1, .1, 1]})
+		const scene = Iron.scene({engine, background: [.3, .1, .1, 1]})
 		const gameloop = Iron.gameloop(engine, [scene])
 		const rendering = Iron.rendering(scene)
 

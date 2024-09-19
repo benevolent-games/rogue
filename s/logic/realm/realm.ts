@@ -2,10 +2,17 @@
 import {makeTact} from "./utils/make-tact.js"
 import {World} from "../../tools/babylon/world.js"
 import {replica} from "../framework/replication/types.js"
+import {makeEnvironment} from "./utils/make-environment.js"
 
 export class Realm {
 	static replica = replica<Realm>()
+
 	tact = makeTact(window)
-	constructor(public world: World) {}
+
+	env: ReturnType<typeof makeEnvironment>
+
+	constructor(public world: World) {
+		this.env = makeEnvironment(world)
+	}
 }
 
