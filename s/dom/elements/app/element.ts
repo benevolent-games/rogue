@@ -54,7 +54,6 @@ export const GameApp = nexus.shadowComponent(use => {
 			}),
 		}
 
-
 		return orchestrator
 	})
 

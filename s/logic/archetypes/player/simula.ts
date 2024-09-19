@@ -19,10 +19,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 			handleFeedbackFrom(owner, feedback, f => {
 				const {movement} = f.data
 				feed.facts = {
-					position: vec2.add(
-						feed.facts.position,
-						vec2.clamp(movement, -1, 1),
-					)
+					position: vec2.add(feed.facts.position, vec2.clamp(movement, -1, 1)),
 				}
 			})
 		},

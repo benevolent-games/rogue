@@ -16,19 +16,17 @@ export async function soloFlow() {
 	const simulator = new Simulator(station, simulas)
 
 	const world = await World.load()
-
 	const realm = new Realm(world)
-	const replicatorId = 0
-	const replicator = new Replicator(realm, replicas, replicatorId)
+	const replicator = new Replicator(realm, replicas, 0)
 
-	simulator.create("player", {owner: replicatorId, position: [0, 0]})
+	simulator.create("player", {owner: replicator.id, position: [0, 0]})
 
 	let feedback: Feedback = []
 
 	const stopInterval = interval(1000 / 60, () => {
 		const feed = simulator.simulate(feedback)
 		const replicatorFeedback = replicator.replicate(feed)
-		feedback = [[replicatorId, replicatorFeedback]]
+		feedback = [[replicator.id, replicatorFeedback]]
 	})
 
 	return {
