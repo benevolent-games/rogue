@@ -1,8 +1,8 @@
 
 import {vec2, Vec2} from "@benev/toolbox"
 
-import {Station} from "../../station.js"
 import {PlayerArchetype} from "./types.js"
+import {Station} from "../../station/station.js"
 import {ReplicatorId} from "../../framework/types.js"
 import {handleFeedbackFrom} from "../../framework/utils/handle-feedback-from.js"
 
@@ -19,7 +19,10 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 			handleFeedbackFrom(owner, feedback, f => {
 				const {movement} = f.data
 				feed.facts = {
-					position: vec2.add(feed.facts.position, vec2.clamp(movement, -1, 1)),
+					position: vec2.add(
+						feed.facts.position,
+						vec2.normalize(vec2.clamp(movement, -1, 1)),
+					),
 				}
 			})
 		},

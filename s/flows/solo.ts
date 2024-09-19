@@ -3,8 +3,8 @@ import {interval} from "@benev/slate"
 
 import {World} from "../tools/babylon/world.js"
 
-import {Realm} from "../logic/realm.js"
-import {Station} from "../logic/station.js"
+import {Realm} from "../logic/realm/realm.js"
+import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
 import {replicas} from "../logic/archetypes/replicas.js"
 import {Feedback} from "../logic/framework/replication/types.js"
