@@ -1,4 +1,5 @@
 
+import {Vec2} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {PlayerArchetype} from "./types.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
@@ -11,11 +12,13 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 		data: {movement: [0, 0]},
 
 		replicate({feed, feedback}) {
-			realm.env.guy.position.set(
-				...Coordinates.planarToWorld(feed.facts.position),
-			)
+			const position = Vec2.array(feed.facts.position)
+			const worldPosition = Coordinates.planarToWorld(position)
+			realm.env.guy.position.set(...worldPosition.array())
 
-			feedback.data = {movement: getMovement(realm.tact)}
+			const movement = getMovement(realm.tact)
+
+			feedback.data = {movement: movement.array()}
 		},
 
 		dispose() {},

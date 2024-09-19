@@ -1,5 +1,5 @@
 
-import {loop2d, make_envmap, scalar, vec2, Vec2, vec3} from "@benev/toolbox"
+import {loop2d, make_envmap, Radians, Vec2, Vec2Array, Vec3} from "@benev/toolbox"
 import {ArcRotateCamera, AxesViewer, Color3, MeshBuilder, PBRMaterial, Vector3} from "@babylonjs/core"
 
 import {Coordinates} from "./coordinates.js"
@@ -33,22 +33,22 @@ export function makeEnvironment(world: World) {
 
 	const camera = new ArcRotateCamera(
 		"camera",
-		scalar.radians.from.degrees(-90),
-		scalar.radians.from.degrees(20),
+		Radians.from.degrees(-90),
+		Radians.from.degrees(20),
 		20,
 		Vector3.Zero(),
 		scene,
 	)
 
-	const extent = [100, 100] as Vec2
-	const halfExtent = vec2.divideBy(extent, 2)
+	const extent = Vec2.new(100, 100)
+	const halfExtent = extent.clone().divideBy(2)
+	const offset = Vec3.new(0, -0.1, 0)
 
-	for (const raw of loop2d(extent)) {
-		const position = Coordinates.planarToWorld(
-			vec2.subtract(raw, halfExtent)
-		)
+	for (const raw of loop2d(extent.array())) {
+		const coords = Vec2.array(raw).subtractV(halfExtent)
+		const position = Coordinates.planarToWorld(coords).addV(offset)
 		const instance = box.createInstance("box-instance")
-		instance.position.set(...vec3.add(position, [0, -0.1, 0]))
+		instance.position.set(...position.array())
 	}
 
 	box.isVisible = false
