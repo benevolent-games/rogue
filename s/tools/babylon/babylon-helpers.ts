@@ -1,6 +1,6 @@
 
-import {TransformNode} from "@babylonjs/core"
 import {babyloid, Meshoid, Prop} from "@benev/toolbox"
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 export function getChildProps(transform: TransformNode) {
 	const props = new Map<string, Prop>()

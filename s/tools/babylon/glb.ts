@@ -1,6 +1,11 @@
 
 import {babyloid, Meshoid, Prop} from "@benev/toolbox"
-import {AssetContainer, InstancedMesh, PBRMaterial, TransformNode} from "@babylonjs/core"
+
+import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
+import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 
 import {Map2} from "../map2.js"
 import {getTopMeshes} from "./babylon-helpers.js"
@@ -46,7 +51,7 @@ export class Glb {
 				this.props.set(node.name, node)
 	}
 
-	getSourceMesh(name: string) {
+	getSourceMesh(name: string): Mesh | undefined {
 		const meshoid = this.meshoids.get(name)
 		if (meshoid) {
 			return meshoid instanceof InstancedMesh

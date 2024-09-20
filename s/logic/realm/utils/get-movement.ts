@@ -1,11 +1,11 @@
 
-import {vec2} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
 import {GameTact} from "./make-tact.js"
 import {cardinals} from "../../../tools/directions.js"
 
 export function getMovement(tact: GameTact) {
 	const {buttons} = tact.inputs.basic
-	let vec = vec2.zero()
+	const vec = Vec2.zero()
 
 	const directions = [
 		!!buttons.moveNorth.input.down,
@@ -16,9 +16,9 @@ export function getMovement(tact: GameTact) {
 
 	directions.forEach((pressed, index) => {
 		if (pressed)
-			vec = vec2.add(vec, cardinals.at(index)!)
+			vec.add(cardinals.at(index)!)
 	})
 
-	return vec2.normalize(vec)
+	return vec.normalize()
 }
 

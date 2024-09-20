@@ -1,6 +1,13 @@
 
-import {loop2d, make_envmap, scalar, vec2, Vec2, vec3} from "@benev/toolbox"
-import {ArcRotateCamera, AxesViewer, Color3, MeshBuilder, PBRMaterial, Vector3} from "@babylonjs/core"
+import {loop2d, make_envmap, Radians, Vec2, Vec3} from "@benev/toolbox"
+
+import {Color3} from "@babylonjs/core/Maths/math.color.js"
+import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
+import {AxesViewer} from "@babylonjs/core/Debug/axesViewer.js"
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
+import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
+import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 
 import {Coordinates} from "./coordinates.js"
 import {constants} from "../../../constants.js"
@@ -28,27 +35,27 @@ export function makeEnvironment(world: World) {
 	guy.material = friendly
 	guy.position.y += 1.8 / 2
 
-	const envmap = make_envmap(scene, constants.urls.envmap)
+	const envmap: {hdrTexture: CubeTexture, dispose: () => void} = make_envmap(scene, constants.urls.envmap)
 	scene.environmentIntensity = 0.1
 
-	const camera = new ArcRotateCamera(
+	const camera: ArcRotateCamera = new ArcRotateCamera(
 		"camera",
-		scalar.radians.from.degrees(-90),
-		scalar.radians.from.degrees(20),
+		Radians.from.degrees(-90),
+		Radians.from.degrees(20),
 		20,
 		Vector3.Zero(),
 		scene,
 	)
 
-	const extent = [100, 100] as Vec2
-	const halfExtent = vec2.divideBy(extent, 2)
+	const extent = Vec2.new(100, 100)
+	const halfExtent = extent.clone().divideBy(2)
+	const offset = Vec3.new(0, -0.1, 0)
 
-	for (const raw of loop2d(extent)) {
-		const position = Coordinates.planarToWorld(
-			vec2.subtract(raw, halfExtent)
-		)
+	for (const raw of loop2d(extent.array())) {
+		const coords = Vec2.array(raw).subtract(halfExtent)
+		const position = Coordinates.planarToWorld(coords).add(offset)
 		const instance = box.createInstance("box-instance")
-		instance.position.set(...vec3.add(position, [0, -0.1, 0]))
+		instance.position.set(...position.array())
 	}
 
 	box.isVisible = false

@@ -1,5 +1,5 @@
 
-import {vec2, Vec2} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
 
 import {PlayerArchetype} from "./types.js"
 import {Station} from "../../station/station.js"
@@ -13,16 +13,18 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 	}) => () => {
 
 	return {
-		facts: {position},
+		facts: {position: position.array()},
 
 		simulate({feed, feedback}) {
 			handleFeedbackFrom(owner, feedback, f => {
-				const {movement} = f.data
+				const movement = Vec2.array(f.data.movement)
+					.normalize()
+
+				const position = Vec2.array(feed.facts.position)
+					.add(movement)
+
 				feed.facts = {
-					position: vec2.add(
-						feed.facts.position,
-						vec2.normalize(vec2.clamp(movement, -1, 1)),
-					),
+					position: position.array(),
 				}
 			})
 		},

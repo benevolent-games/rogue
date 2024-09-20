@@ -13,6 +13,7 @@
 	],
 	"scripts": {
 		"build": "rm -rf x && turtle build --out=x -v && turtle ssg --in=s,x --out=x --exclude=bin -v && run-s links",
+		"delete-babylon-indexes": "find node_modules/@babylonjs/core -type f \\( -name index.js -o -name index.d.ts \\) | xargs rm -f",
 		"links": "run-s links-s links-assets",
 		"links-s": "ln -s \"$(realpath s)\" x/s",
 		"links-assets": "mkdir -p assets/x && ln -s \"$(realpath assets/x)\" x/assets",
@@ -20,8 +21,9 @@
 		"watch": "turtle watch --in=s,x --out=x --exclude=bin -v",
 		"start": "run-p http watch",
 		"director": "node x/director/plumbing/server.js",
-		"devlinks": "run-s devlinks-toolbox devlinks-slate devlinks-renraku",
+		"devlinks": "run-s devlinks-toolbox devlinks-turtle devlinks-slate devlinks-renraku",
 		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",
+		"devlinks-turtle": "rm -rf node_modules/@benev/turtle && ln -s \"$(realpath ../turtle)\" node_modules/@benev/turtle",
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
 		"test": "cynic node x/tests.test.js",
@@ -29,18 +31,18 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@babylonjs/core": "^7.25.1",
-		"@babylonjs/loaders": "^7.25.1",
+		"@babylonjs/core": "^7.26.1",
+		"@babylonjs/loaders": "^7.26.1",
 		"@benev/argv": "^0.3.7",
 		"@benev/slate": "^0.2.3",
-		"@benev/toolbox": "^0.6.3",
+		"@benev/toolbox": "^0.7.0-0",
 		"es-module-shims": "^1.10.0",
 		"renraku": "^0.2.0-3",
-		"zx": "^8.1.6"
+		"zx": "^8.1.8"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",
-		"@benev/turtle": "^0.6.0-8",
+		"@benev/turtle": "^0.6.0-9",
 		"chokidar": "^4.0.0",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",

@@ -1,4 +1,5 @@
 
+import {Vec2} from "@benev/toolbox"
 import {interval} from "@benev/slate"
 
 import {World} from "../tools/babylon/world.js"
@@ -20,7 +21,7 @@ export async function soloFlow() {
 
 	const replicator = new Replicator(realm, replicas, 0)
 
-	simulator.create("player", {owner: replicator.id, position: [0, 0]})
+	simulator.create("player", {owner: replicator.id, position: Vec2.zero()})
 
 	let feedback: Feedback = []
 

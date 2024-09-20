@@ -1,5 +1,6 @@
 
-import {Scene} from "@babylonjs/core"
+import {Scene} from "@babylonjs/core/scene.js"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Iron, AnyEngine, CanvasScaler, Gameloop, Rendering, loadGlb} from "@benev/toolbox"
 
 export class World {
@@ -53,7 +54,7 @@ export class World {
 		public readonly dispose: () => void,
 	) {}
 
-	async loadContainer(url: string) {
+	async loadContainer(url: string): Promise<AssetContainer> {
 		return await loadGlb(this.scene, url)
 	}
 }
