@@ -1,6 +1,13 @@
 
-import {loop2d, make_envmap, Radians, Vec2, Vec2Array, Vec3} from "@benev/toolbox"
-import {ArcRotateCamera, AxesViewer, Color3, MeshBuilder, PBRMaterial, Vector3} from "@babylonjs/core"
+import {loop2d, make_envmap, Radians, Vec2, Vec3} from "@benev/toolbox"
+
+import {Color3} from "@babylonjs/core/Maths/math.color.js"
+import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
+import {AxesViewer} from "@babylonjs/core/Debug/axesViewer.js"
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
+import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
+import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 
 import {Coordinates} from "./coordinates.js"
 import {constants} from "../../../constants.js"
@@ -28,10 +35,10 @@ export function makeEnvironment(world: World) {
 	guy.material = friendly
 	guy.position.y += 1.8 / 2
 
-	const envmap = make_envmap(scene, constants.urls.envmap)
+	const envmap: {hdrTexture: CubeTexture, dispose: () => void} = make_envmap(scene, constants.urls.envmap)
 	scene.environmentIntensity = 0.1
 
-	const camera = new ArcRotateCamera(
+	const camera: ArcRotateCamera = new ArcRotateCamera(
 		"camera",
 		Radians.from.degrees(-90),
 		Radians.from.degrees(20),
