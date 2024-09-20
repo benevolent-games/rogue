@@ -5,10 +5,10 @@ import {Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox
 import styles from "./styles.js"
 import {nexus} from "../../nexus.js"
 import {constants} from "../../../constants.js"
+import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
-import { Gameplay } from "../../views/gameplay/view.js"
 
 export const GameApp = nexus.shadowComponent(use => {
 	use.styles(styles)
