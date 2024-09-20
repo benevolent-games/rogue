@@ -13,6 +13,7 @@
 	],
 	"scripts": {
 		"build": "rm -rf x && turtle build --out=x -v && turtle ssg --in=s,x --out=x --exclude=bin -v && run-s links",
+		"delete-babylon-indexes": "find node_modules/@babylonjs/core -type f \\( -name index.js -o -name index.d.ts \\) | xargs rm -f",
 		"links": "run-s links-s links-assets",
 		"links-s": "ln -s \"$(realpath s)\" x/s",
 		"links-assets": "mkdir -p assets/x && ln -s \"$(realpath assets/x)\" x/assets",
@@ -22,6 +23,7 @@
 		"director": "node x/director/plumbing/server.js",
 		"devlinks": "run-s devlinks-toolbox devlinks-slate devlinks-renraku",
 		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",
+		"devlinks-turtle": "rm -rf node_modules/@benev/turtle && ln -s \"$(realpath ../turtle)\" node_modules/@benev/turtle",
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
 		"test": "cynic node x/tests.test.js",
