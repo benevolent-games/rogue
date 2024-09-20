@@ -12,9 +12,6 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 		position: Vec2
 	}) => () => {
 
-	console.log("yolo hello", position.toString())
-	console.log("yolo hello2", position.array())
-
 	return {
 		facts: {position: position.array()},
 
@@ -24,7 +21,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 					.normalize()
 
 				const position = Vec2.array(feed.facts.position)
-					.addV(movement)
+					.add(movement)
 
 				feed.facts = {
 					position: position.array(),

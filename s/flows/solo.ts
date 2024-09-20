@@ -1,8 +1,4 @@
 
-import "@babylonjs/core"
-// import "@benev/toolbox/x/babylon-side-effects.js"
-// Engine.ShadersRepository = "/path/to/shaders/"
-
 import {Vec2} from "@benev/toolbox"
 import {interval} from "@benev/slate"
 

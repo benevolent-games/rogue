@@ -52,8 +52,8 @@ export function makeEnvironment(world: World) {
 	const offset = Vec3.new(0, -0.1, 0)
 
 	for (const raw of loop2d(extent.array())) {
-		const coords = Vec2.array(raw).subtractV(halfExtent)
-		const position = Coordinates.planarToWorld(coords).addV(offset)
+		const coords = Vec2.array(raw).subtract(halfExtent)
+		const position = Coordinates.planarToWorld(coords).add(offset)
 		const instance = box.createInstance("box-instance")
 		instance.position.set(...position.array())
 	}

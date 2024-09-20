@@ -16,7 +16,7 @@ export function getMovement(tact: GameTact) {
 
 	directions.forEach((pressed, index) => {
 		if (pressed)
-			vec.addV(cardinals.at(index)!)
+			vec.add(cardinals.at(index)!)
 	})
 
 	return vec.normalize()
