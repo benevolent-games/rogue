@@ -54,8 +54,8 @@ export const GameApp = nexus.shadowComponent(use => {
 			}),
 		}
 
-		// TODO hack
-		goExhibit.solo()
+		if (location.hash.includes("solo"))
+			goExhibit.solo()
 
 		return orchestrator
 	})
