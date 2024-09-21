@@ -1,7 +1,7 @@
 
 import {Map2} from "../../../tools/map2.js"
+import {Feedbacks} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
-import {Feedbacks} from "../relay/feedback-collector.js"
 import {FeedCollector, FeedHelper} from "../relay/feed-collector.js"
 import {Data, EntityId, Memo, ReplicatorId, State} from "../types.js"
 import {ProvidedEntityFeedback, SimulaPack, Simulas, Simulon} from "./types.js"

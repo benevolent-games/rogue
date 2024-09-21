@@ -1,13 +1,7 @@
 
+import {Feed} from "./types.js"
 import {Map2} from "../../../tools/map2.js"
 import {Archetype, Broadcast, EntityId, Facts, State} from "../types.js"
-
-export type Feed = {
-	creates: [EntityId, State][]
-	facts: [EntityId, Facts][]
-	broadcasts: [EntityId, Broadcast[]][]
-	destroys: EntityId[]
-}
 
 export class FeedCollector {
 	creates = new Map<EntityId, State>()

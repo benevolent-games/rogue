@@ -1,8 +1,8 @@
 
+import {Feed} from "../relay/types.js"
 import {ReplicatorId} from "../types.js"
 import {Map2} from "../../../tools/map2.js"
 import {Replicas, Replon} from "./types.js"
-import {Feed} from "../relay/feed-collector.js"
 import {FeedbackCollector, FeedbackHelper} from "../relay/feedback-collector.js"
 
 export class Replicator<Re> {
@@ -23,8 +23,9 @@ export class Replicator<Re> {
 		}
 
 		for (const [id, facts] of feed.facts) {
-			const replon = this.#replons.require(id)
-			replon.state.facts = facts
+			const replon = this.#replons.get(id)
+			if (replon)
+				replon.state.facts = facts
 		}
 
 		for (const [id, replon] of this.#replons) {
@@ -41,8 +42,9 @@ export class Replicator<Re> {
 		}
 
 		for (const id of feed.destroys) {
-			const replon = this.#replons.require(id)
-			replon.replicant.dispose()
+			const replon = this.#replons.get(id)
+			if (replon)
+				replon.replicant.dispose()
 			this.#replons.delete(id)
 		}
 	}

@@ -1,6 +1,8 @@
 
 import {nap} from "@benev/slate"
 
+export type LagFn = (fn: () => void) => void
+
 export type LagProfile = {
 	/** round-trip-time in milliseconds */
 	ping: number
@@ -21,9 +23,10 @@ export type LagProfile = {
 	spikeMultiplier: number
 }
 
-export function fakeLag({
-		ping, jitter, loss, smoothTime, spikeTime, spikeMultiplier,
-	}: LagProfile) {
+export function fakeLag(profile: LagProfile): LagFn {
+	const pipe: (() => void)[] = []
+
+	const {ping, jitter, loss, smoothTime, spikeTime, spikeMultiplier} = profile
 
 	const hrtt = ping / 2
 	const hjitter = jitter / 2
@@ -34,24 +37,21 @@ export function fakeLag({
 	let modeDuration = Math.random() * smoothTime
 
 	function switchToSmooth() {
-		modeDuration = Math.random() * smoothTime
 		mode = "smooth"
 		multiplier = 1
+		modeDuration = Math.random() * smoothTime
 		modeStart = Date.now()
 	}
 
 	function switchToSpike() {
-		modeDuration = Math.random() * spikeTime
 		mode = "spike"
-		multiplier = spikeMultiplier
-		modeStart = Date.now()
+		multiplier = (Math.random() * (spikeMultiplier - 1)) + 1
 		modeDuration = Math.random() * spikeTime
+		modeStart = Date.now()
 	}
 
-	return async(fn: () => void) => {
-		if (Math.random() < (multiplier * loss)) {
-			return undefined
-		}
+	return async fn => {
+		pipe.push(fn)
 
 		const modeElapsed = Date.now() - modeStart
 		const timeToSwitchModes = modeElapsed > modeDuration
@@ -65,7 +65,12 @@ export function fakeLag({
 		const delay = multiplier * (hrtt + jitteroffset)
 
 		await nap(delay)
-		fn()
+		const fn2 = pipe.shift()
+
+		const isLost = loss > 0 && (Math.random() < (multiplier * loss))
+
+		if (!isLost)
+			fn2?.()
 	}
 }
 

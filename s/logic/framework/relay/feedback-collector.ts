@@ -1,13 +1,7 @@
 
+import {Feedback} from "./types.js"
 import {Map2} from "../../../tools/map2.js"
-import {Archetype, Data, EntityId, Memo, ReplicatorId} from "../types.js"
-
-export type Feedbacks = [ReplicatorId, Feedback][]
-
-export type Feedback = {
-	datas: [EntityId, Data][]
-	memos: [EntityId, Memo[]][]
-}
+import {Archetype, Data, EntityId, Memo} from "../types.js"
 
 export class FeedbackCollector {
 	datas = new Map<EntityId, Data>()

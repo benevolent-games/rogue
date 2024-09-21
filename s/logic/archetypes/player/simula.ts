@@ -12,7 +12,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 		position: Vec2
 	}) => () => {
 
-	const speed = 0.05
+	const speed = 0.1
 	const movement = Vec2.zero()
 
 	return {
