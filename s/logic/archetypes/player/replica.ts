@@ -12,6 +12,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 		replicate({feed, feedback}) {
 			const position = Vec2.array(feed.facts.position)
 			const worldPosition = Coordinates.planarToWorld(position)
+				.add_(0, 1, 0)
 			realm.env.guy.position.set(...worldPosition.array())
 
 			const movement = getMovement(realm.tact)
