@@ -3,7 +3,7 @@ import {loop2d, make_envmap, Radians, Vec2, Vec3} from "@benev/toolbox"
 
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
-import {AxesViewer} from "@babylonjs/core/Debug/axesViewer.js"
+// import {AxesViewer} from "@babylonjs/core/Debug/axesViewer.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
@@ -16,10 +16,10 @@ import {World} from "../../../tools/babylon/world.js"
 export function makeEnvironment(world: World) {
 	const {scene} = world
 
-	new AxesViewer(scene, 2)
+	// new AxesViewer(scene, 2)
 
 	const plain = new PBRMaterial("plain", scene)
-	plain.albedoColor = new Color3(0.8, 0.8, 0.8)
+	plain.albedoColor = new Color3(0.1, 0.1, 0.1)
 	plain.roughness = 0.9
 	plain.metallic = 0
 

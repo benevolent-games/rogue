@@ -23,7 +23,7 @@ export class Map2<K, V> extends Map<K, V> {
 	}
 
 	guarantee(key: K, make: () => V) {
-		Map2.guarantee(this, key, make)
+		return Map2.guarantee(this, key, make)
 	}
 }
 

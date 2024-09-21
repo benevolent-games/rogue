@@ -1,7 +1,6 @@
 
 import {Simulator} from "./simulator.js"
-import {FeedHelper} from "./feed-helper.js"
-import {SpecificFeedback} from "../replication/types.js"
+import {FeedHelper} from "../relay/feed-collector.js"
 import {Archetype, EntityId, ReplicatorId, State} from "../types.js"
 
 export type Simulant<Ar extends Archetype> = {
@@ -18,7 +17,12 @@ export type SimulaPack<St> = {
 
 export type SimulaImmediate<Ar extends Archetype> = {
 	feed: FeedHelper<Ar>
-	feedback: [ReplicatorId, SpecificFeedback<Ar>][]
+	feedback: ProvidedEntityFeedback<Ar>
+}
+
+export type ProvidedEntityFeedback<Ar extends Archetype> = {
+	datas: [ReplicatorId, Ar["data"]][]
+	memos: [ReplicatorId, Ar["memo"]][]
 }
 
 export type Simulan<St, Ar extends Archetype> = (pack: SimulaPack<St>) => Simulant<Ar>
@@ -32,12 +36,5 @@ export type Simulon<Ar extends Archetype> = {
 	state: State<Ar>
 	simulant: Simulant<Ar>
 	feed: FeedHelper<Ar>
-}
-
-export type Feed = {
-	created: [EntityId, State][]
-	updated: [EntityId, any][]
-	broadcasted: [EntityId, any][]
-	destroyed: EntityId[]
 }
 
