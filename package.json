@@ -31,11 +31,11 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@babylonjs/core": "^7.26.1",
-		"@babylonjs/loaders": "^7.26.1",
+		"@babylonjs/core": "^7.26.2",
+		"@babylonjs/loaders": "^7.26.2",
 		"@benev/argv": "^0.3.7",
 		"@benev/slate": "^0.2.3",
-		"@benev/toolbox": "^0.7.0-0",
+		"@benev/toolbox": "^0.7.0",
 		"es-module-shims": "^1.10.0",
 		"renraku": "^0.2.0-3",
 		"zx": "^8.1.8"
