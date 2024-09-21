@@ -30,47 +30,34 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			.array()
 	}
 
-	const interpolatedCoordinates = Coordinates.zero()
-
-	const expectedDelay = 45
 	const backtracer = new Backtracer<Coordinates>()
-	const alpha = Coordinates.zero()
+	const authoritative = Coordinates.zero()
+	const expected = Coordinates.zero()
 
 	return {
 		replicate({feed, feedback}) {
-			const factualCoordinates = Coordinates.array(feed.facts.coordinates)
-			interpolatedCoordinates.lerp(factualCoordinates, 1 / 10)
+			const raw = Coordinates.array(feed.facts.coordinates)
+			authoritative.lerp(raw, 2 / 10)
 
 			mover.movement.set(getMovement(realm.tact))
 			mover.simulate()
-			backtracer.add(mover.coordinates.clone())
+			const local = mover.coordinates
+			backtracer.add(local.clone())
 
-			const oldPrediction = backtracer.rememberAgo(expectedDelay)
-				?? factualCoordinates.clone()
+			const expectedRaw = backtracer.rememberAgo(45) ?? raw.clone()
+			expected.lerp(expectedRaw, 2 / 10)
 
-			alpha.lerp(oldPrediction, 1 / 10)
+			const discrepancy = raw.clone().subtract(expected)
+			local.add(discrepancy.multiplyBy(.05))
 
-			const projection = interpolatedCoordinates
-				.clone()
-				.add(mover.coordinates.clone().subtract(alpha))
-
-			const discrepancy = projection.distance(mover.coordinates)
-			console.log("discrepancy", discrepancy)
-
-			const predictedCoordinates = mover.coordinates
-
-			// // CORRECTIVE DRIFT :/
-			// if (discrepancy > 1)
-			// 	mover.coordinates.lerp(interpolatedCoordinates, 5 / 100)
-
-			guys.raw.position.set(...guyPosition(factualCoordinates))
-			guys.predicted.position.set(...guyPosition(predictedCoordinates))
-			guys.interpolated.position.set(...guyPosition(interpolatedCoordinates))
-			guys.backtrace.position.set(...guyPosition(projection))
+			guys.raw.position.set(...guyPosition(raw))
+			guys.predicted.position.set(...guyPosition(local))
+			guys.interpolated.position.set(...guyPosition(authoritative))
+			guys.backtrace.position.set(...guyPosition(expected))
 			
 			realm.env.camera.target.set(
 				...cameraPosition
-					.lerp(predictedCoordinates.position(), 1 / 10)
+					.lerp(local.position(), 1 / 10)
 					.array()
 			)
 
