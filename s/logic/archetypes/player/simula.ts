@@ -7,16 +7,16 @@ import {ReplicatorId} from "../../framework/types.js"
 import {dataFromReplicator} from "../../framework/utils/feedback-utils.js"
 
 export const playerSimula = Station.simula<PlayerArchetype>()(
-	({owner, position}: {
+	({owner, coordinates}: {
 		owner: ReplicatorId
-		position: Vec2
+		coordinates: Vec2
 	}) => () => {
 
 	const speed = 0.1
 	const movement = Vec2.zero()
 
 	return {
-		facts: {position: position.array()},
+		facts: {coordinates: coordinates.array()},
 		simulate({feed, feedback}) {
 			for (const data of dataFromReplicator(owner, feedback)) {
 				movement
@@ -25,11 +25,11 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 					.multiplyBy(speed)
 			}
 
-			const position = Vec2.array(feed.facts.position)
+			const coordinates = Vec2.array(feed.facts.coordinates)
 				.add(movement)
 
 			feed.facts = {
-				position: position.array(),
+				coordinates: coordinates.array(),
 			}
 		},
 		dispose() {},
