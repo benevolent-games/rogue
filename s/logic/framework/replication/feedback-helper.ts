@@ -1,12 +1,15 @@
 
-import {Archetype} from "../types.js"
-import {SpecificFeedback} from "./types.js"
+import {Archetype, EntityId} from "../types.js"
+import {RecordFeedbackEventFn} from "./types.js"
 
 export class FeedbackHelper<Ar extends Archetype> {
 	#data: Ar["data"]
-	#memos: Ar["memo"][] = []
 
-	constructor(data: Ar["data"]) {
+	constructor(
+			private record: RecordFeedbackEventFn,
+			private entityId: EntityId,
+			data: Ar["data"],
+		) {
 		this.#data = data
 	}
 
@@ -16,16 +19,11 @@ export class FeedbackHelper<Ar extends Archetype> {
 
 	set data(data: Ar["data"]) {
 		this.#data = data
+		this.record({kind: "data", entityId: this.entityId, data})
 	}
 
-	memo(memo: any) {
-		this.#memos.push(memo)
-	}
-
-	extract(): SpecificFeedback<Ar> {
-		const memos = this.#memos
-		this.#memos = []
-		return {memos, data: this.#data}
+	memo(memo: Ar["memo"]) {
+		this.record({kind: "memo", entityId: this.entityId, memo})
 	}
 }
 

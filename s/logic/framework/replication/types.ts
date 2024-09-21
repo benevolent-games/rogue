@@ -2,7 +2,7 @@
 import {Replicator} from "./replicator.js"
 import {Simulas} from "../simulation/types.js"
 import {FeedbackHelper} from "./feedback-helper.js"
-import {Archetype, EntityId, ReplicatorId, State} from "../types.js"
+import {Archetype, EntityId, FeedbackEvent, ReplicatorId, State} from "../types.js"
 
 export type Replon<Ar extends Archetype = any> = {
 	state: State<Ar["facts"]>
@@ -34,11 +34,6 @@ export type Replicas = Record<string, Replica<any, any>>
 export const replica = <Re>() => <Ar extends Archetype>(r: Replica<Re, Ar>) => r
 export const asReplicas = <Re, S extends Simulas<Re>>(r: Record<keyof S, Replica<Re, any>>) => r
 
-export type SpecificFeedback<Ar extends Archetype> = {
-	readonly data: Ar["data"],
-	readonly memos: Ar["memo"][],
-}
 
-export type ReplicatorFeedback = [EntityId, SpecificFeedback<any>][]
-export type Feedback = [ReplicatorId, ReplicatorFeedback][]
+export type RecordFeedbackEventFn = (event: FeedbackEvent.Any) => void
 

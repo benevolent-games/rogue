@@ -1,27 +1,30 @@
 
-import {Scribe} from "./scribe.js"
 import {Map2} from "../../../tools/map2.js"
 import {FeedHelper} from "./feed-helper.js"
-import {ReplicatorId, State} from "../types.js"
+import {Feedbacks} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
-import {SimulaPack, Simulas, Simulon} from "./types.js"
-import {Feedback, SpecificFeedback} from "../replication/types.js"
+import {FeedCollector} from "../relay/feed-collector.js"
+import {Data, EntityId, Memo, ReplicatorId, State} from "../types.js"
+import {ProvidedEntityFeedback, SimulaPack, Simulas, Simulon} from "./types.js"
 
 export class Simulator<St, S extends Simulas<St> = any> {
+	feedCollector = new FeedCollector()
+	#counter = new IdCounter()
 	#simulons = new Map2<number, Simulon<any>>
-	#idCounter = new IdCounter()
-	#scribe = new Scribe()
 
-	constructor(public station: St, public simulas: S) {}
+	constructor(
+		public station: St,
+		public simulas: S,
+	) {}
 
 	create<K extends keyof S>(kind: K, ...a: Parameters<S[K]>) {
-		const id = this.#idCounter.next()
+		const id = this.#counter.next()
 		const pack: SimulaPack<St> = {id, station: this.station, simulator: this}
 		const simulant = this.simulas[kind](...a)(pack)
 		const state: State<any> = {kind: kind as string, facts: simulant.facts}
-		const feed = new FeedHelper(id, this.#scribe, simulant.facts)
+		const feed = new FeedHelper(this.feedCollector.record, id, simulant.facts)
 		this.#simulons.set(id, {state, simulant, feed})
-		this.#scribe.created.push([id, state])
+		this.feedCollector.record({kind: "create", entityId: id, state})
 		return simulant as ReturnType<ReturnType<S[K]>>
 	}
 
@@ -33,30 +36,37 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		this.#simulons.require(id)
 	}
 
-	update(id: number, state: any) {
-		this.#scribe.updated.push([id, state])
-	}
-
 	destroy(id: number) {
-		this.#scribe.destroyed.push(id)
+		const simulon = this.#simulons.require(id)
+		simulon.simulant.dispose()
+		this.#simulons.delete(id)
+		this.feedCollector.record({kind: "destroy", entityId: id})
 	}
 
-	simulate(feedback: Feedback) {
+	simulate(feedbacks: Feedbacks) {
 		for (const [id, {simulant, feed}] of this.#simulons) {
-			const fb: [ReplicatorId, SpecificFeedback<any>][] = []
-
-			for (const [replicatorId, feeds] of feedback) {
-				for (const [entityId, specific] of feeds)
-					if (entityId === id)
-						fb.push([replicatorId, specific])
-			}
-
 			simulant.simulate({
 				feed,
-				feedback: fb,
+				feedback: this.#prepareFeedbackForEntity(id, feedbacks),
 			})
 		}
-		return this.#scribe.extract()
+	}
+
+	#prepareFeedbackForEntity(entityId: EntityId, feedbacks: Feedbacks): ProvidedEntityFeedback<any> {
+		const memos: [ReplicatorId, Memo][] = []
+		const datas: [ReplicatorId, Data][] = []
+
+		for (const [replicatorId, feedback] of feedbacks) {
+			for (const [eid, memo] of feedback.memos)
+				if (eid === entityId)
+					memos.push([replicatorId, memo])
+
+			for (const [eid, data] of feedback.datas)
+				if (eid === entityId)
+					datas.push([replicatorId, data])
+		}
+
+		return {memos, datas}
 	}
 }
 

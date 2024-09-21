@@ -4,7 +4,7 @@ import {Vec2} from "@benev/toolbox"
 import {PlayerArchetype} from "./types.js"
 import {Station} from "../../station/station.js"
 import {ReplicatorId} from "../../framework/types.js"
-import {handleFeedbackFrom} from "../../framework/utils/handle-feedback-from.js"
+import {dataFromReplicator} from "../../framework/utils/feedback-utils.js"
 
 export const playerSimula = Station.simula<PlayerArchetype>()(
 	({owner, position}: {
@@ -12,23 +12,26 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 		position: Vec2
 	}) => () => {
 
+	const speed = 0.2
+	const movement = Vec2.zero()
+
 	return {
 		facts: {position: position.array()},
-
 		simulate({feed, feedback}) {
-			handleFeedbackFrom(owner, feedback, f => {
-				const movement = Vec2.array(f.data.movement)
+			for (const data of dataFromReplicator(owner, feedback)) {
+				movement
+					.set_(...data.movement)
 					.normalize()
+					.multiplyBy(speed)
+			}
 
-				const position = Vec2.array(feed.facts.position)
-					.add(movement)
+			const position = Vec2.array(feed.facts.position)
+				.add(movement)
 
-				feed.facts = {
-					position: position.array(),
-				}
-			})
+			feed.facts = {
+				position: position.array(),
+			}
 		},
-
 		dispose() {},
 	}
 })
