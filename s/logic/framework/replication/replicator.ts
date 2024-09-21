@@ -1,13 +1,12 @@
 
-import {Feed} from "../relay/types.js"
 import {ReplicatorId} from "../types.js"
 import {Map2} from "../../../tools/map2.js"
 import {Replicas, Replon} from "./types.js"
-import {FeedbackHelper} from "./feedback-helper.js"
-import {FeedbackCollector} from "../relay/feedback-collector.js"
+import {Feed} from "../relay/feed-collector.js"
+import {FeedbackCollector, FeedbackHelper} from "../relay/feedback-collector.js"
 
 export class Replicator<Re> {
-	feedbackCollector = new FeedbackCollector()
+	collector = new FeedbackCollector()
 	#replons = new Map2<number, Replon>
 	#feedbackHelpers: WeakMap<Replon, FeedbackHelper<any>> = new WeakMap()
 
@@ -17,7 +16,7 @@ export class Replicator<Re> {
 		for (const [id, state] of feed.creates) {
 			const replica = this.replicas[state.kind]
 			const replicant = replica({id, realm: this.realm, replicator: this})
-			const feedback = new FeedbackHelper(this.feedbackCollector.record, id, replicant.data)
+			const feedback = new FeedbackHelper(id, this.collector)
 			const replon: Replon = {state, replicant}
 			this.#replons.set(id, replon)
 			this.#feedbackHelpers.set(replon, feedback)

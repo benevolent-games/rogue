@@ -1,14 +1,13 @@
 
 import {Map2} from "../../../tools/map2.js"
-import {FeedHelper} from "./feed-helper.js"
-import {Feedbacks} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
-import {FeedCollector} from "../relay/feed-collector.js"
+import {Feedbacks} from "../relay/feedback-collector.js"
+import {FeedCollector, FeedHelper} from "../relay/feed-collector.js"
 import {Data, EntityId, Memo, ReplicatorId, State} from "../types.js"
 import {ProvidedEntityFeedback, SimulaPack, Simulas, Simulon} from "./types.js"
 
 export class Simulator<St, S extends Simulas<St> = any> {
-	feedCollector = new FeedCollector()
+	collector = new FeedCollector()
 	#counter = new IdCounter()
 	#simulons = new Map2<number, Simulon<any>>
 
@@ -22,9 +21,9 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		const pack: SimulaPack<St> = {id, station: this.station, simulator: this}
 		const simulant = this.simulas[kind](...a)(pack)
 		const state: State<any> = {kind: kind as string, facts: simulant.facts}
-		const feed = new FeedHelper(this.feedCollector.record, id, simulant.facts)
+		const feed = new FeedHelper(id, this.collector, state)
 		this.#simulons.set(id, {state, simulant, feed})
-		this.feedCollector.record({kind: "create", entityId: id, state})
+		this.collector.setCreate(id, state)
 		return simulant as ReturnType<ReturnType<S[K]>>
 	}
 
@@ -40,7 +39,7 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		const simulon = this.#simulons.require(id)
 		simulon.simulant.dispose()
 		this.#simulons.delete(id)
-		this.feedCollector.record({kind: "destroy", entityId: id})
+		this.collector.setDestroy(id)
 	}
 
 	simulate(feedbacks: Feedbacks) {

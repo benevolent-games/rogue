@@ -1,7 +1,7 @@
 
 import {Simulator} from "./simulator.js"
-import {FeedHelper} from "./feed-helper.js"
-import {Archetype, EntityId, FeedEvent, ReplicatorId, State} from "../types.js"
+import {FeedHelper} from "../relay/feed-collector.js"
+import {Archetype, EntityId, ReplicatorId, State} from "../types.js"
 
 export type Simulant<Ar extends Archetype> = {
 	facts: Ar["facts"]
@@ -37,6 +37,4 @@ export type Simulon<Ar extends Archetype> = {
 	simulant: Simulant<Ar>
 	feed: FeedHelper<Ar>
 }
-
-export type RecordFeedEventFn = (event: FeedEvent.Any) => void
 

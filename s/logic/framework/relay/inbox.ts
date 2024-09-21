@@ -5,18 +5,13 @@ export class Inbox<T> {
 	#biggestKnownId?: number
 	#parcels: Parcel<T>[] = []
 
-	constructor(private options: {
-		discardOutOfOrder: boolean
-	}) {}
-
 	/** insert a parcel into the inbox */
 	insertParcel(parcel: Parcel<T>) {
 		const [id] = parcel
 		const biggest = this.#biggestKnownId
-		const {discardOutOfOrder} = this.options
 		const isObsolete = (biggest !== undefined) && (id <= biggest)
 
-		if (discardOutOfOrder && isObsolete)
+		if (isObsolete)
 			return undefined
 
 		this.#biggestKnownId = id
