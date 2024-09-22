@@ -35,7 +35,7 @@
 		"@babylonjs/loaders": "^7.26.2",
 		"@benev/argv": "^0.3.7",
 		"@benev/slate": "^0.2.3",
-		"@benev/toolbox": "^0.7.0",
+		"@benev/toolbox": "^0.7.1",
 		"es-module-shims": "^1.10.0",
 		"renraku": "^0.2.0-3",
 		"zx": "^8.1.8"
