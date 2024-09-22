@@ -13,15 +13,17 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 	const mover = new PlayerMovementSimulator()
 
 	const guys = {
-		predicted: realm.instance(realm.env.guys.happy),
-		interpolated: realm.instance(realm.env.guys.spicy),
-		raw: realm.instance(realm.env.guys.angry),
-		backtrace: realm.instance(realm.env.guys.sad),
+		local: realm.instance(realm.env.guys.local),
+		raw: realm.instance(realm.env.guys.raw),
+		authentic: realm.instance(realm.env.guys.authentic),
+		expected: realm.instance(realm.env.guys.expected),
+		target: realm.instance(realm.env.guys.target),
 	}
 
-	guys.backtrace.scaling.setAll(97 / 100)
+	guys.target.scaling.setAll(96 / 100)
+	guys.expected.scaling.setAll(97 / 100)
 	guys.raw.scaling.setAll(98 / 100)
-	guys.interpolated.scaling.setAll(99 / 100)
+	guys.authentic.scaling.setAll(99 / 100)
 
 	function guyPosition(coordinates: Coordinates) {
 		return coordinates
@@ -31,29 +33,32 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 	}
 
 	const backtracer = new Backtracer<Coordinates>()
-	const authoritative = Coordinates.zero()
+	const authentic = Coordinates.zero()
 	const expected = Coordinates.zero()
 
 	return {
 		replicate({feed, feedback}) {
 			const raw = Coordinates.array(feed.facts.coordinates)
-			authoritative.lerp(raw, 2 / 10)
+			authentic.lerp(raw, 10 / 100)
 
 			mover.movement.set(getMovement(realm.tact))
 			mover.simulate()
 			const local = mover.coordinates
 			backtracer.add(local.clone())
 
-			const expectedRaw = backtracer.rememberAgo(45) ?? raw.clone()
-			expected.lerp(expectedRaw, 2 / 10)
+			const expectedRaw = backtracer.rememberAgo(50) ?? raw.clone()
+			expected.lerp(expectedRaw, 10 / 100)
 
-			const discrepancy = raw.clone().subtract(expected)
-			local.add(discrepancy.multiplyBy(.05))
+			const discrepancy = authentic.clone().subtract(expected)
+			const target = local.clone().add(discrepancy)
 
+			local.lerp(target, 5 / 100)
+
+			guys.local.position.set(...guyPosition(local))
 			guys.raw.position.set(...guyPosition(raw))
-			guys.predicted.position.set(...guyPosition(local))
-			guys.interpolated.position.set(...guyPosition(authoritative))
-			guys.backtrace.position.set(...guyPosition(expected))
+			guys.authentic.position.set(...guyPosition(authentic))
+			guys.expected.position.set(...guyPosition(expected))
+			guys.target.position.set(...guyPosition(target))
 			
 			realm.env.camera.target.set(
 				...cameraPosition

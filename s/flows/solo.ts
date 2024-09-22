@@ -25,7 +25,7 @@ export async function soloFlow() {
 	simulator.create("player", {owner: replicator.id, coordinates: Coordinates.zero()})
 
 	const niceProfile: LagProfile = {
-		ping: 40,
+		ping: 50,
 		jitter: 10,
 		loss: 1 / 100,
 		spikeMultiplier: 1.25,
@@ -34,7 +34,7 @@ export async function soloFlow() {
 	}
 
 	const badProfile: LagProfile = {
-		ping: 250,
+		ping: 300,
 		jitter: 150,
 		loss: 20 / 100,
 		spikeMultiplier: 3,

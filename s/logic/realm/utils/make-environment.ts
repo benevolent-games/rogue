@@ -45,20 +45,20 @@ export function makeEnvironment(world: World) {
 		baseGuy.position.y += 1.8 / 2
 		scene.removeMesh(baseGuy)
 
-		const mk = (material: PBRMaterial) => {
+		const mk = (material: PBRMaterial, alpha: number) => {
 			const guy = baseGuy.clone()
 			guy.material = material
-			guy.visibility = 0.7
+			guy.visibility = alpha
 			scene.removeMesh(guy)
 			return guy
 		}
 
 		return {
-			pearl: mk(materials.pearl),
-			happy: mk(materials.happy),
-			angry: mk(materials.angry),
-			spicy: mk(materials.spicy),
-			sad: mk(materials.sad),
+			local: mk(materials.happy, 0.9),
+			raw: mk(materials.angry, 0.3),
+			authentic: mk(materials.spicy, 0.6),
+			expected: mk(materials.sad, 0.3),
+			target: mk(materials.pearl, 0.3),
 		}
 	})()
 

@@ -18,7 +18,7 @@ export class PlayerMovementSimulator {
 }
 
 export class Backtracer<T> {
-	max = 100
+	max = 1000
 	log: {timestamp: number, payload: T}[] = []
 
 	add(payload: T) {
