@@ -24,7 +24,7 @@ export async function soloFlow() {
 
 	simulator.create("player", {owner: replicator.id, coordinates: Coordinates.zero()})
 
-	const niceProfile: LagProfile = {
+	const nice: LagProfile = {
 		ping: 50,
 		jitter: 10,
 		loss: 1 / 100,
@@ -33,7 +33,16 @@ export async function soloFlow() {
 		smoothTime: 5000,
 	}
 
-	const badProfile: LagProfile = {
+	const mid: LagProfile = {
+		ping: 100,
+		jitter: 10,
+		loss: 1 / 100,
+		spikeMultiplier: 1.25,
+		spikeTime: 1000,
+		smoothTime: 5000,
+	}
+
+	const bad: LagProfile = {
 		ping: 300,
 		jitter: 150,
 		loss: 20 / 100,
@@ -42,7 +51,7 @@ export async function soloFlow() {
 		smoothTime: 5000,
 	}
 
-	const hub = new SoloHub(simulator, replicator, 10, niceProfile)
+	const hub = new SoloHub(simulator, replicator, 10, mid)
 
 	const stop = interval.hz(60, () => {
 		simulator.simulate(hub.nethost.takeAllFeedbacks())

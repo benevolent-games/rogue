@@ -34,7 +34,6 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 
 	const backtracer = new Backtracer<Coordinates>()
 	const authentic = Coordinates.zero()
-	const expected = Coordinates.zero()
 
 	return {
 		replicate({feed, feedback}) {
@@ -46,10 +45,9 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			const local = mover.coordinates
 			backtracer.add(local.clone())
 
-			const expectedRaw = backtracer.rememberAgo(50) ?? raw.clone()
-			expected.lerp(expectedRaw, 10 / 100)
+			const expected = backtracer.rememberAgo(100) ?? raw.clone()
 
-			const discrepancy = authentic.clone().subtract(expected)
+			const discrepancy = raw.clone().subtract(expected)
 			const target = local.clone().add(discrepancy)
 
 			local.lerp(target, 5 / 100)
