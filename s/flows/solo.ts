@@ -26,28 +26,37 @@ export async function soloFlow() {
 	})
 
 	const nice: LagProfile = {
-		ping: 25,
-		jitter: 10,
+		ping: 20,
+		jitter: 5,
 		loss: 1 / 100,
-		spikeMultiplier: 1.25,
+		spikeMultiplier: 1.1,
 		spikeTime: 1000,
 		smoothTime: 5000,
 	}
 
 	const mid: LagProfile = {
-		ping: 100,
+		ping: 70,
 		jitter: 20,
-		loss: 1 / 100,
-		spikeMultiplier: 1.50,
+		loss: 2 / 100,
+		spikeMultiplier: 1.5,
 		spikeTime: 1000,
 		smoothTime: 5000,
 	}
 
 	const bad: LagProfile = {
+		ping: 120,
+		jitter: 20,
+		loss: 2 / 100,
+		spikeMultiplier: 1.5,
+		spikeTime: 1000,
+		smoothTime: 5000,
+	}
+
+	const terrible: LagProfile = {
 		ping: 300,
-		jitter: 150,
-		loss: 20 / 100,
-		spikeMultiplier: 3,
+		jitter: 100,
+		loss: 10 / 100,
+		spikeMultiplier: 1.5,
 		spikeTime: 1000,
 		smoothTime: 5000,
 	}

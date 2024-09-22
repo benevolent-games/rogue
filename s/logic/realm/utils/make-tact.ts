@@ -8,6 +8,7 @@ export const makeTact = ((target: EventTarget) => {
 		basic: {
 			vectors: {},
 			buttons: {
+				sprint: buttons(b("ShiftLeft")),
 				moveNorth: buttons(b("KeyW")),
 				moveEast: buttons(b("KeyD")),
 				moveSouth: buttons(b("KeyS")),

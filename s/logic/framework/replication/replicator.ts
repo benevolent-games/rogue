@@ -17,7 +17,7 @@ export class Replicator<Re> {
 	replicate(feed: Feed) {
 		for (const [id, state] of feed.creates) {
 			const replica = this.replicas[state.kind]
-			const replicant = replica({id, realm: this.realm, replicator: this})
+			const replicant = replica({id, realm: this.realm, replicator: this, facts: state.facts})
 			const feedback = new FeedbackHelper(id, this.collector)
 			const replon: Replon = {state, replicant}
 			this.#replons.set(id, replon)
