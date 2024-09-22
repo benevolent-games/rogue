@@ -18,22 +18,49 @@ export function makeEnvironment(world: World) {
 
 	// new AxesViewer(scene, 2)
 
-	const plain = new PBRMaterial("plain", scene)
-	plain.albedoColor = new Color3(0.1, 0.1, 0.1)
-	plain.roughness = 0.9
-	plain.metallic = 0
+	const materials = (() => {
+		const mk = (r: number, g: number, b: number) => {
+			const m = new PBRMaterial("custom", scene)
+			m.albedoColor = new Color3(r, g, b)
+			m.roughness = 0.9
+			m.metallic = 0
+			return m
+		}
+		return {
+			gray: mk(.1, .1, .1),
+			pearl: mk(.7, .7, .7),
+			happy: mk(.1, .7, .7),
+			angry: mk(.7, .1, .1),
+			spicy: mk(.6, .5, .1),
+			sad: mk(.2, .1, .7),
+		}
+	})()
 
-	const friendly = new PBRMaterial("friendly", scene)
-	friendly.albedoColor = new Color3(0, 0.8, 0)
-	friendly.roughness = 0.9
-	friendly.metallic = 0
+	const box = MeshBuilder.CreateBox("box", {width: 0.9, height: 0.2, depth: 0.9})
+	box.isVisible = false
+	box.material = materials.gray
 
-	const box = MeshBuilder.CreateBox("box", {width: 0.9, height: 0.2, depth: 0.9}, scene)
-	box.material = plain
+	const guys = (() => {
+		const baseGuy = MeshBuilder.CreateCapsule("guy", {height: 1.8, radius: 0.4})
+		baseGuy.position.y += 1.8 / 2
+		scene.removeMesh(baseGuy)
 
-	const guy = MeshBuilder.CreateCapsule("guy", {height: 1.8, radius: 0.4}, scene)
-	guy.material = friendly
-	guy.position.y += 1.8 / 2
+		const mk = (material: PBRMaterial, alpha: number) => {
+			const guy = baseGuy.clone()
+			guy.material = material
+			guy.visibility = alpha
+			scene.removeMesh(guy)
+			return guy
+		}
+
+		return {
+			local: mk(materials.happy, 0.9),
+			raw: mk(materials.angry, 0.3),
+			authentic: mk(materials.spicy, 0.6),
+			expected: mk(materials.sad, 0.3),
+			target: mk(materials.pearl, 0.3),
+		}
+	})()
 
 	const envmap: {hdrTexture: CubeTexture, dispose: () => void} = make_envmap(scene, constants.urls.envmap)
 	scene.environmentIntensity = 0.1
@@ -52,14 +79,20 @@ export function makeEnvironment(world: World) {
 	const offset = Vec3.new(0, -0.1, 0)
 
 	for (const raw of loop2d(extent.array())) {
-		const coords = Vec2.array(raw).subtract(halfExtent)
-		const position = Coordinates.planarToWorld(coords).add(offset)
+		const position = Coordinates
+			.array(raw)
+			.subtract(halfExtent)
+			.position()
+			.add(offset)
 		const instance = box.createInstance("box-instance")
 		instance.position.set(...position.array())
 	}
 
-	box.isVisible = false
-
-	return {camera, envmap, guy}
+	return {
+		camera,
+		envmap,
+		materials,
+		guys,
+	}
 }
 

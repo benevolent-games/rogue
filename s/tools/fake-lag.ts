@@ -29,7 +29,7 @@ export function fakeLag(profile: LagProfile): LagFn {
 	const {ping, jitter, loss, smoothTime, spikeTime, spikeMultiplier} = profile
 
 	const hrtt = ping / 2
-	const hjitter = jitter / 2
+	// const hjitter = jitter / 2
 
 	let mode: "smooth" | "spike" = "smooth"
 	let multiplier = 1
@@ -61,8 +61,8 @@ export function fakeLag(profile: LagProfile): LagFn {
 			else switchToSmooth()
 		}
 
-		const jitteroffset = hjitter * Math.random()
-		const delay = multiplier * (hrtt + jitteroffset)
+		const jitteroffset = (jitter * (Math.random() - 0.5))
+		const delay = Math.max(0, multiplier * (hrtt + jitteroffset))
 
 		await nap(delay)
 		const fn2 = pipe.shift()

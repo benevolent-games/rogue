@@ -3,34 +3,32 @@ import {Vec2} from "@benev/toolbox"
 
 import {PlayerArchetype} from "./types.js"
 import {Station} from "../../station/station.js"
+import {PlayerMovementSimulator} from "./utils.js"
 import {ReplicatorId} from "../../framework/types.js"
 import {dataFromReplicator} from "../../framework/utils/feedback-utils.js"
 
 export const playerSimula = Station.simula<PlayerArchetype>()(
-	({owner, position}: {
+	({owner, coordinates}: {
 		owner: ReplicatorId
-		position: Vec2
+		coordinates: Vec2
 	}) => () => {
 
-	const speed = 0.1
-	const movement = Vec2.zero()
+	const mover = new PlayerMovementSimulator()
+	mover.coordinates.set(coordinates)
+
+	const getFacts = (): PlayerArchetype["facts"] => ({
+		coordinates: mover.coordinates.array(),
+	})
 
 	return {
-		facts: {position: position.array()},
+		facts: getFacts(),
 		simulate({feed, feedback}) {
-			for (const data of dataFromReplicator(owner, feedback)) {
-				movement
-					.set_(...data.movement)
-					.normalize()
-					.multiplyBy(speed)
-			}
+			for (const data of dataFromReplicator(owner, feedback))
+				mover.movement.set_(...data.movement)
 
-			const position = Vec2.array(feed.facts.position)
-				.add(movement)
+			mover.simulate()
 
-			feed.facts = {
-				position: position.array(),
-			}
+			feed.facts = getFacts()
 		},
 		dispose() {},
 	}
