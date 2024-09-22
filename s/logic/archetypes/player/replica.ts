@@ -57,7 +57,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			guys.authentic.position.set(...guyPosition(authentic))
 			guys.expected.position.set(...guyPosition(expected))
 			guys.target.position.set(...guyPosition(target))
-			
+
 			realm.env.camera.target.set(
 				...cameraPosition
 					.lerp(local.position(), 1 / 10)

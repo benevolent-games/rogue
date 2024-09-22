@@ -6,7 +6,9 @@ import {Replicas, Replon} from "./types.js"
 import {FeedbackCollector, FeedbackHelper} from "../relay/feedback-collector.js"
 
 export class Replicator<Re> {
+	ping = 100
 	collector = new FeedbackCollector()
+
 	#replons = new Map2<number, Replon>
 	#feedbackHelpers: WeakMap<Replon, FeedbackHelper<any>> = new WeakMap()
 

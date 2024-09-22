@@ -24,26 +24,27 @@ export class SoloHub {
 		const lossyLag = fakeLag(lagProfile)
 		const losslessLag = fakeLag({...lagProfile, loss: 0})
 
-		this.nethost = new Nethost(simulator, hertz)
+		this.nethost = new Nethost(simulator)
 
 		const handle = this.nethost.acceptConnection({
 			replicatorId: replicator.id,
 			feedbackCollector: new FeedbackCollector(),
-			sendFacts: x => lossyLag(() => this.netclient.receiveFacts(deep.clone(x))),
-			sendEvents: x => losslessLag(() => this.netclient.receiveEvents(deep.clone(x))),
+			sendReliable: x => losslessLag(() => this.netclient.receive(deep.clone(x))),
+			sendUnreliable: x => lossyLag(() => this.netclient.receive(deep.clone(x))),
 		})
 
 		this.netclient = new Netclient({
 			replicator,
-			sendRateHz: hertz,
-			sendDatas: x => lossyLag(() => handle.receiveDatas(deep.clone(x))),
-			sendMemos: x => losslessLag(() => handle.receiveMemos(deep.clone(x))),
+			sendReliable: x => losslessLag(() => handle.receive(deep.clone(x))),
+			sendUnreliable: x => lossyLag(() => handle.receive(deep.clone(x))),
 		})
 	}
 
-	dispose() {
-		this.nethost.dispose()
-		this.netclient.dispose()
+	executeNetworking() {
+		this.nethost.send()
+		this.netclient.send()
+		this.nethost.pingponger.ping()
+		this.netclient.pingponger.ping()
 	}
 }
 
