@@ -2,12 +2,12 @@
 import {Vec3} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {PlayerArchetype} from "./types.js"
-import {Backtracer, PlayerMovementSimulator} from "./utils.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {getMovement} from "../../realm/utils/get-movement.js"
+import {Backtracer, PlayerMovementSimulator} from "./utils.js"
 
 export const playerReplica = Realm.replica<PlayerArchetype>(
-	({realm}) => {
+	({realm, replicator}) => {
 
 	const cameraPosition = Vec3.zero()
 	const mover = new PlayerMovementSimulator()
@@ -45,7 +45,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			const local = mover.coordinates
 			backtracer.add(local.clone())
 
-			const expected = backtracer.rememberAgo(100) ?? raw.clone()
+			const expected = backtracer.rememberAgo(replicator.ping) ?? raw.clone()
 
 			const discrepancy = raw.clone().subtract(expected)
 			const target = local.clone().add(discrepancy)

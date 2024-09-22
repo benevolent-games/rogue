@@ -15,9 +15,8 @@ export class Netclient {
 		}) {
 
 		this.pingponger = new Pingponger({
-			timeout: 3000,
-			onRtt: rtt => options.replicator.ping = rtt,
 			send: pingpong => options.sendUnreliable(["pingpong", pingpong]),
+			onRtt: () => options.replicator.ping = this.pingponger.averageRtt,
 		})
 	}
 

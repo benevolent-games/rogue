@@ -61,8 +61,8 @@ export function fakeLag(profile: LagProfile): LagFn {
 			else switchToSmooth()
 		}
 
-		const jitteroffset = (jitter * (Math.random() - 0.5))
-		const delay = Math.max(0, multiplier * (hrtt + jitteroffset))
+		const jitteroffset = jitter * Math.random()
+		const delay = multiplier * (hrtt + jitteroffset)
 
 		await nap(delay)
 		const fn2 = pipe.shift()

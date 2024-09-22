@@ -1,23 +1,30 @@
 
 import {Ping, Pong} from "./messages.js"
+import {Averager} from "../../../tools/averager.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 
 type PingId = number
 type Timestamp = number
 
 export class Pingponger {
-	#rtt = 99
 	#id = new IdCounter()
 	#pending = new Map<PingId, Timestamp>()
 
+	#rtt = 99
+	#timeout = 3000
+	#averager = new Averager(5)
+
 	constructor(private options: {
-		timeout: number
 		send: (p: Ping | Pong) => void
 		onRtt?: (rtt: number) => void
 	}) {}
 
-	get rtt() {
+	get latestRtt() {
 		return this.#rtt
+	}
+
+	get averageRtt() {
+		return this.#averager.average
 	}
 
 	ping() {
@@ -45,6 +52,7 @@ export class Pingponger {
 
 		const now = Date.now()
 		this.#rtt = now - timestamp
+		this.#averager.add(this.#rtt)
 
 		this.#pending.delete(pingId)
 		this.options.onRtt?.(this.#rtt)
@@ -53,7 +61,7 @@ export class Pingponger {
 	#prune() {
 		const now = Date.now()
 		for (const [pingId, timestamp] of this.#pending) {
-			if ((now - timestamp) > this.options.timeout)
+			if ((now - timestamp) > this.#timeout)
 				this.#pending.delete(pingId)
 		}
 	}

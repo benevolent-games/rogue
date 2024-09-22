@@ -17,7 +17,6 @@ export class SoloHub {
 	constructor(
 			public simulator: Simulator<any, any>,
 			public replicator: Replicator<any>,
-			public hertz: number,
 			public lagProfile: LagProfile,
 		) {
 
