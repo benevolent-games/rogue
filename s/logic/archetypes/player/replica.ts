@@ -2,28 +2,31 @@
 import {Vec3} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {PlayerArchetype} from "./types.js"
-import {Backtracer, PlayerMovementSimulator} from "./utils.js"
+import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
-import {getMovement} from "../../realm/utils/get-movement.js"
+import {PlayerRollbackDriver} from "./utils/player-rollback-driver.js"
 
 export const playerReplica = Realm.replica<PlayerArchetype>(
-	({realm}) => {
+	({realm, replicator, facts}) => {
 
 	const cameraPosition = Vec3.zero()
-	const mover = new PlayerMovementSimulator()
+
+	const driver = new PlayerRollbackDriver({
+		config: facts.config,
+		maxChronicleEntries: 30,
+		coordinates: Coordinates.array(facts.coordinates),
+	})
 
 	const guys = {
-		local: realm.instance(realm.env.guys.local),
-		raw: realm.instance(realm.env.guys.raw),
-		authentic: realm.instance(realm.env.guys.authentic),
-		expected: realm.instance(realm.env.guys.expected),
-		target: realm.instance(realm.env.guys.target),
+		hostRaw: realm.instance(realm.env.guys.raw),
+		hostSmooth: realm.instance(realm.env.guys.authentic),
+		clientRaw: realm.instance(realm.env.guys.local),
+		clientSmooth: realm.instance(realm.env.guys.target),
 	}
 
-	guys.target.scaling.setAll(96 / 100)
-	guys.expected.scaling.setAll(97 / 100)
-	guys.raw.scaling.setAll(98 / 100)
-	guys.authentic.scaling.setAll(99 / 100)
+	guys.clientSmooth.scaling.setAll(96 / 100)
+	guys.hostRaw.scaling.setAll(98 / 100)
+	guys.hostSmooth.scaling.setAll(99 / 100)
 
 	function guyPosition(coordinates: Coordinates) {
 		return coordinates
@@ -32,39 +35,42 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			.array()
 	}
 
-	const backtracer = new Backtracer<Coordinates>()
-	const authentic = Coordinates.zero()
+	let previousRaw = Coordinates.zero()
+	const hostSmooth = Coordinates.zero()
+	const clientSmooth = Coordinates.zero()
 
 	return {
 		replicate({feed, feedback}) {
-			const raw = Coordinates.array(feed.facts.coordinates)
-			authentic.lerp(raw, 10 / 100)
+			const input = getPlayerInput(realm.tact)
 
-			mover.movement.set(getMovement(realm.tact))
-			mover.simulate()
-			const local = mover.coordinates
-			backtracer.add(local.clone())
+			const hostRaw = Coordinates.array(feed.facts.coordinates)
+			const fresh = !previousRaw.equals(hostRaw)
+			previousRaw.set(hostRaw)
 
-			const expected = backtracer.rememberAgo(100) ?? raw.clone()
+			if (fresh) {
+				const estimatedTime = Date.now() - replicator.ping
+				driver.rollbackAndCatchUp(estimatedTime, hostRaw)
+			}
 
-			const discrepancy = raw.clone().subtract(expected)
-			const target = local.clone().add(discrepancy)
+			driver.simulate({input, obstacles: []})
+			const clientRaw = driver.coordinates
 
-			local.lerp(target, 5 / 100)
+			hostSmooth.lerp(hostRaw, 30 / 100)
+			clientSmooth.lerp(clientRaw, 30 / 100)
 
-			guys.local.position.set(...guyPosition(local))
-			guys.raw.position.set(...guyPosition(raw))
-			guys.authentic.position.set(...guyPosition(authentic))
-			guys.expected.position.set(...guyPosition(expected))
-			guys.target.position.set(...guyPosition(target))
-			
+			guys.hostRaw.position.set(...guyPosition(hostRaw))
+			guys.hostSmooth.position.set(...guyPosition(hostSmooth))
+
+			guys.clientRaw.position.set(...guyPosition(clientRaw))
+			guys.clientSmooth.position.set(...guyPosition(clientSmooth))
+
 			realm.env.camera.target.set(
 				...cameraPosition
-					.lerp(local.position(), 1 / 10)
+					.lerp(clientSmooth.position(), 10 / 100)
 					.array()
 			)
 
-			feedback.sendData({movement: mover.movement.array()})
+			feedback.sendData({input})
 		},
 		dispose() {},
 	}

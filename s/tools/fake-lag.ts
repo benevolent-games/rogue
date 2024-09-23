@@ -2,6 +2,7 @@
 import {nap} from "@benev/slate"
 
 export type LagFn = (fn: () => void) => void
+export const noLag: LagFn = fn => fn()
 
 export type LagProfile = {
 	/** round-trip-time in milliseconds */
@@ -61,8 +62,8 @@ export function fakeLag(profile: LagProfile): LagFn {
 			else switchToSmooth()
 		}
 
-		const jitteroffset = (jitter * (Math.random() - 0.5))
-		const delay = Math.max(0, multiplier * (hrtt + jitteroffset))
+		const jitteroffset = jitter * Math.random()
+		const delay = multiplier * (hrtt + jitteroffset)
 
 		await nap(delay)
 		const fn2 = pipe.shift()

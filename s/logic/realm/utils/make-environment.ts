@@ -54,11 +54,10 @@ export function makeEnvironment(world: World) {
 		}
 
 		return {
-			local: mk(materials.happy, 0.9),
-			raw: mk(materials.angry, 0.3),
+			target: mk(materials.happy, 0.9),
+			local: mk(materials.sad, 0.4),
+			raw: mk(materials.angry, 0.4),
 			authentic: mk(materials.spicy, 0.6),
-			expected: mk(materials.sad, 0.3),
-			target: mk(materials.pearl, 0.3),
 		}
 	})()
 

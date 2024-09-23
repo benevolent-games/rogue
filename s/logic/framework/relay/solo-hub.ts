@@ -2,6 +2,8 @@
 import {deep} from "@benev/slate"
 
 import {Nethost} from "./net-host.js"
+import {Message} from "./messages.js"
+import {Netpipe} from "./inbox-outbox.js"
 import {Netclient} from "./net-client.js"
 import {Simulator} from "../simulation/simulator.js"
 import {Replicator} from "../replication/replicator.js"
@@ -9,41 +11,55 @@ import {FeedbackCollector} from "./feedback-collector.js"
 import {fakeLag, LagProfile} from "../../../tools/fake-lag.js"
 
 export class SoloHub {
-	static noLag = (fn: () => void) => fn()
-
 	nethost: Nethost
 	netclient: Netclient
+	executeNetworkReceiving: () => void
 
 	constructor(
 			public simulator: Simulator<any, any>,
 			public replicator: Replicator<any>,
-			public hertz: number,
 			public lagProfile: LagProfile,
 		) {
 
 		const lossyLag = fakeLag(lagProfile)
 		const losslessLag = fakeLag({...lagProfile, loss: 0})
 
-		this.nethost = new Nethost(simulator, hertz)
+		console.log("lag profile", lagProfile)
+
+		const pipes = {
+			toClient: new Netpipe<Message>(25),
+			toHost: new Netpipe<Message>(25),
+		}
+
+		this.nethost = new Nethost(simulator)
 
 		const handle = this.nethost.acceptConnection({
 			replicatorId: replicator.id,
 			feedbackCollector: new FeedbackCollector(),
-			sendFacts: x => lossyLag(() => this.netclient.receiveFacts(deep.clone(x))),
-			sendEvents: x => losslessLag(() => this.netclient.receiveEvents(deep.clone(x))),
+			sendReliable: x => pipes.toClient.send(deep.clone(x), losslessLag),
+			sendUnreliable: x => pipes.toClient.send(deep.clone(x), lossyLag),
 		})
 
 		this.netclient = new Netclient({
 			replicator,
-			sendRateHz: hertz,
-			sendDatas: x => lossyLag(() => handle.receiveDatas(deep.clone(x))),
-			sendMemos: x => losslessLag(() => handle.receiveMemos(deep.clone(x))),
+			sendReliable: x => pipes.toHost.send(deep.clone(x), losslessLag),
+			sendUnreliable: x => pipes.toHost.send(deep.clone(x), lossyLag),
 		})
+
+		this.executeNetworkReceiving = () => {
+			for (const message of pipes.toClient.take())
+				this.netclient.receive(message)
+
+			for (const message of pipes.toHost.take())
+				handle.receive(message)
+		}
 	}
 
-	dispose() {
-		this.nethost.dispose()
-		this.netclient.dispose()
+	executeNetworkSending() {
+		this.nethost.send()
+		this.netclient.send()
+		this.nethost.pingponger.ping()
+		this.netclient.pingponger.ping()
 	}
 }
 

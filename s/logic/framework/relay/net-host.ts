@@ -1,17 +1,26 @@
 
-import {interval} from "@benev/slate"
+import {Message} from "./messages.js"
+import {Pingponger} from "./pingponger.js"
+import {Feedbacks, Netconnection} from "./types.js"
 import {Simulator} from "../simulation/simulator.js"
-import {FeedbackDatas, FeedbackMemos, Feedbacks, Netconnection} from "./types.js"
+import {bountiful} from "../../../tools/bountiful.js"
 
 export class Nethost {
-	#stop: () => void
+	pingponger: Pingponger
 	#connections = new Set<Netconnection>()
 
-	constructor(
-			public simulator: Simulator<any, any>,
-			sendRateHz: number,
-		) {
-		this.#stop = interval.hz(sendRateHz, () => this.#update())
+	constructor(public simulator: Simulator<any, any>) {
+		this.pingponger = new Pingponger({
+			send: pingpong => this.#sendToAll(["pingpong", pingpong], {reliable: false}),
+		})
+	}
+
+	acceptConnection(connection: Netconnection) {
+		this.#connections.add(connection)
+		return {
+			disconnect: () => { this.#connections.delete(connection) },
+			receive: (message: Message) => this.receive(message, connection),
+		}
 	}
 
 	takeAllFeedbacks() {
@@ -23,32 +32,44 @@ export class Nethost {
 		return feedbacks
 	}
 
-	#update() {
+	send() {
 		const feed = this.simulator.collector.take()
-		const {creates, broadcasts, destroys} = feed
+		const {facts, creates, broadcasts, destroys} = feed
+
+		if (!bountiful(facts, creates, broadcasts, destroys))
+			return
+
 		for (const connection of this.#connections) {
-			connection.sendFacts(feed.facts)
-			connection.sendEvents({creates, broadcasts, destroys})
+			if (bountiful(facts))
+				connection.sendReliable(["feed", {facts}])
+			if (bountiful(creates, broadcasts, destroys))
+				connection.sendUnreliable(["feed", {creates, broadcasts, destroys}])
 		}
 	}
 
-	acceptConnection(connection: Netconnection) {
-		this.#connections.add(connection)
-		return {
-			disconnect: () => {
-				this.#connections.delete(connection)
-			},
-			receiveDatas: (datas: FeedbackDatas) => {
-				connection.feedbackCollector.aggregate({datas, memos: []})
-			},
-			receiveMemos: (memos: FeedbackMemos) => {
-				connection.feedbackCollector.aggregate({datas: [], memos})
-			},
+	receive([kind, payload]: Message, connection: Netconnection) {
+		switch (kind) {
+			case "feedback":
+				return this.#handleFeedback(payload, connection)
+
+			case "pingpong":
+				return this.pingponger.receive(payload)
+
+			default:
+				throw new Error(`nethost cannot process message of kind "${kind}"`)
 		}
 	}
 
-	dispose() {
-		this.#stop()
+	#sendToAll(message: Message, {reliable}: {reliable: boolean}) {
+		for (const connection of this.#connections) {
+			if (reliable) connection.sendReliable(message)
+			else connection.sendUnreliable(message)
+		}
+	}
+
+	#handleFeedback(feedback: {datas?: any[], memos?: any[]}, connection: Netconnection) {
+		const {datas = [], memos = []} = feedback
+		connection.feedbackCollector.aggregate({datas, memos})
 	}
 }
 

@@ -1,39 +1,52 @@
 
-import {interval} from "@benev/slate"
+import {Message} from "./messages.js"
+import {Pingponger} from "./pingponger.js"
 import {FeedCollector} from "./feed-collector.js"
 import {Replicator} from "../replication/replicator.js"
-import {FeedbackDatas, FeedbackMemos, FeedEvents, FeedFacts} from "./types.js"
 
 export class Netclient {
-	#stop: () => void
-
 	collector = new FeedCollector()
+	pingponger: Pingponger
 
-	constructor(options: {
+	constructor(private options: {
 			replicator: Replicator<any>
-			sendRateHz: number
-			sendDatas: (feedbackDatas: FeedbackDatas) => void
-			sendMemos: (feedbackMemos: FeedbackMemos) => void
+			sendReliable: (message: Message) => void
+			sendUnreliable: (message: Message) => void
 		}) {
 
-		this.#stop = interval.hz(options.sendRateHz, () => {
-			const {datas, memos} = options.replicator.collector.take()
-			options.sendDatas(datas)
-			options.sendMemos(memos)
+		this.pingponger = new Pingponger({
+			send: pingpong => options.sendUnreliable(["pingpong", pingpong]),
+			onRtt: () => options.replicator.ping = this.pingponger.averageRtt,
 		})
 	}
 
-	receiveFacts(feedFacts: FeedFacts) {
-		for (const [entityId, facts] of feedFacts)
-			this.collector.setFacts(entityId, facts)
+	send() {
+		const {replicator, sendReliable, sendUnreliable} = this.options
+		const {datas, memos} = replicator.collector.take()
+
+		if (datas.length > 0)
+			sendUnreliable(["feedback", {datas}])
+
+		if (memos.length > 0)
+			sendReliable(["feedback", {memos}])
 	}
 
-	receiveEvents(feedEvents: FeedEvents) {
-		this.collector.aggregate({facts: [], ...feedEvents})
-	}
+	receive([kind, payload]: Message) {
+		switch (kind) {
+			case "feed":
+				return this.collector.aggregate({
+					facts: payload.facts ?? [],
+					creates: payload.creates ?? [],
+					broadcasts: payload.broadcasts ?? [],
+					destroys: payload.destroys ?? [],
+				})
 
-	dispose() {
-		this.#stop()
+			case "pingpong":
+				return this.pingponger.receive(payload)
+
+			default:
+				throw new Error(`netclient cannot accept message of kind "${kind}"`)
+		}
 	}
 }
 

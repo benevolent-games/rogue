@@ -1,4 +1,5 @@
 
+import {Message} from "./messages.js"
 import {FeedbackCollector} from "./feedback-collector.js"
 import {Broadcast, Data, EntityId, Facts, Memo, ReplicatorId, State} from "../types.js"
 
@@ -27,7 +28,7 @@ export type FeedbackMemos = Feedback["memos"]
 export type Netconnection = {
 	replicatorId: ReplicatorId
 	feedbackCollector: FeedbackCollector
-	sendFacts: (feedFacts: FeedFacts) => void
-	sendEvents: (feedEvents: FeedEvents) => void
+	sendReliable: (message: Message) => void
+	sendUnreliable: (message: Message) => void
 }
 
