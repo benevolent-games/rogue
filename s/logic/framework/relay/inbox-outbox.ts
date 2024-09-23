@@ -1,9 +1,24 @@
 
 import {RunningAverage} from "@benev/toolbox"
+import {noLag} from "../../../tools/fake-lag.js"
 
 export type ParcelId = number
 export type ParcelTime = number
 export type Parcel<P> = [ParcelId, ParcelTime, P]
+
+export class Netpipe<P> {
+	#inbox = new Inbox<P>()
+	#outbox = new Outbox<P>()
+
+	send = (payload: P, lag = noLag) => {
+		const parcel = this.#outbox.wrap(payload)
+		lag(() => this.#inbox.ingest(parcel))
+	}
+
+	take() {
+		return this.#inbox.take()
+	}
+}
 
 export class Outbox<P> {
 	id = 0

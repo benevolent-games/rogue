@@ -63,13 +63,14 @@ export async function soloFlow() {
 
 	const hub = new SoloHub(simulator, replicator, mid)
 
-	const stopTicking = interval.hz(60, () => {
+	const stopFastTick = interval.hz(60, () => {
+		hub.executeNetworkReceiving()
 		simulator.simulate(hub.nethost.takeAllFeedbacks())
 		replicator.replicate(hub.netclient.collector.take())
 	})
 
-	const stopNetworking = interval.hz(10, () => {
-		hub.executeNetworking()
+	const stopSlowTick = interval.hz(10, () => {
+		hub.executeNetworkSending()
 	})
 
 	world.rendering.setCamera(realm.env.camera)
@@ -78,8 +79,8 @@ export async function soloFlow() {
 	return {
 		realm,
 		dispose: () => {
-			stopTicking()
-			stopNetworking()
+			stopFastTick()
+			stopSlowTick()
 			world.dispose()
 		},
 	}

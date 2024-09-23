@@ -2,6 +2,7 @@
 import {nap} from "@benev/slate"
 
 export type LagFn = (fn: () => void) => void
+export const noLag: LagFn = fn => fn()
 
 export type LagProfile = {
 	/** round-trip-time in milliseconds */
