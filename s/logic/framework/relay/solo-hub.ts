@@ -22,11 +22,13 @@ export class SoloHub {
 		) {
 
 		const lossyLag = fakeLag(lagProfile)
-		const losslessLag = fakeLag({...lagProfile, loss: 0, jitter: 0})
+		const losslessLag = fakeLag({...lagProfile, loss: 0})
+
+		console.log("lag profile", lagProfile)
 
 		const pipes = {
-			toClient: new Netpipe<Message>(),
-			toHost: new Netpipe<Message>(),
+			toClient: new Netpipe<Message>(25),
+			toHost: new Netpipe<Message>(25),
 		}
 
 		this.nethost = new Nethost(simulator)

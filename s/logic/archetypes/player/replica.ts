@@ -55,8 +55,8 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			driver.simulate({input, obstacles: []})
 			const clientRaw = driver.coordinates
 
-			hostSmooth.lerp(hostRaw, 10 / 100)
-			clientSmooth.lerp(clientRaw, 2 / 10)
+			hostSmooth.lerp(hostRaw, 30 / 100)
+			clientSmooth.lerp(clientRaw, 30 / 100)
 
 			guys.hostRaw.position.set(...guyPosition(hostRaw))
 			guys.hostSmooth.position.set(...guyPosition(hostSmooth))
@@ -66,7 +66,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 
 			realm.env.camera.target.set(
 				...cameraPosition
-					.lerp(clientSmooth.position(), 1 / 10)
+					.lerp(clientSmooth.position(), 10 / 100)
 					.array()
 			)
 

@@ -36,7 +36,7 @@ export async function soloFlow() {
 
 	const mid: LagProfile = {
 		ping: 70,
-		jitter: 20,
+		jitter: 10,
 		loss: 2 / 100,
 		spikeMultiplier: 1.5,
 		spikeTime: 1000,
@@ -46,7 +46,7 @@ export async function soloFlow() {
 	const bad: LagProfile = {
 		ping: 120,
 		jitter: 20,
-		loss: 2 / 100,
+		loss: 5 / 100,
 		spikeMultiplier: 1.5,
 		spikeTime: 1000,
 		smoothTime: 5000,
@@ -61,15 +61,12 @@ export async function soloFlow() {
 		smoothTime: 5000,
 	}
 
-	const hub = new SoloHub(simulator, replicator, mid)
+	const hub = new SoloHub(simulator, replicator, bad)
 
-	const stopFastTick = interval.hz(60, () => {
+	const stopTicking = interval.hz(60, () => {
 		hub.executeNetworkReceiving()
 		simulator.simulate(hub.nethost.takeAllFeedbacks())
 		replicator.replicate(hub.netclient.collector.take())
-	})
-
-	const stopSlowTick = interval.hz(10, () => {
 		hub.executeNetworkSending()
 	})
 
@@ -79,8 +76,7 @@ export async function soloFlow() {
 	return {
 		realm,
 		dispose: () => {
-			stopFastTick()
-			stopSlowTick()
+			stopTicking()
 			world.dispose()
 		},
 	}
