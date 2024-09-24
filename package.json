@@ -12,7 +12,7 @@
 		"s"
 	],
 	"scripts": {
-		"build": "rm -rf x && turtle build --out=x -v && turtle ssg --in=s,x --out=x --exclude=bin -v && run-s links",
+		"build": "rm -rf x && turtle build --out=x && turtle ssg --in=s,x --out=x --exclude=bin && run-s links",
 		"delete-babylon-indexes": "find node_modules/@babylonjs/core -type f \\( -name index.js -o -name index.d.ts \\) | xargs rm -f",
 		"links": "run-s links-s links-assets",
 		"links-s": "ln -s \"$(realpath s)\" x/s",
@@ -31,19 +31,19 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@babylonjs/core": "^7.26.2",
-		"@babylonjs/loaders": "^7.26.2",
-		"@benev/argv": "^0.3.7",
-		"@benev/slate": "^0.2.3",
-		"@benev/toolbox": "^0.7.1",
+		"@babylonjs/core": "^7.26.3",
+		"@babylonjs/loaders": "^7.26.3",
+		"@benev/argv": "^0.3.8",
+		"@benev/slate": "^0.2.5",
+		"@benev/toolbox": "^0.7.2",
 		"es-module-shims": "^1.10.0",
-		"renraku": "^0.2.0-3",
+		"renraku": "^0.2.0",
 		"zx": "^8.1.8"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",
-		"@benev/turtle": "^0.6.0-9",
-		"chokidar": "^4.0.0",
+		"@benev/turtle": "^0.6.2",
+		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
 		"http-server": "^14.1.1",
