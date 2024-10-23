@@ -31,24 +31,25 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@babylonjs/core": "^7.26.3",
-		"@babylonjs/loaders": "^7.26.3",
+		"@authduo/authduo": "^0.0.1",
+		"@babylonjs/core": "^7.30.1",
+		"@babylonjs/loaders": "^7.30.1",
 		"@benev/argv": "^0.3.8",
-		"@benev/slate": "^0.2.5",
-		"@benev/toolbox": "^0.7.2",
+		"@benev/slate": "^0.2.8",
+		"@benev/toolbox": "^0.7.3",
 		"es-module-shims": "^1.10.0",
 		"renraku": "^0.2.0",
-		"zx": "^8.1.8"
+		"zx": "^8.1.9"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",
-		"@benev/turtle": "^0.6.2",
+		"@benev/turtle": "^0.6.3",
 		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
 		"http-server": "^14.1.1",
 		"npm-run-all": "^4.1.5",
-		"typescript": "^5.6.2"
+		"typescript": "^5.6.3"
 	},
 	"keywords": [
 		"game",
