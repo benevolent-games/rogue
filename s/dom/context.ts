@@ -1,9 +1,5 @@
 
-import {Context as SlateContext} from "@benev/slate"
+export class Context {}
 
-import {theme} from "./theme.js"
-
-export class Context extends SlateContext {
-	theme = theme
-}
+export const context = new Context()
 

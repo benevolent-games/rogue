@@ -1,14 +1,13 @@
 
-import {html} from "@benev/slate"
+import {html, shadowView} from "@benev/slate"
 
-import styles from "./styles.js"
-import {nexus} from "../../nexus.js"
+import stylesCss from "./styles.css.js"
+import themeCss from "../../theme.css.js"
 import {constants} from "../../../constants.js"
 import rotateClockwiseSvg from "../../icons/tabler/rotate-clockwise.svg.js"
 
-export const LoadingScreen = nexus.shadowView(use => (active: boolean) => {
-	use.name("loading-screen")
-	use.styles(styles)
+export const LoadingScreen = shadowView(use => (active: boolean) => {
+	use.styles(themeCss, stylesCss)
 
 	return html`
 		<div class=plate ?data-show="${active}">

@@ -1,17 +1,15 @@
 
-import {html} from "@benev/slate"
-
-import styles from "./styles.js"
-import {nexus} from "../../nexus.js"
+import stylesCss from "./styles.css.js"
+import themeCss from "../../theme.css.js"
+import {html, shadowView} from "@benev/slate"
 import {Realm} from "../../../logic/realm/realm.js"
 
-export const Gameplay = nexus.shadowView(use => ({realm, exitToMainMenu}: {
+export const Gameplay = shadowView(use => ({realm, exitToMainMenu}: {
 		realm: Realm
 		exitToMainMenu: () => void,
 	}) => {
 
-	use.name("gameplay-view")
-	use.styles(styles)
+	use.styles(themeCss, stylesCss)
 
 	return html`
 		${realm.world.canvas}
