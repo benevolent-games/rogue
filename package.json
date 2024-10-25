@@ -31,14 +31,14 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@authduo/authduo": "^0.0.1",
-		"@babylonjs/core": "^7.30.1",
-		"@babylonjs/loaders": "^7.30.1",
+		"@authduo/authduo": "^0.0.3",
+		"@babylonjs/core": "^7.31.0",
+		"@babylonjs/loaders": "^7.31.0",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.2.8",
-		"@benev/toolbox": "^0.7.3",
+		"@benev/toolbox": "^0.7.4",
 		"es-module-shims": "^1.10.0",
-		"renraku": "^0.2.0",
+		"renraku": "^0.3.0-0",
 		"zx": "^8.1.9"
 	},
 	"devDependencies": {

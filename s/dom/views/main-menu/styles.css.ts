@@ -10,6 +10,14 @@ export default css`
 	flex-direction: column;
 	justify-content: start;
 	align-items: center;
+
+	gap: 1em;
+}
+
+.permabar {
+	width: 42em;
+	max-width: 100%;
+	margin-top: 10vh;
 }
 
 .plate {
@@ -18,7 +26,6 @@ export default css`
 
 	width: 42em;
 	max-width: 100%;
-	margin-top: 10vh;
 
 	aspect-ratio: 1 / 1;
 	background-size: cover;

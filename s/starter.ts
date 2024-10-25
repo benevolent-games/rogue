@@ -1,6 +1,7 @@
 
+import {components} from "@authduo/authduo"
 import {register_to_dom} from "@benev/slate"
 import {GameApp} from "./dom/elements/app/element.js"
 
-register_to_dom({GameApp})
+register_to_dom({GameApp, ...components})
 
