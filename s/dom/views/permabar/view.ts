@@ -1,17 +1,19 @@
 
-import {auth} from "@authduo/authduo"
 import {ev, html, shadowView} from "@benev/slate"
 
+import {Panel} from "./panels.js"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import xSvg from "../../icons/tabler/x.svg.js"
-import {PanelName, renderPanels} from "./panels.js"
 
-export const Permabar = shadowView(use => () => {
+export type PermabarOptions = {
+	menu: null | {goToMainMenu: () => void}
+}
+
+export const Permabar = shadowView(use => (panels: Panel[]) => {
 	use.styles(themeCss, stylesCss)
 
-	const panels = renderPanels(auth)
-	const activePanel = use.signal<null | PanelName>(null)
+	const activePanel = use.signal<null | Panel>(null)
 	const section = use.defer(() => use.shadow.querySelector("section"))
 
 	use.mount(() => ev(window, {
@@ -26,19 +28,21 @@ export const Permabar = shadowView(use => () => {
 		activePanel.value = null
 	}
 
-	const clickButton = (panelName: PanelName) => () => {
-		activePanel.value = (activePanel.value === panelName)
-			? null
-			: panelName
+	const clickButton = (panel: Panel) => {
+		return () => {
+			activePanel.value = (activePanel.value === panel)
+				? null
+				: panel
+		}
 	}
 
 	return html`
 		<nav>
-			${Object.entries(panels).map(([panelName, panel]) => html`
+			${panels.map(panel => html`
 				<button
-					@click="${clickButton(panelName as PanelName)}"
-					?data-active="${activePanel.value === panelName}">
-						${panel.button}
+					@click="${clickButton(panel)}"
+					?data-active="${activePanel.value === panel}">
+						${panel.button()}
 				</button>
 			`)}
 		</nav>
@@ -48,7 +52,7 @@ export const Permabar = shadowView(use => () => {
 				<header>
 					<button @click=${closePanel}>${xSvg}</button>
 				</header>
-				${panels[activePanel.value].content()}
+				${activePanel.value.content()}
 			</section>
 		` : null}
 	`

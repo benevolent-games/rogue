@@ -3,15 +3,19 @@ import {css} from "@benev/slate"
 export default css`
 
 :host {
+	display: block;
 	position: relative;
+	pointer-events: none;
 }
 
 nav {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: end;
+	gap: 0.5em;
 
 	> button {
+		pointer-events: all;
 		cursor: pointer;
 		flex: 0 0 auto;
 		background: transparent;
@@ -36,7 +40,9 @@ nav {
 }
 
 section {
+	pointer-events: all;
 	position: absolute;
+
 	top: 95%;
 	right: 0;
 
@@ -55,6 +61,12 @@ section {
 	border-radius: 0.5em;
 	border: 1px solid #fff8;
 	box-shadow: .1em .2em .5em #000;
+
+	& button {
+		&.angry {
+			color: red;
+		}
+	}
 
 	> header {
 		position: absolute;
@@ -79,10 +91,9 @@ section {
 				height: 1.5em;
 			}
 		}
-
 	}
 
-	> auth-login {
+	& auth-login {
 		--card-bg: transparent;
 		--card-font-size: 1.5em;
 	}

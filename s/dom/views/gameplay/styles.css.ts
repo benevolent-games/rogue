@@ -18,11 +18,13 @@ canvas {
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
+	aspect-ratio: 16 / 9;
+	max-width: 100%;
+	height: 100%;
+	margin: auto;
 
-	.topbar {
-		> button {
-			pointer-events: all;
-		}
+	.permabar {
+		padding-top: 0.5em;
 	}
 }
 
