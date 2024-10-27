@@ -31,7 +31,7 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@authduo/authduo": "^0.1.0",
+		"@authduo/authduo": "^0.1.1",
 		"@babylonjs/core": "^7.31.0",
 		"@babylonjs/loaders": "^7.31.0",
 		"@benev/argv": "^0.3.8",
