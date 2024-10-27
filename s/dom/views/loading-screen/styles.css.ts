@@ -1,7 +1,6 @@
 
 import {css} from "@benev/slate"
 import {constants} from "../../../constants.js"
-
 export default css`
 
 :host {

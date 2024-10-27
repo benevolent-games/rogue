@@ -1,17 +1,17 @@
 
-import {html} from "@benev/slate"
+import {html, shadowComponent} from "@benev/slate"
 import {Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
-import styles from "./styles.js"
-import {nexus} from "../../nexus.js"
+import stylesCss from "./styles.css.js"
+import themeCss from "../../theme.css.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 
-export const GameApp = nexus.shadowComponent(use => {
-	use.styles(styles)
+export const GameApp = shadowComponent(use => {
+	use.styles(themeCss, stylesCss)
 
 	// preload the benev logo
 	use.load(async() => await loadImage(constants.urls.benevLogo))

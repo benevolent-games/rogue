@@ -1,6 +1,6 @@
 
 import "@benev/slate/x/node.js"
-import {template, html, easypage, headScripts, git_commit_hash, read_file, unsanitized} from "@benev/turtle"
+import {template, html, easypage, headScripts, git_commit_hash, read_file} from "@benev/turtle"
 
 export default template(async basic => {
 	const path = basic.path(import.meta.url)

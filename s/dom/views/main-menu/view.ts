@@ -1,20 +1,24 @@
 
-import {html} from "@benev/slate"
-
-import styles from "./styles.js"
-import {nexus} from "../../nexus.js"
+import stylesCss from "./styles.css.js"
+import themeCss from "../../theme.css.js"
+import {Permabar} from "../permabar/view.js"
+import {html, shadowView} from "@benev/slate"
 import {constants} from "../../../constants.js"
+import {LoginPanel} from "../permabar/panels.js"
 
-export const MainMenu = nexus.shadowView(use => ({nav}: {
-		nav: {
-			solo: () => void
-		}
+export const MainMenu = shadowView(use => ({nav}: {
+		nav: {solo: () => void}
 	}) => {
 
-	use.name("main-menu")
-	use.styles(styles)
+	use.styles(themeCss, stylesCss)
 
 	return html`
+		${Permabar([
+			[
+				new LoginPanel(),
+			]
+		], {attrs: {class: "permabar"}})}
+
 		<section class=plate style="background-image: url('${constants.urls.cover}');">
 			<h1>Righteous Fury</h1>
 			<nav>
