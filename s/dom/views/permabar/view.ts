@@ -1,9 +1,10 @@
 
 import {auth} from "@authduo/authduo"
-import {html, shadowView} from "@benev/slate"
+import {ev, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import xSvg from "../../icons/tabler/x.svg.js"
 import {PanelName, renderPanels} from "./panels.js"
 
 export const Permabar = shadowView(use => () => {
@@ -11,6 +12,15 @@ export const Permabar = shadowView(use => () => {
 
 	const panels = renderPanels(auth)
 	const activePanel = use.signal<null | PanelName>(null)
+	const section = use.defer(() => use.shadow.querySelector("section"))
+
+	use.mount(() => ev(window, {
+		click: (event: PointerEvent) => {
+			const path = event.composedPath()
+			if (section.value && !path.includes(section.value))
+				closePanel()
+		},
+	}))
 
 	const closePanel = () => {
 		activePanel.value = null
@@ -35,7 +45,9 @@ export const Permabar = shadowView(use => () => {
 
 		${activePanel.value ? html`
 			<section>
-				<header><button @click=${closePanel}>X</button></header>
+				<header>
+					<button @click=${closePanel}>${xSvg}</button>
+				</header>
 				${panels[activePanel.value].content()}
 			</section>
 		` : null}

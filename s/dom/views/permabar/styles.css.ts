@@ -25,7 +25,7 @@ nav {
 		}
 
 		&[data-active] {
-			background: #111a;
+			background: #8888;
 		}
 
 		> svg {
@@ -37,18 +37,55 @@ nav {
 
 section {
 	position: absolute;
-	top: 100%;
+	top: 95%;
 	right: 0;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
 	width: 24em;
 	max-width: 100%;
 	padding: 1em;
+	padding-top: 2em;
 
 	color: white;
-	background: #111e;
+	background: #1118;
 	backdrop-filter: blur(1rem);
 	border-radius: 0.5em;
-	box-shadow: .1em .2em .5em #0008;
-	border: 2px solid #5558;
+	border: 1px solid #fff8;
+	box-shadow: .1em .2em .5em #000;
+
+	> header {
+		position: absolute;
+		width: max-content;
+		top: 0.5em;
+		left: 0.5em;
+
+		display: flex;
+		justify-content: start;
+
+		> button {
+			opacity: 0.8;
+			padding: 0;
+			border: none;
+			background: transparent;
+			cursor: pointer;
+
+			&:hover { opacity: 1; }
+
+			> svg {
+				width: 1.5em;
+				height: 1.5em;
+			}
+		}
+
+	}
+
+	> auth-login {
+		--card-bg: transparent;
+		--card-font-size: 1.5em;
+	}
 }
 
 `
