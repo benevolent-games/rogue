@@ -1,4 +1,5 @@
 
+import {Map2} from "@benev/slate"
 import {babyloid, Meshoid, Prop} from "@benev/toolbox"
 
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
@@ -7,7 +8,6 @@ import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 
-import {Map2} from "../map2.js"
 import {getTopMeshes} from "./babylon-helpers.js"
 
 export type Instancer = () => TransformNode

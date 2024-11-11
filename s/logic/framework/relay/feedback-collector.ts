@@ -1,6 +1,7 @@
 
+import {Map2} from "@benev/slate"
+
 import {Feedback} from "./types.js"
-import {Map2} from "../../../tools/map2.js"
 import {Archetype, Data, EntityId, Memo} from "../types.js"
 
 export class FeedbackCollector {

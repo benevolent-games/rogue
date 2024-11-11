@@ -1,5 +1,6 @@
 
-import {Map2} from "../../../tools/map2.js"
+import {Map2} from "@benev/slate"
+
 import {Feedbacks} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {FeedCollector, FeedHelper} from "../relay/feed-collector.js"

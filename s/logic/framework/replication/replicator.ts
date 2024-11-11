@@ -1,7 +1,8 @@
 
+import {Map2} from "@benev/slate"
+
 import {Feed} from "../relay/types.js"
 import {ReplicatorId} from "../types.js"
-import {Map2} from "../../../tools/map2.js"
 import {Replicas, Replon} from "./types.js"
 import {FeedbackCollector, FeedbackHelper} from "../relay/feedback-collector.js"
 

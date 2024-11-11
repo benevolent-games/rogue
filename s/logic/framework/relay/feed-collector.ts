@@ -1,6 +1,7 @@
 
+import {Map2} from "@benev/slate"
+
 import {Feed} from "./types.js"
-import {Map2} from "../../../tools/map2.js"
 import {Archetype, Broadcast, EntityId, Facts, State} from "../types.js"
 
 export class FeedCollector {
