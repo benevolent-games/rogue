@@ -1,5 +1,5 @@
 
-import {html, shadowView} from "@benev/slate"
+import {ev, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -13,6 +13,16 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 	const menuOpen = use.signal(false)
 	const activeIndex = use.signal(0)
 	const activePanel = panels.at(activeIndex.value)
+
+	const plate = use.defer(() => use.shadow.querySelector(".plate"))
+
+	use.mount(() => ev(window, {
+		click: (event: PointerEvent) => {
+			const path = event.composedPath()
+			if (plate.value && !path.includes(plate.value))
+				menuOpen.value = false
+		},
+	}))
 
 	function clickMenuButton() {
 		return () => {
