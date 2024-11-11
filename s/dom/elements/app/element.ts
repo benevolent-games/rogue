@@ -43,11 +43,12 @@ export const GameApp = shadowComponent(use => {
 
 			solo: orchestrator.makeNavFn(loadingScreen, async() => {
 				const {soloFlow} = await import("../../../flows/solo.js")
-				const {realm, dispose} = await soloFlow()
+				const {realm, lobby, dispose} = await soloFlow()
 				return {
 					dispose,
 					template: () => Gameplay([{
 						realm,
+						lobby,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 				}

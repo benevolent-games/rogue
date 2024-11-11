@@ -1,6 +1,8 @@
 
+import Sparrow from "sparrow-rtc"
 import {interval} from "@benev/slate"
 
+import {Lobby} from "../logic/lobby/lobby.js"
 import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
 import {LagProfile} from "../tools/fake-lag.js"
@@ -19,6 +21,32 @@ export async function soloFlow() {
 
 	const simulator = new Simulator(station, simulas)
 	const replicator = new Replicator(realm, replicas, 0)
+
+	const lobby = new Lobby()
+	let disconnect = () => {}
+
+	try {
+		const sparrow = await Sparrow.host({
+			welcome: lobby.welcome,
+			closed: () => {
+				lobby.invite.value = null
+				lobby.signallerConnected.value = false
+				console.warn("sparrow signaller disconnected")
+			},
+		})
+		lobby.addSelf(sparrow.self)
+		lobby.invite.value = sparrow.invite
+		lobby.signallerConnected.value = true
+		disconnect = () => {
+			sparrow.close()
+			lobby.disconnectEverybody()
+		}
+	}
+	catch (error) {
+		lobby.invite.value = null
+		lobby.signallerConnected.value = false
+		disconnect = () => {}
+	}
 
 	simulator.create("player", {
 		owner: replicator.id,
@@ -74,6 +102,7 @@ export async function soloFlow() {
 	world.gameloop.start()
 
 	return {
+		lobby,
 		realm,
 		dispose: () => {
 			stopTicking()

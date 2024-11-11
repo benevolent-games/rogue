@@ -23,7 +23,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 			<h1>Righteous Fury</h1>
 			<nav>
 				<button class="naked flashy" @click="${nav.solo}">
-					Play Solo
+					Play
 				</button>
 			</nav>
 		</section>
