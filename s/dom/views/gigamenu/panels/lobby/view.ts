@@ -1,23 +1,20 @@
 
 import Sparrow from "sparrow-rtc"
-import {Bytename, Hex, html, shadowView, Signal} from "@benev/slate"
-
-import {Lobby} from "../../../../../logic/lobby/lobby.js"
-import {LobbyDisplay} from "../../../../../logic/lobby/types.js"
+import {Bytename, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
+import {MultiplayerHost} from "../../../../../logic/multiplayer/multiplayer-host.js"
+import {MultiplayerClient} from "../../../../../logic/multiplayer/multiplayer-client.js"
 
-export type LobbyViewOptions = {
-	lobby: Lobby | null
-	lobbyDisplay: Signal<LobbyDisplay>
-}
-
-export const LobbyView = shadowView(use => (options: LobbyViewOptions) => {
+export const LobbyView = shadowView(use => (multiplayer: MultiplayerHost | MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
 
-	const lobby = options.lobby
-	const lobbyDisplay = options.lobbyDisplay.value
+	const lobby = multiplayer instanceof MultiplayerHost
+		? multiplayer.lobby
+		: null
+
+	const lobbyDisplay = multiplayer.lobbyDisplay.value
 
 	const inviteUrl = lobbyDisplay.invite && Sparrow.invites.url(lobbyDisplay.invite)
 

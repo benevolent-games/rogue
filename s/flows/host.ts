@@ -2,17 +2,18 @@
 import Sparrow from "sparrow-rtc"
 import {interval} from "@benev/slate"
 
-import {Lobby} from "../logic/lobby/lobby.js"
 import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
 import {LagProfile} from "../tools/fake-lag.js"
 import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
 import {replicas} from "../logic/archetypes/replicas.js"
+import {Lobby} from "../logic/multiplayer/lobby/lobby.js"
 import {SoloHub} from "../logic/framework/relay/solo-hub.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {Replicator} from "../logic/framework/replication/replicator.js"
+import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
 
 export async function hostFlow() {
 	const world = await World.load()
@@ -48,28 +49,30 @@ export async function hostFlow() {
 		disconnect = () => {}
 	}
 
+	const multiplayer = new MultiplayerHost(lobby)
+
 	simulator.create("player", {
 		owner: replicator.id,
 		coordinates: Coordinates.zero(),
 	})
 
-	const nice: LagProfile = {
-		ping: 20,
-		jitter: 5,
-		loss: 1 / 100,
-		spikeMultiplier: 1.1,
-		spikeTime: 1000,
-		smoothTime: 5000,
-	}
+	// const nice: LagProfile = {
+	// 	ping: 20,
+	// 	jitter: 5,
+	// 	loss: 1 / 100,
+	// 	spikeMultiplier: 1.1,
+	// 	spikeTime: 1000,
+	// 	smoothTime: 5000,
+	// }
 
-	const mid: LagProfile = {
-		ping: 70,
-		jitter: 10,
-		loss: 2 / 100,
-		spikeMultiplier: 1.5,
-		spikeTime: 1000,
-		smoothTime: 5000,
-	}
+	// const mid: LagProfile = {
+	// 	ping: 70,
+	// 	jitter: 10,
+	// 	loss: 2 / 100,
+	// 	spikeMultiplier: 1.5,
+	// 	spikeTime: 1000,
+	// 	smoothTime: 5000,
+	// }
 
 	const bad: LagProfile = {
 		ping: 120,
@@ -80,14 +83,14 @@ export async function hostFlow() {
 		smoothTime: 5000,
 	}
 
-	const terrible: LagProfile = {
-		ping: 300,
-		jitter: 100,
-		loss: 10 / 100,
-		spikeMultiplier: 1.5,
-		spikeTime: 1000,
-		smoothTime: 5000,
-	}
+	// const terrible: LagProfile = {
+	// 	ping: 300,
+	// 	jitter: 100,
+	// 	loss: 10 / 100,
+	// 	spikeMultiplier: 1.5,
+	// 	spikeTime: 1000,
+	// 	smoothTime: 5000,
+	// }
 
 	const hub = new SoloHub(simulator, replicator, bad)
 
@@ -104,7 +107,9 @@ export async function hostFlow() {
 	return {
 		lobby,
 		realm,
+		multiplayer,
 		dispose: () => {
+			multiplayer.dispose()
 			stopTicking()
 			world.dispose()
 		},
