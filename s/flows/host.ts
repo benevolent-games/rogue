@@ -14,7 +14,7 @@ import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {Replicator} from "../logic/framework/replication/replicator.js"
 
-export async function soloFlow() {
+export async function hostFlow() {
 	const world = await World.load()
 	const realm = new Realm(world)
 	const station = new Station()

@@ -22,7 +22,7 @@ export const GameApp = shadowComponent(use => {
 			dispose: () => {},
 			template: () => MainMenu([{
 				nav: {
-					solo: () => goExhibit.solo(),
+					host: () => goExhibit.host(),
 				},
 			}]),
 		})
@@ -41,9 +41,9 @@ export const GameApp = shadowComponent(use => {
 				return mainMenu
 			}),
 
-			solo: orchestrator.makeNavFn(loadingScreen, async() => {
-				const {soloFlow} = await import("../../../flows/solo.js")
-				const {realm, lobby, dispose} = await soloFlow()
+			host: orchestrator.makeNavFn(loadingScreen, async() => {
+				const {hostFlow} = await import("../../../flows/host.js")
+				const {realm, lobby, dispose} = await hostFlow()
 				return {
 					dispose,
 					template: () => Gameplay([{
@@ -56,7 +56,7 @@ export const GameApp = shadowComponent(use => {
 		}
 
 		if (location.hash.includes("solo"))
-			goExhibit.solo()
+			goExhibit.host()
 
 		return orchestrator
 	})
