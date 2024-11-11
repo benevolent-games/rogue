@@ -14,7 +14,9 @@ export const MainMenu = shadowView(use => ({nav}: {
 	use.styles(themeCss, stylesCss)
 
 	return html`
-		${Gigamenu([AccountPanel()])}
+		<div class=overlay>
+			${Gigamenu([AccountPanel()])}
+		</div>
 
 		<section class=plate style="background-image: url('${constants.urls.cover}');">
 			<h1>Righteous Fury</h1>

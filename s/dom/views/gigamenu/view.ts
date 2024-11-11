@@ -11,7 +11,8 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 	use.styles(themeCss, stylesCss)
 
 	const menuOpen = use.signal(false)
-	const activePanel = use.signal<Gigapanel | undefined>(panels.at(0))
+	const activeIndex = use.signal(0)
+	const activePanel = panels.at(activeIndex.value)
 
 	function clickMenuButton() {
 		return () => {
@@ -19,31 +20,34 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 		}
 	}
 
-	function clickPanelButton(panel: Gigapanel) {
+	function clickPanelButton(index: number) {
 		return () => {
-			activePanel.value = panel
+			activeIndex.value = index
 		}
 	}
 
 	return html`
 		<div class=plate ?x-menu-open="${menuOpen}">
 			<nav>
-				<button x-menu-button @click="${clickMenuButton()}">
+				<button x-menu-button @click="${clickMenuButton()}" class="naked">
 					${menuSvg}
 				</button>
 
-				${(menuOpen.value || null) && panels.map(panel => html`
-					<button x-tabs
-						@click="${clickPanelButton(panel)}"
-						?data-active="${panel === activePanel.value}">
+				${(menuOpen.value || null) && panels.map((panel, index) => html`
+					<button
+						x-tabs
+						@click="${clickPanelButton(index)}"
+						?x-active="${index === activeIndex.value}"
+						class="naked">
 							${panel.button()}
+							<span>${panel.label}</span>
 					</button>
 				`)}
 			</nav>
 
-			${(menuOpen.value || null) && activePanel.value && html`
+			${(menuOpen.value || null) && activePanel && html`
 				<section>
-					${activePanel.value.content()}
+					${activePanel.content()}
 				</section>
 			`}
 		</div>

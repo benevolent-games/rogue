@@ -12,17 +12,35 @@ export default css`
 	align-items: center;
 
 	gap: 1em;
+	padding: 1em;
 }
 
-[view="gigapanel"] {
-	width: 42em;
+.menubar {
+	width: 56em;
 	max-width: 100%;
-	margin-top: 10vh;
+	margin-top: 5vh;
+	outline: 1px solid red;
+}
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	aspect-ratio: 16 / 9;
+	max-width: 100%;
+	height: 100%;
+	margin: auto;
+
+	[view="gigamenu"] {
+		padding-top: 0.5em;
+		padding: 1em;
+	}
 }
 
 .plate {
 	display: flex;
 	flex-direction: column;
+	margin-top: 10vh;
 
 	width: 42em;
 	max-width: 100%;
