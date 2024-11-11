@@ -8,7 +8,9 @@ export const AccountView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
 
 	return html`
-		<auth-login></auth-login>
+		<section>
+			<auth-login></auth-login>
+		</section>
 	`
 })
 

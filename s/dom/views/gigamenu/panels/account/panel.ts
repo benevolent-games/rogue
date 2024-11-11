@@ -7,7 +7,7 @@ import userCheckSvg from "../../../../icons/tabler/user-check.svg.js"
 import userQuestionSvg from "../../../../icons/tabler/user-question.svg.js"
 
 export const AccountPanel = gigapanel(() => ({
-	label: "account",
+	label: "Account",
 	button: () => auth.login
 		? userCheckSvg
 		: userQuestionSvg,

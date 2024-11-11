@@ -30,29 +30,31 @@ export const LobbyView = shadowView(use => (options: LobbyViewOptions) => {
 	}
 
 	return html`
-		${lobbyDisplay.invite && html`
-			<div>
-				<strong>invite:</strong> <a href="${inviteUrl}" target="_blank">${inviteUrl}</a>
-			</div>
-		`}
-		<ol>
-			${lobbyDisplay.lobbyists.map(display => html`
-				<li>
-					<span x-name>${lobbyistName(display)}</span>
-					<span x-connectivity>${display.connectionInfo?.kind ?? "??"}</span>
-					${lobby && (() => {
-						const real = lobby.lobbyists.value.get(display.id)
-						if (!real) return null
-						if (real.kind !== "client") return null
-						if (!real.connection) return null
-						const {connection} = real
-						return html`
-							<button @click="${() => connection.disconnect()}">kick</button>
-						`
-					})()}
-				</li>
-			`)}
-		</ol>
+		<section>
+			${lobbyDisplay.invite && html`
+				<div>
+					<strong>invite:</strong> <a href="${inviteUrl}" target="_blank">${inviteUrl}</a>
+				</div>
+			`}
+			<ol>
+				${lobbyDisplay.lobbyists.map(display => html`
+					<li>
+						<span x-name>${lobbyistName(display)}</span>
+						<span x-connectivity>${display.connectionInfo?.kind ?? "??"}</span>
+						${lobby && (() => {
+							const real = lobby.lobbyists.value.get(display.id)
+							if (!real) return null
+							if (real.kind !== "client") return null
+							if (!real.connection) return null
+							const {connection} = real
+							return html`
+								<button @click="${() => connection.disconnect()}">kick</button>
+							`
+						})()}
+					</li>
+				`)}
+			</ol>
+		</section>
 	`
 })
 

@@ -45,13 +45,13 @@ export default css`
 			}
 
 			> span {
-				color: #555;
+				opacity: 0.25;
 				font-size: 0.8em;
 				text-transform: uppercase;
 			}
 
 			&:is(:hover, [x-active]) {
-				filter: brightness(120%);
+				color: #fff;
 			}
 		}
 	}
@@ -67,6 +67,7 @@ export default css`
 
 	transition: 150ms linear all;
 	section { opacity: 1; transition: 150ms linear opacity; }
+	nav > [x-tab] { opacity: 1; transition: 150ms linear all; }
 
 	nav > [x-menu-button] {
 		pointer-events: all;
