@@ -25,6 +25,7 @@
 		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",
 		"devlinks-turtle": "rm -rf node_modules/@benev/turtle && ln -s \"$(realpath ../turtle)\" node_modules/@benev/turtle",
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
+		"devlinks-sparrow": "rm -rf node_modules/@benev/sparrow && ln -s \"$(realpath ../sparrow)\" node_modules/@benev/sparrow",
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
 		"test": "cynic node x/tests.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\"",
@@ -35,11 +36,11 @@
 		"@babylonjs/core": "^7.33.0",
 		"@babylonjs/loaders": "^7.33.0",
 		"@benev/argv": "^0.3.8",
-		"@benev/slate": "^0.2.15",
+		"@benev/slate": "^0.2.16",
 		"@benev/toolbox": "^0.7.5",
 		"es-module-shims": "^1.10.1",
 		"renraku": "^0.4.2",
-		"sparrow-rtc": "^0.2.1",
+		"sparrow-rtc": "^0.2.2",
 		"zx": "^8.2.1"
 	},
 	"devDependencies": {
