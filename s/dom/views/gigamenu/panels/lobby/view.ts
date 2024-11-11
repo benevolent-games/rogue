@@ -2,16 +2,18 @@
 import Sparrow from "sparrow-rtc"
 import {Bytename, Hex, html, shadowView, Signal} from "@benev/slate"
 
+import {Lobby} from "../../../../../logic/lobby/lobby.js"
+import {LobbyDisplay} from "../../../../../logic/lobby/types.js"
+
 import stylesCss from "./styles.css.js"
-import themeCss from "../../theme.css.js"
-import {Lobby} from "../../../logic/lobby/lobby.js"
-import {LobbyDisplay} from "../../../logic/lobby/types.js"
+import themeCss from "../../../../theme.css.js"
 
-export const LobbyView = shadowView(use => (options: {
-		lobby: Lobby | null
-		lobbyDisplay: Signal<LobbyDisplay>
-	}) => {
+export type LobbyViewOptions = {
+	lobby: Lobby | null
+	lobbyDisplay: Signal<LobbyDisplay>
+}
 
+export const LobbyView = shadowView(use => (options: LobbyViewOptions) => {
 	use.styles(themeCss, stylesCss)
 
 	const lobby = options.lobby
@@ -34,16 +36,16 @@ export const LobbyView = shadowView(use => (options: {
 			</div>
 		`}
 		<ol>
-			${lobbyDisplay.lobbyists.map(lobbyist => html`
+			${lobbyDisplay.lobbyists.map(display => html`
 				<li>
-					<span x-name>${lobbyistName(lobbyist)}</span>
-					<span x-connectivity>${lobbyist.connectionInfo?.kind ?? "??"}</span>
+					<span x-name>${lobbyistName(display)}</span>
+					<span x-connectivity>${display.connectionInfo?.kind ?? "??"}</span>
 					${lobby && (() => {
-						const realLobbyist = lobby.lobbyists.value.get(lobbyist.id)
-						if (!realLobbyist) return null
-						if (realLobbyist.kind !== "client") return null
-						if (!realLobbyist.connection) return null
-						const {connection} = realLobbyist
+						const real = lobby.lobbyists.value.get(display.id)
+						if (!real) return null
+						if (real.kind !== "client") return null
+						if (!real.connection) return null
+						const {connection} = real
 						return html`
 							<button @click="${() => connection.disconnect()}">kick</button>
 						`

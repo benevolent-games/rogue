@@ -23,7 +23,7 @@ canvas {
 	height: 100%;
 	margin: auto;
 
-	.permabar {
+	[view="gigamenu"] {
 		padding-top: 0.5em;
 	}
 }

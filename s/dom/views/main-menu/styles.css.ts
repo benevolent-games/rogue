@@ -14,7 +14,7 @@ export default css`
 	gap: 1em;
 }
 
-.permabar {
+[view="gigapanel"] {
 	width: 42em;
 	max-width: 100%;
 	margin-top: 10vh;

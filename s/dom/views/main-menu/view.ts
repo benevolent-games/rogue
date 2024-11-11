@@ -1,10 +1,11 @@
 
+import {html, shadowView} from "@benev/slate"
+
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
-import {Permabar} from "../permabar/view.js"
-import {html, shadowView} from "@benev/slate"
+import {Gigamenu} from "../gigamenu/view.js"
 import {constants} from "../../../constants.js"
-import {LoginPanel} from "../permabar/panels.js"
+import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 
 export const MainMenu = shadowView(use => ({nav}: {
 		nav: {solo: () => void}
@@ -13,11 +14,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 	use.styles(themeCss, stylesCss)
 
 	return html`
-		${Permabar([
-			[
-				new LoginPanel(),
-			]
-		], {attrs: {class: "permabar"}})}
+		${Gigamenu([AccountPanel()])}
 
 		<section class=plate style="background-image: url('${constants.urls.cover}');">
 			<h1>Righteous Fury</h1>

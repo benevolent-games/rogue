@@ -1,11 +1,14 @@
 
+import {html, shadowView} from "@benev/slate"
+
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
-import {Permabar} from "../permabar/view.js"
-import {html, shadowView} from "@benev/slate"
+import {Gigamenu} from "../gigamenu/view.js"
 import {Lobby} from "../../../logic/lobby/lobby.js"
 import {Realm} from "../../../logic/realm/realm.js"
-import {LobbyPanel, LoginPanel, MenuPanel} from "../permabar/panels.js"
+import {QuitPanel} from "../gigamenu/panels/quit/panel.js"
+import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
+import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 
 export const Gameplay = shadowView(use => ({realm, lobby, exitToMainMenu}: {
 		realm: Realm
@@ -17,14 +20,13 @@ export const Gameplay = shadowView(use => ({realm, lobby, exitToMainMenu}: {
 
 	return html`
 		${realm.world.canvas}
+
 		<div class=overlay>
-			${Permabar([
-				[
-					new MenuPanel(exitToMainMenu),
-					new LoginPanel(),
-					new LobbyPanel({lobby, lobbyDisplay: lobby.display}),
-				]
-			], {attrs: {class: "permabar"}})}
+			${Gigamenu([
+				AccountPanel(),
+				LobbyPanel({lobby, lobbyDisplay: lobby.display}),
+				QuitPanel(exitToMainMenu),
+			])}
 		</div>
 	`
 })
