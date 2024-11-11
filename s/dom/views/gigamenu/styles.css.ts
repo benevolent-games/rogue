@@ -15,15 +15,9 @@ export default css`
 	border-radius: 0.5em;
 	overflow: hidden;
 
-	&[x-menu-open] {
-		background: #000a;
-		backdrop-filter: blur(0.5em);
-		box-shadow: .2em .3em .8em #0004;
-	}
-
-	nav, section {
-		pointer-events: all;
-	}
+	background: #000a;
+	backdrop-filter: blur(0.5em);
+	box-shadow: .2em .3em .8em #0004;
 
 	nav {
 		display: flex;
@@ -36,19 +30,13 @@ export default css`
 
 			color: #aaa;
 			min-width: 6em;
-			gap: 0.2em;
-			padding: 1em;
-			padding-bottom: 0.4em;
+			gap: 0.1em;
+			padding: 0.5em;
 			border-top: 2px solid transparent;
 
 			&[x-active] {
-				color: #fff;
 				background: #3336;
 				border-top: 2px solid orange;
-			}
-
-			&:hover {
-				color: #fff;
 			}
 
 			> svg {
@@ -57,8 +45,13 @@ export default css`
 			}
 
 			> span {
-				opacity: 0.5;
+				color: #555;
 				font-size: 0.8em;
+				text-transform: uppercase;
+			}
+
+			&:is(:hover, [x-active]) {
+				filter: brightness(120%);
 			}
 		}
 	}
@@ -69,6 +62,27 @@ export default css`
 		max-height: 32em;
 		overflow: auto;
 	}
+
+	/* DYNAMICS */
+
+	transition: 150ms linear all;
+	section { opacity: 1; transition: 150ms linear opacity; }
+
+	nav > [x-menu-button] {
+		pointer-events: all;
+	}
+
+	&[x-menu-open] {
+		pointer-events: all;
+	}
+
+	&:not([x-menu-open]) {
+		background: transparent;
+		box-shadow: none;
+		backdrop-filter: none;
+
+		nav > [x-tab] { opacity: 0; }
+		section { opacity: 0;  }
 }
 
 `

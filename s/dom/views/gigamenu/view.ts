@@ -37,15 +37,15 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 	}
 
 	return html`
-		<div class=plate ?x-menu-open="${menuOpen}">
+		<div class=plate ?x-menu-open="${menuOpen}" x-panel="${activePanel?.label ?? ""}">
 			<nav>
 				<button x-menu-button @click="${clickMenuButton()}" class="naked">
 					${menuSvg}
 				</button>
 
-				${(menuOpen.value || null) && panels.map((panel, index) => html`
+				${panels.map((panel, index) => html`
 					<button
-						x-tabs
+						x-tab
 						@click="${clickPanelButton(index)}"
 						?x-active="${index === activeIndex.value}"
 						class="naked">
@@ -55,7 +55,7 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 				`)}
 			</nav>
 
-			${(menuOpen.value || null) && activePanel && html`
+			${activePanel && html`
 				<section>
 					${activePanel.content()}
 				</section>
