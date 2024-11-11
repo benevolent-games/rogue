@@ -1,6 +1,6 @@
 
 import Sparrow from "sparrow-rtc"
-import {html, shadowComponent} from "@benev/slate"
+import {html, Op, opSignal, OpSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
 import stylesCss from "./styles.css.js"
@@ -65,13 +65,13 @@ export const GameApp = shadowComponent(use => {
 				// when hosting, we load babylon and the 3d stuff right away,
 				// multiplayer connectivity happens secondarily.
 				const {hostFlow} = await import("../../../flows/host.js")
-				const {realm, multiplayer, dispose} = await hostFlow()
+				const {realm, multiplayerOp, dispose} = await hostFlow()
 
 				return {
 					dispose,
 					template: () => Gameplay([{
 						realm,
-						multiplayer,
+						multiplayerOp,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 				}
@@ -80,7 +80,8 @@ export const GameApp = shadowComponent(use => {
 			join: makeNav(async(invite: string) => {
 				// when joining, we establish connectivity primarily,
 				// before the game is ready
-				const multiplayer = new MultiplayerClient(invite)
+				const multiplayer = await MultiplayerClient.join(invite)
+				const multiplayerOp = opSignal(Op.ready(multiplayer))
 
 				const {joinFlow} = await import("../../../flows/join.js")
 				const {realm, dispose} = await joinFlow(multiplayer)
@@ -89,7 +90,7 @@ export const GameApp = shadowComponent(use => {
 					dispose,
 					template: () => Gameplay([{
 						realm,
-						multiplayer,
+						multiplayerOp,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 				}

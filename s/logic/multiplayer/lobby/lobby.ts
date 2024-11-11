@@ -1,9 +1,16 @@
 
 import {LobbyDisplay, Lobbyist} from "./types.js"
 import {signal, repeat, signals} from "@benev/slate"
-import Sparrow, {AgentInfo, StdCable, WelcomeFn} from "sparrow-rtc"
+import Sparrow, {AgentInfo, SparrowHost, StdCable, WelcomeFn} from "sparrow-rtc"
 
 export class Lobby {
+	static emptyDisplay(): LobbyDisplay {
+		return {
+			invite: null,
+			lobbyists: [],
+		}
+	}
+
 	invite = signal<string | null>(null)
 	signallerConnected = signal(false)
 	lobbyists = signal(new Map<string, Lobbyist>())
@@ -74,7 +81,18 @@ export class Lobby {
 		}
 	}
 
-	addSelf(self: AgentInfo) {
+	init(sparrow: SparrowHost) {
+		this.#addSelf(sparrow.self)
+		this.invite.value = sparrow.invite
+		this.signallerConnected.value = true
+	}
+
+	clear() {
+		this.invite.value = null
+		this.signallerConnected.value = false
+	}
+
+	#addSelf(self: AgentInfo) {
 		const host: Lobbyist = {
 			kind: "host",
 			id: self.id,

@@ -1,6 +1,6 @@
 
 import Sparrow from "sparrow-rtc"
-import {Bytename, Hex, html, shadowView} from "@benev/slate"
+import {Bytename, Hex, html, Op, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"

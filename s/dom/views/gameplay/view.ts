@@ -1,5 +1,5 @@
 
-import {html, shadowView} from "@benev/slate"
+import {html, Op, OpSignal, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -13,7 +13,7 @@ import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.j
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
-		multiplayer: MultiplayerHost | MultiplayerClient
+		multiplayerOp: OpSignal<MultiplayerHost | MultiplayerClient>
 		exitToMainMenu: () => void
 	}) => {
 
@@ -25,7 +25,7 @@ export const Gameplay = shadowView(use => (o: {
 		<div class=overlay>
 			${Gigamenu([
 				AccountPanel(),
-				LobbyPanel(o.multiplayer),
+				LobbyPanel(o.multiplayerOp),
 				QuitPanel(o.exitToMainMenu),
 			])}
 		</div>
