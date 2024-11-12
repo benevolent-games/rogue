@@ -1,8 +1,9 @@
 
 import Sparrow from "sparrow-rtc"
+import {repeat} from "@benev/slate"
+
 import {Lobby} from "./lobby/lobby.js"
 import {Multiplayer} from "./utils/multiplayer.js"
-import { repeat } from "@benev/slate"
 
 export class MultiplayerHost extends Multiplayer {
 

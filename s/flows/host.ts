@@ -1,6 +1,5 @@
 
-import Sparrow from "sparrow-rtc"
-import {interval, OpSignal, opSignal} from "@benev/slate"
+import {interval, opSignal} from "@benev/slate"
 
 import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
