@@ -10,7 +10,7 @@ export default <Suite>{
 		const outbox = new Outbox<string>(() => now)
 		const inbox = new Inbox<string>(100, 20, () => now)
 		const parcel = outbox.wrap("hello")
-		inbox.ingest(parcel)
+		inbox.give(parcel)
 		now = 1000
 		const payloads = inbox.take()
 		expect(payloads.length).equals(1)
@@ -27,7 +27,7 @@ export default <Suite>{
 		})
 		parcels.forEach(parcel => {
 			now++
-			inbox.ingest(parcel)
+			inbox.give(parcel)
 		})
 		now = 1000
 		const payloads = inbox.take()
@@ -60,7 +60,7 @@ export default <Suite>{
 		now = 100
 		parcels.forEach(parcel => {
 			now += 1
-			inbox.ingest(parcel)
+			inbox.give(parcel)
 		})
 
 		now = 300
@@ -84,7 +84,7 @@ export default <Suite>{
 		now = 400
 		for (const parcel of parcels) {
 			now++
-			inbox.ingest(parcel)
+			inbox.give(parcel)
 		}
 
 		expect(inbox.take().length).equals(0)
@@ -114,11 +114,11 @@ export default <Suite>{
 
 		// ingest most of the parcels at this time
 		now = 200
-		a.forEach(p => inbox.ingest(p))
+		a.forEach(p => inbox.give(p))
 
 		// except our one special parcel will be particularly late
 		now = 275 // late!
-		inbox.ingest(b)
+		inbox.give(b)
 
 		//////
 

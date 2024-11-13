@@ -17,7 +17,7 @@ export class Netpipe<P> {
 
 	send = (payload: P, lag = noLag) => {
 		const parcel = this.#outbox.wrap(payload)
-		lag(() => this.#inbox.ingest(parcel))
+		lag(() => this.#inbox.give(parcel))
 	}
 
 	take() {
@@ -41,21 +41,37 @@ export class Instapipe<P> {
 	}
 }
 
+/** outbox parcelizes messages, preparing them for the inbox's buffering */
 export class Outbox<P> {
-	id = 0
-	start: number
+	#id = 0
+	#start: number
+	#bucket: Parcel<P>[] = []
 
 	constructor(private now = () => Date.now()) {
-		this.start = now()
+		this.#start = now()
 	}
 
+	/** parcelize a payload (wrap it into a parcel) */
 	wrap(payload: P): Parcel<P> {
-		const id = this.id++
-		const time = this.now() - this.start
+		const id = this.#id++
+		const time = this.now() - this.#start
 		return [id, time, payload]
+	}
+
+	/** parcelize and wrap a payload into this outbox */
+	give(payload: P) {
+		this.#bucket.push(this.wrap(payload))
+	}
+
+	/** extract all parcels from this outbox */
+	take() {
+		const parcels = this.#bucket
+		this.#bucket = []
+		return parcels
 	}
 }
 
+/** inbox delays messages with a buffer time, and actively corrects for network packet jitter */
 export class Inbox<P> {
 	#start: number
 	#offsets: RunningAverage
@@ -63,7 +79,7 @@ export class Inbox<P> {
 	#nanny = new Nanny()
 
 	constructor(
-			public delay = 100,
+			public delay = 25,
 			public smoothing = 20,
 			private now = () => Date.now(),
 		) {
@@ -71,13 +87,15 @@ export class Inbox<P> {
 		this.#offsets = new RunningAverage(smoothing)
 	}
 
-	ingest(parcel: Parcel<P>) {
+	/** put a parcel into this inbox */
+	give(parcel: Parcel<P>) {
 		const [id, time] = parcel
 		if (this.#buffer.has(id)) return undefined
 		this.#buffer.set(id, parcel)
 		this.#offsets.add(this.#offset(time))
 	}
 
+	/** extract all *available* parcels from this inbox */
 	take(): P[] {
 		const ready: Parcel<P>[] = []
 		const localtime = this.#localtime
