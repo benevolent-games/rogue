@@ -8,7 +8,7 @@ import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
 import {replicas} from "../logic/archetypes/replicas.js"
 import {Liaison} from "../logic/framework/relay/liaison.js"
-import {Message} from "../logic/framework/relay/messages.js"
+import {GameMessage} from "../logic/framework/relay/messages.js"
 import {Parcel} from "../logic/framework/relay/inbox-outbox.js"
 import {Clientele} from "../logic/framework/relay/clientele.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
@@ -24,14 +24,14 @@ export async function loopbackFlow() {
 	const simulator = new Simulator(station, simulas)
 	const clientele = new Clientele()
 	const {replicatorId, liaison: hostsideLiaison} = (
-		clientele.makeLiaison(new Fiber<Parcel<Message>>(), lag)
+		clientele.makeLiaison(new Fiber<Parcel<GameMessage>>(), lag)
 	)
 
 	// client stuff
 	const world = await World.load()
 	const realm = new Realm(world)
 	const replicator = new Replicator(realm, replicas, replicatorId)
-	const clientsideLiaison = new Liaison(new Fiber<Parcel<Message>>(), lag)
+	const clientsideLiaison = new Liaison(new Fiber<Parcel<GameMessage>>(), lag)
 
 	// cross-wire the host and the client
 	const alice = hostsideLiaison.fiber

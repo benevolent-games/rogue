@@ -3,8 +3,11 @@ import {Signal, signal} from "@benev/slate"
 import Sparrow, {Connection, StdCable} from "sparrow-rtc"
 
 import {Lobby} from "./lobby/lobby.js"
+import {Fiber} from "../../tools/fiber.js"
 import {LobbyDisplay} from "./lobby/types.js"
 import {Multiplayer} from "./utils/multiplayer.js"
+import {Parcel} from "../framework/relay/inbox-outbox.js"
+import {GameMessage} from "../framework/relay/messages.js"
 
 export class MultiplayerClient extends Multiplayer {
 
@@ -19,6 +22,18 @@ export class MultiplayerClient extends Multiplayer {
 				console.warn(`disconnected from host`)
 			},
 		})
+
+		// TODO
+		const {fiber, subfibers} = Fiber.multiplex<{
+			meta: {meta: number}
+			game: Parcel<GameMessage>
+		}>(["meta", "game"])
+
+		fiber.entangleCable(sparrow.connection.cable)
+		fiber.reliable.send
+		subfibers.game.reliable
+
+		// const fiber = Fiber.fromCable(sparrow.connection.cable)
 
 		sparrow.connection.cable.reliable.onmessage = ({data}) => {
 			const json = JSON.parse(data) as {kind: "lobby", lobbyDisplay: LobbyDisplay}

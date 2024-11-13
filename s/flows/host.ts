@@ -8,7 +8,7 @@ import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
 import {replicas} from "../logic/archetypes/replicas.js"
 import {Liaison} from "../logic/framework/relay/liaison.js"
-import {Message} from "../logic/framework/relay/messages.js"
+import {GameMessage} from "../logic/framework/relay/messages.js"
 import {Parcel} from "../logic/framework/relay/inbox-outbox.js"
 import {Clientele} from "../logic/framework/relay/clientele.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
@@ -23,14 +23,14 @@ export async function hostFlow() {
 	const simulator = new Simulator(station, simulas)
 	const clientele = new Clientele()
 	const {replicatorId, liaison: hostsideLiaison} = (
-		clientele.makeLiaison(new Fiber<Parcel<Message>>())
+		clientele.makeLiaison(new Fiber<Parcel<GameMessage>>())
 	)
 
 	// client stuff
 	const world = await World.load()
 	const realm = new Realm(world)
 	const replicator = new Replicator(realm, replicas, replicatorId)
-	const clientsideLiaison = new Liaison(new Fiber<Parcel<Message>>())
+	const clientsideLiaison = new Liaison(new Fiber<Parcel<GameMessage>>())
 
 	// cross-wire the host and the client
 	const alice = hostsideLiaison.fiber
@@ -76,7 +76,7 @@ export async function hostFlow() {
 	const multiplayerOp = opSignal<MultiplayerHost>()
 	const multiplayer = multiplayerOp.load(async() => MultiplayerHost.host({
 		hello: connection => {
-			const {fiber, dispose} = Fiber.fromCable<Parcel<Message>>(connection.cable)
+			const {fiber, dispose} = Fiber.fromCable<Parcel<GameMessage>>(connection.cable)
 			const {replicatorId} = clientele.makeLiaison(fiber)
 			return () => {
 				dispose()

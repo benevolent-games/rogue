@@ -6,14 +6,14 @@ import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
 import {replicas} from "../logic/archetypes/replicas.js"
 import {Liaison} from "../logic/framework/relay/liaison.js"
-import {Message} from "../logic/framework/relay/messages.js"
+import {GameMessage} from "../logic/framework/relay/messages.js"
 import {Parcel} from "../logic/framework/relay/inbox-outbox.js"
 import {Replicator} from "../logic/framework/replication/replicator.js"
 import {MultiplayerClient} from "../logic/multiplayer/multiplayer-client.js"
 
 export async function joinFlow(multiplayer: MultiplayerClient) {
-	const {fiber, dispose: disposeFiber} = (
-		Fiber.fromCable<Parcel<Message>>(multiplayer.connection.cable)
+	const fiber = (
+		Fiber.fromCable<Parcel<GameMessage>>(multiplayer.connection.cable)
 	)
 
 	const liaison = new Liaison(fiber)
@@ -38,7 +38,6 @@ export async function joinFlow(multiplayer: MultiplayerClient) {
 		realm,
 		multiplayer,
 		dispose: () => {
-			disposeFiber()
 			stopTicking()
 			world.dispose()
 		},

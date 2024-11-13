@@ -1,7 +1,7 @@
 
 import {interval} from "@benev/slate"
 
-import {Message} from "./messages.js"
+import {GameMessage} from "./messages.js"
 import {Feed, Feedback} from "./types.js"
 import {Pingponger} from "./pingponger.js"
 import {Fiber} from "../../../tools/fiber.js"
@@ -16,8 +16,8 @@ export class Liaison {
 	pingponger: Pingponger
 	pingPeriod = 1_000
 
-	inbox = new Inbox<Message>()
-	outbox = new Outbox<Message>()
+	inbox = new Inbox<GameMessage>()
+	outbox = new Outbox<GameMessage>()
 
 	feedCollector = new FeedCollector()
 	feedbackCollector = new FeedbackCollector()
@@ -27,7 +27,7 @@ export class Liaison {
 
 	dispose: () => void
 
-	constructor(public fiber: Fiber<Parcel<Message>>, lag: LagProfile | null = null) {
+	constructor(public fiber: Fiber<Parcel<GameMessage>>, lag: LagProfile | null = null) {
 		this.lag = fakeLag(lag)
 		this.lagLossless = fakeLag(lag ? {...lag, loss: 0} : null)
 

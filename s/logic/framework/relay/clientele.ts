@@ -2,7 +2,7 @@
 import {Map2} from "@benev/slate"
 
 import {Liaison} from "./liaison.js"
-import {Message} from "./messages.js"
+import {GameMessage} from "./messages.js"
 import {Parcel} from "./inbox-outbox.js"
 import {Feed, Feedbacks} from "./types.js"
 import {Fiber} from "../../../tools/fiber.js"
@@ -13,7 +13,7 @@ export class Clientele {
 	#replicatorIds = new IdCounter()
 	#liaisons = new Map2<number, Liaison>()
 
-	makeLiaison(fiber: Fiber<Parcel<Message>>, lag: LagProfile | null = null) {
+	makeLiaison(fiber: Fiber<Parcel<GameMessage>>, lag: LagProfile | null = null) {
 		const replicatorId = this.#replicatorIds.next()
 		const liaison = new Liaison(fiber, lag)
 		this.#liaisons.set(replicatorId, liaison)
