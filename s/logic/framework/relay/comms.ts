@@ -30,7 +30,7 @@ export class HostComms {
 
 			// aggregating inbox feedback
 			for (const feedback of liaison.inbox.take())
-				liaison.feedbackCollector.aggregate(feedback)
+				liaison.feedbackCollector.give(feedback)
 
 			// organizing feedback by replicator id
 			const feedback = liaison.feedbackCollector.take()

@@ -39,7 +39,6 @@ export async function loopbackFlow() {
 		coordinates: Coordinates.zero(),
 	})
 
-
 	const stopTicking = interval.hz(60, () => {
 
 		// receive feedbacks from clients

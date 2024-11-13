@@ -3,8 +3,6 @@ import {Message} from "./messages.js"
 import {FeedbackCollector} from "./feedback-collector.js"
 import {Broadcast, Data, EntityId, Facts, Memo, ReplicatorId, State} from "../types.js"
 
-export type Parcel<T> = [number, T]
-
 export type Feed = {
 	creates: [EntityId, State][]
 	facts: [EntityId, Facts][]

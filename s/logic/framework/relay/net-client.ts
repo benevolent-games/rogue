@@ -34,7 +34,7 @@ export class Netclient {
 	receive([kind, payload]: Message) {
 		switch (kind) {
 			case "feed":
-				return this.collector.aggregate({
+				return this.collector.give({
 					facts: payload.facts ?? [],
 					creates: payload.creates ?? [],
 					broadcasts: payload.broadcasts ?? [],

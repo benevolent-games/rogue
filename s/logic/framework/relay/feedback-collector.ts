@@ -18,7 +18,7 @@ export class FeedbackCollector {
 			.push(...memos)
 	}
 
-	aggregate(feedback: Feedback) {
+	give(feedback: Feedback) {
 		feedback.datas.forEach(([id, d]) => this.setData(id, d))
 		feedback.memos.forEach(([id, m]) => this.addMemos(id, m))
 	}

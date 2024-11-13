@@ -69,7 +69,7 @@ export class Nethost {
 
 	#handleFeedback(feedback: {datas?: any[], memos?: any[]}, connection: Netconnection) {
 		const {datas = [], memos = []} = feedback
-		connection.feedbackCollector.aggregate({datas, memos})
+		connection.feedbackCollector.give({datas, memos})
 	}
 }
 

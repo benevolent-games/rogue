@@ -28,7 +28,7 @@ export class FeedCollector {
 		this.destroys.add(entityId)
 	}
 
-	aggregate(feed: Feed) {
+	give(feed: Feed) {
 		feed.creates.forEach(([id, s]) => this.setCreate(id, s))
 		feed.facts.forEach(([id, f]) => this.setFacts(id, f))
 		feed.broadcasts.forEach(([id, b]) => this.addBroadcasts(id, b))

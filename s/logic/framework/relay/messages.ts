@@ -1,12 +1,14 @@
 
+import {Parcel} from "./inbox-outbox.js"
 import {Feed, Feedback} from "./types.js"
 
+export type DiagnosticMessage = ["diagnostic", Ping | Pong]
 export type Ping = ["ping", number]
 export type Pong = ["pong", number]
 
-export type FeedMessage = ["feed", Partial<Feed>]
-export type FeedbackMessage = ["feedback", Partial<Feedback>]
-export type PingpongMessage = ["pingpong", Ping | Pong]
+export type GameMessage = ["game", FeedParcel | FeedbackParcel]
+export type FeedParcel = ["feed", Parcel<Partial<Feed>>]
+export type FeedbackParcel = ["feedback", Parcel<Partial<Feedback>>]
 
-export type Message = FeedMessage | FeedbackMessage | PingpongMessage
+export type Message = GameMessage | DiagnosticMessage
 
