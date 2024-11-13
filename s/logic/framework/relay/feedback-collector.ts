@@ -18,9 +18,9 @@ export class FeedbackCollector {
 			.push(...memos)
 	}
 
-	give(feedback: Feedback) {
-		feedback.datas.forEach(([id, d]) => this.setData(id, d))
-		feedback.memos.forEach(([id, m]) => this.addMemos(id, m))
+	give(feedback: Partial<Feedback>) {
+		feedback.datas?.forEach(([id, d]) => this.setData(id, d))
+		feedback.memos?.forEach(([id, m]) => this.addMemos(id, m))
 	}
 
 	take(): Feedback {

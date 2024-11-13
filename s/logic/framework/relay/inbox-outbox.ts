@@ -41,6 +41,22 @@ export class Instapipe<P> {
 	}
 }
 
+export class Bucket<T> {
+	#items: T[] = []
+
+	/** put an item in the bucket */
+	give(item: T) {
+		this.#items.push(item)
+	}
+
+	/** extract all items out of the bucket */
+	take() {
+		const items = this.#items
+		this.#items = []
+		return items
+	}
+}
+
 /** outbox parcelizes messages, preparing them for the inbox's buffering */
 export class Outbox<P> {
 	#id = 0
@@ -90,7 +106,7 @@ export class Inbox<P> {
 	/** put a parcel into this inbox */
 	give(parcel: Parcel<P>) {
 		const [id, time] = parcel
-		if (this.#buffer.has(id)) return undefined
+		if (this.#buffer.has(id)) return
 		this.#buffer.set(id, parcel)
 		this.#offsets.add(this.#offset(time))
 	}

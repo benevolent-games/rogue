@@ -1,4 +1,5 @@
 
+import {pubsub} from "@benev/slate"
 import {Ping, Pong} from "./messages.js"
 import {Averager} from "../../../tools/averager.js"
 import {IdCounter} from "../../../tools/id-counter.js"
@@ -7,6 +8,8 @@ type PingId = number
 type Timestamp = number
 
 export class Pingponger {
+	onRtt = pubsub<[number]>()
+
 	#id = new IdCounter()
 	#pending = new Map<PingId, Timestamp>()
 
@@ -14,10 +17,7 @@ export class Pingponger {
 	#timeout = 3000
 	#averager = new Averager(5)
 
-	constructor(private options: {
-		send: (p: Ping | Pong) => void
-		onRtt?: (rtt: number) => void
-	}) {}
+	constructor(public send: (p: Ping | Pong) => void) {}
 
 	get latestRtt() {
 		return this.#rtt
@@ -31,15 +31,17 @@ export class Pingponger {
 		const pingId = this.#id.next()
 		const timestamp = Date.now()
 		this.#pending.set(pingId, timestamp)
-		this.options.send(["ping", pingId])
+		this.send(["ping", pingId])
 		this.#prune()
 	}
 
 	receive([kind, id]: Ping | Pong) {
 		if (kind === "ping")
-			this.options.send(["pong", id])
+			this.send(["pong", id])
+
 		else if (kind === "pong")
 			this.#handlePong(id)
+
 		else
 			throw new Error(`Unknown pingpong message kind: ${kind}`)
 	}
@@ -55,7 +57,7 @@ export class Pingponger {
 		this.#averager.add(this.#rtt)
 
 		this.#pending.delete(pingId)
-		this.options.onRtt?.(this.#rtt)
+		this.onRtt.publish(this.#rtt)
 	}
 
 	#prune() {

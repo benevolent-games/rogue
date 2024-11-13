@@ -28,11 +28,11 @@ export class FeedCollector {
 		this.destroys.add(entityId)
 	}
 
-	give(feed: Feed) {
-		feed.creates.forEach(([id, s]) => this.setCreate(id, s))
-		feed.facts.forEach(([id, f]) => this.setFacts(id, f))
-		feed.broadcasts.forEach(([id, b]) => this.addBroadcasts(id, b))
-		feed.destroys.forEach(id => this.setDestroy(id))
+	give(feed: Partial<Feed>) {
+		feed.creates?.forEach(([id, s]) => this.setCreate(id, s))
+		feed.facts?.forEach(([id, f]) => this.setFacts(id, f))
+		feed.broadcasts?.forEach(([id, b]) => this.addBroadcasts(id, b))
+		feed.destroys?.forEach(id => this.setDestroy(id))
 	}
 
 	take(): Feed {
