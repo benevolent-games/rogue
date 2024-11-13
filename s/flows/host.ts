@@ -1,5 +1,5 @@
 
-import {interval, opSignal} from "@benev/slate"
+import {deep, interval, opSignal} from "@benev/slate"
 
 import {Fiber} from "../tools/fiber.js"
 import {Realm} from "../logic/realm/realm.js"
@@ -17,14 +17,14 @@ import {Replicator} from "../logic/framework/replication/replicator.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
 
 export async function hostFlow() {
-	const multiplayerOp = opSignal<MultiplayerHost>()
-	const multiplayer = multiplayerOp.load(async() => MultiplayerHost.host())
 
 	// host stuff
 	const station = new Station()
 	const simulator = new Simulator(station, simulas)
 	const clientele = new Clientele()
-	const {replicatorId, liaison: hostsideLiaison} = clientele.makeLiaison(new Fiber<Parcel<Message>>())
+	const {replicatorId, liaison: hostsideLiaison} = (
+		clientele.makeLiaison(new Fiber<Parcel<Message>>())
+	)
 
 	// client stuff
 	const world = await World.load()
@@ -53,15 +53,17 @@ export async function hostFlow() {
 		{
 			const feedbacks = clientele.collectAllFeedbacks()
 			simulator.simulate(feedbacks)
-			const feed = simulator.collector.take()
+			const feed = deep.clone(simulator.collector.take())
+			clientele.broadcastFeed(feed)
 			hostsideLiaison.sendFeed(feed)
 		}
 
 		// client side activity
 		{
 			const {feed} = clientsideLiaison.take()
+			replicator.ping = clientsideLiaison.pingponger.averageRtt
 			replicator.replicate(feed)
-			const feedback = replicator.collector.take()
+			const feedback = deep.clone(replicator.collector.take())
 			clientsideLiaison.sendFeedback(feedback)
 		}
 	})
@@ -69,6 +71,19 @@ export async function hostFlow() {
 	// init 3d rendering
 	world.rendering.setCamera(realm.env.camera)
 	world.gameloop.start()
+
+	// start up multiplayer
+	const multiplayerOp = opSignal<MultiplayerHost>()
+	const multiplayer = multiplayerOp.load(async() => MultiplayerHost.host({
+		hello: connection => {
+			const {fiber, dispose} = Fiber.fromCable<Parcel<Message>>(connection.cable)
+			const {replicatorId} = clientele.makeLiaison(fiber)
+			return () => {
+				dispose()
+				clientele.deleteLiaison(replicatorId)
+			}
+		},
+	}))
 
 	return {
 		realm,

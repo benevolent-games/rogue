@@ -27,13 +27,27 @@ export class MultiplayerClient extends Multiplayer {
 			lobbyDisplay.value = json.lobbyDisplay
 		}
 
-		return new this(lobbyDisplay, sparrow.connection, sparrow.close)
+		// TODO establish some kind of meta-communicative channel, to transmit replicatorId
+		// 🧐 perhaps a way to perform fiber-splitting,
+		// maybe we can split a fiber into multiple sub-fibers which each get a namespace
+		// and their messages are wrapped, and it's done opaquely so a sub-fiber is just
+		// an ordinary fiber and doesn't have to worry about it.
+		// ie, we split the cable fiber into two sub-fibers,
+		//  - administrative fiber -- for transmitting replicator id from host to client (maybe renraku)
+		//  - game fiber -- for streaming parcelled game data (too raw for renraku)
+
+		// TODO
+		// i think we should create a ParcelFiber which handles are inbox/outbox parcelization,
+		// thus making liaison simpler..
+	
+		return new this(lobbyDisplay, sparrow.connection, sparrow.close, replicatorId)
 	}
 
 	constructor(
 			lobbyDisplay: Signal<LobbyDisplay>,
 			public connection: Connection,
 			public dispose: () => void,
+			public replicatorId: number,
 		) {
 		super(lobbyDisplay)
 	}
