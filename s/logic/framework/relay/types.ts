@@ -32,3 +32,8 @@ export type Netconnection = {
 	sendUnreliable: (message: Message) => void
 }
 
+export type Senders = {
+	sendReliable: (message: Message) => void
+	sendUnreliable: (message: Message) => void
+}
+
