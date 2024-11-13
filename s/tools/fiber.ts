@@ -4,11 +4,17 @@ import {pub} from "./pub.js"
 import {disposers} from "./disposers.js"
 import {onChannelMessage} from "./on-channel-message.js"
 
-/** a virtualized rtc data channel */
+/** an arbitrary data channel */
 export class Bicomm<M> {
 	send = pub<[M]>()
 	recv = pub<[M]>()
 }
+
+export type FiberData<F extends Fiber<any>> = (
+	F extends Fiber<infer M>
+		? M
+		: never
+)
 
 /** a virtualized cable */
 export class Fiber<M> {
@@ -33,35 +39,27 @@ export class Fiber<M> {
 	}
 
 	/** split a main fiber into several virtual sub fibers */
-	static multiplex<C extends {[key: string]: any}>(
-			categories: (keyof C)[],
-		) {
+	static multiplex<C extends {[key: string]: Fiber<any>}>(fibers: C) {
+		const megafiber = new Fiber<{[K in keyof C]: [K, FiberData<C[K]>]}[keyof C]>()
 
-		const fiber = new Fiber<{[K in keyof C]: [K, C[K]]}[keyof C]>()
+		for (const [key, subfiber] of Object.entries(fibers)) {
+			subfiber.reliable.send.on(x => megafiber.reliable.send([key, x]))
+			subfiber.unreliable.send.on(x => megafiber.unreliable.send([key, x as any]))
+		}
 
-		const subfibers = Object.fromEntries(
-			categories.map(key_ => {
-				const key = key_ as string
-				const subfiber = new Fiber()
-				subfiber.reliable.send.on(x => fiber.reliable.send([key, x as any]))
-				subfiber.unreliable.send.on(x => fiber.unreliable.send([key, x as any]))
-				return [key, subfiber]
-			})
-		) as {[K in keyof C]: Fiber<C[K]>}
-
-		fiber.reliable.recv.on(([key, data]) => {
-			const subfiber = subfibers[key as any]
+		megafiber.reliable.recv.on(([key, data]) => {
+			const subfiber = fibers[key as any]
 			if (!subfiber) throw new Error(`unknown subfiber "${key as any}"`)
 			subfiber.reliable.recv(data as any)
 		})
 
-		fiber.unreliable.recv.on(([key, data]) => {
-			const subfiber = subfibers[key as any]
+		megafiber.unreliable.recv.on(([key, data]) => {
+			const subfiber = fibers[key as any]
 			if (!subfiber) throw new Error(`unknown subfiber "${key as any}"`)
 			subfiber.unreliable.recv(data as any)
 		})
 
-		return {fiber, subfibers}
+		return megafiber
 	}
 }
 

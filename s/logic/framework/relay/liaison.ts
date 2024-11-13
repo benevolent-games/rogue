@@ -27,7 +27,11 @@ export class Liaison {
 
 	dispose: () => void
 
-	constructor(public fiber: Fiber<Parcel<GameMessage>>, lag: LagProfile | null = null) {
+	constructor(
+			public fiber: Fiber<Parcel<GameMessage>>,
+			lag: LagProfile | null = null,
+		) {
+
 		this.lag = fakeLag(lag)
 		this.lagLossless = fakeLag(lag ? {...lag, loss: 0} : null)
 
