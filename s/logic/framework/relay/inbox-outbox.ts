@@ -6,41 +6,41 @@ export type ParcelId = number
 export type ParcelTime = number
 export type Parcel<P> = [ParcelId, ParcelTime, P]
 
-export class Netpipe<P> {
-	#inbox: Inbox<P>
-	#outbox: Outbox<P>
-
-	constructor(delay: number) {
-		this.#inbox = new Inbox<P>(delay)
-		this.#outbox = new Outbox<P>()
-	}
-
-	send = (payload: P, lag = noLag) => {
-		const parcel = this.#outbox.wrap(payload)
-		lag(() => this.#inbox.give(parcel))
-	}
-
-	take() {
-		return this.#inbox.take()
-	}
-}
-
-export class Instapipe<P> {
-	payloads: P[] = []
-
-	constructor(_ignored: number) {}
-
-	send = (payload: P, _ignored?: LagFn) => {
-		this.payloads.push(payload)
-	}
-
-	take() {
-		const payloads = this.payloads
-		this.payloads = []
-		return payloads
-	}
-}
-
+// export class Netpipe<P> {
+// 	#inbox: Inbox<P>
+// 	#outbox: Outbox<P>
+//
+// 	constructor(delay: number) {
+// 		this.#inbox = new Inbox<P>(delay)
+// 		this.#outbox = new Outbox<P>()
+// 	}
+//
+// 	send = (payload: P, lag = noLag) => {
+// 		const parcel = this.#outbox.wrap(payload)
+// 		lag(() => this.#inbox.give(parcel))
+// 	}
+//
+// 	take() {
+// 		return this.#inbox.take()
+// 	}
+// }
+//
+// export class Instapipe<P> {
+// 	payloads: P[] = []
+//
+// 	constructor(_ignored: number) {}
+//
+// 	send = (payload: P, _ignored?: LagFn) => {
+// 		this.payloads.push(payload)
+// 	}
+//
+// 	take() {
+// 		const payloads = this.payloads
+// 		this.payloads = []
+// 		return payloads
+// 	}
+// }
+//
 export class Bucket<T> {
 	#items: T[] = []
 

@@ -13,21 +13,28 @@ import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.j
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
-		multiplayerOp: OpSignal<MultiplayerHost | MultiplayerClient>
+		multiplayerOp?: OpSignal<MultiplayerHost | MultiplayerClient>
 		exitToMainMenu: () => void
 	}) => {
 
 	use.styles(themeCss, stylesCss)
 
+	const panels = o.multiplayerOp
+		? [
+			AccountPanel(),
+			LobbyPanel(o.multiplayerOp),
+			QuitPanel(o.exitToMainMenu),
+		]
+		: [
+			AccountPanel(),
+			QuitPanel(o.exitToMainMenu),
+		]
+
 	return html`
 		${o.realm.world.canvas}
 
 		<div class=overlay>
-			${Gigamenu([
-				AccountPanel(),
-				LobbyPanel(o.multiplayerOp),
-				QuitPanel(o.exitToMainMenu),
-			])}
+			${Gigamenu(panels)}
 		</div>
 	`
 })

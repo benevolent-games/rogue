@@ -10,8 +10,8 @@ import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
-import { MultiplayerClient } from "../../../logic/multiplayer/multiplayer-client.js"
-import { handleExhibitErrors } from "../../views/error-screen/view.js"
+import {handleExhibitErrors} from "../../views/error-screen/view.js"
+import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -26,6 +26,7 @@ export const GameApp = shadowComponent(use => {
 			template: () => MainMenu([{
 				nav: {
 					host: () => goExhibit.host(),
+					loopback: () => goExhibit.loopback(),
 				},
 			}]),
 		})
@@ -60,6 +61,18 @@ export const GameApp = shadowComponent(use => {
 
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
+
+			loopback: makeNav(async() => {
+				const {loopbackFlow} = await import("../../../flows/loopback.js")
+				const {realm, dispose} = await loopbackFlow()
+				return {
+					dispose,
+					template: () => Gameplay([{
+						realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+				}
+			}),
 
 			host: makeNav(async() => {
 				// when hosting, we load babylon and the 3d stuff right away,

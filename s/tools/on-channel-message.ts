@@ -1,14 +1,12 @@
 
 import {ev} from "@benev/slate"
 
-export function onChannelMessage<M>(
+export function onChannelMessage(
 		channel: RTCDataChannel,
-		onmessage: (message: M) => void,
+		onmessage: (message: any) => void,
 	) {
 	return ev(channel, {
-		onmessage: (event: MessageEvent) => onmessage(
-			JSON.parse(event.data)
-		),
+		onmessage: (event: MessageEvent) => onmessage(event.data),
 	})
 }
 
