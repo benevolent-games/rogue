@@ -9,8 +9,8 @@ import {FeedCollector} from "./feed-collector.js"
 import {bountiful} from "../../../tools/bountiful.js"
 import {disposers} from "../../../tools/disposers.js"
 import {Inbox, Outbox, Parcel} from "./inbox-outbox.js"
-import {LagFn, noLag} from "../../../tools/fake-lag.js"
 import {FeedbackCollector} from "./feedback-collector.js"
+import {fakeLag, LagFn, LagProfile} from "../../../tools/fake-lag.js"
 
 export class Liaison {
 	pingponger: Pingponger
@@ -22,13 +22,20 @@ export class Liaison {
 	feedCollector = new FeedCollector()
 	feedbackCollector = new FeedbackCollector()
 
+	lag: LagFn
+	lagLossless: LagFn
+
 	dispose: () => void
 
-	constructor(public fiber: Fiber<Parcel<Message>>, public lag: LagFn = noLag) {
+	constructor(public fiber: Fiber<Parcel<Message>>, lag: LagProfile | null = null) {
+		this.lag = fakeLag(lag)
+		this.lagLossless = fakeLag(lag ? {...lag, loss: 0} : null)
+
 		this.pingponger = new Pingponger(p => {
 			const parcel = this.outbox.wrap(p)
 			this.lag(() => fiber.unreliable.send(parcel))
 		})
+
 		this.dispose = disposers(
 			interval(this.pingPeriod, () => this.pingponger.ping()),
 			fiber.reliable.recv.on(m => this.inbox.give(m)),
@@ -39,7 +46,7 @@ export class Liaison {
 	sendFeed({creates, destroys, broadcasts, facts}: Feed) {
 		if (bountiful(creates, destroys, broadcasts)) {
 			const parcel = this.outbox.wrap(["feed", {creates, destroys, broadcasts}])
-			this.lag(() => this.fiber.reliable.send(parcel))
+			this.lagLossless(() => this.fiber.reliable.send(parcel))
 		}
 		if (bountiful(facts)) {
 			const parcel = this.outbox.wrap(["feed", {facts}])
@@ -50,7 +57,7 @@ export class Liaison {
 	sendFeedback({memos, datas}: Feedback) {
 		if (bountiful(memos)) {
 			const parcel = this.outbox.wrap(["feedback", {memos}])
-			this.lag(() => this.fiber.reliable.send(parcel))
+			this.lagLossless(() => this.fiber.reliable.send(parcel))
 		}
 		if (bountiful(datas)) {
 			const parcel = this.outbox.wrap(["feedback", {datas}])

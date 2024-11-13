@@ -5,17 +5,17 @@ import {Liaison} from "./liaison.js"
 import {Message} from "./messages.js"
 import {Parcel} from "./inbox-outbox.js"
 import {Feed, Feedbacks} from "./types.js"
+import {Fiber} from "../../../tools/fiber.js"
+import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
-import { Fiber } from "../../../tools/fiber.js"
-import { LagFn } from "../../../tools/fake-lag.js"
 
 export class Clientele {
 	#replicatorIds = new IdCounter()
 	#liaisons = new Map2<number, Liaison>()
 
-	makeLiaison(fiber: Fiber<Parcel<Message>>, fn?: LagFn) {
+	makeLiaison(fiber: Fiber<Parcel<Message>>, lag: LagProfile | null = null) {
 		const replicatorId = this.#replicatorIds.next()
-		const liaison = new Liaison(fiber, fn)
+		const liaison = new Liaison(fiber, lag)
 		this.#liaisons.set(replicatorId, liaison)
 		return {replicatorId, liaison}
 	}

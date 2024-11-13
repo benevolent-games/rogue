@@ -1,8 +1,7 @@
 
-import {interval} from "@benev/slate"
+import {deep, interval} from "@benev/slate"
 
 import {Fiber} from "../tools/fiber.js"
-import {fakeLag} from "../tools/fake-lag.js"
 import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
 import {Station} from "../logic/station/station.js"
@@ -18,7 +17,7 @@ import {lagProfiles} from "../logic/framework/utils/lag-profiles.js"
 import {Replicator} from "../logic/framework/replication/replicator.js"
 
 export async function loopbackFlow() {
-	const lag = fakeLag(lagProfiles.mid)
+	const lag = lagProfiles.bad
 
 	// host stuff
 	const station = new Station()
@@ -55,7 +54,7 @@ export async function loopbackFlow() {
 		{
 			const feedbacks = clientele.collectAllFeedbacks()
 			simulator.simulate(feedbacks)
-			const feed = simulator.collector.take()
+			const feed = deep.clone(simulator.collector.take())
 			hostsideLiaison.sendFeed(feed)
 			hostsideLiaison.pingponger.ping()
 		}
@@ -65,7 +64,7 @@ export async function loopbackFlow() {
 			const {feed} = clientsideLiaison.take()
 			replicator.ping = clientsideLiaison.pingponger.averageRtt
 			replicator.replicate(feed)
-			const feedback = replicator.collector.take()
+			const feedback = deep.clone(replicator.collector.take())
 			clientsideLiaison.sendFeedback(feedback)
 			clientsideLiaison.pingponger.ping()
 		}
