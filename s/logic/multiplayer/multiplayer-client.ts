@@ -42,10 +42,6 @@ export class MultiplayerClient extends Multiplayer {
 			const megafiber = Fiber.multiplex(fibers)
 			megafiber.proxyCable(sparrow.connection.cable)
 
-			// // TODO
-			// megafiber.reliable.recv.on(m => console.log("client mega reliable", m))
-			// megafiber.unreliable.recv.on(m => console.log("client mega unreliable", m))
-
 			const multiplayerClient = await this.make(fibers)
 			onDisconnected(() => {
 				multiplayerClient.lobbyDisplay.value = Lobby.emptyDisplay()

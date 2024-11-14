@@ -35,6 +35,9 @@ export class MultiplayerHost extends Multiplayer {
 			})
 
 			lobby.init(sparrow)
+
+			// // LOBBY
+
 			// const lobbyDisplay = lobby.display
 
 			// const stopRepeating = repeat(3_000, async() => {
