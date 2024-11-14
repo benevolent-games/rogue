@@ -1,5 +1,5 @@
 
-import {repeat} from "@benev/slate"
+// import {repeat} from "@benev/slate"
 import Sparrow, {Connection, StdCable} from "sparrow-rtc"
 
 import {Lobby} from "./lobby/lobby.js"
@@ -35,21 +35,21 @@ export class MultiplayerHost extends Multiplayer {
 			})
 
 			lobby.init(sparrow)
-			const lobbyDisplay = lobby.display
+			// const lobbyDisplay = lobby.display
 
-			const stopRepeating = repeat(3_000, async() => {
-				for (const lobbyist of lobby.lobbyists.value.values()) {
-					if (lobbyist.kind === "client" && lobbyist.connection) {
-						lobbyist.connection.cable.reliable.send(JSON.stringify({
-							kind: "lobby",
-							lobbyDisplay: lobbyDisplay.value,
-						}))
-					}
-				}
-			})
+			// const stopRepeating = repeat(3_000, async() => {
+			// 	for (const lobbyist of lobby.lobbyists.value.values()) {
+			// 		if (lobbyist.kind === "client" && lobbyist.connection) {
+			// 			lobbyist.connection.cable.reliable.send(JSON.stringify({
+			// 				kind: "lobby",
+			// 				lobbyDisplay: lobbyDisplay.value,
+			// 			}))
+			// 		}
+			// 	}
+			// })
 
 			disconnect = () => {
-				stopRepeating()
+				// stopRepeating()
 				sparrow.close()
 				lobby.disconnectEverybody()
 			}

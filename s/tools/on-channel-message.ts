@@ -6,7 +6,7 @@ export function onChannelMessage(
 		onmessage: (message: any) => void,
 	) {
 	return ev(channel, {
-		onmessage: (event: MessageEvent) => onmessage(event.data),
+		message: (event: MessageEvent) => onmessage(event.data),
 	})
 }
 
