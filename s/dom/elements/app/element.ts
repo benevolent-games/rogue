@@ -12,6 +12,7 @@ import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
+import { MultiplayerHost } from "../../../logic/multiplayer/multiplayer-host.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -78,12 +79,15 @@ export const GameApp = shadowComponent(use => {
 				// when hosting, we load babylon and the 3d stuff right away,
 				// multiplayer connectivity happens secondarily.
 				const {hostFlow} = await import("../../../flows/host.js")
-				const {realm, multiplayerOp, dispose} = await hostFlow()
+				const {host, client, dispose} = await hostFlow({lag: null})
+
+				const multiplayerOp = opSignal<MultiplayerHost>()
+				multiplayerOp.load(async() => host.startMultiplayer())
 
 				return {
 					dispose,
 					template: () => Gameplay([{
-						realm,
+						realm: client.realm,
 						multiplayerOp,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),

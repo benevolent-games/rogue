@@ -22,7 +22,7 @@ export class Fiber<M> {
 	unreliable = new Bicomm<M>()
 
 	/** this fiber becomes a proxy of the cable */
-	entangleCable(cable: StdCable) {
+	proxyCable(cable: StdCable) {
 		this.reliable.send.on(m => cable.reliable.send(JSON.stringify(m)))
 		this.unreliable.send.on(m => cable.reliable.send(JSON.stringify(m)))
 		return disposers(
@@ -31,11 +31,32 @@ export class Fiber<M> {
 		)
 	}
 
+	/** produce a partner fiber which will receive messages send from this fiber, and vice-versa */
+	makeEntangledPartner() {
+		const partner = new Fiber<M>()
+		this.reliable.send.on(m => partner.reliable.recv(m))
+		this.unreliable.send.on(m => partner.unreliable.recv(m))
+		partner.reliable.send.on(m => this.reliable.recv(m))
+		partner.unreliable.send.on(m => this.unreliable.recv(m))
+		return partner
+	}
+
 	/** create a fiber as a proxy to the given cable */
 	static fromCable<M>(cable: StdCable) {
 		const fiber = new Fiber<M>()
-		fiber.entangleCable(cable)
+		fiber.proxyCable(cable)
 		return fiber
+	}
+
+	/** create two fibers that are welded together: sending to one is recieved by the other */
+	static entangledPair<M>() {
+		const alice = new Fiber<M>()
+		const bob = new Fiber<M>()
+		alice.reliable.send.on(m => bob.reliable.recv(m))
+		alice.unreliable.send.on(m => bob.unreliable.recv(m))
+		bob.reliable.send.on(m => alice.reliable.recv(m))
+		bob.unreliable.send.on(m => alice.unreliable.recv(m))
+		return [alice, bob] as [Fiber<M>, Fiber<M>]
 	}
 
 	/** split a main fiber into several virtual sub fibers */

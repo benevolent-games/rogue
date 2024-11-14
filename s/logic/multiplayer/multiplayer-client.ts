@@ -27,7 +27,7 @@ export class MultiplayerClient extends Multiplayer {
 
 		const fibers = multiplayerFibers()
 		const megafiber = Fiber.multiplex(fibers)
-		megafiber.entangleCable(sparrow.connection.cable)
+		megafiber.proxyCable(sparrow.connection.cable)
 
 		const meta = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
