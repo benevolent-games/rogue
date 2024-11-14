@@ -25,7 +25,7 @@ export function getPlayerInput(tact: GameTact): PlayerInput {
 
 	return {
 		sprint,
-		intent: intent.normalize(),
+		intent: intent.normalize().array(),
 	}
 }
 

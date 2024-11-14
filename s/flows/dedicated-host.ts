@@ -41,8 +41,14 @@ export async function dedicatedHostFlow() {
 
 				const contact = clientele.add(fibers)
 
+				const playerId = simulator.create("player", {
+					owner: contact.replicatorId,
+					coordinates: Coordinates.zero(),
+				})
+
 				return () => {
 					clientele.delete(contact)
+					simulator.destroy(playerId)
 				}
 			},
 		})

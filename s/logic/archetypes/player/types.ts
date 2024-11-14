@@ -1,5 +1,6 @@
 
-import {Vec2, Vec2Array} from "@benev/toolbox"
+import {Vec2Array} from "@benev/toolbox"
+import {ReplicatorId} from "../../framework/types.js"
 
 export type PlayerArchetype = {
 	facts: {
@@ -14,13 +15,14 @@ export type PlayerArchetype = {
 }
 
 export type PlayerConfig = {
+	owner: ReplicatorId
 	speed: number
 	speedSprint: number
 }
 
 export type PlayerInput = {
 	sprint: boolean
-	intent: Vec2
+	intent: Vec2Array
 }
 
 export type PlayerWorld = {

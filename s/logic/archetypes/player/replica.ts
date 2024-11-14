@@ -41,36 +41,48 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 
 	return {
 		replicate({feed, feedback}) {
-			const input = getPlayerInput(realm.tact)
 
-			const hostRaw = Coordinates.array(feed.facts.coordinates)
-			const fresh = !previousRaw.equals(hostRaw)
-			previousRaw.set(hostRaw)
+			// we are acting as the owner, we control this
+			if (facts.config.owner === replicator.id) {
+				const input = getPlayerInput(realm.tact)
 
-			if (fresh) {
-				const estimatedTime = Date.now() - replicator.ping
-				driver.rollbackAndCatchUp(estimatedTime, hostRaw)
+				const hostRaw = Coordinates.array(feed.facts.coordinates)
+				const fresh = !previousRaw.equals(hostRaw)
+				previousRaw.set(hostRaw)
+
+				if (fresh) {
+					const estimatedTime = Date.now() - replicator.ping
+					driver.rollbackAndCatchUp(estimatedTime, hostRaw)
+				}
+
+				driver.simulate({input, obstacles: []})
+				const clientRaw = driver.coordinates
+
+				hostSmooth.lerp(hostRaw, 30 / 100)
+				clientSmooth.lerp(clientRaw, 30 / 100)
+
+				guys.hostRaw.position.set(...guyPosition(hostRaw))
+				guys.hostSmooth.position.set(...guyPosition(hostSmooth))
+
+				guys.clientRaw.position.set(...guyPosition(clientRaw))
+				guys.clientSmooth.position.set(...guyPosition(clientSmooth))
+
+				realm.env.camera.target.set(
+					...cameraPosition
+						.lerp(clientSmooth.position(), 10 / 100)
+						.array()
+				)
+
+				feedback.sendData({input})
 			}
 
-			driver.simulate({input, obstacles: []})
-			const clientRaw = driver.coordinates
-
-			hostSmooth.lerp(hostRaw, 30 / 100)
-			clientSmooth.lerp(clientRaw, 30 / 100)
-
-			guys.hostRaw.position.set(...guyPosition(hostRaw))
-			guys.hostSmooth.position.set(...guyPosition(hostSmooth))
-
-			guys.clientRaw.position.set(...guyPosition(clientRaw))
-			guys.clientSmooth.position.set(...guyPosition(clientSmooth))
-
-			realm.env.camera.target.set(
-				...cameraPosition
-					.lerp(clientSmooth.position(), 10 / 100)
-					.array()
-			)
-
-			feedback.sendData({input})
+			// we are a passive observer
+			else {
+				const hostRaw = Coordinates.array(feed.facts.coordinates)
+				hostSmooth.lerp(hostRaw, 30 / 100)
+				guys.hostRaw.position.set(...guyPosition(hostRaw))
+				guys.hostSmooth.position.set(...guyPosition(hostSmooth))
+			}
 		},
 		dispose() {},
 	}

@@ -1,5 +1,5 @@
 
-import {deep, Map2} from "@benev/slate"
+import {Map2} from "@benev/slate"
 
 import {Feedbacks, Snapshot} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
@@ -25,7 +25,8 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		const feed = new FeedHelper(id, this.collector, state)
 		this.#simulons.set(id, {state, simulant, feed})
 		this.collector.setCreate(id, state)
-		return simulant as ReturnType<ReturnType<S[K]>>
+		// return simulant as ReturnType<ReturnType<S[K]>>
+		return id
 	}
 
 	get(id: number) {

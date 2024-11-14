@@ -1,6 +1,7 @@
 
 import {PlayerConfig, PlayerWorld} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
+import { Vec2 } from "@benev/toolbox"
 
 export class PlayerRollbackDriver {
 	coordinates: Coordinates
@@ -57,7 +58,7 @@ export class PlayerRollbackDriver {
 
 	#applyMovement({input}: PlayerWorld) {
 		const {config} = this.options
-		const movement = input.intent.clone().clampMagnitude(1)
+		const movement = Vec2.array(input.intent).clampMagnitude(1)
 
 		const effectiveSpeed = input.sprint
 			? config.speedSprint
