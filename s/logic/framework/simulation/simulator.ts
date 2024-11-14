@@ -38,10 +38,12 @@ export class Simulator<St, S extends Simulas<St> = any> {
 	}
 
 	destroy(id: number) {
-		const simulon = this.#simulons.require(id)
-		simulon.simulant.dispose()
-		this.#simulons.delete(id)
-		this.collector.setDestroy(id)
+		const simulon = this.#simulons.get(id)
+		if (simulon) {
+			simulon.simulant.dispose()
+			this.#simulons.delete(id)
+			this.collector.setDestroy(id)
+		}
 	}
 
 	snapshot(): Snapshot {
