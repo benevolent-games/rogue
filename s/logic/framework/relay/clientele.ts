@@ -1,6 +1,6 @@
 
 import {Liaison} from "./liaison.js"
-import {Feed, Feedbacks} from "./types.js"
+import {Feed, Feedbacks, Snapshot} from "./types.js"
 import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../../multiplayer/meta/client.js"
@@ -45,6 +45,11 @@ export class Clientele {
 	broadcastFeed(feed: Feed) {
 		for (const contact of this.#contacts)
 			contact.liaison.sendFeed(feed)
+	}
+
+	broadcastSnapshot(snapshot: Snapshot) {
+		for (const contact of this.#contacts)
+			contact.liaison.sendSnapshot(snapshot)
 	}
 }
 

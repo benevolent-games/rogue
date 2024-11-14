@@ -1,7 +1,7 @@
 
-import {Map2} from "@benev/slate"
+import {deep, Map2} from "@benev/slate"
 
-import {Feedbacks} from "../relay/types.js"
+import {Feedbacks, Snapshot} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {FeedCollector, FeedHelper} from "../relay/feed-collector.js"
 import {Data, EntityId, Memo, ReplicatorId, State} from "../types.js"
@@ -41,6 +41,12 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		simulon.simulant.dispose()
 		this.#simulons.delete(id)
 		this.collector.setDestroy(id)
+	}
+
+	snapshot(): Snapshot {
+		return [...this.#simulons].map(
+			([id, simulon]) => [id, simulon.state]
+		)
 	}
 
 	simulate(feedbacks: Feedbacks) {

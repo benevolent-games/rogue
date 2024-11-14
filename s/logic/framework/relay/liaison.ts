@@ -2,10 +2,10 @@
 import {interval} from "@benev/slate"
 
 import {GameMessage} from "./messages.js"
-import {Feed, Feedback} from "./types.js"
 import {Pingponger} from "./pingponger.js"
 import {Fiber} from "../../../tools/fiber.js"
 import {FeedCollector} from "./feed-collector.js"
+import {Feed, Feedback, Snapshot} from "./types.js"
 import {bountiful} from "../../../tools/bountiful.js"
 import {disposers} from "../../../tools/disposers.js"
 import {Inbox, Outbox, Parcel} from "./inbox-outbox.js"
@@ -19,6 +19,7 @@ export class Liaison {
 	inbox = new Inbox<GameMessage>()
 	outbox = new Outbox<GameMessage>()
 
+	snapshot: Snapshot | null = null
 	feedCollector = new FeedCollector()
 	feedbackCollector = new FeedbackCollector()
 
@@ -47,6 +48,11 @@ export class Liaison {
 		)
 	}
 
+	sendSnapshot(snapshot: Snapshot) {
+		const parcel = this.outbox.wrap(["snapshot", snapshot])
+		this.lagLossless(() => this.fiber.reliable.send(parcel))
+	}
+
 	sendFeed({creates, destroys, broadcasts, facts}: Feed) {
 		if (bountiful(creates, destroys, broadcasts)) {
 			const parcel = this.outbox.wrap(["feed", {creates, destroys, broadcasts}])
@@ -71,8 +77,9 @@ export class Liaison {
 
 	take() {
 		const {feedCollector, feedbackCollector} = this
+
 		for (const message of this.inbox.take()) {
-			const [kind, payload] = message
+			const [kind, x] = message
 			switch (kind) {
 				case "ping":
 				case "pong":
@@ -80,11 +87,15 @@ export class Liaison {
 					break
 
 				case "feed":
-					feedCollector.give(payload)
+					feedCollector.give(x)
 					break
 
 				case "feedback":
-					feedbackCollector.give(payload)
+					feedbackCollector.give(x)
+					break
+
+				case "snapshot":
+					this.snapshot = x
 					break
 
 				default:
@@ -92,7 +103,11 @@ export class Liaison {
 			}
 		}
 
+		const {snapshot} = this
+		this.snapshot = null
+
 		return {
+			snapshot,
 			feed: feedCollector.take(),
 			feedback: feedbackCollector.take(),
 		}

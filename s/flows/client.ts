@@ -15,7 +15,8 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	const liaison = new Liaison(multiplayer.gameFiber)
 
 	const stopTicking = interval.hz(60, () => {
-		const {feed} = liaison.take()
+		const {snapshot, feed} = liaison.take()
+		if (snapshot) replicator.applySnapshot(snapshot)
 		replicator.ping = liaison.pingponger.averageRtt
 		replicator.replicate(feed)
 		const feedback = deep.clone(replicator.collector.take())
