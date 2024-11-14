@@ -22,8 +22,6 @@ export class MultiplayerClient extends Multiplayer {
 			bicomm: fibers.meta.reliable,
 			localFns: metaClientApi({lobbyDisplay}),
 		})
-		fibers.meta.reliable.send.on(x => console.log("CLIENT SEND", x))
-		fibers.meta.reliable.recv.on(x => console.log("CLIENT RECV", x))
 		const {replicatorId} = await metaHost.hello({identity: "Frank"})
 		return new this(replicatorId, fibers.game, lobbyDisplay, () => {})
 	}
@@ -43,6 +41,10 @@ export class MultiplayerClient extends Multiplayer {
 			const fibers = multiplayerFibers()
 			const megafiber = Fiber.multiplex(fibers)
 			megafiber.proxyCable(sparrow.connection.cable)
+
+			// // TODO
+			// megafiber.reliable.recv.on(m => console.log("client mega reliable", m))
+			// megafiber.unreliable.recv.on(m => console.log("client mega unreliable", m))
 
 			const multiplayerClient = await this.make(fibers)
 			onDisconnected(() => {

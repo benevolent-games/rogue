@@ -29,9 +29,9 @@ export async function dedicatedHostFlow() {
 				const megafiber = Fiber.multiplex(fibers)
 				megafiber.proxyCable(connection.cable)
 
-				console.log("CONNECTION HERE", connection)
-				fibers.meta.reliable.send.on(x => console.log("HOST SEND", x))
-				fibers.meta.reliable.recv.on(x => console.log("HOST RECV", x))
+			// // TODO
+			// megafiber.reliable.send.on(m => console.log("host mega reliable", m))
+			// megafiber.unreliable.send.on(m => console.log("host mega unreliable", m))
 
 				const contact = clientele.add(fibers)
 				return () => {

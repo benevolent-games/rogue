@@ -24,7 +24,7 @@ export class Fiber<M> {
 	/** this fiber becomes a proxy of the cable */
 	proxyCable(cable: StdCable) {
 		this.reliable.send.on(m => cable.reliable.send(JSON.stringify(m)))
-		this.unreliable.send.on(m => cable.reliable.send(JSON.stringify(m)))
+		this.unreliable.send.on(m => cable.unreliable.send(JSON.stringify(m)))
 		return disposers(
 			onChannelMessage(cable.reliable, s => this.reliable.recv(JSON.parse(s))),
 			onChannelMessage(cable.unreliable, s => this.unreliable.recv(JSON.parse(s))),
