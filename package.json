@@ -27,6 +27,7 @@
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
 		"devlinks-sparrow": "rm -rf node_modules/@benev/sparrow && ln -s \"$(realpath ../sparrow)\" node_modules/@benev/sparrow",
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
+		"devlinks-authduo": "rm -rf node_modules/@authduo/authduo && ln -s \"$(realpath ../../authduo/authduo)\" node_modules/@authduo/authduo",
 		"test": "cynic node x/tests.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\"",
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
