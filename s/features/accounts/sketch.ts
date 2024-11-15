@@ -1,7 +1,7 @@
 
 import {secure} from "renraku"
 import {Map2} from "@benev/slate"
-import {FromNow, JsonWebToken, Keypair, Proof, Pubkey} from "@authduo/authduo/x/server.js"
+import {FromNow, Keypair, Proof, Token} from "@authduo/authduo/x/server.js"
 
 import {Avatar} from "./avatars.js"
 
@@ -67,38 +67,13 @@ export class AccountantDatabase {
 	}
 }
 
-export const QuickToken = {
-	sign: async({data, keypair, expiresAt}: {
-			data: any
-			keypair: Keypair
-			expiresAt: number
-		}) => keypair.sign({
-		data,
-		iat: Date.now(),
-		exp: expiresAt / 1000,
-	}),
-
-	decode: <D>(token: string) => {
-		return JsonWebToken.decode<any>(token).payload.data as D
-	},
-
-	verify: async<D>(pubkey: Pubkey, token: string) => {
-		const payload = await pubkey.verify<any>(token)
-		return payload.data as D
-	},
-}
-
 export class Accountant {
 	#keypair = tempKeypair
 	pubkeyJson = tempPubkeyJson
 	database = new AccountantDatabase()
 
 	async signAccountToken(account: Account) {
-		return QuickToken.sign({
-			keypair: this.#keypair,
-			expiresAt: FromNow.hours(24),
-			data: account,
-		})
+		return Token.sign(this.#keypair, FromNow.hours(24), account)
 	}
 }
 

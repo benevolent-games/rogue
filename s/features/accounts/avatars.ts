@@ -3,7 +3,6 @@ import {Map2} from "@benev/slate"
 
 export type AvatarKind = "free" | "premium" | "rare"
 
-
 export class Avatar {
 	constructor(public id: string, public kind: "free" | "premium" | "rare") {}
 

@@ -1,9 +1,9 @@
 
 import {opSignal} from "@benev/slate"
-import {auth, Pubkey} from "@authduo/authduo"
+import {auth, Pubkey, Token} from "@authduo/authduo"
 
 import {Avatar} from "../features/accounts/avatars.js"
-import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord, QuickToken} from "../features/accounts/sketch.js"
+import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
 
 export type Session = {
 	account: Account
@@ -36,7 +36,7 @@ export class Context {
 				}
 				const {accountToken, accountRecord} = await this
 					.accounting.authed.query(proofToken, preferences)
-				const account = await QuickToken.verify<Account>(pubkey, accountToken)
+				const account = await Token.verify<Account>(pubkey, accountToken)
 				console.log("account loaded!", account)
 				return {account, accountToken, accountRecord}
 			})
