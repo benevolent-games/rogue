@@ -1,7 +1,7 @@
 
 import {secure} from "renraku"
 import {Map2} from "@benev/slate"
-import {FromNow, Keypair, Proof, Token} from "@authduo/authduo/x/server.js"
+import {Future, Keypair, Proof, Token} from "@authduo/authduo/x/server.js"
 
 import {Avatar} from "./avatars.js"
 
@@ -73,7 +73,10 @@ export class Accountant {
 	database = new AccountantDatabase()
 
 	async signAccountToken(account: Account) {
-		return Token.sign(this.#keypair, FromNow.hours(24), account)
+		return this.#keypair.sign({
+			...Token.params({expiresAt: Future.hours(24)}),
+			data: account,
+		})
 	}
 }
 
@@ -84,7 +87,7 @@ export const accountingApi = (accountant: Accountant) => ({
 		},
 
 		authed: secure(async(proofToken: string) => {
-			const {thumbprint} = await Proof.verify(proofToken)
+			const {thumbprint} = await Proof.verify(proofToken, {allowedAudiences: [window.origin]})
 			return {
 
 				async query(preferences: AccountPreferences) {
