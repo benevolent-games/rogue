@@ -14,8 +14,14 @@ export class Avatar {
 		return ids.map(id => [id, new this(id, kind)] as [string, Avatar])
 	}
 
+
+
+
+
 	static library = new Map2<string, Avatar>([
 		...this.#group("free", [
+			"cLZcTnPDhh8",
+			"M1xwCjPJq5s",
 			"2ymYtRCvkSZ",
 			"8b9xfjAmHYP",
 			"AQAh96wwLXL",
@@ -47,6 +53,6 @@ export class Avatar {
 		]),
 	])
 
-	static default = this.library.require("VZZju7jdLc")
+	static default = this.library.require("cLZcTnPDhh8")
 }
 

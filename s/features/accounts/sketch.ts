@@ -57,6 +57,10 @@ export class AccountantDatabase {
 			avatars: [],
 		}],
 		["47713bfb62e73de626f8071243601d775bda48d1a67d352d59265403538f8e29", {
+			tags: ["premium"],
+			avatars: [],
+		}],
+		["99ce9dc3c26f57ad01be6b6305f84be7607947d73274e80d42f6378298ccf659", {
 			tags: [],
 			avatars: ["JFQMRRrsA9x"],
 		}],
