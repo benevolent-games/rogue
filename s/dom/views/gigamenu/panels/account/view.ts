@@ -12,17 +12,14 @@ export const AccountView = shadowView(use => () => {
 
 	return html`
 		<section>
-			<auth-login></auth-login>
 			${loading.binary(context.sessionOp, session => session && html`
-
 				${AccountCardView([session.account], {attrs: {class: "account-card"}})}
-
 				${AvatarSelectorView([{
 					account: session.account,
 					accountRecord: session.accountRecord,
 				}])}
-
 			`)}
+			<auth-login></auth-login>
 		</section>
 	`
 })

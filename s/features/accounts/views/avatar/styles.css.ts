@@ -8,9 +8,10 @@ export default css`
 	--radius: .1em;
 }
 
-div {
+div[part="box"] {
 	font-size: var(--size);
 
+	z-index: 0;
 	position: relative;
 	overflow: hidden;
 	box-shadow: .1em .2em .3em #0008;
@@ -20,6 +21,22 @@ div {
 	> img {
 		display: block;
 		width: 1em;
+	}
+
+	> [x-lock-icon] {
+		z-index: 1;
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: max-content;
+		height: max-content;
+		color: white;
+		opacity: 0.5;
+		> svg {
+			display: block;
+			width: 0.5em;
+			height: 0.5em;
+		}
 	}
 
 	&[x-kind="premium"] {
@@ -47,8 +64,8 @@ div {
 			display: block;
 			content: "";
 			inset: 0;
-			background: #8888;
-			backdrop-filter: blur(0.3em);
+			background: #8884;
+			backdrop-filter: blur(0.1em);
 		}
 	}
 

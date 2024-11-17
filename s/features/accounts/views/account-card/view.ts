@@ -15,7 +15,7 @@ export const AccountCardView = shadowView(use => (account: Account) => {
 	// const thumbprintName = Bytename.string(thumbprintBytes, "Xxxxxx Xxxxxxxxx ")
 
 	return html`
-		<div x-card x-status="${status}">
+		<div x-card>
 			${AvatarView([avatar])}
 
 			<div x-info>
