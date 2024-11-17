@@ -9,5 +9,5 @@ banner "initialize the assets area";
 mkdir -p assets/s;
 
 banner "download all asset sources";
-rsync --delete -vham --progress assets/benev-storage/righteous-fury/assets/ assets/s;
+rsync --delete -vham --progress assets/benev-storage/rogue/assets/ assets/s;
 

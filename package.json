@@ -1,5 +1,5 @@
 {
-	"name": "@benev/righteous-fury",
+	"name": "@benev/rogue",
 	"private": true,
 	"version": "0.4.0-1",
 	"description": "",
@@ -60,10 +60,10 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/benevolent-games/righteous-fury.git"
+		"url": "git+https://github.com/benevolent-games/rogue.git"
 	},
 	"bugs": {
-		"url": "https://github.com/benevolent-games/righteous-fury/issues"
+		"url": "https://github.com/benevolent-games/rogue/issues"
 	},
-	"homepage": "https://github.com/benevolent-games/righteous-fury#readme"
+	"homepage": "https://github.com/benevolent-games/rogue#readme"
 }

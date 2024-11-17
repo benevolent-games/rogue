@@ -10,7 +10,7 @@ export default template(async basic => {
 		path,
 		dark: true,
 		css: "index.css",
-		title: "Righteous Fury",
+		title: "Rogue Crusade",
 		head: html`
 			<link rel="icon" href="/assets/graphics/favicon.png"/>
 			<link rel="stylesheet" href="${path.version.root("index.css")}"/>
