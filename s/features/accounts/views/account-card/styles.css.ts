@@ -31,24 +31,13 @@ export default css`
 			font-weight: bold;
 		}
 
-		[x-thumbprint] {
-			opacity: 0.7;
-			font-size: 0.7em;
-			font-family: monospace;
-		}
-
-		[x-tags] {
+		[x-features] {
 			list-style: none;
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.5em;
-			font-size: 0.8em;
-
-			> li {
-				border: 2px solid #fff4;
-				border-radius: 1em;
-				padding: 0.1em 0.3em;
-			}
+			color: #8888;
+			cursor: default;
 		}
 	}
 }
