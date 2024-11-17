@@ -46,7 +46,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         S3_ENDPOINT_URL: "https://sfo2.digitaloceanspaces.com"
       run: |
-        s5cmd cp "s3://benev-storage/righteous-fury/assets/*" assets/s/
+        s5cmd cp "s3://benev-storage/rogue/assets/*" assets/s/
 
     - name: 🎠 converting assets
       run: bin/assets-convert
