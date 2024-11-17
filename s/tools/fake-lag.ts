@@ -24,7 +24,10 @@ export type LagProfile = {
 	spikeMultiplier: number
 }
 
-export function fakeLag(profile: LagProfile): LagFn {
+export function fakeLag(profile: LagProfile | null): LagFn {
+	if (profile === null)
+		return noLag
+
 	const pipe: (() => void)[] = []
 
 	const {ping, jitter, loss, smoothTime, spikeTime, spikeMultiplier} = profile

@@ -27,21 +27,22 @@
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
 		"devlinks-sparrow": "rm -rf node_modules/@benev/sparrow && ln -s \"$(realpath ../sparrow)\" node_modules/@benev/sparrow",
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
+		"devlinks-authduo": "rm -rf node_modules/@authduo/authduo && ln -s \"$(realpath ../../authduo/authduo)\" node_modules/@authduo/authduo",
 		"test": "cynic node x/tests.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\"",
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@authduo/authduo": "^0.1.1",
-		"@babylonjs/core": "^7.33.0",
-		"@babylonjs/loaders": "^7.33.0",
+		"@authduo/authduo": "^0.2.0-2",
+		"@babylonjs/core": "^7.34.1",
+		"@babylonjs/loaders": "^7.34.1",
 		"@benev/argv": "^0.3.8",
-		"@benev/slate": "^0.2.16",
+		"@benev/slate": "^0.2.17",
 		"@benev/toolbox": "^0.7.5",
 		"es-module-shims": "^1.10.1",
 		"renraku": "^0.4.2",
 		"sparrow-rtc": "^0.2.2",
-		"zx": "^8.2.1"
+		"zx": "^8.2.2"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",

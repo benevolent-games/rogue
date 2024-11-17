@@ -8,7 +8,9 @@ import {constants} from "../../../constants.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 
 export const MainMenu = shadowView(use => ({nav}: {
-		nav: {host: () => void}
+		nav: {
+			play: () => void
+		}
 	}) => {
 
 	use.styles(themeCss, stylesCss)
@@ -21,7 +23,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 		<section class=plate style="background-image: url('${constants.urls.cover}');">
 			<h1>Righteous Fury</h1>
 			<nav>
-				<button class="naked flashy" @click="${nav.host}">
+				<button class="naked flashy" @click="${nav.play}">
 					Play
 				</button>
 			</nav>

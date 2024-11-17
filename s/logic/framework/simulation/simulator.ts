@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
 
-import {Feedbacks} from "../relay/types.js"
+import {Feedbacks, Snapshot} from "../relay/types.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {FeedCollector, FeedHelper} from "../relay/feed-collector.js"
 import {Data, EntityId, Memo, ReplicatorId, State} from "../types.js"
@@ -25,7 +25,8 @@ export class Simulator<St, S extends Simulas<St> = any> {
 		const feed = new FeedHelper(id, this.collector, state)
 		this.#simulons.set(id, {state, simulant, feed})
 		this.collector.setCreate(id, state)
-		return simulant as ReturnType<ReturnType<S[K]>>
+		// return simulant as ReturnType<ReturnType<S[K]>>
+		return id
 	}
 
 	get(id: number) {
@@ -37,10 +38,18 @@ export class Simulator<St, S extends Simulas<St> = any> {
 	}
 
 	destroy(id: number) {
-		const simulon = this.#simulons.require(id)
-		simulon.simulant.dispose()
-		this.#simulons.delete(id)
-		this.collector.setDestroy(id)
+		const simulon = this.#simulons.get(id)
+		if (simulon) {
+			simulon.simulant.dispose()
+			this.#simulons.delete(id)
+			this.collector.setDestroy(id)
+		}
+	}
+
+	snapshot(): Snapshot {
+		return [...this.#simulons].map(
+			([id, simulon]) => [id, simulon.state]
+		)
 	}
 
 	simulate(feedbacks: Feedbacks) {

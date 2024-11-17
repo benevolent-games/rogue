@@ -15,6 +15,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 	}) => () => {
 
 	const config: PlayerConfig = {
+		owner,
 		speed: 5 / 100,
 		speedSprint: 10 / 100,
 	}
@@ -32,7 +33,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 
 	let input: PlayerInput = {
 		sprint: false,
-		intent: Vec2.zero(),
+		intent: Vec2.zero().array(),
 	}
 
 	return {

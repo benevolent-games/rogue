@@ -2,6 +2,8 @@
 import {LagProfile} from "../../../tools/fake-lag.js"
 
 export const lagProfiles = {
+	none: null,
+
 	nice: {
 		ping: 20,
 		jitter: 5,
@@ -37,5 +39,5 @@ export const lagProfiles = {
 		spikeTime: 1000,
 		smoothTime: 5000,
 	},
-} satisfies Record<string, LagProfile>
+} satisfies Record<string, LagProfile | null>
 

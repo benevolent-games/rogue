@@ -1,6 +1,6 @@
 
 import Sparrow from "sparrow-rtc"
-import {html, Op, opSignal, OpSignal, shadowComponent} from "@benev/slate"
+import {html, Op, opSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
 import stylesCss from "./styles.css.js"
@@ -10,8 +10,10 @@ import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
-import { MultiplayerClient } from "../../../logic/multiplayer/multiplayer-client.js"
-import { handleExhibitErrors } from "../../views/error-screen/view.js"
+import {handleExhibitErrors} from "../../views/error-screen/view.js"
+import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
+import { MultiplayerHost } from "../../../logic/multiplayer/multiplayer-host.js"
+import { lagProfiles } from "../../../logic/framework/utils/lag-profiles.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -25,7 +27,7 @@ export const GameApp = shadowComponent(use => {
 			dispose: () => {},
 			template: () => MainMenu([{
 				nav: {
-					host: () => goExhibit.host(),
+					play: () => goExhibit.host(),
 				},
 			}]),
 		})
@@ -61,36 +63,44 @@ export const GameApp = shadowComponent(use => {
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
+			test: makeNav(async() => {
+				const {playerHostFlow} = await import("../../../flows/player-host.js")
+				const {client, dispose} = await playerHostFlow({lag: lagProfiles.bad})
+				return {
+					dispose,
+					template: () => Gameplay([{
+						realm: client.realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+				}
+			}),
+
 			host: makeNav(async() => {
-				// when hosting, we load babylon and the 3d stuff right away,
-				// multiplayer connectivity happens secondarily.
-				const {hostFlow} = await import("../../../flows/host.js")
-				const {realm, multiplayerOp, dispose} = await hostFlow()
+				const {playerHostFlow} = await import("../../../flows/player-host.js")
+				const {host, client, dispose} = await playerHostFlow({lag: null})
+
+				const multiplayerOp = opSignal<MultiplayerHost>()
+				multiplayerOp.load(async() => host.startMultiplayer())
 
 				return {
 					dispose,
 					template: () => Gameplay([{
-						realm,
+						realm: client.realm,
 						multiplayerOp,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 				}
 			}),
 
-			join: makeNav(async(invite: string) => {
-				// when joining, we establish connectivity primarily,
-				// before the game is ready
+			client: makeNav(async(invite: string) => {
 				const multiplayer = await MultiplayerClient.join(invite)
-				const multiplayerOp = opSignal(Op.ready(multiplayer))
-
-				const {joinFlow} = await import("../../../flows/join.js")
-				const {realm, dispose} = await joinFlow(multiplayer)
-
+				const {clientFlow} = await import("../../../flows/client.js")
+				const {realm, dispose} = await clientFlow(multiplayer)
 				return {
 					dispose,
 					template: () => Gameplay([{
 						realm,
-						multiplayerOp,
+						multiplayerOp: opSignal(Op.ready(multiplayer)),
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 				}
@@ -98,10 +108,10 @@ export const GameApp = shadowComponent(use => {
 		}
 
 		if (invite)
-			goExhibit.join(invite)
+			goExhibit.client(invite)
 
-		// if (location.hash.includes("solo"))
-		// 	goExhibit.host()
+		else if (location.hash.includes("test"))
+			goExhibit.test()
 
 		return orchestrator
 	})

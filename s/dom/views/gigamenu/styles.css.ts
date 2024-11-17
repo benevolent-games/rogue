@@ -11,7 +11,7 @@ export default css`
 .plate {
 	position: absolute;
 	width: 100%;
-	max-width: 32em;
+	max-width: 48em;
 	border-radius: 0.5em;
 	overflow: hidden;
 
@@ -44,6 +44,10 @@ export default css`
 				height: 2em;
 			}
 
+			> [view="avatar"] {
+				--size: 2em;
+			}
+
 			> span {
 				opacity: 0.25;
 				font-size: 0.8em;
@@ -57,9 +61,10 @@ export default css`
 	}
 
 	section {
-		padding: 1em;
+		padding: 2em;
 		background: #3336;
 		max-height: 32em;
+		max-height: 80vh;
 		overflow: auto;
 	}
 

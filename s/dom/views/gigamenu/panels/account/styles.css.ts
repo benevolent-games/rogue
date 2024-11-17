@@ -8,9 +8,15 @@ section {
 	align-items: center;
 	justify-content: center;
 	min-height: 8em;
+
+	gap: 1em;
 }
 
 auth-login {
+	font-size: 1.5em;
+}
+
+.account-card {
 	font-size: 1.5em;
 }
 

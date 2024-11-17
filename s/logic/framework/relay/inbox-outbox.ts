@@ -6,56 +6,88 @@ export type ParcelId = number
 export type ParcelTime = number
 export type Parcel<P> = [ParcelId, ParcelTime, P]
 
-export class Netpipe<P> {
-	#inbox: Inbox<P>
-	#outbox: Outbox<P>
+// export class Netpipe<P> {
+// 	#inbox: Inbox<P>
+// 	#outbox: Outbox<P>
+//
+// 	constructor(delay: number) {
+// 		this.#inbox = new Inbox<P>(delay)
+// 		this.#outbox = new Outbox<P>()
+// 	}
+//
+// 	send = (payload: P, lag = noLag) => {
+// 		const parcel = this.#outbox.wrap(payload)
+// 		lag(() => this.#inbox.give(parcel))
+// 	}
+//
+// 	take() {
+// 		return this.#inbox.take()
+// 	}
+// }
+//
+// export class Instapipe<P> {
+// 	payloads: P[] = []
+//
+// 	constructor(_ignored: number) {}
+//
+// 	send = (payload: P, _ignored?: LagFn) => {
+// 		this.payloads.push(payload)
+// 	}
+//
+// 	take() {
+// 		const payloads = this.payloads
+// 		this.payloads = []
+// 		return payloads
+// 	}
+// }
+//
+export class Bucket<T> {
+	#items: T[] = []
 
-	constructor(delay: number) {
-		this.#inbox = new Inbox<P>(delay)
-		this.#outbox = new Outbox<P>()
+	/** put an item in the bucket */
+	give(item: T) {
+		this.#items.push(item)
 	}
 
-	send = (payload: P, lag = noLag) => {
-		const parcel = this.#outbox.wrap(payload)
-		lag(() => this.#inbox.ingest(parcel))
-	}
-
+	/** extract all items out of the bucket */
 	take() {
-		return this.#inbox.take()
+		const items = this.#items
+		this.#items = []
+		return items
 	}
 }
 
-export class Instapipe<P> {
-	payloads: P[] = []
-
-	constructor(_ignored: number) {}
-
-	send = (payload: P, _ignored?: LagFn) => {
-		this.payloads.push(payload)
-	}
-
-	take() {
-		const payloads = this.payloads
-		this.payloads = []
-		return payloads
-	}
-}
-
+/** outbox parcelizes messages, preparing them for the inbox's buffering */
 export class Outbox<P> {
-	id = 0
-	start: number
+	#id = 0
+	#start: number
+	#bucket: Parcel<P>[] = []
 
 	constructor(private now = () => Date.now()) {
-		this.start = now()
+		this.#start = now()
 	}
 
+	/** parcelize a payload (wrap it into a parcel) */
 	wrap(payload: P): Parcel<P> {
-		const id = this.id++
-		const time = this.now() - this.start
+		const id = this.#id++
+		const time = this.now() - this.#start
 		return [id, time, payload]
+	}
+
+	/** parcelize and wrap a payload into this outbox */
+	give(payload: P) {
+		this.#bucket.push(this.wrap(payload))
+	}
+
+	/** extract all parcels from this outbox */
+	take() {
+		const parcels = this.#bucket
+		this.#bucket = []
+		return parcels
 	}
 }
 
+/** inbox delays messages with a buffer time, and actively corrects for network packet jitter */
 export class Inbox<P> {
 	#start: number
 	#offsets: RunningAverage
@@ -63,7 +95,7 @@ export class Inbox<P> {
 	#nanny = new Nanny()
 
 	constructor(
-			public delay = 100,
+			public delay = 25,
 			public smoothing = 20,
 			private now = () => Date.now(),
 		) {
@@ -71,13 +103,15 @@ export class Inbox<P> {
 		this.#offsets = new RunningAverage(smoothing)
 	}
 
-	ingest(parcel: Parcel<P>) {
+	/** put a parcel into this inbox */
+	give(parcel: Parcel<P>) {
 		const [id, time] = parcel
-		if (this.#buffer.has(id)) return undefined
+		if (this.#buffer.has(id)) return
 		this.#buffer.set(id, parcel)
 		this.#offsets.add(this.#offset(time))
 	}
 
+	/** extract all *available* parcels from this inbox */
 	take(): P[] {
 		const ready: Parcel<P>[] = []
 		const localtime = this.#localtime

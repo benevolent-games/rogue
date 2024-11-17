@@ -23,6 +23,7 @@ export default css`
 }
 
 .overlay {
+	z-index: 1;
 	position: absolute;
 	inset: 0;
 	pointer-events: none;

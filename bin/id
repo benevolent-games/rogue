@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+import "@benev/slate/x/node.js"
+import {Base58} from "@benev/slate"
+
+for (const _ of Array(50))
+	console.log(Base58.random(8))
+
