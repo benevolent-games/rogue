@@ -10,11 +10,5 @@ section {
 	min-height: 8em;
 }
 
-[x-exit] {
-	color: red;
-	padding: 1em;
-	text-transform: uppercase;
-}
-
 `
 

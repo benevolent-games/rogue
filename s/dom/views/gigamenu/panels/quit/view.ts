@@ -9,7 +9,9 @@ export const QuitView = shadowView(use => (exit: () => void) => {
 
 	return html`
 		<section>
-			<button x-exit @click="${exit}">exit game</button>
+			<button class=angry x-exit @click="${exit}">
+				Exit Game
+			</button>
 		</section>
 	`
 })

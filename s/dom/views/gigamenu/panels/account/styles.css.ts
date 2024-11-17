@@ -20,5 +20,9 @@ auth-login {
 	font-size: 1.5em;
 }
 
+button {
+	font-size: 1.5em;
+}
+
 `
 

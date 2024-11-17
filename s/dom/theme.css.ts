@@ -1,6 +1,6 @@
 
 import {css} from "@benev/slate"
-export default css`
+export default css`@layer theme, component; @layer theme {
 
 * {
 	margin: 0;
@@ -34,22 +34,7 @@ a {
 	}
 }
 
-button.naked {
-	color: inherit;
-	background: none;
-	border: none;
-	outline: 0;
-	font-family: inherit;
-}
-
-button.flashy {
-	&:not([disabled]) {
-		&:hover { filter: brightness(120%); }
-		&:active { filter: brightness(90%); }
-	}
-}
-
-button.based {
+button:not(.std, .naked) {
 	cursor: pointer;
 
 	border: none;
@@ -57,29 +42,36 @@ button.based {
 	box-shadow: .1em .2em .2em #0004;
 
 	background: #8888;
-	color: #fffc;
-	font: inherit;
+	color: #fff;
 	text-shadow: .1em .2em .1em #0004;
 
-	font-variant: small-caps;
+	font: inherit;
 	font-weight: bold;
 
 	display: block;
 	max-width: 100%;
-	padding: 0.5em 1em;
+	padding: .5em;
 
-	&.fx {
+	&:not([disabled]) {
 		&:hover { filter: brightness(110%); }
-		&:active { filter: brightness(95%); }
+		&:active { filter: brightness(90%); }
 	}
 
 	&.play {
-		padding: 1em 2em;
-		background: #43ca43ab;
-		background: linear-gradient(#8dff8dab, #138813ab);
-		font-weight: bold;
-		text-transform: uppercase;
+		background: linear-gradient(to bottom, #44ff44, #008800);
 	}
+
+	&.angry {
+		background: #e00;
+	}
+}
+
+button.naked {
+	color: inherit;
+	background: none;
+	border: none;
+	outline: 0;
+	font-family: inherit;
 }
 
 .spin {
@@ -92,5 +84,5 @@ button.based {
 	to { transform: rotate(360deg); }
 }
 
-`
+}`
 

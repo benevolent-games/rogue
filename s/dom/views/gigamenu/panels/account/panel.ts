@@ -9,9 +9,6 @@ import {AvatarView} from "../../../../../features/accounts/views/avatar/view.js"
 
 export const AccountPanel = gigapanel(() => ({
 	label: "Account",
-	// button: () => context.auth.login
-	// 	? userCheckSvg
-	// 	: userQuestionSvg,
 
 	button: () => {
 		const session = context.sessionOp.payload
