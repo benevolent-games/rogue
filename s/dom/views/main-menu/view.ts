@@ -20,13 +20,16 @@ export const MainMenu = shadowView(use => ({nav}: {
 			${Gigamenu([AccountPanel()])}
 		</div>
 
-		<section class=plate style="background-image: url('${constants.urls.cover}');">
-			<h1>Righteous Fury</h1>
-			<nav>
-				<button class="naked flashy" @click="${nav.play}">
-					Play
-				</button>
-			</nav>
+		<section class=plate>
+			<img src="${constants.urls.cover}" alt=""/>
+			<div class=content>
+				<h1>Righteous Fury</h1>
+				<nav>
+					<button class="naked flashy" @click="${nav.play}">
+						Play
+					</button>
+				</nav>
+			</div>
 		</section>
 	`
 })

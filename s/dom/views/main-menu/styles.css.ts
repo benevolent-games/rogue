@@ -15,13 +15,6 @@ export default css`
 	padding: 1em;
 }
 
-.menubar {
-	width: 56em;
-	max-width: 100%;
-	margin-top: 5vh;
-	outline: 1px solid red;
-}
-
 .overlay {
 	z-index: 1;
 	position: absolute;
@@ -39,55 +32,59 @@ export default css`
 }
 
 .plate {
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	margin-top: 10vh;
-
-	width: 42em;
-	max-width: 100%;
-
-	aspect-ratio: 1 / 1;
-	background-size: cover;
-	background-position: center center;
+	margin-top: 4em;
 
 	box-shadow: .2em .3em 1em #0008;
 	border-radius: 0.6em;
 
-	> h1 {
-		height: 25%;
-		outline: 2px solid cyan;
-		visibility: hidden;
+	> img {
+		display: block;
+		width: 100%;
+		max-width: 32em;
 	}
 
-	> nav {
-		flex: 0 0 auto;
-		display: flex;
-		justify-content: center;
-		align-items: stretch;
-		gap: 1em;
-		padding: 1em;
+	> .content {
+		position: absolute;
+		inset: 0;
 
-		background: #0008;
-		backdrop-filter: blur(1rem);
+		> h1 {
+			height: 70%;
+			visibility: hidden;
+		}
 
-		> :is(button, a) {
-			font-size: 2em;
-			cursor: pointer;
-			text-decoration: none;
+		> nav {
+			flex: 0 0 auto;
+			display: flex;
+			justify-content: center;
+			align-items: stretch;
+			gap: 1em;
+			padding: 1em;
 
-			font-weight: bold;
-			font-family: "Uncial Antiqua", serif;
-			text-shadow: 0.03em 0.06em 0.08em #0006;
-			font-variant: small-caps;
+			background: #0008;
+			backdrop-filter: blur(0.3rem);
 
-			padding: 0.1em 0.5em;
-			border-radius: 0.4em;
+			> :is(button, a) {
+				font-size: 2em;
+				cursor: pointer;
+				text-decoration: none;
 
-			background: linear-gradient(
-				to bottom,
-				#44ff44,
-				#008800
-			);
+				font-weight: bold;
+				font-family: "Uncial Antiqua", serif;
+				text-shadow: 0.03em 0.06em 0.08em #0006;
+				font-variant: small-caps;
+
+				padding: 0.1em 0.5em;
+				border-radius: 0.4em;
+
+				background: linear-gradient(
+					to bottom,
+					#44ff44,
+					#008800
+				);
+			}
 		}
 	}
 }
