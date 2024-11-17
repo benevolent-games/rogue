@@ -40,12 +40,12 @@ export default css`
 			}
 
 			> svg {
-				width: 2em;
-				height: 2em;
+				width: 3em;
+				height: 3em;
 			}
 
 			> [view="avatar"] {
-				--size: 2em;
+				--size: 3em;
 			}
 
 			> span {
@@ -64,7 +64,7 @@ export default css`
 		padding: 2em;
 		background: #3336;
 		max-height: 32em;
-		max-height: 80vh;
+		max-height: calc(80vh - 4em);
 		overflow: auto;
 	}
 
