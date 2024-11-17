@@ -42,8 +42,8 @@ export default css`
 
 	> img {
 		display: block;
-		width: 100%;
-		max-width: 32em;
+		max-height: calc(90vh - 4em);
+		max-width: 50em;
 	}
 
 	> .content {
@@ -51,11 +51,15 @@ export default css`
 		inset: 0;
 
 		> h1 {
-			height: 70%;
-			visibility: hidden;
+			display: none;
 		}
 
 		> nav {
+			position: absolute;
+			bottom: 10%;
+			left: 0;
+			right: 0;
+
 			flex: 0 0 auto;
 			display: flex;
 			justify-content: center;
