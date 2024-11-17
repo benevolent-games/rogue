@@ -52,14 +52,24 @@ export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord) {
 
 export class AccountantDatabase {
 	#records = new Map2<string, AccountRecord>([
+
+		// chase
 		["670da5deea9ca8b5d472c6a1744c44b7238650103aeb2fbb8c99ed0605211753", {
 			tags: ["admin"],
 			avatars: [],
 		}],
+
+		// lonnie
+		["43c25328c76e94c563ef5143122c7df89f7702485bf569e9051d52f79e56ab3e", {
+			tags: ["admin"],
+			avatars: [],
+		}],
+
 		["47713bfb62e73de626f8071243601d775bda48d1a67d352d59265403538f8e29", {
 			tags: ["premium"],
 			avatars: [],
 		}],
+
 		["99ce9dc3c26f57ad01be6b6305f84be7607947d73274e80d42f6378298ccf659", {
 			tags: [],
 			avatars: ["JFQMRRrsA9x"],
