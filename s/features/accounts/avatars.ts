@@ -48,8 +48,15 @@ export class Avatar {
 		]),
 
 		...this.#group("rare", [
-			"5wDN74yCMG5",
+			"h4u8YqcTJa1",
 			"AVF85Jbcu4G",
+			"5wDN74yCMG5",
+			"QSxbM1abxdD",
+			"97XHrHvoPFh",
+			"BHyXLzjRUcN",
+			"3W4jyfC4HWv",
+			"bWp3Wx9spam",
+			"UVwF6C786kd",
 		]),
 	])
 
