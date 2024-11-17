@@ -2,11 +2,11 @@
 import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {Avatar} from "../../avatars.js"
-import {Account} from "../../sketch.js"
 import {AvatarView} from "../avatar/view.js"
-import themeCss from "../../../../dom/theme.css.js"
-import {IdView} from "../../../../dom/views/id/view.js"
+import themeCss from "../../../dom/theme.css.js"
+import {IdView} from "../../../dom/views/id/view.js"
+import {Avatar} from "../../../features/accounts/avatars.js"
+import {Account} from "../../../features/accounts/sketch.js"
 
 export const AccountCardView = shadowView(use => (account: Account, isLoading: boolean) => {
 	use.styles(themeCss, stylesCss)

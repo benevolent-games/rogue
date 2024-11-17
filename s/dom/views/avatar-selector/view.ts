@@ -2,11 +2,11 @@
 import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {Avatar} from "../../avatars.js"
 import {AvatarView} from "../avatar/view.js"
-import {context} from "../../../../dom/context.js"
-import themeCss from "../../../../dom/theme.css.js"
-import {Account, AccountRecord, isAvatarAllowed} from "../../sketch.js"
+import {context} from "../../../dom/context.js"
+import themeCss from "../../../dom/theme.css.js"
+import {Avatar} from "../../../features/accounts/avatars.js"
+import {Account, AccountRecord, isAvatarAllowed} from "../../../features/accounts/sketch.js"
 
 export const AvatarSelectorView = shadowView(use => (options: {
 		account: Account

@@ -4,8 +4,8 @@ import {html, loading, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import {context} from "../../../../context.js"
 import themeCss from "../../../../theme.css.js"
-import {AccountCardView} from "../../../../../features/accounts/views/account-card/view.js"
-import {AvatarSelectorView} from "../../../../../features/accounts/views/avatar-selector/view.js"
+import {AccountCardView} from "../../../account-card/view.js"
+import {AvatarSelectorView} from "../../../avatar-selector/view.js"
 
 export const AccountView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)

@@ -2,10 +2,10 @@
 import {AccountView} from "./view.js"
 import {context} from "../../../../context.js"
 import {gigapanel} from "../../utils/gigapanel.js"
+import {AvatarView} from "../../../avatar/view.js"
 import {Avatar} from "../../../../../features/accounts/avatars.js"
 import userCheckSvg from "../../../../icons/tabler/user-check.svg.js"
 import userQuestionSvg from "../../../../icons/tabler/user-question.svg.js"
-import {AvatarView} from "../../../../../features/accounts/views/avatar/view.js"
 
 export const AccountPanel = gigapanel(() => ({
 	label: "Account",
