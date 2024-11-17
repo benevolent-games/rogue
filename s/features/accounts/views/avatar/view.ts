@@ -26,7 +26,7 @@ export const AvatarView = shadowView(use => (avatar: Avatar, options: AvatarOpti
 			?x-selected="${options.selected}"
 			?x-locked="${options.locked}"
 			?x-clickable="${clickable}"
-			@click="${onClick}"
+			@click="${() => onClick(avatar)}"
 			>
 			<img part=img src="${avatar.url}" alt=""/>
 		</div>

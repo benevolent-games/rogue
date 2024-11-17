@@ -15,30 +15,32 @@ export type Session = {
 export class Context {
 	auth = Auth.get()
 	accounting = accountingApi(new Accountant()).v1
-	sessionOp = opSignal<Session | null>()
-
 	accountingPubkey = this.accounting.pubkey()
 
-	constructor() {
-		this.auth.onChange(login => {
-			if (!login) {
-				this.sessionOp.load(async() => null)
-				return undefined
-			}
+	sessionOp = opSignal<Session | null>()
 
-			this.sessionOp.load(async() => {
-				const pubkey = await Pubkey.fromData(await this.accountingPubkey)
-				const proofToken = login.proof.token
-				const preferences: AccountPreferences = {
-					name: login.name,
-					avatarId: Avatar.default.id,
-				}
-				const {accountToken, accountRecord} = await this
-					.accounting.authed.query(proofToken, preferences)
-				const account = (await pubkey.verify<{data: Account}>(accountToken)).data
-				console.log("account loaded!", account)
-				return {login, account, accountToken, accountRecord}
-			})
+	constructor() {
+		this.auth.onChange(login => this.refreshSession({
+			name: login?.name ?? "unknown",
+			avatarId: Avatar.default.id,
+		}))
+	}
+
+	async refreshSession(preferences: AccountPreferences) {
+		const {login} = this.auth
+
+		if (!login) {
+			this.sessionOp.load(async() => null)
+			return undefined
+		}
+
+		this.sessionOp.load(async() => {
+			const pubkey = await Pubkey.fromData(await this.accountingPubkey)
+			const proofToken = login.proof.token
+			const {accountToken, accountRecord} = await this
+				.accounting.authed.query(proofToken, preferences)
+			const account = (await pubkey.verify<{data: Account}>(accountToken)).data
+			return {login, account, accountToken, accountRecord}
 		})
 	}
 }
