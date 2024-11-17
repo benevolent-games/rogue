@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+import "@benev/slate/x/node.js"
+import {Bytename} from "@benev/slate"
+
+for (const _ of Array(50))
+	console.log(Bytename.random())
+
