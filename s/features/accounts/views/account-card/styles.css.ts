@@ -17,7 +17,7 @@ export default css`
 			display: block;
 			width: 5em;
 			border-radius: 0.5em;
-			border: 4px solid #fff8;
+			border: 3px solid #888;
 		}
 	}
 
@@ -46,7 +46,7 @@ export default css`
 			font-size: 0.8em;
 
 			> li {
-				border: 1px solid #fff4;
+				border: 2px solid #fff4;
 				border-radius: 1em;
 				padding: 0.1em 0.3em;
 			}
@@ -55,11 +55,11 @@ export default css`
 }
 
 [x-status="premium"] {
-	[x-avatar] > img { border-color: yellow; }
+	[x-avatar] > img { border-color: #ffcb00; }
 }
 
 [x-status="admin"] {
-	[x-avatar] > img { border-color: rebeccapurple; }
+	[x-avatar] > img { border-color: #5000ff; }
 }
 
 `

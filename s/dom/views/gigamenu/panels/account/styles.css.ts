@@ -16,5 +16,9 @@ auth-login {
 	font-size: 1.5em;
 }
 
+.account-card {
+	font-size: 1.5em;
+}
+
 `
 

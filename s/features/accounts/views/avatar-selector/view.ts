@@ -21,9 +21,16 @@ export const AvatarSelectorView = shadowView(use => (options: {
 			console.log("select avatar", avatar.id)
 	}
 
+	const avatars = [...Avatar.library.values()]
+		.filter(avatar => {
+			if (!account.tags.includes("admin"))
+				return avatar.kind !== "rare"
+			return true
+		})
+
 	return html`
 		<ol>
-			${[...Avatar.library.values()].map(avatar => html`
+			${avatars.map(avatar => html`
 				<li
 					x-id="${avatar.id}"
 					x-kind="${avatar.kind}"
