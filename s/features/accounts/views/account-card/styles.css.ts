@@ -9,9 +9,6 @@ export default css`
 	display: flex;
 	gap: 1em;
 
-	xxx-background: #4448;
-	xxx-border-radius: 0.5em;
-
 	[x-avatar] {
 		> img {
 			display: block;
@@ -30,6 +27,8 @@ export default css`
 		[x-name] {
 			font-size: 1.5em;
 			color: white;
+			font-family: "Metamorphous", serif;
+			font-weight: bold;
 		}
 
 		[x-thumbprint] {

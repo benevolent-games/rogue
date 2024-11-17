@@ -7,7 +7,7 @@ import {Account} from "../../sketch.js"
 import {AvatarView} from "../avatar/view.js"
 import themeCss from "../../../../dom/theme.css.js"
 
-export const AccountCardView = shadowView(use => (account: Account) => {
+export const AccountCardView = shadowView(use => (account: Account, isLoading: boolean) => {
 	use.styles(themeCss, stylesCss)
 
 	const avatar = Avatar.library.get(account.avatarId) ?? Avatar.default
@@ -16,7 +16,7 @@ export const AccountCardView = shadowView(use => (account: Account) => {
 
 	return html`
 		<div x-card>
-			${AvatarView([avatar])}
+			${AvatarView([avatar, {loading: isLoading}])}
 
 			<div x-info>
 				<span x-name>${account.name}</span>

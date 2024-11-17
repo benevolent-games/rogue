@@ -39,11 +39,11 @@ button:not(.std, .naked) {
 
 	border: none;
 	border-radius: .3em;
-	box-shadow: .1em .2em .2em #0004;
+	box-shadow: .1em .2em .3em #0005;
 
 	background: #8888;
 	color: #fff;
-	text-shadow: .1em .2em .1em #0004;
+	text-shadow: .08em .12em .10em #0005;
 
 	font: inherit;
 	font-weight: bold;
@@ -53,8 +53,8 @@ button:not(.std, .naked) {
 	padding: .5em;
 
 	&:not([disabled]) {
-		&:hover { filter: brightness(110%); }
-		&:active { filter: brightness(90%); }
+		&:hover { filter: brightness(120%); }
+		&:active { filter: brightness(80%); }
 	}
 
 	&.play {
@@ -63,6 +63,10 @@ button:not(.std, .naked) {
 
 	&.angry {
 		background: #e00;
+	}
+
+	&.authduo {
+		background: #7c42ac;
 	}
 }
 

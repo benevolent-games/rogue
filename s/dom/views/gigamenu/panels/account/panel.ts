@@ -11,13 +11,12 @@ export const AccountPanel = gigapanel(() => ({
 	label: "Account",
 
 	button: () => {
-		const session = context.sessionOp.payload
+		const session = context.session.value
 
 		if (session) {
 			const avatar = Avatar.library.get(session.account.avatarId)
-			if (avatar) {
-				return AvatarView([avatar])
-			}
+			if (avatar)
+				return AvatarView([avatar, {loading: context.isSessionLoading}])
 		}
 
 		return context.auth.login

@@ -17,15 +17,17 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	const {account, accountRecord} = options
 
-	const onClick = (avatar: Avatar) => {
-		const unlocked = isAvatarAllowed(avatar, accountRecord)
-		if (unlocked) {
-			context.refreshSession({
-				name: context.auth.login?.name ?? "unknown",
-				avatarId: avatar.id,
-			})
+	const onClick = context.isSessionLoading
+		? undefined
+		: (avatar: Avatar) => {
+			const unlocked = isAvatarAllowed(avatar, accountRecord)
+			if (unlocked) {
+				context.refreshSession({
+					name: context.auth.login?.name ?? "unknown",
+					avatarId: avatar.id,
+				})
+			}
 		}
-	}
 
 	const avatars = [...Avatar.library.values()]
 		.filter(avatar => {

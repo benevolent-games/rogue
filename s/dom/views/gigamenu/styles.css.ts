@@ -40,11 +40,13 @@ export default css`
 			}
 
 			> svg {
+				display: block;
 				width: 3em;
 				height: 3em;
 			}
 
 			> [view="avatar"] {
+				display: block;
 				--size: 3em;
 			}
 

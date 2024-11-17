@@ -10,21 +10,34 @@ import {AvatarSelectorView} from "../../../../../features/accounts/views/avatar-
 export const AccountView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
 
+	const session = context.session.value
+	const login = () => { context.auth.popup() }
 	const logout = () => { context.auth.login = null }
 
 	return html`
 		<section>
-			${loading.binary(context.sessionOp, session => session && html`
-				${AccountCardView([session.account], {attrs: {class: "account-card"}})}
+			${session ? html`
+				${AccountCardView(
+					[session.account, context.isSessionLoading],
+					{attrs: {class: "account-card"}},
+				)}
 				${AvatarSelectorView([{
 					account: session.account,
 					accountRecord: session.accountRecord,
 				}])}
-				<button x-logout @click="${logout}">
+				<button @click="${logout}">
 					Logout
 				</button>
+			` : loading.binary(context.sessionOp, () => html`
+				<button class=authduo @click="${login}">
+					Login
+				</button>
 			`)}
-			<auth-login></auth-login>
+			${context.sessionOp.isError() ? html`
+				<button @click="${logout}">
+					Logout
+				</button>
+			` : null}
 		</section>
 	`
 })

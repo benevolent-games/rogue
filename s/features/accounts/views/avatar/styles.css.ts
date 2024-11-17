@@ -10,23 +10,28 @@ export default css`
 
 div[part="box"] {
 	font-size: var(--size);
+	width: 1em;
+	height: 1em;
 
 	z-index: 0;
 	position: relative;
 	overflow: hidden;
 	box-shadow: .1em .2em .3em #0008;
-	border: .03em solid #888;
+	border: .05em solid #888;
 	border-radius: var(--radius);
 
 	> img {
 		display: block;
-		width: 1em;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 		user-drag: none;
 		user-select: none;
 		pointer-events: none;
 	}
 
-	> [x-lock-icon] {
+	> [x-icon] {
 		z-index: 1;
 		position: absolute;
 		inset: 0;
@@ -35,10 +40,15 @@ div[part="box"] {
 		height: max-content;
 		color: white;
 		opacity: 0.5;
+
 		> svg {
 			display: block;
 			width: 0.5em;
 			height: 0.5em;
+		}
+
+		&[x-icon="loading"] {
+			opacity: 1;
 		}
 	}
 
@@ -61,7 +71,7 @@ div[part="box"] {
 		}
 	}
 
-	&[x-locked] {
+	&:is([x-locked], [x-loading]) {
 		&::after {
 			position: absolute;
 			display: block;
