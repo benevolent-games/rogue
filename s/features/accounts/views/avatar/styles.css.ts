@@ -21,6 +21,9 @@ div[part="box"] {
 	> img {
 		display: block;
 		width: 1em;
+		user-drag: none;
+		user-select: none;
+		pointer-events: none;
 	}
 
 	> [x-lock-icon] {
