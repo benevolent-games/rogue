@@ -1,7 +1,9 @@
 
-import {LobbyDisplay, Lobbyist} from "./types.js"
 import {signal, repeat, signals} from "@benev/slate"
-import Sparrow, {AgentInfo, SparrowHost, StdCable, WelcomeFn} from "sparrow-rtc"
+import Sparrow, {AgentInfo, StdCable, WelcomeFn} from "sparrow-rtc"
+
+import {Identity} from "../types.js"
+import {LobbyDisplay, Lobbyist} from "./types.js"
 
 export class Lobby {
 	static emptyDisplay(): LobbyDisplay {
@@ -22,6 +24,8 @@ export class Lobby {
 				kind: lobbyist.kind,
 				id: lobbyist.id,
 				reputation: lobbyist.reputation,
+				replicatorId: lobbyist.replicatorId,
+				identity: lobbyist.identity,
 				connectionInfo: lobbyist.kind === "client" && lobbyist.stats
 					? {kind: lobbyist.stats?.kind ?? "unknown"}
 					: null
@@ -36,6 +40,8 @@ export class Lobby {
 			kind: "client",
 			id: prospect.id,
 			reputation: prospect.reputation,
+			replicatorId: null,
+			identity: null,
 			connection: null,
 			stats: null,
 		}
@@ -81,26 +87,35 @@ export class Lobby {
 		}
 	}
 
-	init(sparrow: SparrowHost) {
-		this.#addSelf(sparrow.self)
-		this.invite.value = sparrow.invite
+	showConnected(invite: string) {
+		this.invite.value = invite
 		this.signallerConnected.value = true
 	}
 
-	clear() {
+	showDisconnected() {
 		this.invite.value = null
 		this.signallerConnected.value = false
 	}
 
-	#addSelf(self: AgentInfo) {
+	addSelf(self: AgentInfo, replicatorId: number) {
 		const host: Lobbyist = {
 			kind: "host",
 			id: self.id,
 			reputation: self.reputation,
+			replicatorId,
+			identity: null,
 		}
 		this.lobbyists.value.set(self.id, host)
 		this.lobbyists.publish()
 		return host
+	}
+
+	updateIdentity(id: string, identity: Identity | null) {
+		const lobbyist = this.lobbyists.value.get(id)
+		if (lobbyist) {
+			lobbyist.identity = identity
+			this.lobbyists.publish()
+		}
 	}
 
 	disconnectEverybody() {

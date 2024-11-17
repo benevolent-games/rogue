@@ -7,6 +7,7 @@ import {MetaClient} from "../../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../../multiplayer/meta/host.js"
 import {renrakuChannel} from "../../multiplayer/utils/renraku-channel.js"
 import {MultiplayerFibers} from "../../multiplayer/utils/multiplayer-fibers.js"
+import { Identity } from "../../multiplayer/types.js"
 
 export class Contact {
 	constructor(
@@ -20,13 +21,17 @@ export class Clientele {
 	#replicatorIds = new IdCounter()
 	#contacts = new Set<Contact>()
 
-	add(fibers: MultiplayerFibers, lag: LagProfile | null = null) {
+	add({fibers, lag, updateIdentity}: {
+			fibers: MultiplayerFibers
+			lag: LagProfile | null
+			updateIdentity: (identity: Identity) => void
+		}) {
 		const replicatorId = this.#replicatorIds.next()
 		const liaison = new Liaison(fibers.game, lag)
 		const metaClient = renrakuChannel<MetaHost, MetaClient>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
-			localFns: metaHostApi({replicatorId}),
+			localFns: metaHostApi({replicatorId, updateIdentity}),
 		})
 		const contact = new Contact(replicatorId, liaison, metaClient)
 		this.#contacts.add(contact)

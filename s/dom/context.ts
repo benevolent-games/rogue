@@ -1,9 +1,11 @@
 
-import {nap, Op, opSignal, signal} from "@benev/slate"
+import {Randy} from "@benev/toolbox"
+import {computed, Hex, nap, opSignal, signal} from "@benev/slate"
 import {Auth, Login, Pubkey} from "@authduo/authduo"
 
 import {Avatar} from "../features/accounts/avatars.js"
 import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
+import { Identity } from "../logic/multiplayer/types.js"
 
 export type Session = {
 	login: Login
@@ -12,13 +14,36 @@ export type Session = {
 	accountRecord: AccountRecord
 }
 
+export type Guest = {
+	id: string
+	avatar: Avatar
+}
+
 export class Context {
+	randy = Randy.seed(Math.random())
+	
 	auth = Auth.get()
 	accounting = accountingApi(new Accountant()).v1
 	accountingPubkey = this.accounting.pubkey()
 
+	guest: Guest = {
+		id: Hex.random(32),
+		avatar: this.randy.choose(
+			[...Avatar.library.values()]
+				.filter(avatar => avatar.kind === "free")
+		)
+	}
+
 	session = signal<Session | null>(null)
 	sessionOp = opSignal<Session | null>()
+
+	multiplayerIdentity = computed((): Identity => {
+		const session = this.session.value
+		const guest = this.guest
+		return session
+			? {kind: "account", accountToken: session.accountToken}
+			: {kind: "guest", id: guest.id, avatarId: guest.avatar.id}
+	})
 
 	get isSessionLoading() { return !this.sessionOp.isReady() }
 

@@ -4,6 +4,7 @@ import {html, Op, opSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
 import stylesCss from "./styles.css.js"
+import {context} from "../../context.js"
 import themeCss from "../../theme.css.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
@@ -12,8 +13,8 @@ import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
-import { MultiplayerHost } from "../../../logic/multiplayer/multiplayer-host.js"
-import { lagProfiles } from "../../../logic/framework/utils/lag-profiles.js"
+import {MultiplayerHost} from "../../../logic/multiplayer/multiplayer-host.js"
+import {lagProfiles} from "../../../logic/framework/utils/lag-profiles.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -60,12 +61,14 @@ export const GameApp = shadowComponent(use => {
 			return orchestrator.makeNavFn(loadingScreen, exhibitor)
 		}
 
+		const identity = context.multiplayerIdentity
+
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
 			test: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const {client, dispose} = await playerHostFlow({lag: lagProfiles.bad})
+				const {client, dispose} = await playerHostFlow({lag: lagProfiles.bad, identity})
 				return {
 					dispose,
 					template: () => Gameplay([{
@@ -77,10 +80,18 @@ export const GameApp = shadowComponent(use => {
 
 			host: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const {host, client, dispose} = await playerHostFlow({lag: null})
+				const {host, client, onSelfIdentity, dispose} = await playerHostFlow({lag: null, identity})
 
 				const multiplayerOp = opSignal<MultiplayerHost>()
+
 				multiplayerOp.load(async() => host.startMultiplayer())
+					.then(multiplayer => {
+						multiplayer.lobby.updateIdentity(multiplayer.self.id, identity.value)
+						onSelfIdentity(identity => multiplayer.lobby.updateIdentity(
+							multiplayer.self.id,
+							identity,
+						))
+					})
 
 				return {
 					dispose,
@@ -93,7 +104,7 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			client: makeNav(async(invite: string) => {
-				const multiplayer = await MultiplayerClient.join(invite)
+				const multiplayer = await MultiplayerClient.join(invite, identity)
 				const {clientFlow} = await import("../../../flows/client.js")
 				const {realm, dispose} = await clientFlow(multiplayer)
 				return {

@@ -12,21 +12,23 @@ import {MetaHost} from "./meta/host.js"
 import {Parcel} from "../framework/relay/inbox-outbox.js"
 import {Fiber} from "../../tools/fiber.js"
 import {GameMessage} from "../framework/relay/messages.js"
+import {Identity} from "./types.js"
 
 export class MultiplayerClient extends Multiplayer {
 
-	static async make(fibers: MultiplayerFibers) {
+	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>) {
 		const lobbyDisplay = signal<LobbyDisplay>(Lobby.emptyDisplay())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
 			localFns: metaClientApi({lobbyDisplay}),
 		})
-		const {replicatorId} = await metaHost.hello({identity: "Frank"})
-		return new this(replicatorId, fibers.game, lobbyDisplay, () => {})
+		const {replicatorId} = await metaHost.hello(identity.value)
+		identity.on(identity => { metaHost.hello(identity) })
+		return new this(replicatorId, fibers.game, identity, lobbyDisplay, () => {})
 	}
 
-	static async join(invite: string) {
+	static async join(invite: string, identity: Signal<Identity>) {
 		const onDisconnected = pubsub()
 		const sparrow = await Sparrow.join<StdCable>({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
@@ -42,7 +44,7 @@ export class MultiplayerClient extends Multiplayer {
 			const megafiber = Fiber.multiplex(fibers)
 			megafiber.proxyCable(sparrow.connection.cable)
 
-			const multiplayerClient = await this.make(fibers)
+			const multiplayerClient = await this.make(fibers, identity)
 			onDisconnected(() => {
 				multiplayerClient.lobbyDisplay.value = Lobby.emptyDisplay()
 			})
@@ -58,6 +60,7 @@ export class MultiplayerClient extends Multiplayer {
 	constructor(
 			public replicatorId: number,
 			public gameFiber: Fiber<Parcel<GameMessage>>,
+			public identity: Signal<Identity>,
 			public lobbyDisplay: Signal<LobbyDisplay>,
 			public dispose: () => void,
 		) {
