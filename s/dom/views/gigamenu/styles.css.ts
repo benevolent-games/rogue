@@ -44,6 +44,10 @@ export default css`
 				height: 2em;
 			}
 
+			> [view="avatar"] {
+				--size: 2em;
+			}
+
 			> span {
 				opacity: 0.25;
 				font-size: 0.8em;
