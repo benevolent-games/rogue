@@ -56,6 +56,9 @@ export default css`
 
 			&:is(:hover, [x-active]) {
 				color: #fff;
+				[view="avatar"]::part(img) {
+					filter: brightness(130%);
+				}
 			}
 		}
 	}
@@ -72,7 +75,7 @@ export default css`
 
 	transition: 150ms linear all;
 	section { opacity: 1; transition: 150ms linear opacity; }
-	nav > [x-tab] { opacity: 1; transition: 150ms linear all; }
+	nav > [x-tab] { opacity: 1; transition: 150ms linear opacity; }
 
 	nav > [x-menu-button] {
 		pointer-events: all;
