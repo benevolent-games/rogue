@@ -1,6 +1,6 @@
 
-import Sparrow, { AgentInfo } from "sparrow-rtc"
-import {Bytename, Hex, html, Op, shadowView} from "@benev/slate"
+import Sparrow, {AgentInfo} from "sparrow-rtc"
+import {Bytename, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
@@ -11,12 +11,7 @@ import {Lobbyist, LocalLobbyist, RemoteLobbyist} from "../../../../../logic/mult
 export const LobbyView = shadowView(use => (multiplayer: MultiplayerHost | MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
 
-	const lobby = multiplayer instanceof MultiplayerHost
-		? multiplayer.lobby.value
-		: null
-
-	if (!lobby)
-		return null
+	const lobby = multiplayer.lobby.value
 
 	const inviteUrl = lobby.online?.invite
 		&& Sparrow.invites.url(lobby.online.invite)

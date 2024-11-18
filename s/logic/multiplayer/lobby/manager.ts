@@ -90,5 +90,11 @@ export class LobbyManager {
 		this.#online = null
 		this.pulse()
 	}
+
+	dispose() {
+		this.goOffline()
+		this.#lobbyists.clear()
+		this.pulse()
+	}
 }
 

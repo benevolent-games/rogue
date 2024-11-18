@@ -35,7 +35,12 @@ export async function playerHostFlow(o: {lag: LagProfile | null, identity: Signa
 		registration,
 	})
 
-	const multiplayerClient = await MultiplayerClient.make(clientFibers, context.multiplayerIdentity)
+	const multiplayerClient = await MultiplayerClient.make(
+		clientFibers,
+		context.multiplayerIdentity,
+		() => {},
+	)
+
 	const client = await clientFlow(multiplayerClient)
 
 	const disposePlayer = host.acceptNewPlayer(contact)

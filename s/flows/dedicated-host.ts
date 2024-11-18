@@ -27,11 +27,6 @@ export async function dedicatedHostFlow() {
 		clientele.broadcastFeed(feed)
 	})
 
-	const dispose = () => {
-		stopSnapshots()
-		stopTicks()
-	}
-
 	function acceptNewPlayer(contact: Contact) {
 		const playerId = simulator.create("player", {
 			owner: contact.replicatorId,
@@ -49,6 +44,13 @@ export async function dedicatedHostFlow() {
 			lobbyManager,
 			hello: acceptNewPlayer,
 		})
+	}
+
+	const dispose = () => {
+		stopSnapshots()
+		stopTicks()
+		lobbyManager.dispose()
+		clientele.dispose()
 	}
 
 	return {station, lobbyManager, simulator, clientele, acceptNewPlayer, startMultiplayer, dispose}

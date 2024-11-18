@@ -14,17 +14,26 @@ import {GameMessage} from "../framework/relay/messages.js"
 import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.js"
 
 export class MultiplayerClient extends Multiplayer {
+	constructor(
+			public replicatorId: number,
+			public gameFiber: Fiber<Parcel<GameMessage>>,
+			public identity: Signal<Identity>,
+			public lobby: Signal<Lobby>,
+			public dispose: () => void,
+		) {
+		super(lobby)
+	}
 
-	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>) {
+	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>, dispose: () => void) {
 		const lobby = signal<Lobby>(LobbyManager.empty())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
-			localFns: metaClientApi({lobby, identity}),
+			localFns: metaClientApi({lobby}),
 		})
 		const {replicatorId} = await metaHost.hello(identity.value)
 		identity.on(identity => { metaHost.hello(identity) })
-		return new this(replicatorId, fibers.game, identity, lobby, () => {})
+		return new this(replicatorId, fibers.game, identity, lobby, dispose)
 	}
 
 	static async join(invite: string, identity: Signal<Identity>) {
@@ -43,8 +52,10 @@ export class MultiplayerClient extends Multiplayer {
 			const megafiber = Fiber.multiplex(fibers)
 			megafiber.proxyCable(sparrow.connection.cable)
 
-			const multiplayerClient = await this.make(fibers, identity)
+			const multiplayerClient = await this.make(fibers, identity, () => sparrow.connection.disconnect())
+
 			onDisconnected(() => {
+				console.log("ON DISCONNECTED")
 				multiplayerClient.lobby.value = LobbyManager.empty()
 			})
 
@@ -54,16 +65,6 @@ export class MultiplayerClient extends Multiplayer {
 			sparrow.connection.disconnect()
 			throw error
 		}
-	}
-
-	constructor(
-			public replicatorId: number,
-			public gameFiber: Fiber<Parcel<GameMessage>>,
-			public identity: Signal<Identity>,
-			public lobby: Signal<Lobby>,
-			public dispose: () => void,
-		) {
-		super(lobby)
 	}
 }
 

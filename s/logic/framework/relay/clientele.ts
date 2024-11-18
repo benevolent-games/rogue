@@ -60,5 +60,11 @@ export class Clientele {
 		for (const contact of this.#contacts)
 			contact.liaison.sendSnapshot(snapshot)
 	}
+
+	dispose() {
+		for (const contact of this.#contacts)
+			contact.liaison.dispose()
+		this.#contacts.clear()
+	}
 }
 

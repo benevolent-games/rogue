@@ -30,6 +30,7 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	function dispose() {
 		stopTicking()
 		world.dispose()
+		multiplayer.dispose()
 	}
 
 	return {world, realm, replicator, liaison, dispose}
