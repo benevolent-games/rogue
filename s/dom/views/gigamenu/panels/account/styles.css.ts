@@ -16,8 +16,13 @@ auth-login {
 	font-size: 1.5em;
 }
 
-.account-card {
-	font-size: 1.5em;
+[view="account-card"] {
+	font-size: 1em;
+	--avatar-size: 8em;
+}
+
+[view="avatar-selector"] {
+	font-size: 0.7em;
 }
 
 button {

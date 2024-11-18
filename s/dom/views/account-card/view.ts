@@ -9,6 +9,7 @@ import {Avatar} from "../../../features/accounts/avatars.js"
 import {Account} from "../../../features/accounts/sketch.js"
 
 export const AccountCardView = shadowView(use => (account: Account, isLoading: boolean) => {
+	use.name("account-card")
 	use.styles(themeCss, stylesCss)
 
 	const avatar = Avatar.library.get(account.avatarId) ?? Avatar.default

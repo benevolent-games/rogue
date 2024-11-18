@@ -13,6 +13,7 @@ export const AvatarSelectorView = shadowView(use => (options: {
 		accountRecord: AccountRecord
 	}) => {
 
+	use.name("avatar-selector")
 	use.styles(themeCss, stylesCss)
 
 	const {account, accountRecord} = options

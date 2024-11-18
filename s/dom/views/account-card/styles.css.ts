@@ -2,20 +2,18 @@
 import {css} from "@benev/slate"
 export default css`
 
-:host { display: contents; }
+:host {
+	display: contents;
+	--avatar-size: 5em;
+}
 
 [x-card] {
 	width: 100%;
 	display: flex;
 	gap: 1em;
 
-	[x-avatar] {
-		> img {
-			display: block;
-			width: 5em;
-			border-radius: 0.5em;
-			border: 3px solid #888;
-		}
+	[view="avatar"] {
+		--size: var(--avatar-size);
 	}
 
 	[x-info] {
