@@ -16,31 +16,33 @@ export class Avatar {
 
 	static library = new Map2<string, Avatar>([
 		...this.#group("anon", [
+			"cLZcTnPDhh8",
 			"64tcJ1tTCF7",
 			"499UCh29USv",
 			"Kz7fjUWdShz",
 			"Y6xnbNkvJCg",
 			"f2TMdv7Jabe",
 			"h6DEGDRTteC",
+			"M1xwCjPJq5s",
+			"AQAh96wwLXL",
 		]),
 
 		...this.#group("free", [
-			"cLZcTnPDhh8",
-			"M1xwCjPJq5s",
+			"ZUDSVX5Rit3",
 			"2ymYtRCvkSZ",
-			"8b9xfjAmHYP",
-			"AQAh96wwLXL",
 			"eK9LNNUMzrg",
-			"Ke2VEHn4im9",
 			"PpoLtH7Akes",
 			"UobCyy5A3iP",
 			"VZZju7jdLc",
 			"W3JcKGE8E38",
+			"8b9xfjAmHYP",
+			"Ke2VEHn4im9",
 		]),
 
 		...this.#group("premium", [
+			"Qt616tVcwPr",
+			"RJ8CcDAyfx5",
 			"A6uDbWB24LA",
-			"ATaJ3eHJrjG",
 			"bHmj72CVBc2",
 			"hB98W6T4Gmk",
 			"JFQMRRrsA9x",
@@ -48,8 +50,7 @@ export class Avatar {
 			"jP3fehL9dok",
 			"NVrhJ8ddBqS",
 			"Qhtwnt9cTq2",
-			"Qt616tVcwPr",
-			"RJ8CcDAyfx5",
+			"ATaJ3eHJrjG",
 		]),
 
 		...this.#group("rare", [
@@ -66,5 +67,9 @@ export class Avatar {
 	])
 
 	static default = this.library.require("cLZcTnPDhh8")
+
+	static selectKind(kind: AvatarKind) {
+		return [...this.library.values()].filter(a => a.kind === kind)
+	}
 }
 

@@ -30,8 +30,11 @@ const tempKeypair = await Keypair.fromData({
 
 const tempPubkeyJson = await tempKeypair.toPubkey().toData()
 
-export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord) {
-	if (avatar.kind === "free")
+export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord | undefined) {
+	if (!accountRecord)
+		return (avatar.kind === "anon")
+
+	if (avatar.kind === "anon" || avatar.kind === "free")
 		return true
 
 	const hasAdmin = accountRecord.tags.includes("admin")
