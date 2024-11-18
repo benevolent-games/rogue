@@ -97,7 +97,11 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			client: makeNav(async(invite: string) => {
-				const multiplayerClient = await MultiplayerClient.join(invite, identity)
+				const multiplayerClient = await MultiplayerClient.join(
+					invite,
+					identity,
+					() => { goExhibit.mainMenu() },
+				)
 				const {clientFlow} = await import("../../../flows/client.js")
 				const {realm, dispose} = await clientFlow(multiplayerClient)
 				return {

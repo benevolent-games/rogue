@@ -1,6 +1,6 @@
 
 import {repeat} from "@benev/slate"
-import {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
+import Sparrow, {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
 import {Liaison} from "./liaison.js"
 import {Fiber} from "../../../tools/fiber.js"
@@ -36,6 +36,7 @@ export type Lobby = {
 }
 
 export type LobbySeat = {
+	kind: "local" | "remote"
 	agent: AgentInfo | undefined
 	identity: Identity | undefined
 	replicatorId: number | undefined
@@ -70,12 +71,13 @@ export class Cathedral {
 			invite: this.invite,
 			online: this.online,
 			seats: [...this.seats].map(seat => {
-				const {agent, bundle} = seat
+				const {kind, agent, bundle} = seat
 				return {
+					kind,
 					agent,
-					connectionStats: undefined,
 					identity: bundle?.identity,
 					replicatorId: bundle?.replicatorId,
+					connectionStats: bundle?.connectionStats,
 				}
 			}),
 		}
@@ -104,9 +106,11 @@ export class Cathedral {
 
 	deleteSeat(seat: Seat) {
 		const {bundle} = seat
-		this.seats.delete(seat)
-		if (bundle)
-			bundle.dispose()
+		if (this.seats.has(seat)) {
+			this.seats.delete(seat)
+			if (bundle)
+				bundle.dispose()
+		}
 	}
 
 	getBundles() {
@@ -131,7 +135,7 @@ export class Cathedral {
 	}
 
 	dispose() {
-		for (const seat of this.seats)
+		for (const seat of [...this.seats])
 			this.deleteSeat(seat)
 	}
 
@@ -152,6 +156,13 @@ export class Cathedral {
 			ping: undefined,
 		}
 
+		const stopStats = repeat(1_000, async() => {
+			if (connection?.peer) {
+				const report = await Sparrow.reportConnectivity(connection.peer)
+				connectionStats.kind = report.kind
+			}
+		})
+
 		const stopPings = repeat(1_000, async() => {
 			const alpha = Date.now()
 			await metaClient.ping()
@@ -170,16 +181,19 @@ export class Cathedral {
 			connectionStats,
 			identity: undefined,
 			dispose: () => {
-				dispose()
+				bundleOff()
+				stopStats()
 				stopPings()
 				stopLobbyUpdates()
 				liaison.dispose()
-				if (connection)
+				if (connection) {
 					connection.disconnect()
+					bundle.connection = undefined
+				}
 			},
 		}
 
-		const dispose = this.options.onBundle(bundle)
+		const bundleOff = this.options.onBundle(bundle)
 		return bundle
 	}
 }

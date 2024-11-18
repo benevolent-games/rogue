@@ -11,11 +11,7 @@ export class MultiplayerHost extends Multiplayer {
 		public dispose: () => void,
 	) { super() }
 
-	static async host({cathedral, hello}: {
-			cathedral: Cathedral
-			hello: (bundle: Bundle) => () => void
-		}) {
-
+	static async host(cathedral: Cathedral) {
 		const sparrow = await Sparrow.host<StdCable>({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 
@@ -29,12 +25,10 @@ export class MultiplayerHost extends Multiplayer {
 				prospect.onFailed(() => cathedral.deleteSeat(seat))
 
 				return connection => {
-					const bundle = cathedral.attachRemoteBundle(seat, connection)
-					const goodbye = hello(bundle)
+					cathedral.attachRemoteBundle(seat, connection)
 
 					return () => {
 						cathedral.deleteSeat(seat)
-						goodbye()
 					}
 				}
 			},

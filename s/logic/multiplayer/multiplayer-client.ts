@@ -20,11 +20,17 @@ export class MultiplayerClient extends Multiplayer {
 			public identity: Signal<Identity>,
 			public lobby: Signal<Lobby>,
 			public dispose: () => void,
+			public disconnected: () => void,
 		) {
 		super()
 	}
 
-	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>, dispose: () => void) {
+	static async make({fibers, identity, dispose, disconnected}: {
+			fibers: MultiplayerFibers,
+			identity: Signal<Identity>,
+			dispose: () => void,
+			disconnected: () => void,
+		}) {
 		const lobby = signal<Lobby>(Cathedral.emptyLobby())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
@@ -33,11 +39,13 @@ export class MultiplayerClient extends Multiplayer {
 		})
 		const {replicatorId} = await metaHost.hello(identity.value)
 		identity.on(identity => { metaHost.hello(identity) })
-		return new this(replicatorId, fibers.game, identity, lobby, dispose)
+		return new this(replicatorId, fibers.game, identity, lobby, dispose, disconnected)
 	}
 
-	static async join(invite: string, identity: Signal<Identity>) {
+	static async join(invite: string, identity: Signal<Identity>, disconnected: () => void) {
 		const onDisconnected = pubsub()
+		onDisconnected(disconnected)
+
 		const sparrow = await Sparrow.join<StdCable>({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			invite,
@@ -52,10 +60,14 @@ export class MultiplayerClient extends Multiplayer {
 			const megafiber = Fiber.multiplex(fibers)
 			megafiber.proxyCable(sparrow.connection.cable)
 
-			const multiplayerClient = await this.make(fibers, identity, () => sparrow.connection.disconnect())
+			const multiplayerClient = await this.make({
+				fibers,
+				identity,
+				disconnected: () => {},
+				dispose: () => sparrow.connection.disconnect(),
+			})
 
 			onDisconnected(() => {
-				console.log("ON DISCONNECTED")
 				multiplayerClient.lobby.value = Cathedral.emptyLobby()
 			})
 

@@ -23,11 +23,12 @@ export async function playerHostFlow(o: {
 
 	host.cathedral.makeLocalSeat(hostFibers)
 
-	const multiplayerClient = await MultiplayerClient.make(
-		clientFibers,
-		o.identity,
-		() => {},
-	)
+	const multiplayerClient = await MultiplayerClient.make({
+		fibers: clientFibers,
+		identity: o.identity,
+		dispose: () => {},
+		disconnected: () => {},
+	})
 
 	const client = await clientFlow(multiplayerClient)
 

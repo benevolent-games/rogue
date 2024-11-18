@@ -37,11 +37,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	})
 
 	async function startMultiplayer() {
-		return MultiplayerHost.host({
-			cathedral,
-			hello: () => () => {},
-			// hello: bundle => acceptNewPlayer(bundle.replicatorId),
-		})
+		return MultiplayerHost.host(cathedral)
 	}
 
 	const dispose = () => {
