@@ -35,15 +35,20 @@ export default css`
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	margin-top: 4em;
+	margin-top: 5em;
 
 	box-shadow: .2em .3em 1em #0008;
 	border-radius: 0.6em;
 
+	transform: scale(90%);
+	opacity: 0;
+	transition: 3s ease all;
+	&[x-ready] { opacity: 1; transform: scale(100%); }
+
 	> img {
 		display: block;
 		max-height: calc(90vh - 4em);
-		max-width: 50em;
+		max-width: min(50em, 90vw);
 	}
 
 	> .content {

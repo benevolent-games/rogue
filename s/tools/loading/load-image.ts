@@ -10,3 +10,15 @@ export async function loadImage(src: string, alt = "") {
 	})
 }
 
+export function loadImage2(src: string, alt = "") {
+	const element = document.createElement("img")
+	element.src = src
+	element.alt = alt
+	element.loading = "eager"
+	const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+		element.onload = () => resolve(element)
+		element.onerror = reject
+	})
+	return {element, promise}
+}
+
