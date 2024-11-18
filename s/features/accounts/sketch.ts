@@ -1,7 +1,7 @@
 
 import {secure} from "renraku"
-import {Map2} from "@benev/slate"
-import {Future, Keypair, Proof, Token} from "@authduo/authduo/x/server.js"
+import {Map2, nap} from "@benev/slate"
+import {Future, Keypair, Proof, Token, Payload} from "@authduo/authduo/x/server.js"
 
 import {Avatar} from "./avatars.js"
 
@@ -84,6 +84,8 @@ export class AccountantDatabase {
 	}
 }
 
+export type AccountPayload = {data: Account} & Payload
+
 export class Accountant {
 	#keypair = tempKeypair
 	pubkeyJson = tempPubkeyJson
@@ -93,13 +95,17 @@ export class Accountant {
 		return this.#keypair.sign({
 			...Token.params({expiresAt: Future.hours(24)}),
 			data: account,
-		})
+		} satisfies AccountPayload)
 	}
 }
 
 export const accountingApi = (accountant: Accountant) => ({
 	v1: {
 		async pubkey() {
+
+			// TODO remove fake lag
+			await nap(200)
+
 			return accountant.pubkeyJson
 		},
 
@@ -108,6 +114,10 @@ export const accountingApi = (accountant: Accountant) => ({
 			return {
 
 				async query(preferences: AccountPreferences) {
+
+					// TODO remove fake lag
+					await nap(200)
+
 					const accountRecord = await accountant.database.getRecord(thumbprint)
 					const avatarRequested = Avatar.library.get(preferences.avatarId) ?? Avatar.default
 					const avatarActual = isAvatarAllowed(avatarRequested, accountRecord)

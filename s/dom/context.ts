@@ -78,6 +78,7 @@ export class Context {
 	auth = Auth.get()
 	accounting = accountingApi(new Accountant()).v1
 	accountingPubkey = this.accounting.pubkey()
+		.then(pubkey => Pubkey.fromData(pubkey))
 
 	anonIdentity = anonIdentityStore.guarantee(() => ({
 		kind: "anon",
@@ -135,11 +136,7 @@ export class Context {
 		}
 
 		this.sessionOp.load(async() => {
-
-			// TODO remove fake lag
-			await nap(200)
-
-			const pubkey = await Pubkey.fromData(await this.accountingPubkey)
+			const pubkey = await this.accountingPubkey
 			const proofToken = login.proof.token
 			const {accountToken, accountRecord} = await this
 				.accounting.authed.query(proofToken, preferences)
