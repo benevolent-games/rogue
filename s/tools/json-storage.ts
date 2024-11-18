@@ -30,5 +30,14 @@ export class JsonStorage<D> {
 			return null
 		}
 	}
+
+	guarantee(make: () => D) {
+		let data = this.get()
+		if (data === null) {
+			data = make()
+			this.set(data)
+		}
+		return data
+	}
 }
 

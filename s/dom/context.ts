@@ -1,11 +1,12 @@
 
 import {Randy} from "@benev/toolbox"
-import {computed, Hex, nap, opSignal, signal} from "@benev/slate"
 import {Auth, Login, Pubkey} from "@authduo/authduo"
+import {computed, Hex, nap, opSignal, signal} from "@benev/slate"
 
+import {JsonStorage} from "../tools/json-storage.js"
 import {Avatar} from "../features/accounts/avatars.js"
+import {AnonIdentity, Identity} from "../logic/multiplayer/types.js"
 import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
-import { Identity } from "../logic/multiplayer/types.js"
 
 export type Session = {
 	login: Login
@@ -14,9 +15,61 @@ export type Session = {
 	accountRecord: AccountRecord
 }
 
-export type Guest = {
-	id: string
-	avatar: Avatar
+const anonIdentityStore = new JsonStorage<AnonIdentity>("rogue_guest")
+
+export class AccountRecollection {
+	map = new Map<string, AccountPreferences>()
+	store = new JsonStorage<[string, AccountPreferences][]>("rogue_account_recollection")
+
+	preferences: AccountPreferences | null = null
+
+	constructor() {
+		this.load()
+	}
+
+	updateLogin(login: Login | null) {
+		if (!login) {
+			this.preferences = null
+			return
+		}
+
+		this.preferences = this.guarantee(login.thumbprint, () => ({
+			name: login.name,
+			avatarId: Avatar.default.id,
+		}))
+
+		if (this.preferences.name !== login.name) {
+			this.preferences.name = login.name
+			this.save()
+		}
+
+		return this.preferences
+	}
+
+	load() {
+		this.map.clear()
+		const data = this.store.get() ?? []
+		for (const [k, v] of data)
+			this.map.set(k, v)
+	}
+
+	save() {
+		this.store.set([...this.map.entries()])
+	}
+
+	get(thumbprint: string) {
+		return this.map.get(thumbprint)
+	}
+
+	guarantee(thumbprint: string, make: () => AccountPreferences) {
+		let prefs = this.get(thumbprint)
+		if (!prefs) {
+			prefs = make()
+			this.map.set(thumbprint, prefs)
+			this.save()
+		}
+		return prefs
+	}
 }
 
 export class Context {
@@ -26,45 +79,59 @@ export class Context {
 	accounting = accountingApi(new Accountant()).v1
 	accountingPubkey = this.accounting.pubkey()
 
-	guest: Guest = {
+	anonIdentity = anonIdentityStore.guarantee(() => ({
+		kind: "anon",
 		id: Hex.random(32),
-		avatar: this.randy.choose(
-			[...Avatar.library.values()]
-				.filter(avatar => avatar.kind === "free")
-		)
-	}
+		avatarId: this.randy.choose(Avatar.selectKind("anon")).id,
+	}))
 
 	session = signal<Session | null>(null)
 	sessionOp = opSignal<Session | null>()
 
 	multiplayerIdentity = computed((): Identity => {
 		const session = this.session.value
-		const guest = this.guest
+		const anon = this.anonIdentity
 		return session
 			? {kind: "account", accountToken: session.accountToken}
-			: {kind: "anon", id: guest.id, avatarId: guest.avatar.id}
+			: {kind: "anon", id: anon.id, avatarId: anon.avatarId}
 	})
 
+	accountRecollection = new AccountRecollection()
 	get isSessionLoading() { return !this.sessionOp.isReady() }
 
 	constructor() {
 
+		this.accountRecollection.store.onChangeFromOutside(() => {
+			this.accountRecollection.load()
+			this.refreshSession()
+		})
+
 		// refresh session whenever the user logs in or out
-		this.auth.onChange(login => this.refreshSession({
-			name: login?.name ?? "unknown",
-			avatarId: Avatar.default.id,
-		}))
+		this.auth.onChange(login => {
+			this.accountRecollection.updateLogin(login)
+			this.refreshSession()
+		})
 	}
 
-	async refreshSession(preferences: AccountPreferences) {
-		const {login} = this.auth
+	async changeAvatar(avatarId: string) {
+		const {preferences} = this.accountRecollection
+		if (!preferences)
+			throw new Error("cannot save avatar to accountRecollection, no available preferences")
+		preferences.avatarId = avatarId
+		this.accountRecollection.save()
+		this.refreshSession()
+	}
 
-		if (!login) {
+	async refreshSession() {
+		const {login} = this.auth
+		const {preferences} = this.accountRecollection
+
+		if (!login || !preferences) {
 			this.sessionOp.load(async() => {
 				this.session.value = null
 				return null
 			})
-			return undefined
+			return
 		}
 
 		this.sessionOp.load(async() => {
@@ -85,4 +152,5 @@ export class Context {
 }
 
 export const context = new Context()
+console.log(context)
 
