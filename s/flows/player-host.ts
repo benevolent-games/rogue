@@ -12,8 +12,8 @@ import {MultiplayerFibers, multiplayerFibers} from "../logic/multiplayer/utils/m
 
 export async function playerHostFlow(o: {lag: LagProfile | null, identity: Signal<Identity>}) {
 	const host = await dedicatedHostFlow()
-
 	const hostFibers = multiplayerFibers()
+
 	const clientFibers: MultiplayerFibers = {
 		meta: hostFibers.meta.makeEntangledPartner(),
 		game: hostFibers.game.makeEntangledPartner(),

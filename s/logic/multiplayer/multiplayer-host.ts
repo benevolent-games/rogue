@@ -105,7 +105,7 @@ export class MultiplayerHost extends Multiplayer {
 
 		const stopRepeating = repeat(3_000, async() => {
 			for (const contact of clientele.list())
-				contact.metaClient.lobby(lobbyManager.lobby.value)
+				contact.metaClient.updateLobby(lobbyManager.lobby.value)
 		})
 
 		const disconnect = () => {

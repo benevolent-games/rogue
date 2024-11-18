@@ -11,7 +11,7 @@ export function metaClientApi({lobby}: {
 	return {
 		async ping() {},
 
-		async lobby(data: Lobby) {
+		async updateLobby(data: Lobby) {
 			console.log("GOT LOBBY DATA!!")
 			lobby.value = data
 		},
