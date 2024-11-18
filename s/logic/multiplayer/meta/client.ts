@@ -1,14 +1,24 @@
 
 import {Signal} from "@benev/slate"
-import {LobbyDisplay} from "../lobby/types.js"
+import {Identity} from "../types.js"
+import {Lobby} from "../lobby/manager.js"
 
 export type MetaClient = ReturnType<typeof metaClientApi>
 
-export function metaClientApi({lobbyDisplay}: {lobbyDisplay: Signal<LobbyDisplay>}) {
+export function metaClientApi({lobby, identity}: {
+		lobby: Signal<Lobby>
+		identity: Signal<Identity>
+	}) {
+
 	return {
 		async ping() {},
-		async lobby(lobby: LobbyDisplay) {
-			lobbyDisplay.value = lobby
+
+		async getIdentity() {
+			return identity.value
+		},
+
+		async lobby(data: Lobby) {
+			lobby.value = data
 		},
 	}
 }

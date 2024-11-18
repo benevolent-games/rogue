@@ -3,12 +3,14 @@ import {deep, interval} from "@benev/slate"
 
 import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
-import {Clientele} from "../logic/framework/relay/clientele.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
+import {LobbyManager} from "../logic/multiplayer/lobby/manager.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
+import {Clientele, Contact} from "../logic/framework/relay/clientele.js"
 
 export async function dedicatedHostFlow() {
+	const lobbyManager = new LobbyManager()
 	const station = new Station()
 	const simulator = new Simulator(station, simulas)
 	const clientele = new Clientele()
@@ -30,22 +32,25 @@ export async function dedicatedHostFlow() {
 		stopTicks()
 	}
 
+	function acceptNewPlayer(contact: Contact) {
+		const playerId = simulator.create("player", {
+			owner: contact.replicatorId,
+			coordinates: Coordinates.zero(),
+		})
+
+		return () => {
+			simulator.destroy(playerId)
+		}
+	}
+
 	async function startMultiplayer() {
 		return MultiplayerHost.host({
 			clientele,
-			hello: contact => {
-				const playerId = simulator.create("player", {
-					owner: contact.replicatorId,
-					coordinates: Coordinates.zero(),
-				})
-
-				return () => {
-					simulator.destroy(playerId)
-				}
-			},
+			lobbyManager,
+			hello: acceptNewPlayer,
 		})
 	}
 
-	return {station, simulator, clientele, startMultiplayer, dispose}
+	return {station, lobbyManager, simulator, clientele, acceptNewPlayer, startMultiplayer, dispose}
 }
 

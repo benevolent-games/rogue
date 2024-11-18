@@ -1,10 +1,9 @@
 
 import {Signal} from "@benev/slate"
-
-import {LobbyDisplay} from "../lobby/types.js"
+import {Lobby} from "../lobby/manager.js"
 
 export abstract class Multiplayer {
-	constructor(public lobbyDisplay: Signal<LobbyDisplay>) {}
+	constructor(public lobby: Signal<Lobby>) {}
 	abstract dispose(): void
 }
 

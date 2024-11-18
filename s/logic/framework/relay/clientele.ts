@@ -1,5 +1,6 @@
 
 import {Liaison} from "./liaison.js"
+import {Identity} from "../../multiplayer/types.js"
 import {Feed, Feedbacks, Snapshot} from "./types.js"
 import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
@@ -7,7 +8,6 @@ import {MetaClient} from "../../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../../multiplayer/meta/host.js"
 import {renrakuChannel} from "../../multiplayer/utils/renraku-channel.js"
 import {MultiplayerFibers} from "../../multiplayer/utils/multiplayer-fibers.js"
-import { Identity } from "../../multiplayer/types.js"
 
 export class Contact {
 	constructor(
@@ -20,6 +20,10 @@ export class Contact {
 export class Clientele {
 	#replicatorIds = new IdCounter()
 	#contacts = new Set<Contact>()
+
+	list() {
+		return this.#contacts.values()
+	}
 
 	add({fibers, lag, updateIdentity}: {
 			fibers: MultiplayerFibers

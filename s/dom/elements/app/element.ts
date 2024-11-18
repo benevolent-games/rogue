@@ -80,18 +80,10 @@ export const GameApp = shadowComponent(use => {
 
 			host: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const {host, client, onSelfIdentity, dispose} = await playerHostFlow({lag: null, identity})
+				const {host, client, dispose} = await playerHostFlow({lag: null, identity})
 
 				const multiplayerOp = opSignal<MultiplayerHost>()
-
 				multiplayerOp.load(async() => host.startMultiplayer())
-					.then(multiplayer => {
-						multiplayer.lobby.updateIdentity(multiplayer.self.id, identity.value)
-						onSelfIdentity(identity => multiplayer.lobby.updateIdentity(
-							multiplayer.self.id,
-							identity,
-						))
-					})
 
 				return {
 					dispose,

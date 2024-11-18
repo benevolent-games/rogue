@@ -1,31 +1,30 @@
 
-import {pubsub, Signal, signal} from "@benev/slate"
 import Sparrow, {StdCable} from "sparrow-rtc"
+import {pubsub, Signal, signal} from "@benev/slate"
 
-import {Lobby} from "./lobby/lobby.js"
-import {LobbyDisplay} from "./lobby/types.js"
+import {Identity} from "./types.js"
+import {MetaHost} from "./meta/host.js"
+import {Fiber} from "../../tools/fiber.js"
 import {Multiplayer} from "./utils/multiplayer.js"
-import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.js"
+import {Lobby, LobbyManager} from "./lobby/manager.js"
+import {Parcel} from "../framework/relay/inbox-outbox.js"
 import {renrakuChannel} from "./utils/renraku-channel.js"
 import {MetaClient, metaClientApi} from "./meta/client.js"
-import {MetaHost} from "./meta/host.js"
-import {Parcel} from "../framework/relay/inbox-outbox.js"
-import {Fiber} from "../../tools/fiber.js"
 import {GameMessage} from "../framework/relay/messages.js"
-import {Identity} from "./types.js"
+import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.js"
 
 export class MultiplayerClient extends Multiplayer {
 
 	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>) {
-		const lobbyDisplay = signal<LobbyDisplay>(Lobby.emptyDisplay())
+		const lobby = signal<Lobby>(LobbyManager.empty())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
-			localFns: metaClientApi({lobbyDisplay}),
+			localFns: metaClientApi({lobby, identity}),
 		})
 		const {replicatorId} = await metaHost.hello(identity.value)
 		identity.on(identity => { metaHost.hello(identity) })
-		return new this(replicatorId, fibers.game, identity, lobbyDisplay, () => {})
+		return new this(replicatorId, fibers.game, identity, lobby, () => {})
 	}
 
 	static async join(invite: string, identity: Signal<Identity>) {
@@ -46,7 +45,7 @@ export class MultiplayerClient extends Multiplayer {
 
 			const multiplayerClient = await this.make(fibers, identity)
 			onDisconnected(() => {
-				multiplayerClient.lobbyDisplay.value = Lobby.emptyDisplay()
+				multiplayerClient.lobby.value = LobbyManager.empty()
 			})
 
 			return multiplayerClient
@@ -61,10 +60,10 @@ export class MultiplayerClient extends Multiplayer {
 			public replicatorId: number,
 			public gameFiber: Fiber<Parcel<GameMessage>>,
 			public identity: Signal<Identity>,
-			public lobbyDisplay: Signal<LobbyDisplay>,
+			public lobby: Signal<Lobby>,
 			public dispose: () => void,
 		) {
-		super(lobbyDisplay)
+		super(lobby)
 	}
 }
 

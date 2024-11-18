@@ -42,7 +42,7 @@ export class Context {
 		const guest = this.guest
 		return session
 			? {kind: "account", accountToken: session.accountToken}
-			: {kind: "guest", id: guest.id, avatarId: guest.avatar.id}
+			: {kind: "anon", id: guest.id, avatarId: guest.avatar.id}
 	})
 
 	get isSessionLoading() { return !this.sessionOp.isReady() }
