@@ -1,35 +1,19 @@
 
-import {repeat} from "@benev/slate"
-import Sparrow, {AgentInfo, Connection, StdCable} from "sparrow-rtc"
+import Sparrow, {AgentInfo, StdCable} from "sparrow-rtc"
 
-import {Identity} from "./types.js"
-import {Fiber} from "../../tools/fiber.js"
 import {Multiplayer} from "./utils/multiplayer.js"
-import {multiplayerFibers} from "./utils/multiplayer-fibers.js"
-import {Clientele, Contact} from "../framework/relay/clientele.js"
-import {ConnectionInfo, LobbyManager, Registration, RemoteLobbyist} from "./lobby/manager.js"
-
-export type ClientHandle = {
-	connection: Connection
-	lobbyist: RemoteLobbyist
-	contact: Contact
-	dispose: () => {}
-}
+import {Bundle, Cathedral} from "../framework/relay/cathedral.js"
 
 export class MultiplayerHost extends Multiplayer {
-
 	constructor(
-			public lobbyManager: LobbyManager,
-			public self: AgentInfo,
-			public dispose: () => void,
-		) {
-		super(lobbyManager.lobby)
-	}
+		public cathedral: Cathedral,
+		public self: AgentInfo,
+		public dispose: () => void,
+	) { super() }
 
-	static async host({clientele, lobbyManager, hello}: {
-			clientele: Clientele
-			lobbyManager: LobbyManager
-			hello: (contact: Contact) => () => void
+	static async host({cathedral, hello}: {
+			cathedral: Cathedral
+			hello: (bundle: Bundle) => () => void
 		}) {
 
 		const sparrow = await Sparrow.host<StdCable>({
@@ -37,84 +21,41 @@ export class MultiplayerHost extends Multiplayer {
 
 			// client incoming
 			welcome: prospect => {
-				const lobbyist = lobbyManager.add<RemoteLobbyist>({
-					kind: "remote",
-					agent: {id: prospect.id, reputation: prospect.reputation},
-					registration: null,
-					connectionInfo: null,
+				const seat = cathedral.reserveRemoteSeat({
+					id: prospect.id,
+					reputation: prospect.reputation,
 				})
 
-				const disposeLobbyist = () => {
-					lobbyManager.delete(lobbyist)
-				}
-
-				prospect.onFailed(disposeLobbyist)
+				prospect.onFailed(() => cathedral.deleteSeat(seat))
 
 				return connection => {
-					const fibers = multiplayerFibers()
-					const megafiber = Fiber.multiplex(fibers)
-					megafiber.proxyCable(connection.cable)
-
-					const contact = clientele.add({
-						fibers,
-						lag: null,
-						updateIdentity: (identity: Identity) => {
-							registration.identity = identity
-							lobbyManager.pulse()
-						},
-					})
-
-					const connectionInfo: ConnectionInfo = {
-						kind: "unknown",
-						ping: null,
-					}
-
-					const registration: Registration = {
-						identity: null,
-						replicatorId: contact.replicatorId,
-					}
-
-					lobbyist.registration = registration
-					lobbyist.connectionInfo = connectionInfo
-
-					const stopStats = repeat(3_000, async() => {
-						const report = await Sparrow.reportConnectivity(connection.peer)
-						connectionInfo.kind = report.kind
-					})
-
-					const goodbye = hello(contact)
+					const bundle = cathedral.attachRemoteBundle(seat, connection)
+					const goodbye = hello(bundle)
 
 					return () => {
-						stopStats()
-						disposeLobbyist()
-						clientele.delete(contact)
+						cathedral.deleteSeat(seat)
 						goodbye()
 					}
 				}
 			},
+
 			closed: () => {
-				lobbyManager.goOffline()
+				cathedral.invite = undefined
+				cathedral.online = false
 				console.warn("sparrow signaller disconnected")
 			},
 		})
 
-		lobbyManager.goOnline({
-			agent: sparrow.self,
-			invite: sparrow.invite,
-		})
-
-		const stopRepeating = repeat(3_000, async() => {
-			for (const contact of clientele.list())
-				contact.metaClient.updateLobby(lobbyManager.lobby.value)
-		})
+		cathedral.invite = sparrow.invite
+		cathedral.online = true
 
 		const disconnect = () => {
-			stopRepeating()
 			sparrow.close()
-			lobbyManager.goOffline()
+			cathedral.invite = undefined
+			cathedral.online = false
 		}
 
-		return new this(lobbyManager, sparrow.self, disconnect)
+		return new this(cathedral, sparrow.self, disconnect)
 	}
 }
 

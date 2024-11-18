@@ -6,11 +6,11 @@ import {Identity} from "./types.js"
 import {MetaHost} from "./meta/host.js"
 import {Fiber} from "../../tools/fiber.js"
 import {Multiplayer} from "./utils/multiplayer.js"
-import {Lobby, LobbyManager} from "./lobby/manager.js"
 import {Parcel} from "../framework/relay/inbox-outbox.js"
 import {renrakuChannel} from "./utils/renraku-channel.js"
 import {MetaClient, metaClientApi} from "./meta/client.js"
 import {GameMessage} from "../framework/relay/messages.js"
+import {Cathedral, Lobby} from "../framework/relay/cathedral.js"
 import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.js"
 
 export class MultiplayerClient extends Multiplayer {
@@ -21,11 +21,11 @@ export class MultiplayerClient extends Multiplayer {
 			public lobby: Signal<Lobby>,
 			public dispose: () => void,
 		) {
-		super(lobby)
+		super()
 	}
 
 	static async make(fibers: MultiplayerFibers, identity: Signal<Identity>, dispose: () => void) {
-		const lobby = signal<Lobby>(LobbyManager.empty())
+		const lobby = signal<Lobby>(Cathedral.emptyLobby())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
@@ -56,7 +56,7 @@ export class MultiplayerClient extends Multiplayer {
 
 			onDisconnected(() => {
 				console.log("ON DISCONNECTED")
-				multiplayerClient.lobby.value = LobbyManager.empty()
+				multiplayerClient.lobby.value = Cathedral.emptyLobby()
 			})
 
 			return multiplayerClient

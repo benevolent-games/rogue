@@ -1,11 +1,12 @@
 
-import {repeat, signal} from "@benev/slate"
-import {AgentInfo, Connection, ConnectivityKind, ConnectivityReport} from "sparrow-rtc"
+import {repeat} from "@benev/slate"
+import {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
 import {Liaison} from "./liaison.js"
-import {Feed, Feedbacks} from "./types.js"
 import {Fiber} from "../../../tools/fiber.js"
 import {Identity} from "../../multiplayer/types.js"
+import {Feed, Feedbacks, Snapshot} from "./types.js"
+import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../../multiplayer/meta/host.js"
@@ -46,12 +47,25 @@ export type LobbyConnectionStats = {
 	ping: number | undefined
 }
 
+export type CathedralOptions = {
+	lag: LagProfile | null
+}
+
 export class Cathedral {
+	static emptyLobby(): Lobby {
+		return {invite: undefined, online: false, seats: []}
+	}
+
 	replicatorIds = new IdCounter()
 	seats = new Set<Seat>()
+	lag: LagProfile | null
 
 	invite: string | undefined = undefined
 	online = false
+
+	constructor({lag}: CathedralOptions) {
+		this.lag = lag
+	}
 
 	#computeLobby(): Lobby {
 		return {
@@ -73,19 +87,16 @@ export class Cathedral {
 		const bundle = this.#bundlize(fibers, undefined)
 		const seat: Seat = {kind: "local", agent: undefined, bundle}
 		this.seats.add(seat)
-		return seat
+		return {seat, bundle}
 	}
 
 	reserveRemoteSeat(agent: AgentInfo) {
 		const seat: Seat = {kind: "remote", agent, bundle: undefined}
 		this.seats.add(seat)
-		return (connection: Connection) => {
-			this.#attachRemoteBundle(seat, connection)
-			return () => this.#deleteSeat(seat)
-		}
+		return seat
 	}
 
-	#attachRemoteBundle(seat: Seat, connection: Connection) {
+	attachRemoteBundle(seat: Seat, connection: Connection) {
 		const fibers = multiplayerFibers()
 		const megafiber = Fiber.multiplex(fibers)
 		megafiber.proxyCable(connection.cable)
@@ -93,7 +104,7 @@ export class Cathedral {
 		return seat.bundle
 	}
 
-	#deleteSeat(seat: Seat) {
+	deleteSeat(seat: Seat) {
 		const {bundle} = seat
 		this.seats.delete(seat)
 		if (bundle)
@@ -116,19 +127,19 @@ export class Cathedral {
 			bundle.liaison.sendFeed(feed)
 	}
 
-	broadcastSnapshot(feed: Feed) {
+	broadcastSnapshot(snapshot: Snapshot) {
 		for (const bundle of this.getBundles())
-			bundle.liaison.sendFeed(feed)
+			bundle.liaison.sendSnapshot(snapshot)
 	}
 
 	dispose() {
 		for (const seat of this.seats)
-			this.#deleteSeat(seat)
+			this.deleteSeat(seat)
 	}
 
 	#bundlize(fibers: MultiplayerFibers, connection: Connection | undefined) {
 		const replicatorId = this.replicatorIds.next()
-		const liaison = new Liaison(fibers.game)
+		const liaison = new Liaison(fibers.game, this.lag)
 
 		const updateIdentity = (id: Identity) => { bundle.identity = id }
 
