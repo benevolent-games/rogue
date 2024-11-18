@@ -34,8 +34,8 @@
 	},
 	"dependencies": {
 		"@authduo/authduo": "^0.2.0-3",
-		"@babylonjs/core": "^7.34.1",
-		"@babylonjs/loaders": "^7.34.1",
+		"@babylonjs/core": "^7.34.2",
+		"@babylonjs/loaders": "^7.34.2",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-0",
 		"@benev/toolbox": "^0.7.5",
@@ -51,7 +51,7 @@
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
 		"http-server": "^14.1.1",
-		"npm-run-all": "^4.1.5",
+		"npm-run-all": "^2.1.0",
 		"typescript": "^5.6.3"
 	},
 	"keywords": [
