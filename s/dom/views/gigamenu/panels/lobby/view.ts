@@ -1,10 +1,11 @@
 
 import Sparrow from "sparrow-rtc"
-import {html, shadowView} from "@benev/slate"
+import {html, shadowView, signal} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
 import {MultiplayerClient} from "../../../../../logic/multiplayer/multiplayer-client.js"
+import { AccountCardView } from "../../../account-card/view.js"
 
 export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
@@ -34,6 +35,7 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 						<span x-replicator-id>${seat.replicatorId}</span>
 						${seat.identity && html`
 							<span x-identity-kind>${seat.identity.kind}</span>
+							${AccountCardView([seat.identity, false])}
 							${seat.identity.kind === "account" ? html`
 								<span x-identity-account-token>${seat.identity.accountToken.slice(0, 8)}</span>
 							` : html`

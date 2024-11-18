@@ -45,9 +45,14 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 	}
 }
 
-export const AccountCardView = shadowView(use => (identity: Signal<Identity>, isLoading: boolean) => {
+export const AccountCardView = shadowView(use => (identity_: Identity, isLoading: boolean) => {
 	use.name("account-card")
 	use.styles(themeCss, stylesCss)
+
+	const identity = use.signal(identity_)
+
+	if (identity.value !== identity_)
+		identity.value = identity_
 
 	const infoOp = use.op<Info>()
 

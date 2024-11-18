@@ -16,7 +16,7 @@ export const AccountView = shadowView(use => () => {
 
 	return html`
 		<section>
-			${AccountCardView([context.multiplayerIdentity, context.isSessionLoading])}
+			${AccountCardView([context.multiplayerIdentity.value, context.isSessionLoading])}
 			${session ? html`
 				${AvatarSelectorView([{
 					account: session.account,
