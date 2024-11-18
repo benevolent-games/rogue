@@ -49,6 +49,7 @@ export type LobbyConnectionStats = {
 
 export type CathedralOptions = {
 	lag: LagProfile | null
+	onBundle: (bundle: Bundle) => () => void
 }
 
 export class Cathedral {
@@ -58,14 +59,11 @@ export class Cathedral {
 
 	replicatorIds = new IdCounter()
 	seats = new Set<Seat>()
-	lag: LagProfile | null
 
 	invite: string | undefined = undefined
 	online = false
 
-	constructor({lag}: CathedralOptions) {
-		this.lag = lag
-	}
+	constructor(private options: CathedralOptions) {}
 
 	#computeLobby(): Lobby {
 		return {
@@ -139,7 +137,7 @@ export class Cathedral {
 
 	#bundlize(fibers: MultiplayerFibers, connection: Connection | undefined) {
 		const replicatorId = this.replicatorIds.next()
-		const liaison = new Liaison(fibers.game, this.lag)
+		const liaison = new Liaison(fibers.game, this.options.lag)
 
 		const updateIdentity = (id: Identity) => { bundle.identity = id }
 
@@ -172,6 +170,7 @@ export class Cathedral {
 			connectionStats,
 			identity: undefined,
 			dispose: () => {
+				dispose()
 				stopPings()
 				stopLobbyUpdates()
 				liaison.dispose()
@@ -180,6 +179,7 @@ export class Cathedral {
 			},
 		}
 
+		const dispose = this.options.onBundle(bundle)
 		return bundle
 	}
 }

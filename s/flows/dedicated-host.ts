@@ -1,17 +1,28 @@
 
 import {deep, interval} from "@benev/slate"
 
+import {LagProfile} from "../tools/fake-lag.js"
 import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
+import {Cathedral} from "../logic/framework/relay/cathedral.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
-import {Cathedral, CathedralOptions} from "../logic/framework/relay/cathedral.js"
 
-export async function dedicatedHostFlow(o: CathedralOptions) {
-	const cathedral = new Cathedral(o)
+export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
 	const simulator = new Simulator(station, simulas)
+
+	const cathedral = new Cathedral({
+		lag,
+		onBundle: ({replicatorId}) => {
+			const playerId = simulator.create("player", {
+				owner: replicatorId,
+				coordinates: Coordinates.zero(),
+			})
+			return () => simulator.destroy(playerId)
+		},
+	})
 
 	const stopSnapshots = interval(1000, () => {
 		const snapshot = deep.clone(simulator.snapshot())
@@ -25,20 +36,11 @@ export async function dedicatedHostFlow(o: CathedralOptions) {
 		cathedral.broadcastFeed(feed)
 	})
 
-	function acceptNewPlayer(replicatorId: number) {
-		const playerId = simulator.create("player", {
-			owner: replicatorId,
-			coordinates: Coordinates.zero(),
-		})
-		return () => {
-			simulator.destroy(playerId)
-		}
-	}
-
 	async function startMultiplayer() {
 		return MultiplayerHost.host({
 			cathedral,
-			hello: bundle => acceptNewPlayer(bundle.replicatorId),
+			hello: () => () => {},
+			// hello: bundle => acceptNewPlayer(bundle.replicatorId),
 		})
 	}
 
