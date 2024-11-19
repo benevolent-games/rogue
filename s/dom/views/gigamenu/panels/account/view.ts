@@ -16,21 +16,29 @@ export const AccountView = shadowView(use => () => {
 
 	return html`
 		<section>
-			${AccountCardView([context.multiplayerIdentity.value, context.isSessionLoading])}
+			${AccountCardView([
+				context.multiplayerIdentity.value,
+				context.isSessionLoading,
+			])}
+
 			${session ? html`
 				${AvatarSelectorView([{
 					account: session.account,
 					accountRecord: session.accountRecord,
 				}])}
+
 				<button @click="${logout}">
 					Logout
 				</button>
+
 			` : loading.binary(context.sessionOp, () => html`
 				<p>You're currently logged out</p>
+
 				<button class=authduo @click="${login}">
 					Login
 				</button>
 			`)}
+
 			${context.sessionOp.isError() ? html`
 				<button @click="${logout}">
 					Logout

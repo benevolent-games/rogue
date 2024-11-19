@@ -1,5 +1,5 @@
 
-import {Bytename, Hex, html, loading, shadowView} from "@benev/slate"
+import {Bytename, Hex, html, loading, nap, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
@@ -19,6 +19,10 @@ type Info = {
 }
 
 async function ascertainPersonInfo(identity: Identity): Promise<Info> {
+
+	// TODO remove fake lag
+	await nap(1000)
+
 	if (identity.kind === "anon") {
 		const avatarPref = Avatar.get(identity.avatarId)
 		const avatar = isAvatarAllowed(avatarPref, undefined)
@@ -45,16 +49,20 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 	}
 }
 
-export const AccountCardView = shadowView(use => (identity_: Identity, isLoading: boolean) => {
+export const AccountCardView = shadowView(use => (
+		identity_: Identity,
+		isLoading: boolean,
+	) => {
+
 	use.name("account-card")
 	use.styles(themeCss, stylesCss)
 
 	const identity = use.signal(identity_)
-
 	if (identity.value !== identity_)
 		identity.value = identity_
 
 	const infoOp = use.op<Info>()
+	const info = infoOp.payload
 
 	use.mount(() => {
 		const reload = () => infoOp.load(
@@ -64,20 +72,22 @@ export const AccountCardView = shadowView(use => (identity_: Identity, isLoading
 		return identity.on(reload)
 	})
 
-	return loading.braille(infoOp, info => html`
-		<div x-card>
-			${AvatarView([info.avatar, {loading: isLoading}])}
+	return html`
+		${AvatarView([
+			info?.avatar ?? Avatar.default,
+			{loading: info ? isLoading : true},
+		])}
 
-			<div x-info>
-				<span x-name>${info.name}</span>
-				<ul x-features>
-					<li x-thumbprint>${IdView([info.id])}</li>
-					${info.tags.map(tag => html`
-						<li x-tag>${tag}</li>
-					`)}
-				</ul>
-			</div>
+		<div x-info>
+			<span x-name>${info?.name ?? "~"}</span>
+
+			<ul x-features>
+				<li x-thumbprint>${info ? IdView([info.id]) : "~"}</li>
+				${info && info.tags.map(tag => html`
+					<li x-tag>${tag}</li>
+				`)}
+			</ul>
 		</div>
-	`)
+	`
 })
 
