@@ -58,7 +58,7 @@ export class Cathedral {
 		return {invite: undefined, online: false, seats: []}
 	}
 
-	replicatorIds = new IdCounter()
+	replicatorIds = new IdCounter(1)
 	seats = new Set<Seat>()
 
 	invite: string | undefined = undefined
@@ -163,14 +163,10 @@ export class Cathedral {
 			}
 		})
 
-		const stopPings = repeat(1_000, async() => {
-			const alpha = Date.now()
-			await metaClient.ping()
-			connectionStats.ping = Date.now() - alpha
-		})
-
 		const stopLobbyUpdates = repeat(1_000, async() => {
-			metaClient.updateLobby(this.#computeLobby())
+			const alpha = Date.now()
+			await metaClient.updateLobby(this.#computeLobby())
+			connectionStats.ping = Date.now() - alpha
 		})
 
 		const bundle: Bundle = {
@@ -183,7 +179,6 @@ export class Cathedral {
 			dispose: () => {
 				bundleOff()
 				stopStats()
-				stopPings()
 				stopLobbyUpdates()
 				liaison.dispose()
 				if (connection) {

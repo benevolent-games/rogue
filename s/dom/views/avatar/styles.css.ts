@@ -16,7 +16,7 @@ div[part="box"] {
 	z-index: 0;
 	position: relative;
 	overflow: hidden;
-	box-shadow: .1em .2em .3em #0008;
+	box-shadow: .03em .06em .09em #0004;
 	border: .05em solid #888;
 	border-radius: var(--radius);
 

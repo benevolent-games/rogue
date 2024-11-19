@@ -1,6 +1,10 @@
 
 export class IdCounter {
-	#count = 0
+	#count: number
+
+	constructor(start: number = 0) {
+		this.#count = start
+	}
 
 	next() {
 		return this.#count++

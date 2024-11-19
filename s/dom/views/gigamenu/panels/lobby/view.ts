@@ -1,11 +1,13 @@
 
 import Sparrow from "sparrow-rtc"
-import {html, shadowView, signal} from "@benev/slate"
+import {Bytename, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
+import {IdView} from "../../../id/view.js"
 import themeCss from "../../../../theme.css.js"
+import {AccountCardView} from "../../../account-card/view.js"
+import {LobbySeat} from "../../../../../logic/framework/relay/cathedral.js"
 import {MultiplayerClient} from "../../../../../logic/multiplayer/multiplayer-client.js"
-import { AccountCardView } from "../../../account-card/view.js"
 
 export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
@@ -13,42 +15,45 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	const lobby = multiplayer.lobby.value
 	const inviteUrl = lobby.invite && Sparrow.invites.url(lobby.invite)
 
+	const firstName = (hex: string) => Bytename.string(Hex.bytes(hex).slice(0, 2), "Xxxxxx ")
+	const lastName = (hex: string) => Bytename.string(Hex.bytes(hex).slice(0, 3), "Xxxxxxxxx ")
+
+	const renderLobbySeat = (seat: LobbySeat) => html`
+		<li data-id="${seat.replicatorId}">
+			<div x-card>
+				${seat.identity && AccountCardView([seat.identity, false])}
+			</div>
+
+			<div x-net>
+				${seat.connectionStats && html`
+					<span x-stats-ping>${seat.connectionStats.ping && seat.connectionStats.ping.toFixed(0)} ms</span>
+					<span x-stats-kind>${seat.kind === "local" ? "host" : seat.connectionStats.kind}</span>
+				`}
+				${seat.agent && html`
+					<span x-agent-name>
+						${IdView([seat.agent.id, firstName(seat.agent.id)])}
+						${IdView([seat.agent.reputation, lastName(seat.agent.reputation)])}
+					</span>
+				`}
+			</div>
+		</li>
+	`
+
 	return html`
 		<section>
-			${inviteUrl && html`
+			<header>
 				<div>
-					<strong>invite:</strong>
-					<a href="${inviteUrl}" target="_blank">${inviteUrl.slice(0, 14)}..</a>
+					<span>${lobby.online ? "🟢 online" : "❌ offline"}</span>
 				</div>
-			`}
-			<div>
-				<strong>online:</strong>
-				<span>${lobby.online ? "✅" : "❌"}</span>
-			</div>
+				${inviteUrl && html`
+					<div>
+						<a href="${inviteUrl}" target="_blank">${inviteUrl.slice(0, 14)}..</a>
+					</div>
+				`}
+			</header>
+
 			<ol>
-				${lobby.seats.map(seat => html`
-					<li>
-						${seat.agent && html`
-							<span x-agent-id>${seat.agent.id.slice(0, 8)}</span>
-							<span x-agent-reputation>${seat.agent.reputation.slice(0, 8)}</span>
-						`}
-						<span x-replicator-id>${seat.replicatorId}</span>
-						${seat.identity && html`
-							<span x-identity-kind>${seat.identity.kind}</span>
-							${AccountCardView([seat.identity, false])}
-							${seat.identity.kind === "account" ? html`
-								<span x-identity-account-token>${seat.identity.accountToken.slice(0, 8)}</span>
-							` : html`
-								<span x-identity-id>${seat.identity.id.slice(0, 8)}</span>
-								<span x-identity-avatar-id>${seat.identity.avatarId}</span>
-							`}
-						`}
-						${seat.connectionStats && html`
-							<span x-stats-kind>${seat.kind === "local" ? "host" : seat.connectionStats.kind}</span>
-							<span x-stats-ping>${seat.connectionStats.ping && seat.connectionStats.ping.toFixed(0)} ms</span>
-						`}
-					</li>
-				`)}
+				${lobby.seats.map(renderLobbySeat)}
 			</ol>
 		</section>
 	`
