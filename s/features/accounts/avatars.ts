@@ -57,6 +57,7 @@ export class Avatar {
 			"h4u8YqcTJa1",
 			"AVF85Jbcu4G",
 			"5wDN74yCMG5",
+			"BWzuxLn3dre",
 			"QSxbM1abxdD",
 			"97XHrHvoPFh",
 			"BHyXLzjRUcN",
