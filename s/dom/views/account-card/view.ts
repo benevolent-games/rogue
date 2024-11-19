@@ -1,5 +1,5 @@
 
-import {Bytename, Hex, html, loading, nap, shadowView} from "@benev/slate"
+import {Bytename, deep, Hex, html, nap, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
@@ -19,10 +19,6 @@ type Info = {
 }
 
 async function ascertainPersonInfo(identity: Identity): Promise<Info> {
-
-	// TODO remove fake lag
-	await nap(1000)
-
 	if (identity.kind === "anon") {
 		const avatarPref = Avatar.get(identity.avatarId)
 		const avatar = isAvatarAllowed(avatarPref, undefined)
@@ -58,7 +54,7 @@ export const AccountCardView = shadowView(use => (
 	use.styles(themeCss, stylesCss)
 
 	const identity = use.signal(identity_)
-	if (identity.value !== identity_)
+	if (!deep.equal(identity.value, identity_))
 		identity.value = identity_
 
 	const infoOp = use.op<Info>()
