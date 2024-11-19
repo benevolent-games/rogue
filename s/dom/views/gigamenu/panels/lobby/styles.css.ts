@@ -53,5 +53,9 @@ ol {
 	gap: 2em;
 }
 
+[view="account-card"] {
+	--avatar-size: 7em;
+}
+
 `
 

@@ -15,8 +15,10 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	const lobby = multiplayer.lobby.value
 	const inviteUrl = lobby.invite && Sparrow.invites.url(lobby.invite)
 
-	const firstName = (hex: string) => Bytename.string(Hex.bytes(hex).slice(0, 2), "Xxxxxx ")
-	const lastName = (hex: string) => Bytename.string(Hex.bytes(hex).slice(0, 3), "Xxxxxxxxx ")
+	const fullName = (hex: string) => Bytename.string(
+		Hex.bytes(hex).slice(0, 5),
+		"Xxxxxx Xxxxxxxxx ",
+	)
 
 	const renderLobbySeat = (seat: LobbySeat) => html`
 		<li data-id="${seat.replicatorId}">
@@ -31,8 +33,7 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 				`}
 				${seat.agent && html`
 					<span x-agent-name>
-						${IdView([seat.agent.id, firstName(seat.agent.id)])}
-						${IdView([seat.agent.reputation, lastName(seat.agent.reputation)])}
+						${IdView([seat.agent.reputation, fullName(seat.agent.reputation)])}
 					</span>
 				`}
 			</div>

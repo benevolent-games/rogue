@@ -1,5 +1,5 @@
 
-import {Bytename, deep, Hex, html, nap, shadowView} from "@benev/slate"
+import {Bytename, deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
