@@ -52,7 +52,7 @@ div[part="box"] {
 		}
 	}
 
-	&[x-kind="anon"] { border-color: #aaa; }
+	&[x-kind="rando"] { border-color: #aaa; }
 	&[x-kind="free"] { border-color: #f00; }
 	&[x-kind="premium"] { border-color: #ffcb00; }
 	&[x-kind="rare"] { border-color: #5000ff; }

@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
 
-export type AvatarKind = "anon" | "free" | "premium" | "rare"
+export type AvatarKind = "rando" | "free" | "premium" | "rare"
 
 export class Avatar {
 	constructor(public id: string, public kind: AvatarKind) {}
@@ -15,7 +15,7 @@ export class Avatar {
 	}
 
 	static library = new Map2<string, Avatar>([
-		...this.#group("anon", [
+		...this.#group("rando", [
 			"cLZcTnPDhh8",
 			"64tcJ1tTCF7",
 			"499UCh29USv",

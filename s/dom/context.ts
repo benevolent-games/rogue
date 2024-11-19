@@ -1,11 +1,11 @@
 
 import {Randy} from "@benev/toolbox"
 import {Auth, Login, Pubkey} from "@authduo/authduo"
-import {computed, Hex, nap, opSignal, signal} from "@benev/slate"
+import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {JsonStorage} from "../tools/json-storage.js"
 import {Avatar} from "../features/accounts/avatars.js"
-import {AnonIdentity, Identity} from "../logic/multiplayer/types.js"
+import {RandoIdentity, Identity} from "../logic/multiplayer/types.js"
 import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
 
 export type Session = {
@@ -15,7 +15,7 @@ export type Session = {
 	accountRecord: AccountRecord
 }
 
-const anonIdentityStore = new JsonStorage<AnonIdentity>("rogue_guest")
+const randoIdentityStore = new JsonStorage<RandoIdentity>("rogue_rando")
 
 export class AccountRecollection {
 	map = new Map<string, AccountPreferences>()
@@ -80,10 +80,10 @@ export class Context {
 	accountingPubkey = this.accounting.pubkey()
 		.then(pubkey => Pubkey.fromData(pubkey))
 
-	anonIdentity = anonIdentityStore.guarantee(() => ({
-		kind: "anon",
+	randoIdentity = randoIdentityStore.guarantee(() => ({
+		kind: "rando",
 		id: Hex.random(32),
-		avatarId: this.randy.choose(Avatar.selectKind("anon")).id,
+		avatarId: this.randy.choose(Avatar.selectKind("rando")).id,
 	}))
 
 	session = signal<Session | null>(null)
@@ -91,10 +91,10 @@ export class Context {
 
 	multiplayerIdentity = computed((): Identity => {
 		const session = this.session.value
-		const anon = this.anonIdentity
+		const rando = this.randoIdentity
 		return session
 			? {kind: "account", accountToken: session.accountToken}
-			: {kind: "anon", id: anon.id, avatarId: anon.avatarId}
+			: {kind: "rando", id: rando.id, avatarId: rando.avatarId}
 	})
 
 	accountRecollection = new AccountRecollection()

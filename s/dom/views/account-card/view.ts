@@ -19,7 +19,7 @@ type Info = {
 }
 
 async function ascertainPersonInfo(identity: Identity): Promise<Info> {
-	if (identity.kind === "anon") {
+	if (identity.kind === "rando") {
 		const avatarPref = Avatar.get(identity.avatarId)
 		const avatar = isAvatarAllowed(avatarPref, undefined)
 			? avatarPref
@@ -29,7 +29,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 			avatar,
 			id: identity.id,
 			name: Bytename.string(Hex.bytes(identity.id).slice(0, 5)),
-			tags: ["anon"],
+			tags: ["rando"],
 		}
 	}
 	else {
