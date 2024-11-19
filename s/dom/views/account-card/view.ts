@@ -1,5 +1,5 @@
 
-import {Bytename, Hex, html, loading, shadowView, Signal} from "@benev/slate"
+import {Bytename, Hex, html, loading, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
