@@ -68,6 +68,12 @@ export class AccountantDatabase {
 			avatars: [],
 		}],
 
+		// loshunter
+		["f42af8f96865f5b830c8cb2017e8ffb0ac3fbc90c87aeda5cd356bf8d70e9219", {
+			tags: ["premium"],
+			avatars: [],
+		}],
+
 		["47713bfb62e73de626f8071243601d775bda48d1a67d352d59265403538f8e29", {
 			tags: ["premium"],
 			avatars: [],
