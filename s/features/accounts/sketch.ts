@@ -1,7 +1,7 @@
 
 import {secure} from "renraku"
 import {Map2, nap} from "@benev/slate"
-import {Future, Keypair, Proof, Token, Payload} from "@authduo/authduo/x/server.js"
+import {Future, Keypair, Proof, Token, TokenPayload} from "@authduo/authduo/x/server.js"
 
 import {Avatar} from "./avatars.js"
 
@@ -84,7 +84,7 @@ export class AccountantDatabase {
 	}
 }
 
-export type AccountPayload = {data: Account} & Payload
+export type AccountPayload = {data: Account} & TokenPayload
 
 export class Accountant {
 	#keypair = tempKeypair
