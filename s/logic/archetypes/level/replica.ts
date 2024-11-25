@@ -1,9 +1,11 @@
 
-import {loop2d, Randy, Vec2} from "@benev/toolbox"
+import {TransformNode} from "@babylonjs/core"
+import {loop, loop2d, Randy, Vec2} from "@benev/toolbox"
 
 import {LevelArchetype} from "./types.js"
 import {Realm} from "../../realm/realm.js"
 import {cardinals} from "../../../tools/directions.js"
+import {Coordinates} from "../../realm/utils/coordinates.js"
 
 // . . . X . . .
 // O X X X . . .
@@ -18,6 +20,37 @@ class Grid {
 
 	inBounds({x, y}: Vec2) {
 		return (x >= 0 && x < this.extent.x && y >= 0 && y < this.extent.y)
+	}
+
+	neighbors(vec: Vec2) {
+		return cardinals
+			.map(c => vec.clone().add(c))
+			.filter(v => this.inBounds(v))
+	}
+}
+
+class Vec2Set {
+	#vectors: Vec2[] = []
+
+	get size() {
+		return this.#vectors.length
+	}
+
+	has(vec: Vec2) {
+		return this.#vectors.some(v => v.equals(vec))
+	}
+
+	add(vec: Vec2) {
+		if (!this.has(vec))
+			this.#vectors.push(vec)
+	}
+
+	delete(vec: Vec2) {
+		this.#vectors = this.#vectors.filter(v => !v.equals(vec))
+	}
+
+	list() {
+		return [...this.#vectors]
 	}
 }
 
@@ -176,6 +209,19 @@ class Pathfinder {
 	}
 }
 
+function getNeighbors(grid: Grid, path: Vec2[]) {
+	const set = new Vec2Set()
+
+	for (const vec of path)
+		for (const neighbor of grid.neighbors(vec))
+			set.add(neighbor)
+
+	for (const vec of path)
+		set.delete(vec)
+
+	return set.list()
+}
+
 export const levelReplica = Realm.replica<LevelArchetype>(
 	({realm, replicator, facts}) => {
 		const {config} = facts
@@ -183,11 +229,12 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		let randy = Randy.seed(config.seed)
 		const grid = new Grid(Vec2.new(7, 7))
 		const pathfinder = new Pathfinder(randy, grid)
+		const instances = new Set<TransformNode>()
+		const floorInstancer = realm.glbs.templateGlb.instancer("floor, size=1x1, type=ref")
 
-		function generateLevelTile() {
+		function generatePath() {
 			const start = Vec2.new(3, 0)
 			const end = Vec2.new(3, 6)
-
 			const goals = [
 				start,
 				pathfinder.pickRandomPoint(),
@@ -195,25 +242,50 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 				pathfinder.pickRandomPoint(),
 				end,
 			]
-
-			const path = pathfinder.aStarChain(goals)
-			return path
+			return pathfinder.aStarChain(goals)
 		}
 
-		const path = generateLevelTile()
-		if (path) {
-			console.log("PATH", path.length)
-			for (const v of path) {
-				console.log(" - ", v.toString())
+		function generateLevelBlock(offset: Vec2) {
+			const path = generatePath()
+			if (!path) throw new Error("pathfinder failed")
+
+			const walkable = new Vec2Set()
+			const knobCount = 2
+
+			for (const vec of path)
+				walkable.add(vec)
+
+			const knobRoots = randy.extract(knobCount, walkable.list())
+
+			for (const root of knobRoots) {
+				for (const n1 of grid.neighbors(root)) {
+					walkable.add(n1)
+					for (const n2 of grid.neighbors(n1)) {
+						walkable.add(n2)
+						for (const n3 of grid.neighbors(n2)) {
+							walkable.add(n3)
+						}
+					}
+				}
+			}
+
+			for (const vec of walkable.list()) {
+				const coordinates = Coordinates.import(vec.clone().add(offset))
+				const floor = floorInstancer()
+				instances.add(floor)
+				floor.position.set(...coordinates.position().add_(0, 0.2, 0).array())
 			}
 		}
-		else {
-			console.error("PATHFINDING FAILED")
-		}
+
+		for (const i of loop(5))
+			generateLevelBlock(Vec2.new(0, (i * grid.extent.y)))
 
 		return {
 			replicate({feed, feedback}) {},
-			dispose() {},
+			dispose() {
+				for (const instance of instances)
+					instance.dispose()
+			},
 		}
 	}
 )

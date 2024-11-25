@@ -1,5 +1,9 @@
 
+import "@benev/toolbox/x/babylon-side-effects.js"
+
 import {Mesh} from "@babylonjs/core"
+
+import {Glbs} from "./glbs.js"
 import {makeTact} from "./utils/make-tact.js"
 import {World} from "../../tools/babylon/world.js"
 import {replica} from "../framework/replication/types.js"
@@ -11,13 +15,12 @@ export class Realm {
 	tact = makeTact(window)
 	env: ReturnType<typeof makeEnvironment>
 
-	constructor(public world: World) {
+	constructor(public world: World, public glbs: Glbs) {
 		this.env = makeEnvironment(world)
 	}
 
 	instance(source: Mesh) {
-		const instance = source.createInstance("instance")
-		return instance
+		return source.createInstance("instance")
 	}
 }
 
