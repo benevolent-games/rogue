@@ -10,7 +10,6 @@ export function metaHostApi({replicatorId, updateIdentity}: {
 
 	return {
 		async hello(identity: Identity) {
-			console.log("GOT IDENTITY", identity)
 			updateIdentity(identity)
 			return {replicatorId}
 		},
