@@ -31,7 +31,7 @@ export class Fiber<M> {
 		)
 	}
 
-	/** produce a partner fiber which will receive messages send from this fiber, and vice-versa */
+	/** produce a partner fiber which will receive messages sent from this fiber, and vice-versa */
 	makeEntangledPartner() {
 		const partner = new Fiber<M>()
 		this.reliable.send.on(m => partner.reliable.recv(m))
