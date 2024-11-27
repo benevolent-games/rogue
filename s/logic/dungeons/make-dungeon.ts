@@ -8,6 +8,7 @@ import {Vecset2} from "./utils/vecset2.js"
 import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
+import { Fattener } from "./utils/fattener.js"
 
 export class Dungeon {
 	randy: Randy
@@ -69,7 +70,14 @@ export class Dungeon {
 			if (!tilePath)
 				throw new Error("failure to produce tilepath")
 			const sector = sectorByCell.require(cell)
-			return {sector, cell, tiles: Vecset2.dedupe(tilePath)}
+
+			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
+
+			fattener.grow(fattener.tiles.length / 5)
+			fattener.knobbify(30, 2)
+			fattener.knobbify(4, 6)
+
+			return {sector, cell, tiles: fattener.tiles}
 		})
 	}
 
@@ -82,6 +90,17 @@ export class Dungeon {
 
 	cellspace(sector: Vec2, cell = Vec2.zero()) {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
+	}
+
+	#fattenTiles(tiles: Vec2[]) {
+		const moreTiles = new Vecset2()
+		const hat = [...tiles]
+		const knobs = this.randy.extract(3, hat)
+		for (const knob of knobs) {
+			this.tileGrid.nearby(knob, 3)
+				.forEach(tile => moreTiles.add(tile))
+		}
+		return moreTiles.list()
 	}
 
 	#innerSubunits(grid: Grid) {

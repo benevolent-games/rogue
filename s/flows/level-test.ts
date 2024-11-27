@@ -12,9 +12,8 @@ export async function levelTestFlow(o: {
 
 	const flow = await playerHostFlow(o)
 
-	console.log("CREATE LEVEL")
 	flow.host.simulator.create("level", {
-		seed: 4,
+		seed: 6,
 		gridExtents: {
 			cells: [3, 3],
 			tiles: [24, 24],

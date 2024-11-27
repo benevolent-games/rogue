@@ -4,6 +4,7 @@ import {Randy, Vec2} from "@benev/toolbox"
 import {Grid} from "./grid.js"
 import {Vecset2} from "./vecset2.js"
 import {cardinals} from "../../../tools/directions.js"
+import {distance, DistanceAlgo} from "../../../tools/distance.js"
 
 export class Pathfinder {
 	constructor(public randy: Randy, public grid: Grid) {}
@@ -48,34 +49,7 @@ export class Pathfinder {
 		return path.list()
 	}
 
-	drunkard(start: Vec2, end: Vec2) {
-		const path = [start.clone()]
-		let current = start.clone()
-
-		while (!current.equals(end)) {
-			const possibleSteps = cardinals
-				.map(v => current.clone().add(v))
-				.filter(v => this.grid.inBounds(v))
-
-			const freshSteps = possibleSteps
-				.filter(v => !path.some(p => p.equals(v)))
-
-			const availableSteps = freshSteps.length > 0
-				? freshSteps
-				: possibleSteps
-
-			current = this.randy.choose(availableSteps).clone()
-			path.push(current)
-		}
-
-		return path
-	}
-
-	#manhattanDistance(a: Vec2, b: Vec2) {
-		return Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
-	}
-
-	aStar(start: Vec2, end: Vec2): null | Vec2[] {
+	aStar(start: Vec2, end: Vec2, distanceAlgo?: DistanceAlgo): null | Vec2[] {
 		const {grid} = this
 
 		if (start.equals(end))
@@ -92,7 +66,7 @@ export class Pathfinder {
 		const openNodes: Pathnode[] = [{
 			location: start,
 			cost: 0,
-			heuristic: this.#manhattanDistance(start, end),
+			heuristic: distance(start, end, distanceAlgo),
 			parent: null,
 		}]
 
@@ -139,7 +113,7 @@ export class Pathfinder {
 						parent: current,
 						location: nextLocation,
 						cost: cost,
-						heuristic: this.#manhattanDistance(nextLocation, end),
+						heuristic: distance(nextLocation, end, distanceAlgo),
 					})
 				}
 			}
@@ -148,7 +122,7 @@ export class Pathfinder {
 		return null
 	}
 
-	aStarChain(points: Vec2[]): Vec2[] | null {
+	aStarChain(points: Vec2[], distanceAlgo?: DistanceAlgo): Vec2[] | null {
 		if (points.length < 2)
 			throw new Error("throw a star chain")
 
@@ -158,7 +132,7 @@ export class Pathfinder {
 
 		for (const point of points) {
 			if (last) {
-				const subpath = this.aStar(last, point)
+				const subpath = this.aStar(last, point, distanceAlgo)
 				if (!subpath) return null
 				path.push(...(count++ === 0)
 					? subpath

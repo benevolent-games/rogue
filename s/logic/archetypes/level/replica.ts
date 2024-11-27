@@ -17,6 +17,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		const dungeon = new Dungeon(dungeonOptions)
 
 		const mainScale = 20 / 100
+		let tileCount = 0
 
 		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {
 			const scale = rawScale.clone().multiplyBy(mainScale)
@@ -34,7 +35,6 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 			const location = dungeon.tilespace(sector)
 			const {position, scale} = place(location, dungeon.sectorSize, 0.01)
 			const sectorIndicator = indicators.sector(position, scale)
-			console.log("sector", position.toString())
 			instances.add(sectorIndicator)
 		}
 
@@ -45,6 +45,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 			instances.add(cellIndicator)
 
 			for (const tile of tiles) {
+				tileCount++
 				const location = dungeon.tilespace(sector, cell, tile)
 				const {position, scale} = place(location, Vec2.new(1, 1), 0.1)
 				const floor = floorInstancer()
@@ -53,6 +54,8 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 				instances.add(floor)
 			}
 		}
+
+		console.log("floor tile count", tileCount)
 
 		return {
 			replicate({feed, feedback}) {},

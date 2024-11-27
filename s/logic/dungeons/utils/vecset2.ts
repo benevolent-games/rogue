@@ -21,9 +21,11 @@ export class Vecset2 {
 		return this.#vectors.some(v => v.equals(vec))
 	}
 
-	add(vec: Vec2) {
-		if (!this.has(vec))
-			this.#vectors.push(vec)
+	add(...vecs: Vec2[]) {
+		for (const vec of vecs) {
+			if (!this.has(vec))
+				this.#vectors.push(vec)
+		}
 	}
 
 	delete(vec: Vec2) {
