@@ -1,4 +1,5 @@
 
+import {Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./utils/grid.js"
@@ -30,34 +31,45 @@ export class Dungeon {
 		const sectorGoals = this.#carvePathwayThroughSubgrids(
 			sectors,
 			cellGrid,
-			(sector, cell) => this.cellspace(sector, cell),
+			sector => sector,
 		)
 
-		const cellPaths = sectorGoals.map(({unit: sector, start, end}) => {
+		const cellPathing = sectorGoals.map(({unit: sector, start, end}) => {
 			const pathfinder = new Pathfinder(randy, cellGrid)
 			const cells = pathfinder.drunkardWithPerseverance(start, end)
 			return {sector, cells}
 		})
-		this.cells = cellPaths.flatMap(({sector, cells}) => {
-			const cellGoals = this.#carvePathwayThroughSubgrids(
-				cells,
-				tileGrid,
-				(cell, tile) => this.tilespace(sector, cell, tile),
+
+		const cellPath = cellPathing.flatMap(c => c.cells)
+		const sectorByCell = new Map2(
+			cellPathing.flatMap(c =>
+				c.cells.map(cell => [cell, c.sector] as [Vec2, Vec2])
 			)
-			return cellGoals.map(({unit: cell, start, end}) => {
-				const pathfinder = new Pathfinder(randy, tileGrid)
-				const innerTiles = this.#innerSubunits(tileGrid)
-				const tilePath = pathfinder.aStarChain([
-					start,
-					randy.yoink(innerTiles),
-					randy.yoink(innerTiles),
-					randy.yoink(innerTiles),
-					end,
-				])
-				if (!tilePath)
-					throw new Error("failure to produce tilepath")
-				return {sector, cell, tiles: Vecset2.dedupe(tilePath)}
-			})
+		)
+
+		const cellGoals = this.#carvePathwayThroughSubgrids(
+			cellPath,
+			tileGrid,
+			cell => {
+				const sector = sectorByCell.require(cell)
+				return this.cellspace(sector, cell)
+			},
+		)
+
+		this.cells = cellGoals.map(({unit: cell, start, end}) => {
+			const pathfinder = new Pathfinder(randy, tileGrid)
+			const innerTiles = this.#innerSubunits(tileGrid)
+			const tilePath = pathfinder.aStarChain([
+				start,
+				randy.yoink(innerTiles),
+				randy.yoink(innerTiles),
+				randy.yoink(innerTiles),
+				end,
+			])
+			if (!tilePath)
+				throw new Error("failure to produce tilepath")
+			const sector = sectorByCell.require(cell)
+			return {sector, cell, tiles: Vecset2.dedupe(tilePath)}
 		})
 	}
 
@@ -84,7 +96,7 @@ export class Dungeon {
 	#carvePathwayThroughSubgrids(
 			unitPath: Vec2[],
 			subgrid: Grid,
-			locate: (unit: Vec2, subunit?: Vec2) => Vec2,
+			locate: (unit: Vec2) => Vec2,
 		) {
 
 		const unitGoals: {unit: Vec2, start: Vec2, end: Vec2}[] = []
@@ -95,14 +107,14 @@ export class Dungeon {
 			const nextUnit = unitPath.at(index + 1) ?? null
 
 			const end = nextUnit
-				? this.randy.choose(getBorder(subgrid, unit, nextUnit))
+				? this.randy.choose(this.#getBorder(subgrid, locate(unit), locate(nextUnit)))
 				: this.randy.choose(subunits)
 
 			const start = previous
-				? pickAdjacent(
-					{unit: previous.unit, subunit: previous.end},
-					{unit, subunits},
-					locate,
+				? this.#pickAdjacent(
+					subgrid,
+					{unit: locate(previous.unit), subunit: previous.end},
+					{unit: locate(unit), subunits},
 				)
 				: this.randy.choose(subunits)
 
@@ -112,43 +124,44 @@ export class Dungeon {
 
 		return unitGoals
 	}
-}
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+	#getBorder(grid: Grid, unit: Vec2, neighborUnit: Vec2) {
+		const direction = neighborUnit.clone().subtract(unit)
+		const border = grid.list().filter(cell => (
+			(direction.x === 1 && cell.x === (grid.extent.x - 1)) ||
+			(direction.x === -1 && cell.x === 0) ||
+			(direction.y === 1 && cell.y === (grid.extent.y - 1)) ||
+			(direction.y === -1 && cell.y === 0)
+		))
+		if (border.length === 0)
+			throw new Error("failure to obtain border")
+		return border
+	}
 
-function getBorder(grid: Grid, unit: Vec2, neighborUnit: Vec2) {
-	const direction = neighborUnit.clone().subtract(unit)
-	const border = grid.list().filter(cell => (
-		(direction.x === 1 && cell.x === (grid.extent.x - 1)) ||
-		(direction.x === -1 && cell.x === 0) ||
-		(direction.y === 1 && cell.y === (grid.extent.y - 1)) ||
-		(direction.y === -1 && cell.y === 0)
-	))
-	if (border.length === 0)
-		throw new Error("failure to obtain border")
-	return border
-}
+	#pickAdjacent(
+			subgrid: Grid,
+			alpha: {unit: Vec2, subunit: Vec2},
+			bravo: {unit: Vec2, subunits: Vec2[]},
+		) {
 
-function pickAdjacent(
-		alpha: {unit: Vec2, subunit: Vec2},
-		bravo: {unit: Vec2, subunits: Vec2[]},
-		locate: (unit: Vec2, subunit?: Vec2) => Vec2,
-	) {
+		const resolve = (unit: Vec2, subunit: Vec2) => {
+			return subgrid.extent.clone().multiply(unit).add(subunit)
+		}
 
-	const commonAlpha = locate(alpha.unit, alpha.subunit)
+		const commonAlpha = resolve(alpha.unit, alpha.subunit)
 
-	const commonAdjacent = cardinals
-		.map(cardinal => commonAlpha.clone().add(cardinal))
+		const commonAdjacent = cardinals
+			.map(cardinal => commonAlpha.clone().add(cardinal))
 
-	const subunit = bravo.subunits.find(sub => {
-		const commonBravo = locate(bravo.unit, sub)
-		return commonAdjacent.some(adjacent => adjacent.equals(commonBravo))
-	})
+		const subunit = bravo.subunits.find(sub => {
+			const commonBravo = resolve(bravo.unit, sub)
+			return commonAdjacent.some(adjacent => adjacent.equals(commonBravo))
+		})
 
-	if (!subunit)
-		throw new Error("unable to find adjacent bravo subunit")
+		if (!subunit)
+			throw new Error("unable to find adjacent bravo subunit")
 
-	return subunit
+		return subunit
+	}
 }
 

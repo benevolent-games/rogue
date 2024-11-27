@@ -16,9 +16,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		const instances = new Set<TransformNode>()
 		const dungeon = new Dungeon(dungeonOptions)
 
-		const mainScale = 10 / 100
-		const cellScale = 95 / 100
-		const sectorScale = 98 / 100
+		const mainScale = 20 / 100
 
 		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {
 			const scale = rawScale.clone().multiplyBy(mainScale)
