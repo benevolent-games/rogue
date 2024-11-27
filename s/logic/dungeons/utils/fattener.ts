@@ -3,6 +3,7 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./grid.js"
 import {Vecset2} from "./vecset2.js"
+import {distance} from "../../../tools/distance.js"
 
 export class Fattener {
 	#tiles = new Vecset2()
@@ -39,6 +40,22 @@ export class Fattener {
 			if (chosen)
 				this.#tiles.add(chosen)
 		}
+	}
+
+	growBorderHole(hole: Vec2, direction: Vec2, maxGrowth: number) {
+		const {grid, randy} = this
+		const growth = Math.floor(randy.between(1, maxGrowth + 1))
+		console.log("G", growth)
+		const banned = new Vecset2(
+			grid.list().filter(v => (
+				(grid.isCorner(v)) ||
+				(grid.isBorder(v) && !grid.isDirectionalBorder(v, direction))
+			)),
+		)
+		const additions = grid.list()
+			.filter(v => !banned.has(v))
+			.filter(v => distance(hole, v, "euclidean") <= growth)
+		this.#tiles.add(...additions)
 	}
 }
 

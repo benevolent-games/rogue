@@ -4,11 +4,10 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./utils/grid.js"
 import {DungeonOptions} from "./types.js"
-import {Vecset2} from "./utils/vecset2.js"
+import {Fattener} from "./utils/fattener.js"
 import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
-import { Fattener } from "./utils/fattener.js"
 
 export class Dungeon {
 	randy: Randy
@@ -29,12 +28,12 @@ export class Dungeon {
 		this.sectorSize = tileGrid.extent.clone().multiply(cellGrid.extent)
 
 		const sectors = this.sectors = drunkWalkToHorizon({randy, ...sectorWalk})
-		const sectorGoals = this.#carvePathwayThroughSubgrids(
-			sectors,
-			cellGrid,
-			false,
-			sector => sector,
-		)
+		const sectorGoals = this.#carvePathwayThroughSubgrids({
+			unitPath: sectors,
+			subgrid: cellGrid,
+			excludeCorners: false,
+			locate: sector => sector,
+		})
 
 		const cellPathing = sectorGoals.map(({unit: sector, start, end}) => {
 			const pathfinder = new Pathfinder(randy, cellGrid)
@@ -49,17 +48,17 @@ export class Dungeon {
 			)
 		)
 
-		const cellGoals = this.#carvePathwayThroughSubgrids(
-			cellPath,
-			tileGrid,
-			true,
-			cell => {
+		const cellGoals = this.#carvePathwayThroughSubgrids({
+			unitPath: cellPath,
+			subgrid: tileGrid,
+			excludeCorners: true,
+			locate: cell => {
 				const sector = sectorByCell.require(cell)
 				return this.cellspace(sector, cell)
 			},
-		)
+		})
 
-		this.cells = cellGoals.map(({unit: cell, start, end}) => {
+		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}) => {
 			const pathfinder = new Pathfinder(randy, tileGrid)
 			const innerTiles = tileGrid.excludeBorders()
 			const tilePath = pathfinder.aStarChain([
@@ -68,7 +67,7 @@ export class Dungeon {
 				randy.yoink(innerTiles),
 				randy.yoink(innerTiles),
 				end,
-			])
+			], "manhattan")
 
 			if (!tilePath)
 				throw new Error("failure to produce tilepath")
@@ -76,6 +75,12 @@ export class Dungeon {
 			const sector = sectorByCell.require(cell)
 
 			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
+
+			if (forwardDirection)
+				fattener.growBorderHole(end, forwardDirection, 4)
+
+			if (backwardDirection)
+				fattener.growBorderHole(start, backwardDirection, 4)
 
 			fattener.grow(fattener.tiles.length / 5)
 			fattener.knobbify(30, 2)
@@ -96,22 +101,35 @@ export class Dungeon {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
 	}
 
-	#carvePathwayThroughSubgrids(
+	#carvePathwayThroughSubgrids({unitPath, subgrid, excludeCorners, locate}: {
 			unitPath: Vec2[],
 			subgrid: Grid,
 			excludeCorners: boolean,
 			locate: (unit: Vec2) => Vec2,
-		) {
+		}) {
 
-		const unitGoals: {unit: Vec2, start: Vec2, end: Vec2}[] = []
-		let previous: {unit: Vec2, end: Vec2} | null = null
+		const unitGoals: {
+			unit: Vec2,
+			start: Vec2,
+			end: Vec2,
+			forwardDirection: Vec2 | null,
+			backwardDirection: Vec2 | null,
+		}[] = []
+
+		let previous: {unit: Vec2, end: Vec2, direction: Vec2} | null = null
 
 		unitPath.forEach((unit, index) => {
 			const subunits = subgrid.list()
 			const nextUnit = unitPath.at(index + 1) ?? null
 
-			const end = nextUnit
-				? this.randy.choose(this.#getBorder(subgrid, locate(unit), locate(nextUnit), excludeCorners))
+			const forwardDirection = nextUnit
+				? locate(nextUnit).clone().subtract(locate(unit))
+				: null
+
+			const backwardDirection = previous && previous.direction
+
+			const end = forwardDirection
+				? this.randy.choose(this.#getBorder(subgrid, forwardDirection, excludeCorners))
 				: this.randy.choose(subunits)
 
 			const start = previous
@@ -122,15 +140,16 @@ export class Dungeon {
 				)
 				: this.randy.choose(subunits)
 
-			unitGoals.push({unit, start, end})
-			previous = {unit, end}
+			unitGoals.push({unit, start, end, forwardDirection, backwardDirection})
+
+			if (nextUnit)
+				previous = {unit, end, direction: locate(unit).clone().subtract(locate(nextUnit))}
 		})
 
 		return unitGoals
 	}
 
-	#getBorder(subgrid: Grid, unit: Vec2, neighborUnit: Vec2, excludeCorners: boolean) {
-		const direction = neighborUnit.clone().subtract(unit)
+	#getBorder(subgrid: Grid, direction: Vec2, excludeCorners: boolean) {
 		const border = subgrid.list()
 			.filter(v => subgrid.isDirectionalBorder(v, direction))
 			.filter(v => (excludeCorners ? !subgrid.isCorner(v) : true))

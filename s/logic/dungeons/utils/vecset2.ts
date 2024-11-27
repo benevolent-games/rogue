@@ -28,8 +28,8 @@ export class Vecset2 {
 		}
 	}
 
-	delete(vec: Vec2) {
-		this.#vectors = this.#vectors.filter(v => !v.equals(vec))
+	delete(...vecs: Vec2[]) {
+		this.#vectors = this.#vectors.filter(a => !vecs.some(b => b.equals(a)))
 	}
 
 	list() {

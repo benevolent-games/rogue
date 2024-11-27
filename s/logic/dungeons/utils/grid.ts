@@ -26,6 +26,11 @@ export class Grid {
 			.filter(v => this.inBounds(v))
 	}
 
+	isNeighbor(a: Vec2, b: Vec2) {
+		const diff = b.subtract(a)
+		return cardinals.some(c => c.equals(diff))
+	}
+
 	nearby(a: Vec2, range: number, algo: DistanceAlgo = "euclidean") {
 		return this.list().filter(b => distance(a, b, algo) <= range)
 	}
