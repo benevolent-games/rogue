@@ -24,7 +24,7 @@ export class Fattener {
 					knob,
 					size,
 					this.randy.choose(["chebyshev", "euclidean", "manhattan"]),
-				)
+				).filter(v => !this.grid.isBorder(v))
 			)
 		}
 	}
@@ -34,6 +34,7 @@ export class Fattener {
 			const target = this.randy.choose(this.tiles)
 			const neighbors = this.grid.neighbors(target)
 				.filter(v => !this.#tiles.has(v))
+				.filter(v => !this.grid.isBorder(v))
 			const chosen = this.randy.choose(neighbors)
 			if (chosen)
 				this.#tiles.add(chosen)

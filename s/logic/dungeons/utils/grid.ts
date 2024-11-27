@@ -3,6 +3,11 @@ import {loop2d, Vec2} from "@benev/toolbox"
 import {cardinals} from "../../../tools/directions.js"
 import {distance, DistanceAlgo} from "../../../tools/distance.js"
 
+/**
+ * Operations pertaining to managing vectors on a 2d grid.
+ *  - does not store any vectors
+ *  - it's about operations related to the extent of the grid (the boundaries)
+ */
 export class Grid {
 	constructor(public extent: Vec2) {}
 
@@ -27,6 +32,24 @@ export class Grid {
 
 	vacancies(occupied: Vec2[]) {
 		return this.list().filter(v => !occupied.includes(v))
+	}
+
+	isBorder({x, y}: Vec2, range = 1) {
+		const {extent} = this
+		return (
+			(x < range) ||
+			(x >= (extent.x - range)) ||
+			(y < range) ||
+			(y >= (extent.y - range))
+		)
+	}
+
+	getBorders(range = 1) {
+		return this.list().filter(v => this.isBorder(v, range))
+	}
+
+	excludeBorders(range = 1) {
+		return this.list().filter(v => !this.isBorder(v, range))
 	}
 }
 

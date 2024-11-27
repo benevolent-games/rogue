@@ -59,7 +59,7 @@ export class Dungeon {
 
 		this.cells = cellGoals.map(({unit: cell, start, end}) => {
 			const pathfinder = new Pathfinder(randy, tileGrid)
-			const innerTiles = this.#innerSubunits(tileGrid)
+			const innerTiles = tileGrid.excludeBorders()
 			const tilePath = pathfinder.aStarChain([
 				start,
 				randy.yoink(innerTiles),
@@ -67,11 +67,15 @@ export class Dungeon {
 				randy.yoink(innerTiles),
 				end,
 			])
+
 			if (!tilePath)
 				throw new Error("failure to produce tilepath")
+
 			const sector = sectorByCell.require(cell)
 
 			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
+
+			// const borderTiles = this.tileGrid.getBorders()
 
 			fattener.grow(fattener.tiles.length / 5)
 			fattener.knobbify(30, 2)
@@ -90,26 +94,6 @@ export class Dungeon {
 
 	cellspace(sector: Vec2, cell = Vec2.zero()) {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
-	}
-
-	#fattenTiles(tiles: Vec2[]) {
-		const moreTiles = new Vecset2()
-		const hat = [...tiles]
-		const knobs = this.randy.extract(3, hat)
-		for (const knob of knobs) {
-			this.tileGrid.nearby(knob, 3)
-				.forEach(tile => moreTiles.add(tile))
-		}
-		return moreTiles.list()
-	}
-
-	#innerSubunits(grid: Grid) {
-		return grid.list().filter(({x, y}) => (
-			(x !== 0) &&
-			(x !== (grid.extent.x - 1)) &&
-			(y !== 0) &&
-			(y !== (grid.extent.y - 1))
-		))
 	}
 
 	#carvePathwayThroughSubgrids(
@@ -144,12 +128,12 @@ export class Dungeon {
 		return unitGoals
 	}
 
-	#getBorder(grid: Grid, unit: Vec2, neighborUnit: Vec2) {
+	#getBorder(subgrid: Grid, unit: Vec2, neighborUnit: Vec2) {
 		const direction = neighborUnit.clone().subtract(unit)
-		const border = grid.list().filter(cell => (
-			(direction.x === 1 && cell.x === (grid.extent.x - 1)) ||
+		const border = subgrid.list().filter(cell => (
+			(direction.x === 1 && cell.x === (subgrid.extent.x - 1)) ||
 			(direction.x === -1 && cell.x === 0) ||
-			(direction.y === 1 && cell.y === (grid.extent.y - 1)) ||
+			(direction.y === 1 && cell.y === (subgrid.extent.y - 1)) ||
 			(direction.y === -1 && cell.y === 0)
 		))
 		if (border.length === 0)
