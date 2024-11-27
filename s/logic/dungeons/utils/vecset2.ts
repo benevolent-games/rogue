@@ -1,8 +1,13 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Randy, Vec2} from "@benev/toolbox"
 
 export class Vecset2 {
 	#vectors: Vec2[] = []
+
+	constructor(vectors: Vec2[] = []) {
+		for (const v of vectors)
+			this.add(v)
+	}
 
 	get size() {
 		return this.#vectors.length
@@ -23,6 +28,10 @@ export class Vecset2 {
 
 	list() {
 		return [...this.#vectors]
+	}
+
+	yoink(randy: Randy) {
+		return randy.yoink(this.#vectors)
 	}
 }
 

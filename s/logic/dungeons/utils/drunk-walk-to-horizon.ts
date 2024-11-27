@@ -9,7 +9,7 @@ export function drunkWalkToHorizon(options: {randy: Randy} & DrunkWalkOptions) {
 	const {randy} = options
 
 	const steps = new Vecset2()
-	const bannedDirection = options.horizonDirection.clone().multiplyBy(-1)
+	const bannedDirection = Vec2.array(options.horizonDirection).multiplyBy(-1)
 	let current = new Vec2(0, 0)
 
 	steps.add(current)

@@ -1,16 +1,10 @@
 
+import {DungeonOptions} from "../../dungeons/types.js"
+
 export type LevelArchetype = {
-	facts: {
-		config: LevelConfig
-	}
+	facts: {dungeonOptions: DungeonOptions}
 	data: {}
 	memo: {}
 	broadcast: {}
-}
-
-export type LevelConfig = {
-	seed: number
-	length: number
-	density: number
 }
 

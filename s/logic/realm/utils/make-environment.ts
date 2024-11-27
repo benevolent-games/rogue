@@ -61,6 +61,34 @@ export function makeEnvironment(world: World) {
 		}
 	})()
 
+	const indicators = (() => {
+		let count = 0
+
+		const square = MeshBuilder.CreateBox("square", {width: 1, height: 0.1, depth: 1})
+		square.isVisible = false
+		square.material = materials.gray
+		scene.removeMesh(square)
+
+		const mk = (material: PBRMaterial, alpha: number) => {
+			const clone = square.clone()
+			clone.material = material
+			clone.visibility = alpha
+			scene.removeMesh(clone)
+			return (position = Vec3.zero(), scale = Vec3.zero()) => {
+				const instance = clone.createInstance(`square-${count++}`)
+				instance.material = material
+				instance.position.set(...position.array())
+				instance.scaling.set(...scale.array())
+				return instance
+			}
+		}
+
+		return {
+			sector: mk(materials.sad, 0.6),
+			cell: mk(materials.happy, 0.6),
+		}
+	})()
+
 	const envmap: {hdrTexture: CubeTexture, dispose: () => void} = make_envmap(scene, constants.urls.envmap)
 	scene.environmentIntensity = 0.1
 
@@ -92,6 +120,7 @@ export function makeEnvironment(world: World) {
 		envmap,
 		materials,
 		guys,
+		indicators,
 	}
 }
 

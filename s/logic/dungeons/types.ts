@@ -1,25 +1,30 @@
 
-import {Randy, Vec2} from "@benev/toolbox"
+import {Map2} from "@benev/slate"
+import {Vec2, Vec2Array} from "@benev/toolbox"
+
+export type Dungeon = {
+	cellSize: Vec2
+	sectorSize: Vec2
+	sectorCellPaths: Map2<Vec2, Vec2[]>
+}
+
+///////////////////
 
 export type DungeonOptions = {
-	randy: Randy
-	densities: Densities
+	seed: number
+	gridExtents: Extents
 	sectorWalk: DrunkWalkOptions
 }
 
-export type SectorOptions = {
-	vector: Vec2
-	densities: Densities
-	sectorWalk: DrunkWalkOptions
-}
+///////////////////
 
-export type Densities = {
-	cells: number
-	sectors: number
+export type Extents = {
+	cells: Vec2Array
+	tiles: Vec2Array
 }
 
 export type DrunkWalkOptions = {
 	stepCount: number
-	horizonDirection: Vec2
+	horizonDirection: Vec2Array
 }
 
