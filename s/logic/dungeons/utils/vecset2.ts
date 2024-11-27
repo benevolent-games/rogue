@@ -9,6 +9,10 @@ export class Vecset2 {
 			this.add(v)
 	}
 
+	static dedupe(vectors: Vec2[]) {
+		return new this(vectors).list()
+	}
+
 	get size() {
 		return this.#vectors.length
 	}

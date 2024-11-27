@@ -1,5 +1,4 @@
 
-import {Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./utils/grid.js"
@@ -16,124 +15,103 @@ export class Dungeon {
 	cellSize: Vec2
 	sectorSize: Vec2
 
+	sectors: Vec2[]
+	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[]}[]
+
 	constructor(public options: DungeonOptions) {
-		const {seed, gridExtents} = options
-		this.randy = Randy.seed(seed)
-		this.cellGrid = new Grid(Vec2.array(gridExtents.cells))
-		this.tileGrid = new Grid(Vec2.array(gridExtents.tiles))
-		this.cellSize = this.tileGrid.extent.clone()
-		this.sectorSize = this.tileGrid.extent.clone().multiply(this.cellGrid.extent)
+		const {seed, gridExtents, sectorWalk} = options
+		const randy = this.randy = Randy.seed(seed)
+		const cellGrid = this.cellGrid = new Grid(Vec2.array(gridExtents.cells))
+		const tileGrid = this.tileGrid = new Grid(Vec2.array(gridExtents.tiles))
+		this.cellSize = tileGrid.extent.clone()
+		this.sectorSize = tileGrid.extent.clone().multiply(cellGrid.extent)
+
+		const sectors = this.sectors = drunkWalkToHorizon({randy, ...sectorWalk})
+		const sectorGoals = this.#carvePathwayThroughSubgrids(
+			sectors,
+			cellGrid,
+			(sector, cell) => this.cellspace(sector, cell),
+		)
+
+		const cellPaths = sectorGoals.map(({unit: sector, start, end}) => {
+			const pathfinder = new Pathfinder(randy, cellGrid)
+			const cells = pathfinder.drunkardWithPerseverance(start, end)
+			return {sector, cells}
+		})
+		this.cells = cellPaths.flatMap(({sector, cells}) => {
+			const cellGoals = this.#carvePathwayThroughSubgrids(
+				cells,
+				tileGrid,
+				(cell, tile) => this.tilespace(sector, cell, tile),
+			)
+			return cellGoals.map(({unit: cell, start, end}) => {
+				const pathfinder = new Pathfinder(randy, tileGrid)
+				const innerTiles = this.#innerSubunits(tileGrid)
+				const tilePath = pathfinder.aStarChain([
+					start,
+					randy.yoink(innerTiles),
+					randy.yoink(innerTiles),
+					randy.yoink(innerTiles),
+					end,
+				])
+				if (!tilePath)
+					throw new Error("failure to produce tilepath")
+				return {sector, cell, tiles: Vecset2.dedupe(tilePath)}
+			})
+		})
 	}
 
-	resolve(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
+	tilespace(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
 		const sectorOffset = this.sectorSize.clone().multiply(sector)
 		const cellOffset = this.cellSize.clone().multiply(cell)
 		const tileOffset = tile.clone()
 		return Vec2.zero().add(sectorOffset, cellOffset, tileOffset)
 	}
-}
 
-export function makeDungeon(options: DungeonOptions) {
-	const {seed, sectorWalk, gridExtents} = options
-
-	const randy = Randy.seed(seed)
-	const cellGrid = new Grid(Vec2.array(gridExtents.cells))
-	const tileGrid = new Grid(Vec2.array(gridExtents.tiles))
-
-	const cellSize = tileGrid.extent.clone()
-	const sectorSize = tileGrid.extent.clone().multiply(cellGrid.extent)
-
-	const sectorPath = drunkWalkToHorizon({randy, ...sectorWalk})
-	const sectorCellPaths = new Map2<Vec2, Vec2[]>()
-	const cellTiles = new Map2<Vec2, Vec2[]>()
-
-	function locate(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
-		const sectorOffset = sectorSize.clone().multiply(sector)
-		const cellOffset = cellSize.clone().multiply(cell)
-		const tileOffset = tile.clone()
-		return Vec2.zero().add(sectorOffset, cellOffset, tileOffset)
+	cellspace(sector: Vec2, cell = Vec2.zero()) {
+		return this.cellGrid.extent.clone().multiply(sector).add(cell)
 	}
 
-
-	let previousReport: {sector: Vec2, endCell: Vec2} | null = null
-
-	sectorPath.forEach((sector, index) => {
-		const cells = cellGrid.list()
-		const nextSector = sectorPath.at(index + 1) ?? null
-
-		const endCell = nextSector
-			? randy.choose(getBorder(cellGrid, sector, nextSector))
-			: randy.choose(cells)
-
-		const startCell = previousReport
-			? pickAdjacent(
-				cellGrid,
-				{unit: previousReport.sector, sub: previousReport.endCell},
-				{unit: sector, subs: cells},
-			)
-			: randy.choose(cells)
-
-		const pathfinder = new Pathfinder(randy, cellGrid)
-		const path = pathfinder.drunkardWithPerseverance(startCell, endCell)
-		sectorCellPaths.set(sector, path)
-
-		previousReport = {sector, endCell}
-	})
-
-	const sectorsByCell = new Map2<Vec2, Vec2>()
-	for (const [sector, cellPath] of [...sectorCellPaths]) {
-		for (const cell of cellPath)
-			sectorsByCell.set(cell, sector)
+	#innerSubunits(grid: Grid) {
+		return grid.list().filter(({x, y}) => (
+			(x !== 0) &&
+			(x !== (grid.extent.x - 1)) &&
+			(y !== 0) &&
+			(y !== (grid.extent.y - 1))
+		))
 	}
 
-	const cellPath = new Vecset2([...sectorCellPaths.values()].flat()).list()
+	#carvePathwayThroughSubgrids(
+			unitPath: Vec2[],
+			subgrid: Grid,
+			locate: (unit: Vec2, subunit?: Vec2) => Vec2,
+		) {
 
-	let previousCellReport: {cell: Vec2, endTile: Vec2} | null = null
+		const unitGoals: {unit: Vec2, start: Vec2, end: Vec2}[] = []
+		let previous: {unit: Vec2, end: Vec2} | null = null
 
-	cellPath.forEach((cell, index) => {
-		const sector = sectorsByCell.require(cell)
-		const absoluteCell = commonSpace(cellGrid, sector, cell)
+		unitPath.forEach((unit, index) => {
+			const subunits = subgrid.list()
+			const nextUnit = unitPath.at(index + 1) ?? null
 
-		const tiles = tileGrid.list()
-		const nextCell = cellPath.at(index + 1) ?? null
+			const end = nextUnit
+				? this.randy.choose(getBorder(subgrid, unit, nextUnit))
+				: this.randy.choose(subunits)
 
-		const endTile = nextCell
-			? randy.choose(getBorder(tileGrid, absoluteCell, commonSpace(cellGrid, sector, nextCell)))
-			: randy.choose(tiles)
+			const start = previous
+				? pickAdjacent(
+					{unit: previous.unit, subunit: previous.end},
+					{unit, subunits},
+					locate,
+				)
+				: this.randy.choose(subunits)
 
-		const startTile = previousCellReport
-			? pickAdjacent(
-				tileGrid,
-				{unit: previousCellReport.cell, sub: previousCellReport.endTile},
-				{unit: cell, subs: tiles},
-			)
-			: randy.choose(tiles)
+			unitGoals.push({unit, start, end})
+			previous = {unit, end}
+		})
 
-		const pathfinder = new Pathfinder(randy, tileGrid)
-		const availableTiles = new Vecset2(tiles)
-		availableTiles.delete(startTile)
-		availableTiles.delete(endTile)
-
-		const path = pathfinder.aStarChain([
-			startTile,
-			availableTiles.yoink(randy),
-			availableTiles.yoink(randy),
-			availableTiles.yoink(randy),
-			endTile,
-		])
-
-		if (!path)
-			throw new Error("a-star-chain failed to find tile path")
-
-		const dedupedPath = new Vecset2(path).list()
-		cellTiles.set(cell, dedupedPath)
-
-		previousCellReport = {cell, endTile}
-	})
-
-	console.log("CELL PATH", cellPath)
-
-	return {cellSize, sectorSize, sectorCellPaths, cellTiles}
+		return unitGoals
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,40 +119,36 @@ export function makeDungeon(options: DungeonOptions) {
 
 function getBorder(grid: Grid, unit: Vec2, neighborUnit: Vec2) {
 	const direction = neighborUnit.clone().subtract(unit)
-	return grid.list().filter(cell => (
+	const border = grid.list().filter(cell => (
 		(direction.x === 1 && cell.x === (grid.extent.x - 1)) ||
 		(direction.x === -1 && cell.x === 0) ||
 		(direction.y === 1 && cell.y === (grid.extent.y - 1)) ||
 		(direction.y === -1 && cell.y === 0)
 	))
+	if (border.length === 0)
+		throw new Error("failure to obtain border")
+	return border
 }
 
 function pickAdjacent(
-		grid: Grid,
-		alpha: {unit: Vec2, sub: Vec2},
-		bravo: {unit: Vec2, subs: Vec2[]},
+		alpha: {unit: Vec2, subunit: Vec2},
+		bravo: {unit: Vec2, subunits: Vec2[]},
+		locate: (unit: Vec2, subunit?: Vec2) => Vec2,
 	) {
 
-	const commonAlpha = commonSpace(grid, alpha.unit, alpha.sub)
+	const commonAlpha = locate(alpha.unit, alpha.subunit)
 
 	const commonAdjacent = cardinals
 		.map(cardinal => commonAlpha.clone().add(cardinal))
 
-	const sub = bravo.subs.find(sub => {
-		const commonBravo = commonSpace(grid, bravo.unit, sub)
+	const subunit = bravo.subunits.find(sub => {
+		const commonBravo = locate(bravo.unit, sub)
 		return commonAdjacent.some(adjacent => adjacent.equals(commonBravo))
 	})
 
-	if (!sub)
+	if (!subunit)
 		throw new Error("unable to find adjacent bravo subunit")
 
-	return sub
-}
-
-function commonSpace(grid: Grid, unit: Vec2, sub: Vec2) {
-	return unit
-		.clone()
-		.multiply(grid.extent)
-		.add(sub)
+	return subunit
 }
 
