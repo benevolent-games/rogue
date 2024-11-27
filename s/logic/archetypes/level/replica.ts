@@ -4,7 +4,7 @@ import {TransformNode} from "@babylonjs/core"
 
 import {LevelArchetype} from "./types.js"
 import {Realm} from "../../realm/realm.js"
-import {Dungeon} from "../../dungeons/make-dungeon.js"
+import {Dungeon} from "../../dungeons/dungeon.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
 export const levelReplica = Realm.replica<LevelArchetype>(
