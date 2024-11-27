@@ -34,14 +34,37 @@ export class Grid {
 		return this.list().filter(v => !occupied.includes(v))
 	}
 
-	isBorder({x, y}: Vec2, range = 1) {
+	#borderReport({x, y}: Vec2, range: number) {
 		const {extent} = this
+		const north = (y >= (extent.y - range))
+		const east = (x >= (extent.x - range))
+		const south = (y < range)
+		const west = (x < range)
+		return {north, east, south, west}
+	}
+
+	isBorder(vec: Vec2, range = 1) {
+		const b = this.#borderReport(vec, range)
+		return b.north || b.east || b.south || b.west
+	}
+
+	isCorner(vec: Vec2, range = 1) {
+		const {north, east, south, west} = this.#borderReport(vec, range)
 		return (
-			(x < range) ||
-			(x >= (extent.x - range)) ||
-			(y < range) ||
-			(y >= (extent.y - range))
+			(north && west) ||
+			(north && east) ||
+			(south && west) ||
+			(south && east)
 		)
+	}
+
+	isDirectionalBorder(vec: Vec2, direction: Vec2, range = 1) {
+		const [northCardinal, eastCardinal, southCardinal, westCardinal] = cardinals
+		const {north, east, south, west} = this.#borderReport(vec, range)
+		if (direction.equals(northCardinal)) return north
+		if (direction.equals(eastCardinal)) return east
+		if (direction.equals(southCardinal)) return south
+		if (direction.equals(westCardinal)) return west
 	}
 
 	getBorders(range = 1) {

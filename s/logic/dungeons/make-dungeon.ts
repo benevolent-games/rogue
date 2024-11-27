@@ -32,6 +32,7 @@ export class Dungeon {
 		const sectorGoals = this.#carvePathwayThroughSubgrids(
 			sectors,
 			cellGrid,
+			false,
 			sector => sector,
 		)
 
@@ -51,6 +52,7 @@ export class Dungeon {
 		const cellGoals = this.#carvePathwayThroughSubgrids(
 			cellPath,
 			tileGrid,
+			true,
 			cell => {
 				const sector = sectorByCell.require(cell)
 				return this.cellspace(sector, cell)
@@ -75,8 +77,6 @@ export class Dungeon {
 
 			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
 
-			// const borderTiles = this.tileGrid.getBorders()
-
 			fattener.grow(fattener.tiles.length / 5)
 			fattener.knobbify(30, 2)
 			fattener.knobbify(4, 6)
@@ -99,6 +99,7 @@ export class Dungeon {
 	#carvePathwayThroughSubgrids(
 			unitPath: Vec2[],
 			subgrid: Grid,
+			excludeCorners: boolean,
 			locate: (unit: Vec2) => Vec2,
 		) {
 
@@ -110,7 +111,7 @@ export class Dungeon {
 			const nextUnit = unitPath.at(index + 1) ?? null
 
 			const end = nextUnit
-				? this.randy.choose(this.#getBorder(subgrid, locate(unit), locate(nextUnit)))
+				? this.randy.choose(this.#getBorder(subgrid, locate(unit), locate(nextUnit), excludeCorners))
 				: this.randy.choose(subunits)
 
 			const start = previous
@@ -128,14 +129,11 @@ export class Dungeon {
 		return unitGoals
 	}
 
-	#getBorder(subgrid: Grid, unit: Vec2, neighborUnit: Vec2) {
+	#getBorder(subgrid: Grid, unit: Vec2, neighborUnit: Vec2, excludeCorners: boolean) {
 		const direction = neighborUnit.clone().subtract(unit)
-		const border = subgrid.list().filter(cell => (
-			(direction.x === 1 && cell.x === (subgrid.extent.x - 1)) ||
-			(direction.x === -1 && cell.x === 0) ||
-			(direction.y === 1 && cell.y === (subgrid.extent.y - 1)) ||
-			(direction.y === -1 && cell.y === 0)
-		))
+		const border = subgrid.list()
+			.filter(v => subgrid.isDirectionalBorder(v, direction))
+			.filter(v => (excludeCorners ? !subgrid.isCorner(v) : true))
 		if (border.length === 0)
 			throw new Error("failure to obtain border")
 		return border
