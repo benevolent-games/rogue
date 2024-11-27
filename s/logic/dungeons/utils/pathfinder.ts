@@ -2,6 +2,7 @@
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./grid.js"
+import {Vecset2} from "./vecset2.js"
 import {cardinals} from "../../../tools/directions.js"
 
 export class Pathfinder {
@@ -12,6 +13,39 @@ export class Pathfinder {
 			Math.floor(this.randy.between(0, this.grid.extent.x)),
 			Math.floor(this.randy.between(0, this.grid.extent.y)),
 		)
+	}
+
+	drunkardWithPerseverance(start: Vec2, end: Vec2) {
+		let attempts = 0
+		let path: Vec2[] | null = null
+
+		while (attempts < 1000 && path === null) {
+			path = this.drunkAttempt(start, end)
+		}
+
+		if (!path)
+			throw new Error("drunkard failed to find a path in 1000 attempts")
+
+		return path
+	}
+
+	drunkAttempt(start: Vec2, end: Vec2) {
+		const path = new Vecset2()
+		let current = start.clone()
+		path.add(current)
+
+		while (!current.equals(end)) {
+			const possibleSteps = this.grid.neighbors(current)
+				.filter(step => !path.has(step))
+
+			if (possibleSteps.length === 0)
+				return null
+
+			current = this.randy.choose(possibleSteps)
+			path.add(current)
+		}
+
+		return path.list()
 	}
 
 	drunkard(start: Vec2, end: Vec2) {

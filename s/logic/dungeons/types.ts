@@ -1,14 +1,5 @@
 
-import {Map2} from "@benev/slate"
-import {Vec2, Vec2Array} from "@benev/toolbox"
-
-export type Dungeon = {
-	cellSize: Vec2
-	sectorSize: Vec2
-	sectorCellPaths: Map2<Vec2, Vec2[]>
-}
-
-///////////////////
+import {Vec2Array} from "@benev/toolbox"
 
 export type DungeonOptions = {
 	seed: number

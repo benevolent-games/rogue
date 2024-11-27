@@ -1,5 +1,5 @@
 
-import {Vec3} from "@benev/toolbox"
+import {Vec2, Vec3} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core"
 
 import {LevelArchetype} from "./types.js"
@@ -11,38 +11,55 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 	({realm, facts}) => {
 		const {indicators} = realm.env
 		const {dungeonOptions} = facts
+		const floorInstancer = realm.glbs.templateGlb.instancer("floor, size=1x1, type=ref")
+
 		const instances = new Set<TransformNode>()
 		const dungeon = makeDungeon(dungeonOptions)
 
-		const mainScale = 25 / 100
+		const mainScale = 10 / 100
 		const cellScale = 95 / 100
 		const sectorScale = 98 / 100
 
-		const cellSize = dungeon.cellSize.clone().multiplyBy(mainScale)
-		const sectorSize = dungeon.sectorSize.clone().multiplyBy(mainScale)
-		const halfCellSize = cellSize.clone().multiplyBy(0.5)
-		const halfSectorSize = sectorSize.clone().multiplyBy(0.5)
+		function locate(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
+			const sectorOffset = dungeon.sectorSize.clone().multiply(sector).multiplyBy(mainScale)
+			const cellOffset = dungeon.cellSize.clone().multiply(cell).multiplyBy(mainScale)
+			const tileOffset = tile.clone().multiplyBy(mainScale)
+			return Vec2.zero().add(sectorOffset, cellOffset, tileOffset)
+		}
+
+		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {
+			const scale = rawScale.clone().multiplyBy(mainScale)
+			return {
+				scale: Vec3.new(scale.x, 1, scale.y),
+				position: Coordinates.import(location)
+					.add(scale.divideBy(2))
+					.position()
+					.add_(0, verticalOffset, 0),
+			}
+		}
 
 		for (const [sector, cellPaths] of dungeon.sectorCellPaths) {
-			const sectorCoords = Coordinates.import(sectorSize).multiply(sector)
-			const sectorPosition = sectorCoords.position().add_(0, 0.1, 0)
-			const {x: scaleX, y: scaleY} = sectorSize.clone().multiplyBy(sectorScale)
-			const sectorIndicator = indicators.sector(
-				sectorPosition,
-				Vec3.new(scaleX, 1, scaleY),
-			)
+			const location = locate(sector)
+			const {position, scale} = place(location, dungeon.sectorSize, 0.01)
+			const sectorIndicator = indicators.sector(position, scale)
 			instances.add(sectorIndicator)
 
 			for (const cell of cellPaths) {
-				const relativeCellCoords = Coordinates.import(cellSize).multiply(cell)
-				const absoluteCellCoords = sectorCoords.clone().subtract(halfSectorSize).add(halfCellSize).add(relativeCellCoords)
-				const cellPosition = absoluteCellCoords.position().add_(0, 0.2, 0)
-				const {x: scaleX, y: scaleY} = cellSize.clone().multiplyBy(cellScale)
-				const cellIndicator = indicators.cell(
-					cellPosition,
-					Vec3.new(scaleX, 1, scaleY),
-				)
+				const location = locate(sector, cell)
+				const {position, scale} = place(location, dungeon.cellSize, 0.02)
+				const cellIndicator = indicators.cell(position, scale)
 				instances.add(cellIndicator)
+
+				const tiles = dungeon.cellTiles.get(cell) ?? []
+
+				for (const tile of tiles) {
+					const location = locate(sector, cell, tile)
+					const {position, scale} = place(location, Vec2.new(1, 1), 0.1)
+					const floor = floorInstancer()
+					floor.scaling.set(...scale.array())
+					floor.position.set(...position.array())
+					instances.add(floor)
+				}
 			}
 		}
 

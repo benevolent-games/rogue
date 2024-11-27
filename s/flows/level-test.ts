@@ -14,13 +14,13 @@ export async function levelTestFlow(o: {
 
 	console.log("CREATE LEVEL")
 	flow.host.simulator.create("level", {
-		seed: 1,
+		seed: 4,
 		gridExtents: {
 			cells: [3, 3],
-			tiles: [11, 11],
+			tiles: [24, 24],
 		},
 		sectorWalk: {
-			stepCount: 10,
+			stepCount: 5,
 			horizonDirection: [0, 1],
 		},
 	})
