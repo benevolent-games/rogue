@@ -21,7 +21,6 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 			}
 		})
 
-
 		return {
 			replicate({feed, feedback}) {},
 			dispose() {

@@ -3,6 +3,7 @@ import {deep, interval} from "@benev/slate"
 
 import {LagProfile} from "../tools/fake-lag.js"
 import {Station} from "../logic/station/station.js"
+import {Dungeon} from "../logic/dungeons/dungeon.js"
 import {simulas} from "../logic/archetypes/simulas.js"
 import {stdDungeonOptions} from "../logic/dungeons/options.js"
 import {Cathedral} from "../logic/framework/relay/cathedral.js"
@@ -14,14 +15,18 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
 	const simulator = new Simulator(station, simulas)
 
-	simulator.create("level", stdDungeonOptions())
+	const dungeonOptions = stdDungeonOptions()
+	const dungeon = new Dungeon(dungeonOptions)
+	const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
+
+	simulator.create("level", dungeonOptions)
 
 	const cathedral = new Cathedral({
 		lag,
 		onBundle: ({replicatorId}) => {
 			const playerId = simulator.create("player", {
 				owner: replicatorId,
-				coordinates: Coordinates.zero(),
+				coordinates: Coordinates.import(getSpawnpoint()),
 			})
 			return () => simulator.destroy(playerId)
 		},

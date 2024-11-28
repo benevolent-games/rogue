@@ -10,6 +10,7 @@ import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
+import { distance } from "../../tools/distance.js"
 
 export class Dungeon {
 	randy: Randy
@@ -91,6 +92,19 @@ export class Dungeon {
 			const tiles = fixAllDiagonalKisses(tileGrid, directTiles)
 			return {sector, cell, tiles, goalposts, flavorName: flavorName as FlavorName}
 		})
+	}
+
+	makeSpawnpointGetterFn() {
+		const [{sector, cell, tiles, goalposts}] = this.cells
+		const [goalpost] = goalposts
+		const sortedTiles = tiles.sort((a, b) => distance(goalpost, b) - distance(goalpost, a))
+		let pipe = sortedTiles
+		return () => {
+			if (pipe.length === 0)
+				pipe = sortedTiles
+			const tile = pipe.pop()!
+			return this.tilespace(sector, cell, tile).add_(0.5, 0.5)
+		}
 	}
 
 	tilespace(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
