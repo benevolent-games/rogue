@@ -9,7 +9,7 @@ import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
-import { fixAllDiagonalKisses, fixDiagonalKissingTiles } from "./utils/fix-diagonal-kissing-tiles.js"
+import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
 
 export class Dungeon {
 	randy: Randy
@@ -19,7 +19,7 @@ export class Dungeon {
 	sectorSize: Vec2
 
 	sectors: Vec2[]
-	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[], flavorName: FlavorName}[]
+	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[], goalposts: Vec2[], flavorName: FlavorName}[]
 
 	constructor(public options: DungeonOptions) {
 		const {seed, gridExtents, sectorWalk} = options
@@ -67,14 +67,14 @@ export class Dungeon {
 			const pathfinder = new Pathfinder(randy, tileGrid)
 			const innerTiles = tileGrid.excludeBorders()
 
-			const goals = [
+			const goalposts = [
 				start,
 				...Array(flavor.goalposts).fill(undefined)
 					.map(() => randy.yoink(innerTiles)),
 				end,
 			]
 
-			const tilePath = pathfinder.aStarChain(goals, flavor.distanceAlgo)
+			const tilePath = pathfinder.aStarChain(goalposts, flavor.distanceAlgo)
 
 			if (!tilePath)
 				throw new Error("failure to produce tilepath")
@@ -85,10 +85,11 @@ export class Dungeon {
 			const directTiles = flavor.fn({
 				tilePath, fattener, sector, cell, start, end,
 				forwardDirection, backwardDirection, tileGrid,
+				goalposts,
 			})
 
 			const tiles = fixAllDiagonalKisses(tileGrid, directTiles)
-			return {sector, cell, tiles, flavorName: flavorName as FlavorName}
+			return {sector, cell, tiles, goalposts, flavorName: flavorName as FlavorName}
 		})
 	}
 

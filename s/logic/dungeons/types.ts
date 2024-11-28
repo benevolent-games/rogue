@@ -31,6 +31,7 @@ export type CellFlavor = (options: {randy: Randy}) => {
 	goalposts: number
 	fn: (params: {
 		tilePath: Vec2[]
+		goalposts: Vec2[]
 		fattener: Fattener
 		sector: Vec2
 		cell: Vec2

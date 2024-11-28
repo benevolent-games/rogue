@@ -3,7 +3,7 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./grid.js"
 import {Vecset2} from "./vecset2.js"
-import {distance} from "../../../tools/distance.js"
+import {distance, DistanceAlgo} from "../../../tools/distance.js"
 
 export class Fattener {
 	#tiles = new Vecset2()
@@ -14,6 +14,23 @@ export class Fattener {
 
 	constructor(public randy: Randy, public grid: Grid, tiles: Vec2[]) {
 		this.#tiles.add(...tiles)
+	}
+
+	makeRoom(center: Vec2, radius: number, algo: DistanceAlgo = "chebyshev") {
+		this.#tiles.add(
+			...this.grid.nearby(center, Math.round(radius), algo)
+				.filter(v => !this.grid.isBorder(v))
+		)
+	}
+
+	makeGoalpostBulbs(goalposts: Vec2[]) {
+		for (const goal of goalposts) {
+			this.randy.choose([
+				() => {},
+				() => this.makeRoom(goal, 1, "chebyshev"),
+				() => this.makeRoom(goal, 2, this.randy.choose(["manhattan"])),
+			])()
+		}
 	}
 
 	knobbify({count, size}: {

@@ -6,7 +6,7 @@ export const CellFlavors = flavors({
 	chaotic: ({randy}) => ({
 		distanceAlgo: "euclidean",
 		goalposts: Math.round(randy.between(1, 5)),
-		fn: ({fattener, tileGrid, start, end, backwardDirection, forwardDirection}) => {
+		fn: ({fattener, tileGrid, goalposts, start, end, backwardDirection, forwardDirection}) => {
 			const p = tileGrid.percentageFn()
 
 			fattener.growBorderPortals(
@@ -27,6 +27,8 @@ export const CellFlavors = flavors({
 				size: randy.between(3, 5),
 			})
 
+			fattener.makeGoalpostBulbs(goalposts)
+
 			return fattener.tiles
 		},
 	}),
@@ -34,7 +36,7 @@ export const CellFlavors = flavors({
 	mechanoid: ({randy}) => ({
 		distanceAlgo: "manhattan",
 		goalposts: Math.round(randy.between(1, 10)),
-		fn: ({fattener, tileGrid, start, end, backwardDirection, forwardDirection}) => {
+		fn: ({fattener, tileGrid, goalposts, start, end, backwardDirection, forwardDirection}) => {
 			const p = tileGrid.percentageFn()
 
 			fattener.shadow()
@@ -50,6 +52,8 @@ export const CellFlavors = flavors({
 				size: randy.between(2, 3),
 			})
 
+			fattener.makeGoalpostBulbs(goalposts)
+
 			return fattener.tiles
 		},
 	}),
@@ -57,7 +61,7 @@ export const CellFlavors = flavors({
 	tatters: ({randy}) => ({
 		distanceAlgo: "manhattan",
 		goalposts: Math.round(randy.between(5, 10)),
-		fn: ({fattener, tileGrid}) => {
+		fn: ({fattener, tileGrid, goalposts}) => {
 			const p = tileGrid.percentageFn()
 
 			fattener.grow(p(10))
@@ -71,6 +75,8 @@ export const CellFlavors = flavors({
 				count: randy.between(1, 2),
 				size: randy.between(2, 3),
 			})
+
+			fattener.makeGoalpostBulbs(goalposts)
 
 			return fattener.tiles
 		},
