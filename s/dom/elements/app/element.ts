@@ -79,6 +79,19 @@ export const GameApp = shadowComponent(use => {
 				}
 			}),
 
+			levelTest: makeNav(async() => {
+				const {levelTestFlow} = await import("../../../flows/level-test.js")
+				const {client, multiplayerClient, dispose} = await levelTestFlow({lag: lagProfiles.bad, identity})
+				return {
+					dispose,
+					template: () => Gameplay([{
+						multiplayerClient,
+						realm: client.realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+				}
+			}),
+
 			host: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
 				const {host, multiplayerClient, client, dispose} = await playerHostFlow({lag: null, identity})
@@ -117,6 +130,9 @@ export const GameApp = shadowComponent(use => {
 
 		if (invite)
 			goExhibit.client(invite)
+
+		else if (location.hash.includes("leveltest"))
+			goExhibit.levelTest()
 
 		else if (location.hash.includes("test"))
 			goExhibit.test()

@@ -1,6 +1,7 @@
 
 import {deep, interval} from "@benev/slate"
 
+import {Glbs} from "../logic/realm/glbs.js"
 import {Realm} from "../logic/realm/realm.js"
 import {World} from "../tools/babylon/world.js"
 import {replicas} from "../logic/archetypes/replicas.js"
@@ -10,7 +11,8 @@ import {MultiplayerClient} from "../logic/multiplayer/multiplayer-client.js"
 
 export async function clientFlow(multiplayer: MultiplayerClient) {
 	const world = await World.load()
-	const realm = new Realm(world)
+	const glbs = await Glbs.load(world)
+	const realm = new Realm(world, glbs)
 	const replicator = new Replicator(realm, replicas, multiplayer.replicatorId)
 	const liaison = new Liaison(multiplayer.gameFiber)
 
@@ -29,6 +31,7 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 	function dispose() {
 		stopTicking()
+		glbs.dispose()
 		world.dispose()
 		multiplayer.dispose()
 	}

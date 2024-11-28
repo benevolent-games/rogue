@@ -8,10 +8,13 @@ import {Cathedral} from "../logic/framework/relay/cathedral.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
+import {stdDungeonOptions} from "../logic/dungeons/std-dungeon-options.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
 	const simulator = new Simulator(station, simulas)
+
+	simulator.create("level", stdDungeonOptions())
 
 	const cathedral = new Cathedral({
 		lag,
