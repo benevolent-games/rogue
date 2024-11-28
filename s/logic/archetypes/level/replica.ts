@@ -16,7 +16,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		const instances = new Set<TransformNode>()
 		const dungeon = new Dungeon(dungeonOptions)
 
-		const mainScale = 20 / 100
+		const mainScale = 100 / 100
 		let tileCount = 0
 
 		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {

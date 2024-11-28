@@ -19,7 +19,7 @@ export async function levelTestFlow(o: {
 			tiles: [24, 24],
 		},
 		sectorWalk: {
-			stepCount: 5,
+			stepCount: 2,
 			horizonDirection: [0, 1],
 		},
 	})
