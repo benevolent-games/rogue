@@ -1,6 +1,6 @@
 
 import {loop2d, Vec2} from "@benev/toolbox"
-import {cardinals} from "../../../tools/directions.js"
+import {cardinals, ordinals} from "../../../tools/directions.js"
 import {distance, DistanceAlgo} from "../../../tools/distance.js"
 
 /**
@@ -22,6 +22,12 @@ export class Grid {
 
 	neighbors(vec: Vec2) {
 		return cardinals
+			.map(c => vec.clone().add(c))
+			.filter(v => this.inBounds(v))
+	}
+
+	ordinalNeighbors(vec: Vec2) {
+		return ordinals
 			.map(c => vec.clone().add(c))
 			.filter(v => this.inBounds(v))
 	}

@@ -9,6 +9,7 @@ import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
+import { fixAllDiagonalKisses, fixDiagonalKissingTiles } from "./utils/fix-diagonal-kissing-tiles.js"
 
 export class Dungeon {
 	randy: Randy
@@ -81,11 +82,12 @@ export class Dungeon {
 			const sector = sectorByCell.require(cell)
 			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
 
-			const tiles = flavor.fn({
+			const directTiles = flavor.fn({
 				tilePath, fattener, sector, cell, start, end,
 				forwardDirection, backwardDirection, tileGrid,
 			})
 
+			const tiles = fixAllDiagonalKisses(tileGrid, directTiles)
 			return {sector, cell, tiles, flavorName: flavorName as FlavorName}
 		})
 	}
