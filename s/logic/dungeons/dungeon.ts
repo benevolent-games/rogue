@@ -3,10 +3,11 @@ import {Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./utils/grid.js"
-import {DungeonOptions} from "./types.js"
+import {CellFlavors} from "./flavors.js"
 import {Fattener} from "./utils/fattener.js"
 import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
+import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
 
 export class Dungeon {
@@ -17,7 +18,7 @@ export class Dungeon {
 	sectorSize: Vec2
 
 	sectors: Vec2[]
-	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[]}[]
+	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[], flavorName: FlavorName}[]
 
 	constructor(public options: DungeonOptions) {
 		const {seed, gridExtents, sectorWalk} = options
@@ -59,34 +60,33 @@ export class Dungeon {
 		})
 
 		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}) => {
+			const [flavorName, makeFlavor] = randy.choose(Object.entries(CellFlavors))
+			const flavor = makeFlavor({randy})
+
 			const pathfinder = new Pathfinder(randy, tileGrid)
 			const innerTiles = tileGrid.excludeBorders()
-			const tilePath = pathfinder.aStarChain([
+
+			const goals = [
 				start,
-				randy.yoink(innerTiles),
-				randy.yoink(innerTiles),
-				randy.yoink(innerTiles),
+				...Array(flavor.goalposts).fill(undefined)
+					.map(() => randy.yoink(innerTiles)),
 				end,
-			], "manhattan")
+			]
+
+			const tilePath = pathfinder.aStarChain(goals, flavor.distanceAlgo)
 
 			if (!tilePath)
 				throw new Error("failure to produce tilepath")
 
 			const sector = sectorByCell.require(cell)
-
 			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
 
-			if (forwardDirection)
-				fattener.growBorderHole(end, forwardDirection, 4)
+			const tiles = flavor.fn({
+				tilePath, fattener, sector, cell, start, end,
+				forwardDirection, backwardDirection, tileGrid,
+			})
 
-			if (backwardDirection)
-				fattener.growBorderHole(start, backwardDirection, 4)
-
-			fattener.grow(fattener.tiles.length / 5)
-			fattener.knobbify(30, 2)
-			fattener.knobbify(4, 6)
-
-			return {sector, cell, tiles: fattener.tiles}
+			return {sector, cell, tiles, flavorName: flavorName as FlavorName}
 		})
 	}
 

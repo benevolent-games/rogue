@@ -79,5 +79,9 @@ export class Grid {
 	excludeBorders(range = 1) {
 		return this.list().filter(v => !this.isBorder(v, range))
 	}
+
+	percentageFn() {
+		return (p: number) => ((p / 100) * (this.extent.x * this.extent.y))
+	}
 }
 

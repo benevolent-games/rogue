@@ -16,18 +16,33 @@ export class Fattener {
 		this.#tiles.add(...tiles)
 	}
 
-	knobbify(count: number, maxSize: number) {
+	knobbify({count, size}: {
+			count: number,
+			size: number
+		}) {
 		for (const _ of Array(Math.floor(count))) {
-			const size = this.randy.between(1, maxSize)
 			const knob = this.randy.choose(this.tiles)
 			this.#tiles.add(
 				...this.grid.nearby(
 					knob,
-					size,
+					Math.round(size),
 					this.randy.choose(["chebyshev", "euclidean", "manhattan"]),
 				).filter(v => !this.grid.isBorder(v))
 			)
 		}
+	}
+
+	shadow() {
+		this.#tiles.add(
+			...this.tiles
+				.map(tile => {
+					let shadow = tile.clone().add_(1, 1)
+					return (this.grid.isBorder(shadow))
+						? tile.clone().add_(-1, -1)
+						: shadow
+				})
+				.filter(tile => !this.grid.isBorder(tile))
+		)
 	}
 
 	grow(count: number) {
@@ -42,10 +57,22 @@ export class Fattener {
 		}
 	}
 
-	growBorderHole(hole: Vec2, direction: Vec2, maxGrowth: number) {
+	growBorderPortals(
+			range: [number, number],
+			[start, backwardDirection]: [Vec2, Vec2 | null],
+			[end, forwardDirection]: [Vec2, Vec2 | null],
+		) {
+
+		if (backwardDirection)
+			this.#growPortal(start, backwardDirection, range)
+
+		if (forwardDirection)
+			this.#growPortal(end, forwardDirection, range)
+	}
+
+	#growPortal(hole: Vec2, direction: Vec2, range: [number, number]) {
 		const {grid, randy} = this
-		const growth = Math.floor(randy.between(1, maxGrowth + 1))
-		console.log("G", growth)
+		const growth = Math.round(randy.between(...range))
 		const banned = new Vecset2(
 			grid.list().filter(v => (
 				(grid.isCorner(v)) ||
