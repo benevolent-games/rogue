@@ -8,6 +8,7 @@ import {Realm} from "../../../logic/realm/realm.js"
 import {QuitPanel} from "../gigamenu/panels/quit/panel.js"
 import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
+import {dungeonDropper} from "../../../logic/dungeons/ui/dungeon-dropper.js"
 import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
 
 export const Gameplay = shadowView(use => (o: {
@@ -17,6 +18,10 @@ export const Gameplay = shadowView(use => (o: {
 	}) => {
 
 	use.styles(themeCss, stylesCss)
+
+	const dropper = use.once(() => dungeonDropper(
+		files => o.realm.onFilesDropped.publish(files))
+	)
 
 	const panels = o.multiplayerClient
 		? [
@@ -30,10 +35,23 @@ export const Gameplay = shadowView(use => (o: {
 		]
 
 	return html`
-		${o.realm.world.canvas}
+		<div class=container
+			?x-drop-hover="${dropper.indicator}"
+			@dragover="${dropper.dragover}"
+			@dragleave="${dropper.dragleave}"
+			@drop="${dropper.drop}">
 
-		<div class=overlay>
-			${Gigamenu(panels)}
+			${o.realm.world.canvas}
+
+			<div class=overlay>
+				${Gigamenu(panels)}
+			</div>
+
+			${(dropper.indicator || null) && html`
+				<div class=drop-indicator>
+					file drop detected
+				</div>
+			`}
 		</div>
 	`
 })

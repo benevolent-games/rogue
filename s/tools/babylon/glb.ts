@@ -64,5 +64,10 @@ export class Glb {
 		const prop = this.props.require(name)
 		return () => Glb.instantiate(prop)
 	}
+
+	dispose() {
+		this.container.removeAllFromScene()
+		this.container.dispose()
+	}
 }
 

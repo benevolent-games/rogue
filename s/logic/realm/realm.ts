@@ -1,6 +1,7 @@
 
 import "@benev/toolbox/x/babylon-side-effects.js"
 
+import {pubsub} from "@benev/slate"
 import {Mesh} from "@babylonjs/core"
 
 import {Glbs} from "./glbs.js"
@@ -14,6 +15,8 @@ export class Realm {
 
 	tact = makeTact(window)
 	env: ReturnType<typeof makeEnvironment>
+
+	onFilesDropped = pubsub<[File[]]>()
 
 	constructor(public world: World, public glbs: Glbs) {
 		this.env = makeEnvironment(world)
