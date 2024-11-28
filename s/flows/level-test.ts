@@ -4,7 +4,7 @@ import {Signal} from "@benev/slate"
 import {LagProfile} from "../tools/fake-lag.js"
 import {playerHostFlow} from "./player-host.js"
 import {Identity} from "../logic/multiplayer/types.js"
-import {stdDungeonOptions} from "../logic/dungeons/std-dungeon-options.js"
+import {stdDungeonOptions} from "../logic/dungeons/options.js"
 
 export async function levelTestFlow(o: {
 		lag: LagProfile | null

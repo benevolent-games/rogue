@@ -4,11 +4,11 @@ import {deep, interval} from "@benev/slate"
 import {LagProfile} from "../tools/fake-lag.js"
 import {Station} from "../logic/station/station.js"
 import {simulas} from "../logic/archetypes/simulas.js"
+import {stdDungeonOptions} from "../logic/dungeons/options.js"
 import {Cathedral} from "../logic/framework/relay/cathedral.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
-import {stdDungeonOptions} from "../logic/dungeons/std-dungeon-options.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
