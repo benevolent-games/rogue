@@ -13,6 +13,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		const stopDrops = realm.onFilesDropped(files => {
 			for (const file of files) {
 				if (file.name.endsWith(".glb")) {
+					console.log("loading", file.name)
 					dungeonRenderer.load(URL.createObjectURL(file))
 						.then(() => console.log("loaded", file.name))
 						.catch(error => console.error("error", file.name, error))

@@ -1,5 +1,5 @@
 
-import {loop2d, make_envmap, Radians, Vec2, Vec3} from "@benev/toolbox"
+import {make_envmap, Radians, Vec3} from "@benev/toolbox"
 
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
@@ -9,7 +9,7 @@ import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
 import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 
-import {Coordinates} from "./coordinates.js"
+// import {Coordinates} from "./coordinates.js"
 import {constants} from "../../../constants.js"
 import {World} from "../../../tools/babylon/world.js"
 
@@ -36,9 +36,9 @@ export function makeEnvironment(world: World) {
 		}
 	})()
 
-	const box = MeshBuilder.CreateBox("box", {width: 0.9, height: 0.2, depth: 0.9})
-	box.isVisible = false
-	box.material = materials.gray
+	// const box = MeshBuilder.CreateBox("box", {width: 0.9, height: 0.2, depth: 0.9})
+	// box.isVisible = false
+	// box.material = materials.gray
 
 	const guys = (() => {
 		const baseGuy = MeshBuilder.CreateCapsule("guy", {height: 1.8, radius: 0.4})
@@ -101,19 +101,19 @@ export function makeEnvironment(world: World) {
 		scene,
 	)
 
-	const extent = Vec2.new(100, 100)
-	const halfExtent = extent.clone().divideBy(2)
-	const offset = Vec3.new(0, -0.1, 0)
+	// const extent = Vec2.new(100, 100)
+	// const halfExtent = extent.clone().divideBy(2)
+	// const offset = Vec3.new(0, -0.1, 0)
 
-	for (const raw of loop2d(extent.array())) {
-		const position = Coordinates
-			.array(raw)
-			.subtract(halfExtent)
-			.position()
-			.add(offset)
-		const instance = box.createInstance("box-instance")
-		instance.position.set(...position.array())
-	}
+	// for (const raw of loop2d(extent.array())) {
+	// 	const position = Coordinates
+	// 		.array(raw)
+	// 		.subtract(halfExtent)
+	// 		.position()
+	// 		.add(offset)
+	// 	const instance = box.createInstance("box-instance")
+	// 	instance.position.set(...position.array())
+	// }
 
 	return {
 		camera,

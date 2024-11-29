@@ -38,7 +38,7 @@ export class DungeonRenderer {
 
 	makeSkin(assets: DungeonAssets): DungeonSkin {
 		const {realm, dungeon} = this
-		const {indicators} = realm.env
+		// const {indicators} = realm.env
 
 		const trashbin = new Trashbin()
 		const instances = new Set<TransformNode>()
@@ -61,18 +61,18 @@ export class DungeonRenderer {
 			}
 		}
 
-		for (const sector of dungeon.sectors) {
-			const location = dungeon.tilespace(sector)
-			const {position, scale} = place(location, dungeon.sectorSize, 0.01)
-			const sectorIndicator = indicators.sector(position, scale)
-			instances.add(sectorIndicator)
-		}
+		// for (const sector of dungeon.sectors) {
+		// 	const location = dungeon.tilespace(sector)
+		// 	const {position, scale} = place(location, dungeon.sectorSize, 0.01)
+		// 	const sectorIndicator = indicators.sector(position, scale)
+		// 	instances.add(sectorIndicator)
+		// }
 
 		for (const {sector, cell, tiles} of dungeon.cells) {
-			const location = dungeon.tilespace(sector, cell)
-			const {position, scale} = place(location, dungeon.cellSize, 0.02)
-			const cellIndicator = indicators.cell(position, scale)
-			instances.add(cellIndicator)
+			// const location = dungeon.tilespace(sector, cell)
+			// const {position, scale} = place(location, dungeon.cellSize, 0.02)
+			// const cellIndicator = indicators.cell(position, scale)
+			// instances.add(cellIndicator)
 
 			for (const tile of tiles) {
 				tileCount++
