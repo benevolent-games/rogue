@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
 import {Prop} from "@benev/toolbox"
-import {Propname} from "../../../../tools/propnames/propnames.js"
+import {Propname} from "./propnames.js"
 
 export type PropCategory = Map2<string, Map2<Propname, Prop>>
 

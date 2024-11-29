@@ -16,8 +16,7 @@ export class Glbs {
 	}
 
 	dispose() {
-		this.templateGlb.container.removeAllFromScene()
-		this.templateGlb.container.dispose()
+		this.templateGlb.dispose()
 	}
 }
 
