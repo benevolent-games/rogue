@@ -5,12 +5,12 @@ import {Randy, Vec2} from "@benev/toolbox"
 import {Grid} from "./utils/grid.js"
 import {CellFlavors} from "./flavors.js"
 import {Fattener} from "./utils/fattener.js"
+import {distance} from "../../tools/distance.js"
 import {Pathfinder} from "./utils/pathfinder.js"
 import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
-import { distance } from "../../tools/distance.js"
 
 export class Dungeon {
 	randy: Randy

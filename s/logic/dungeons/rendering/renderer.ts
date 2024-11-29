@@ -1,11 +1,12 @@
 
 import {Trashbin} from "@benev/slate"
+import {Vec2, Vec3} from "@benev/toolbox"
+import {TransformNode} from "@babylonjs/core"
+
 import {Dungeon} from "../dungeon.js"
 import {Realm} from "../../realm/realm.js"
 import {Glb} from "../../../tools/babylon/glb.js"
-import { TransformNode } from "@babylonjs/core"
-import { Vec2, Vec3 } from "@benev/toolbox"
-import { Coordinates } from "../../realm/utils/coordinates.js"
+import {Coordinates} from "../../realm/utils/coordinates.js"
 
 type DungeonSkin = {
 	glb: Glb
