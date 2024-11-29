@@ -17,6 +17,19 @@ export class Glb {
 	readonly meshoids = new Map2<string, Meshoid>()
 	readonly materials = new Map2<string, PBRMaterial>()
 
+	constructor(public readonly container: AssetContainer) {
+		for (const material of container.materials)
+			if (material instanceof PBRMaterial)
+				this.materials.set(material.name, material)
+
+		for (const mesh of container.meshes.filter(babyloid.is.meshoid))
+			this.meshoids.set(mesh.name, mesh)
+
+		for (const node of [...container.meshes, ...container.transformNodes])
+			if (!node.name.includes("_primitive"))
+				this.props.set(node.name, node)
+	}
+
 	static instantiate(prop: Prop) {
 		return prop.instantiateHierarchy(
 			undefined,
@@ -36,19 +49,6 @@ export class Glb {
 			mesh.visibility = opacity
 			prop.getScene().removeMesh(mesh, true)
 		})
-	}
-
-	constructor(public readonly container: AssetContainer) {
-		for (const material of container.materials)
-			if (material instanceof PBRMaterial)
-				this.materials.set(material.name, material)
-
-		for (const mesh of container.meshes.filter(babyloid.is.meshoid))
-			this.meshoids.set(mesh.name, mesh)
-
-		for (const node of [...container.meshes, ...container.transformNodes])
-			if (!node.name.includes("_primitive"))
-				this.props.set(node.name, node)
 	}
 
 	getSourceMesh(name: string): Mesh | undefined {

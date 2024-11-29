@@ -6,10 +6,11 @@ import {TransformNode} from "@babylonjs/core"
 import {Dungeon} from "../dungeon.js"
 import {Realm} from "../../realm/realm.js"
 import {Glb} from "../../../tools/babylon/glb.js"
+import {DungeonAssets} from "./utils/dungeon-assets.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
 type DungeonSkin = {
-	glb: Glb
+	assets: DungeonAssets
 	trashbin: Trashbin
 }
 
@@ -18,23 +19,32 @@ export class DungeonRenderer {
 
 	constructor(public realm: Realm, public dungeon: Dungeon) {
 		const glb = realm.glbs.templateGlb
-		this.skin = this.makeSkin(glb)
+		const assets = new DungeonAssets(glb)
+		this.skin = this.makeSkin(assets)
 	}
 
 	async load(url: string) {
 		const container = await this.realm.world.loadContainer(url)
 		const glb = new Glb(container)
-		this.dispose()
-		this.skin = this.makeSkin(glb)
+		try {
+			const assets = new DungeonAssets(glb)
+			this.dispose()
+			this.skin = this.makeSkin(assets)
+		}
+		catch (error) {
+			console.error(`problem with dungeon glb`, error)
+		}
 	}
 
-	makeSkin(glb: Glb): DungeonSkin {
+	makeSkin(assets: DungeonAssets): DungeonSkin {
 		const {realm, dungeon} = this
 		const {indicators} = realm.env
 
 		const trashbin = new Trashbin()
 		const instances = new Set<TransformNode>()
-		const floorInstancer = glb.instancer("floor, size=1x1, type=ref")
+		const [styleKey] = [...assets.styles.keys()]
+		const style = assets.styles.require(styleKey)
+		const floorInstancer = () => style.spawn.floor()
 
 		const mainScale = 100 / 100
 		let tileCount = 0
@@ -76,7 +86,7 @@ export class DungeonRenderer {
 		}
 
 		trashbin.disposer(() => instances.forEach(i => i.dispose()))
-		return {glb, trashbin}
+		return {assets, trashbin}
 	}
 
 	dispose() {
@@ -85,8 +95,8 @@ export class DungeonRenderer {
 		// don't delete the original template glb,
 		// (so when user exits game and reboots a new level,
 		// the standard default skin is always available)
-		if (this.skin.glb !== this.realm.glbs.templateGlb)
-			this.skin.glb.dispose()
+		if (this.skin.assets.glb !== this.realm.glbs.templateGlb)
+			this.skin.assets.glb.dispose()
 	}
 }
 
