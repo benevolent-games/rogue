@@ -66,22 +66,10 @@ export const GameApp = shadowComponent(use => {
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
-			test: makeNav(async() => {
+			offline: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const {client, multiplayerClient, dispose} = await playerHostFlow({lag: lagProfiles.bad, identity})
-				return {
-					dispose,
-					template: () => Gameplay([{
-						multiplayerClient,
-						realm: client.realm,
-						exitToMainMenu: () => goExhibit.mainMenu(),
-					}]),
-				}
-			}),
-
-			levelTest: makeNav(async() => {
-				const {levelTestFlow} = await import("../../../flows/level-test.js")
-				const {client, multiplayerClient, dispose} = await levelTestFlow({lag: lagProfiles.bad, identity})
+				const flow = await playerHostFlow({lag: lagProfiles.bad, identity})
+				const {client, multiplayerClient, dispose} = flow
 				return {
 					dispose,
 					template: () => Gameplay([{
@@ -94,7 +82,8 @@ export const GameApp = shadowComponent(use => {
 
 			host: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const {host, multiplayerClient, client, dispose} = await playerHostFlow({lag: null, identity})
+				const flow = await playerHostFlow({lag: null, identity})
+				const {host, multiplayerClient, client, dispose} = flow
 
 				const multiplayerOp = opSignal<MultiplayerHost>()
 				multiplayerOp.load(async() => host.startMultiplayer())
@@ -131,11 +120,8 @@ export const GameApp = shadowComponent(use => {
 		if (invite)
 			goExhibit.client(invite)
 
-		else if (location.hash.includes("leveltest"))
-			goExhibit.levelTest()
-
-		else if (location.hash.includes("test"))
-			goExhibit.test()
+		else if (location.hash.includes("offline"))
+			goExhibit.offline()
 
 		else if (location.hash.includes("play"))
 			goExhibit.host()
