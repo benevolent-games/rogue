@@ -66,7 +66,7 @@ button:not(.std, .naked) {
 	}
 
 	&.authduo {
-		background: #7c42ac;
+		background: #80f;
 	}
 }
 
