@@ -1,62 +1,69 @@
 
-import {Map2} from "@benev/slate"
-import {Prop, Randy} from "@benev/toolbox"
-import {Glb} from "../../../../tools/babylon/glb.js"
-import {Propname} from "../../../../tools/propnames/propnames.js"
+import {Randy} from "@benev/toolbox"
+import {Trashbin} from "@benev/slate"
+
+import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
+import {Warehouse} from "../../../../tools/babylon/logistics/warehouse.js"
+import {Spatial, WarehouseSearch} from "../../../../tools/babylon/logistics/types.js"
 
 export class DungeonStyle {
 	randy = Randy.seed(1)
-
-	resources: {
-		floors: Prop[]
-		walls: Prop[]
-		concaves: Prop[]
-		convexes: Prop[]
-	}
+	trashbin = new Trashbin()
 
 	constructor(
-			public style: string,
-			public props: Map2<Propname, Prop>,
-		) {
-		this.resources = {
-			floors: this.#prepare("floor", "1x1"),
-			walls: this.#prepare("wall", "1"),
-			concaves: this.#prepare("concave"),
-			convexes: this.#prepare("convex"),
+		public style: string,
+		public styleWarehouse: Warehouse,
+	) {}
+
+	#query(search: WarehouseSearch) {
+		return this.styleWarehouse.query(search, true).list()
+	}
+
+	#instancer(cargo: Cargo) {
+		const name = cargo.manifest.toString()
+		console.log("instancer", name)
+		return (spatial?: Spatial) => {
+			console.log("instance!!", name)
+			const instance = cargo.instance(spatial)
+			this.trashbin.disposable(instance)
+			return instance
 		}
 	}
 
-	spawn = {
-		floor: () => {
-			const prop = this.randy.choose(this.resources.floors)
-			return Glb.instantiate(prop)
-		},
-		wall: () => {
-			const prop = this.randy.choose(this.resources.walls)
-			return Glb.instantiate(prop)
-		},
-		concave: () => {
-			const prop = this.randy.choose(this.resources.concaves)
-			return Glb.instantiate(prop)
-		},
-		convex: () => {
-			const prop = this.randy.choose(this.resources.convexes)
-			return Glb.instantiate(prop)
-		},
-	}
+	makeSpawners = () => ({
+		floor: (() => {
+			const size1x1 = this.#query({part: "floor", size: "1x1"})
+			const size2x2 = this.#query({part: "floor", size: "2x2"})
+			const size3x3 = this.#query({part: "floor", size: "3x3"})
+			return {
+				size1x1: this.#instancer(this.randy.choose(size1x1)),
+				size2x2: this.#instancer(this.randy.choose(size2x2)),
+				size3x3: this.#instancer(this.randy.choose(size3x3)),
+			}
+		})(),
 
-	#prepare(part: string, size?: string) {
-		const results = [...this.props.entries()]
-			.filter(([propname]) => (
-				(propname.get("part") === part) &&
-				(size ? (propname.get("size") === size) : true)
-			))
-			.map(([,prop]) => prop)
+		wall: (() => {
+			const size1 = this.#query({part: "wall", size: "1"})
+			const sizeHalf = this.#query({part: "wall", size: "0.5"})
+			return {
+				size1: this.#instancer(this.randy.choose(size1)),
+				sizeHalf: this.#instancer(this.randy.choose(sizeHalf)),
+			}
+		})(),
 
-		if (results.length === 0)
-			throw new Error(`dungeon style "${this.style}" is missing part "${part}"`)
+		concave: (() => {
+			const cargos = this.#query({part: "concave"})
+			return this.#instancer(this.randy.choose(cargos))
+		})(),
 
-		return results
+		convex: (() => {
+			const cargos = this.#query({part: "convex"})
+			return this.#instancer(this.randy.choose(cargos))
+		})(),
+	})
+
+	dispose() {
+		this.trashbin.dispose()
 	}
 }
 
