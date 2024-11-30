@@ -1,12 +1,11 @@
 
-import {Quat, Radians, Vec2, Vec3} from "@benev/toolbox"
+import {Trashbin} from "@benev/slate"
+import {Degrees, Quat, Vec2, Vec3} from "@benev/toolbox"
 
 import {Dungeon} from "../dungeon.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonAssets} from "./utils/dungeon-assets.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
-import { Trashbin } from "@benev/slate"
-import { Quaternion } from "@babylonjs/core/Maths/math.vector.js"
 
 type DungeonSkin = {
 	assets: DungeonAssets
@@ -41,9 +40,7 @@ export class DungeonRenderer {
 
 		const mainScale = 100 / 100
 		const counts = {sectors: 0, cells: 0, tiles: 0}
-
-		// TODO fix broken quat rotation methods in toolbox
-		const rotation = Quat.import(Quaternion.RotationYawPitchRoll(0, Radians.from.degrees(90), 0))
+		const indicatorRotation = Quat.rotate_(0, Degrees.toRadians(90), 0)
 
 		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {
 			const scale = rawScale.clone().multiplyBy(mainScale)
@@ -63,7 +60,7 @@ export class DungeonRenderer {
 			const {position, scale} = place(location, dungeon.sectorSize, -0.02)
 			const instance = realm.env.indicators.sector.instance({
 				position,
-				rotation,
+				rotation: indicatorRotation,
 				scale: scale.multiplyBy(0.999),
 			})
 			trashbin.disposable(instance)
@@ -75,7 +72,7 @@ export class DungeonRenderer {
 			const {position, scale} = place(location, dungeon.cellSize, -0.01)
 			const instance = realm.env.indicators.cell.instance({
 				position,
-				rotation,
+				rotation: indicatorRotation,
 				scale: scale.multiplyBy(0.99),
 			})
 			trashbin.disposable(instance)
