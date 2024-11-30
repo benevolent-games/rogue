@@ -4,7 +4,7 @@ import {Trashbin} from "@benev/slate"
 
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Warehouse} from "../../../../tools/babylon/logistics/warehouse.js"
-import {Spatial, WarehouseSearch} from "../../../../tools/babylon/logistics/types.js"
+import {Spatial, ManifestQuery} from "../../../../tools/babylon/logistics/types.js"
 
 export class DungeonStyle {
 	randy = Randy.seed(1)
@@ -15,15 +15,12 @@ export class DungeonStyle {
 		public styleWarehouse: Warehouse,
 	) {}
 
-	#query(search: WarehouseSearch) {
+	#query(search: ManifestQuery) {
 		return this.styleWarehouse.query(search, true).list()
 	}
 
 	#instancer(cargo: Cargo) {
-		const name = cargo.manifest.toString()
-		console.log("instancer", name)
 		return (spatial?: Spatial) => {
-			console.log("instance!!", name)
 			const instance = cargo.instance(spatial)
 			this.trashbin.disposable(instance)
 			return instance

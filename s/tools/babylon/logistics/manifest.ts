@@ -1,6 +1,7 @@
 
 import {Map2} from "@benev/slate"
 
+/** Name format for our GLB objects, for smuggling in key-value properties */
 export class Manifest extends Map2<string, string> {
 
 	static parse(string: string) {

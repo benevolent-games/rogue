@@ -7,5 +7,5 @@ export type Spatial = Partial<{
 	scale: Vec3
 }>
 
-export type WarehouseSearch = Record<string, string | boolean>
+export type ManifestQuery = Record<string, string | boolean>
 

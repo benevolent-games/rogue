@@ -9,11 +9,13 @@ export class DungeonAssets {
 
 	constructor(public container: AssetContainer) {
 		const dungeonWarehouse = Warehouse.from(container)
+
 		this.styles = new Map2(
-			[...dungeonWarehouse.categorize("style")].map(([style, styleWarehouse]) => [
-				style,
-				new DungeonStyle(style, styleWarehouse),
-			])
+			[...dungeonWarehouse.categorize("style")]
+				.map(([style, styleWarehouse]) => [
+					style,
+					new DungeonStyle(style, styleWarehouse),
+				])
 		)
 	}
 

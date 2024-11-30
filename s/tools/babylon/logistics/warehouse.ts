@@ -3,8 +3,9 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Cargo} from "./cargo.js"
 import {Manifest} from "./manifest.js"
-import {WarehouseSearch} from "./types.js"
+import {ManifestQuery} from "./types.js"
 
+/** Collection of cargo (3d props) */
 export class Warehouse extends Set<Cargo> {
 	static from(container: AssetContainer) {
 		return new this(
@@ -21,7 +22,8 @@ export class Warehouse extends Set<Cargo> {
 		return [...this]
 	}
 
-	query(search: WarehouseSearch, required: boolean = false) {
+	/** get all cargo that matches the manifest query */
+	query(search: ManifestQuery, required: boolean = false) {
 		const result = new Warehouse(
 			[...this].filter(cargo =>
 				Object.entries(search).every(([key, value]) => (
@@ -36,6 +38,7 @@ export class Warehouse extends Set<Cargo> {
 		return result
 	}
 
+	/** organize objects by their value for the given manifest key */
 	categorize(key: string) {
 		const map = new Map2<string, Warehouse>()
 		for (const cargo of this) {
