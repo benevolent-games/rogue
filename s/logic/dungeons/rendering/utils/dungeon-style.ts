@@ -1,14 +1,14 @@
 
 import {Randy} from "@benev/toolbox"
-import {Trashbin} from "@benev/slate"
-
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Warehouse} from "../../../../tools/babylon/logistics/warehouse.js"
 import {Spatial, ManifestQuery} from "../../../../tools/babylon/logistics/types.js"
 
+export type DungeonSpawners = ReturnType<DungeonStyle["makeSpawners"]>
+
+/** Props specific to a single style within a dungeon glb */
 export class DungeonStyle {
 	randy = Randy.seed(1)
-	trashbin = new Trashbin()
 
 	constructor(
 		public style: string,
@@ -20,11 +20,7 @@ export class DungeonStyle {
 	}
 
 	#instancer(cargo: Cargo) {
-		return (spatial?: Spatial) => {
-			const instance = cargo.instance(spatial)
-			this.trashbin.disposable(instance)
-			return instance
-		}
+		return (spatial?: Spatial) => cargo.instance(spatial)
 	}
 
 	makeSpawners = () => ({
@@ -58,9 +54,5 @@ export class DungeonStyle {
 			return this.#instancer(this.randy.choose(cargos))
 		})(),
 	})
-
-	dispose() {
-		this.trashbin.dispose()
-	}
 }
 
