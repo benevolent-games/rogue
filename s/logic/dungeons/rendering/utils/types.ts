@@ -1,8 +1,18 @@
 
 import {Vec2} from "@benev/toolbox"
 
+export type WallPlacement = {
+	location: Vec2
+	cardinalIndex: number
+}
+
+export type CornerPlacement = {
+	location: Vec2
+	ordinalIndex: number
+}
+
 export type Cornering = {
-	concaves: Map<Vec2, number>
-	convexes: Map<Vec2, number>
+	concaves: CornerPlacement[]
+	convexes: CornerPlacement[]
 }
 

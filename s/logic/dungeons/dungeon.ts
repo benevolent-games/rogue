@@ -11,7 +11,6 @@ import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
-import { Coordinates } from "../realm/utils/coordinates.js"
 
 export class Dungeon {
 	randy: Randy

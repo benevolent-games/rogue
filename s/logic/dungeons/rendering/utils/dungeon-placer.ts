@@ -1,7 +1,7 @@
 
 import {Degrees, Quat, Randy, Vec2, Vec3} from "@benev/toolbox"
 
-import {ordinals} from "../../../../tools/directions.js"
+import {cardinals, ordinals} from "../../../../tools/directions.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
 /** Calculator for the positions, rotaitons, and scales of dungeon props */
@@ -25,6 +25,7 @@ export class DungeonPlacer {
 	placeFloor(location: Vec2) {
 		const scale = new Vec2(this.mainScale, this.mainScale)
 		const degrees = this.randy.choose([0, -90, 90, 180])
+		// const degrees = 0
 		return {
 			rotation: Quat.rotate_(Degrees.toRadians(degrees), 0, 0),
 			scale: Vec3.new(scale.x, scale.y, scale.y),
@@ -38,7 +39,7 @@ export class DungeonPlacer {
 	placeCorner(location: Vec2, cornerIndex: number) {
 		const floor = this.placeFloor(location)
 		const degrees = 180 - ((cornerIndex + 1) * 90)
-		const cornerOffset = ordinals.at(cornerIndex)!
+		const offset = ordinals.at(cornerIndex)!
 			.clone()
 			.divideBy(2)
 		return {
@@ -47,7 +48,24 @@ export class DungeonPlacer {
 			position: Coordinates.import(location)
 				.multiplyBy(this.mainScale)
 				.add(floor.scale.clone().divideBy(2))
-				.add(cornerOffset)
+				.add(offset)
+				.position()
+		}
+	}
+
+	placeWall(location: Vec2, cardinalIndex: number) {
+		const floor = this.placeFloor(location)
+		const degrees = 180 + (cardinalIndex * -90)
+		const offset = cardinals.at(cardinalIndex)!
+			.clone()
+			.divideBy(2)
+		return {
+			rotation: Quat.rotate_(Degrees.toRadians(degrees), 0, 0),
+			scale: floor.scale,
+			position: Coordinates.import(location)
+				.multiplyBy(this.mainScale)
+				.add(floor.scale.clone().divideBy(2))
+				.add(offset)
 				.position()
 		}
 	}
