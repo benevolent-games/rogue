@@ -15,3 +15,10 @@ export const ordinals = Object.freeze([
 	Vec2.new(-1, 1), // north-west
 ]) as Vec2[]
 
+export const corners = Object.freeze([
+	[cardinals[0], ordinals[0], cardinals[1]], // north-east
+	[cardinals[1], ordinals[1], cardinals[2]], // south-east
+	[cardinals[2], ordinals[2], cardinals[3]], // south-west
+	[cardinals[3], ordinals[3], cardinals[0]], // north-west
+]) as [Vec2, Vec2, Vec2][]
+

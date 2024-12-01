@@ -2,12 +2,16 @@
 import {Trashbin} from "@benev/slate"
 import {Degrees, Quat, Vec2} from "@benev/toolbox"
 
+import {Cornering} from "./types.js"
 import {Dungeon} from "../../dungeon.js"
 import {Realm} from "../../../realm/realm.js"
+import {Vecset2} from "../../utils/vecset2.js"
 import {DungeonPlacer} from "./dungeon-placer.js"
+import {isConcave, isConvex} from "./patterns.js"
 import {DungeonSkinStats} from "./dungeon-skin-stats.js"
 import {DungeonAssets} from "./../utils/dungeon-assets.js"
 import {DungeonSpawners} from "./../utils/dungeon-style.js"
+import {cardinals, corners} from "../../../../tools/directions.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -32,17 +36,68 @@ export class DungeonSkin {
 
 	actuate() {
 		for (const sector of this.dungeon.sectors)
-			this.makeSectorIndicator(sector)
+			this.spawnSectorIndicator(sector)
 
 		for (const {cell, sector, tiles} of this.dungeon.cells) {
-			this.makeCellIndicator(cell, sector)
+			this.spawnCellIndicator(cell, sector)
 
 			for (const tile of tiles)
-				this.makeFloorTile(tile, cell, sector)
+				this.spawnFloor(tile, cell, sector)
 		}
+
+		const walkables = this.getWalkables()
+		const unwalkables = this.getUnwalkables(walkables)
+		const cornering = this.getCornering(walkables)
+		// const walls = this.getWalls(cornering, walkables, unwalkables)
+
+		for (const [location, cornerIndex] of cornering.concaves)
+			this.spawnConcave(location, cornerIndex)
+
+		// for (const [location, cornerIndex] of cornering.convexes)
+		// 	this.spawnConvex(location, cornerIndex)
 	}
 
-	makeSectorIndicator(sector: Vec2) {
+	getCornering(walkables: Vecset2): Cornering {
+		const concaves = new Map<Vec2, number>()
+		const convexes = new Map<Vec2, number>()
+
+		for (const walkable of walkables.list()) {
+			corners.forEach((corner, index) => {
+
+				if (isConcave(walkable, corner, walkables))
+					concaves.set(walkable, index)
+
+				else if (isConvex(walkable, corner, walkables))
+					convexes.set(walkable, index)
+			})
+		}
+		return {concaves, convexes}
+	}
+
+	// getWalls(cornering, walkables: Vecset2, unwalkables: Vecset2) {
+	// 	return new Vecset2()
+	// }
+
+	getWalkables() {
+		return new Vecset2(
+			this.dungeon.cells.flatMap(({sector, cell, tiles}) =>
+				tiles.map(tile => this.dungeon.tilespace(sector, cell, tile))
+			)
+		)
+	}
+
+	getUnwalkables(walkables: Vecset2) {
+		const walls = new Vecset2(
+			walkables.list().flatMap(
+				tile => cardinals.map(c => tile.clone().add(c))
+			)
+		)
+		return new Vecset2(
+			walls.list().filter(wall => !walkables.has(wall))
+		)
+	}
+
+	spawnSectorIndicator(sector: Vec2) {
 		const location = this.dungeon.tilespace(sector)
 		const {position, scale} = this.placer
 			.placeIndicator(location, this.dungeon.sectorSize, -0.02)
@@ -56,7 +111,7 @@ export class DungeonSkin {
 		return instance
 	}
 
-	makeCellIndicator(cell: Vec2, sector: Vec2) {
+	spawnCellIndicator(cell: Vec2, sector: Vec2) {
 		const location = this.dungeon.tilespace(sector, cell)
 		const {position, scale} = this.placer
 			.placeIndicator(location, this.dungeon.cellSize, -0.01)
@@ -70,12 +125,28 @@ export class DungeonSkin {
 		return instance
 	}
 
-	makeFloorTile(tile: Vec2, cell: Vec2, sector: Vec2) {
+	spawnFloor(tile: Vec2, cell: Vec2, sector: Vec2) {
 		const location = this.dungeon.tilespace(sector, cell, tile)
-		const {position, scale, rotation} = this.placer.placeFloor(location)
-		const instance = this.spawners.floor.size1x1({position, scale, rotation})
+		const spatial = this.placer.placeFloor(location)
+		const instance = this.spawners.floor.size1x1(spatial)
 		this.trashbin.disposable(instance)
 		this.stats.tiles++
+		return instance
+	}
+
+	spawnConcave(tileLocation: Vec2, cornerIndex: number) {
+		const spatial = this.placer.placeCorner(tileLocation, cornerIndex)
+		const instance = this.spawners.concave(spatial)
+		this.trashbin.disposable(instance)
+		this.stats.concaves++
+		return instance
+	}
+
+	spawnConvex(tileLocation: Vec2, cornerIndex: number) {
+		const spatial = this.placer.placeCorner(tileLocation, cornerIndex)
+		const instance = this.spawners.convex(spatial)
+		this.trashbin.disposable(instance)
+		this.stats.convexes++
 		return instance
 	}
 
