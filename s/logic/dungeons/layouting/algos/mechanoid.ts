@@ -1,45 +1,26 @@
 
 import {cellAlgo} from "../types.js"
-import {Vecset2} from "../vecset2.js"
-import {Fattener} from "../fattener.js"
-import {Pathfinder} from "../pathfinder.js"
-import {range} from "../../../../tools/range.js"
-import {DistanceAlgo} from "../../../../tools/distance.js"
+import {goalposting} from "./utils/goalposting.js"
 
-export const mechanoid = cellAlgo(({
+export const mechanoid = cellAlgo(options => {
+	const {
+		end,
+		start,
 		randy,
 		tileGrid,
-		start,
-		end,
 		nextCellDirection,
 		previousCellDirection,
-	}) => {
-
-	const distanceAlgo: DistanceAlgo = "manhattan"
-	const goalCount = Math.round(randy.range(1, 10))
-
-	//
-	// goalposts tile path
-	//
-
-	const pathfinder = new Pathfinder(randy, tileGrid)
-	const innerTiles = tileGrid.excludeBorders()
-	const goalposts = [
-		start,
-		...range(goalCount)
-			.map(() => randy.yoink(innerTiles)),
-		end,
-	]
-	const tilePath = pathfinder.aStarChain(goalposts, distanceAlgo)
-	if (!tilePath)
-		throw new Error("failure to produce tilepath")
-	const fattener = new Fattener(randy, tileGrid, tilePath)
-
-	//
-	// fattening
-	//
+	} = options
 
 	const p = tileGrid.percentageFn()
+	const {fattener, goalposts} = goalposting({
+		end,
+		start,
+		randy,
+		tileGrid,
+		distanceAlgo: "manhattan",
+		goalcountRange: [1, p(2)],
+	})
 
 	fattener.shadow()
 

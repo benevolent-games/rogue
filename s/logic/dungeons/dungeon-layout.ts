@@ -88,7 +88,6 @@ export class DungeonLayout {
 				nextCellDirection: forwardDirection,
 				previousCellDirection: backwardDirection,
 			})
-
 			const sector = sectorByCell.require(cell)
 			const fixedTiles = fixAllDiagonalKisses(tileGrid, tiles)
 			return {sector, cell, tiles: fixedTiles, goalposts, flavorName}

@@ -1,48 +1,29 @@
 
 import {cellAlgo} from "../types.js"
-import {Vecset2} from "../vecset2.js"
-import {Fattener} from "../fattener.js"
-import {Pathfinder} from "../pathfinder.js"
-import {range} from "../../../../tools/range.js"
-import {DistanceAlgo} from "../../../../tools/distance.js"
+import {goalposting} from "./utils/goalposting.js"
 
-export const tatters = cellAlgo(({
+export const tatters = cellAlgo(options => {
+	const {
+		end,
+		start,
 		randy,
 		tileGrid,
-		start,
-		end,
-	}) => {
-
-	const distanceAlgo: DistanceAlgo = "manhattan"
-	const goalCount = Math.round(randy.range(5, 10))
-
-	//
-	// goalposts tile path
-	//
-
-	const pathfinder = new Pathfinder(randy, tileGrid)
-	const innerTiles = tileGrid.excludeBorders()
-	const goalposts = [
-		start,
-		...range(goalCount)
-			.map(() => randy.yoink(innerTiles)),
-		end,
-	]
-	const tilePath = pathfinder.aStarChain(goalposts, distanceAlgo)
-	if (!tilePath)
-		throw new Error("failure to produce tilepath")
-	const fattener = new Fattener(randy, tileGrid, tilePath)
-
-	//
-	// fattening
-	//
+	} = options
 
 	const p = tileGrid.percentageFn()
+	const {fattener, goalposts} = goalposting({
+		end,
+		start,
+		randy,
+		tileGrid,
+		distanceAlgo: "manhattan",
+		goalcountRange: [1, p(2)],
+	})
 
 	fattener.grow(p(10))
 
 	fattener.knobbify({
-		count: randy.range(p(2), p(3)),
+		count: randy.range(p(1), p(2)),
 		size: randy.range(1, 2),
 	})
 
