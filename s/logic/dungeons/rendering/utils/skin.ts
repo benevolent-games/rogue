@@ -1,18 +1,16 @@
 
 import {Trashbin} from "@benev/slate"
 import {Degrees, Quat, Randy, Vec2} from "@benev/toolbox"
+import { AssetContainer } from "@babylonjs/core/assetContainer.js"
 
 import {Placement} from "./types.js"
 import {Dungeon} from "../../dungeon.js"
 import {Realm} from "../../../realm/realm.js"
-import {Vecset2} from "../../utils/vecset2.js"
-import {DungeonPlacer} from "./dungeon-placer.js"
-import {DungeonSkinStats} from "./dungeon-skin-stats.js"
+import {DungeonPlacer} from "./placer.js"
+import {DungeonSkinStats} from "./skin-stats.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
-import {DungeonAssets} from "./../utils/dungeon-assets.js"
-import {DungeonSpawners} from "./../utils/dungeon-style.js"
+import {DungeonSpawners, DungeonStyle} from "./../utils/style.js"
 import {Crate} from "../../../../tools/babylon/logistics/crate.js"
-import {cardinals, ordinals} from "../../../../tools/directions.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -25,11 +23,11 @@ export class DungeonSkin {
 
 	constructor(
 			public dungeon: Dungeon,
-			public assets: DungeonAssets,
+			public container: AssetContainer,
 			public realm: Realm,
 			public mainScale: number,
 		) {
-		const [style] = [...assets.styles.values()]
+		const [style] = [...DungeonStyle.extractFromContainer(container).values()]
 		this.placer = new DungeonPlacer(mainScale)
 		this.spawners = style.makeSpawners()
 		this.actuate()

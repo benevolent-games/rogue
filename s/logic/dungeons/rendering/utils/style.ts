@@ -1,5 +1,8 @@
 
+import {Map2} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
+
 import {Warehouse} from "../../../../tools/babylon/logistics/warehouse.js"
 import {ManifestQuery} from "../../../../tools/babylon/logistics/types.js"
 
@@ -13,6 +16,19 @@ export class DungeonStyle {
 		public style: string,
 		public styleWarehouse: Warehouse,
 	) {}
+
+	static extractFromContainer(container: AssetContainer) {
+		const dungeonWarehouse = Warehouse.from(container)
+
+		// each style has its own complete set of dungeon props, floors/walls/etc
+		return new Map2(
+			[...dungeonWarehouse.categorize("style")]
+				.map(([style, styleWarehouse]) => [
+					style,
+					new DungeonStyle(style, styleWarehouse),
+				])
+		)
+	}
 
 	#query(search: ManifestQuery) {
 		return this.styleWarehouse.query(search, true).list()
