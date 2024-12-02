@@ -10,7 +10,7 @@ export class Coordinates extends Vec2 {
 	}
 
 	toString() {
-		return `(Coordinates x${this.x.toFixed(2)}, z${this.y.toFixed(2)})`
+		return `(Coordinates x${this.x.toFixed(2)}, y${this.y.toFixed(2)})`
 	}
 
 	// kinda a hack, should find a way to inherit this

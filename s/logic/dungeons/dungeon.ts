@@ -4,11 +4,12 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./utils/grid.js"
 import {CellFlavors} from "./flavors.js"
+import {Vecset2} from "./utils/vecset2.js"
 import {Fattener} from "./utils/fattener.js"
 import {distance} from "../../tools/distance.js"
 import {Pathfinder} from "./utils/pathfinder.js"
-import {cardinals} from "../../tools/directions.js"
 import {DungeonOptions, FlavorName} from "./types.js"
+import {cardinals, ordinals} from "../../tools/directions.js"
 import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
 
@@ -20,7 +21,13 @@ export class Dungeon {
 	sectorSize: Vec2
 
 	sectors: Vec2[]
-	cells: {sector: Vec2, cell: Vec2, tiles: Vec2[], goalposts: Vec2[], flavorName: FlavorName}[]
+	cells: {
+		sector: Vec2,
+		cell: Vec2,
+		tiles: Vec2[],
+		goalposts: Vec2[],
+		flavorName: FlavorName,
+	}[]
 
 	constructor(public options: DungeonOptions) {
 		const {seed, gridExtents, sectorWalk} = options
@@ -116,6 +123,28 @@ export class Dungeon {
 
 	cellspace(sector: Vec2, cell = Vec2.zero()) {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
+	}
+
+	getWalkables() {
+		return new Vecset2(
+			this.cells.flatMap(({sector, cell, tiles}) =>
+				tiles.map(tile => this.tilespace(sector, cell, tile))
+			)
+		)
+	}
+
+	getUnwalkables(walkables: Vecset2) {
+		const walls = new Vecset2(
+			walkables.list().flatMap(
+				tile => [
+					...cardinals.map(c => tile.clone().add(c)),
+					...ordinals.map(c => tile.clone().add(c)),
+				]
+			)
+		)
+		return new Vecset2(
+			walls.list().filter(wall => !walkables.has(wall))
+		)
 	}
 
 	#carvePathwayThroughSubgrids({unitPath, subgrid, excludeCorners, locate}: {

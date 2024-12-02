@@ -1,5 +1,5 @@
 
-import {Prop, Quat, Vec3} from "@benev/toolbox"
+import {Prop} from "@benev/toolbox"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
@@ -9,7 +9,7 @@ import {Spatial} from "./types.js"
 export class Crate {
 	constructor(public prop: Prop) {}
 
-	instance({position, rotation, scale}: Spatial = {}) {
+	instance({position, rotation, scale}: Partial<Spatial> = {}) {
 		const instance = this.prop.instantiateHierarchy(
 			undefined,
 			undefined,
