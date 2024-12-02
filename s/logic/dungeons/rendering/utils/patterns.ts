@@ -1,5 +1,5 @@
 
-import {Degrees, Vec2} from "@benev/toolbox"
+import {Degrees, loop, Radians, Vec2} from "@benev/toolbox"
 import {Vecset2} from "../../utils/vecset2.js"
 import {cardinals, ordinals} from "../../../../tools/directions.js"
 
@@ -95,6 +95,102 @@ export const getConvexStumps = (() => {
 			? null
 			: v
 		return {left, right}
+	}
+})()
+
+//////////////////////////////
+
+export const getWallSkinningReport = (() => {
+
+	//   i j k
+	// h a e l
+	// d X b m
+	// g c f
+	const northPattern = [
+		...cardinals,
+		...ordinals,
+		Vec2.new(0, 2),
+		Vec2.new(1, 2),
+		Vec2.new(2, 2),
+		Vec2.new(2, 1),
+		Vec2.new(2, 0),
+	]
+
+	type Placement = {offset: Vec2, radians: number}
+
+	return (unwalkable: Vec2, walkables: Vecset2) => {
+		const considerOneSide = (pattern: Vec2[], radians: number) => {
+			const [a, b, c, d, e, f, g, h, i, j, k, l, m] = pattern.map(p => p.clone().rotate(radians).round())
+			const isWalkable = (tile: Vec2) => walkables.has(unwalkable.clone().add(tile))
+			const notWalkable = (tile: Vec2) => !walkables.has(unwalkable.clone().add(tile))
+
+			let wall: Placement | null = null
+			let concave: Placement | null = null
+			let convex: Placement | null = null
+			const stumps: Placement[] = []
+
+			// wall
+			if ([h, a, e].every(isWalkable) && [d, b].every(notWalkable)) {
+				wall = {
+					offset: new Vec2(0, 0.5).rotate(radians),
+					radians,
+				}
+			}
+
+			// concave
+			else if ([a, b].every(notWalkable) && isWalkable(e)) {
+				concave = {
+					offset: new Vec2(0.5, 0.5).rotate(radians),
+					radians: Degrees.toRadians(-90) + radians,
+				}
+
+				// left stump
+				if (notWalkable(i) && isWalkable(j)) {
+					stumps.push({
+						offset: new Vec2(0.5, 1.25).rotate(radians),
+						radians: Degrees.toRadians(-90) + radians,
+					})
+				}
+
+				// right stump
+				if (notWalkable(m) && isWalkable(l)) {
+					stumps.push({
+						offset: new Vec2(1.25, 0.5).rotate(radians),
+						radians: Degrees.toRadians(0) + radians,
+					})
+				}
+			}
+
+			// convex
+			else if ([a, e, b].every(isWalkable)) {
+				convex = {
+					offset: new Vec2(0.5, 0.5).rotate(radians),
+					radians: Degrees.toRadians(-90) + radians,
+				}
+
+				// left stump
+				if (notWalkable(c) && isWalkable(f)) {
+					stumps.push({
+						offset: new Vec2(0.5, -0.25).rotate(radians),
+						radians: Degrees.toRadians(-90) + radians,
+					})
+				}
+
+				// right stump
+				if (notWalkable(d) && isWalkable(h)) {
+					stumps.push({
+						offset: new Vec2(-0.25, 0.5).rotate(radians),
+						radians: Degrees.toRadians(0) + radians,
+					})
+				}
+			}
+
+			return {wall, concave, convex, stumps}
+		}
+
+		return [...loop(4)].map(index =>
+			considerOneSide(northPattern, Degrees.toRadians(-90 * index))
+		)
 	}
 })()
 

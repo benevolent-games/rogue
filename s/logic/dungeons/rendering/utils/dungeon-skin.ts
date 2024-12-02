@@ -6,12 +6,11 @@ import {Dungeon} from "../../dungeon.js"
 import {Realm} from "../../../realm/realm.js"
 import {Vecset2} from "../../utils/vecset2.js"
 import {DungeonPlacer} from "./dungeon-placer.js"
+import {getWallSkinningReport} from "./patterns.js"
 import {DungeonSkinStats} from "./dungeon-skin-stats.js"
 import {DungeonAssets} from "./../utils/dungeon-assets.js"
 import {DungeonSpawners} from "./../utils/dungeon-style.js"
-import {cardinals, corners} from "../../../../tools/directions.js"
-import {Cornering, CornerPlacement, WallPlacement} from "./types.js"
-import {getConcaveStumps, getConvexStumps, isConcave, isConvex, isWall} from "./patterns.js"
+import {cardinals, ordinals} from "../../../../tools/directions.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -49,64 +48,60 @@ export class DungeonSkin {
 		// 	...[...loop2d([4, 4])].map(([x, y]) => new Vec2(x, y).add_(-2, 2)),
 		// ])
 
-		const cornering = this.getCornering(walkables)
-		const walls = this.getWalls(walkables)
+		// const walkables = new Vecset2([
+		// 	...[...loop2d([5, 1])].map(([x, y]) => new Vec2(x, y)),
+		// 	...[...loop2d([5, 1])].map(([x, y]) => new Vec2(x, y).add_(0, 2)),
+		// 	...[...loop2d([1, 5])].map(([x, y]) => new Vec2(x, y)),
+		// 	...[...loop2d([1, 5])].map(([x, y]) => new Vec2(x, y).add_(2, 0)),
+		// ])
 
 		for (const walkable of walkables.list())
 			this.spawnFloor2(walkable)
 
-		for (const {location, ordinalIndex} of cornering.concaves)
-			this.spawnConcave(location, ordinalIndex)
+		const unwalkables = this.getUnwalkables(walkables)
 
-		for (const {location, ordinalIndex} of cornering.convexes)
-			this.spawnConvex(location, ordinalIndex)
-
-		for (const {location, cardinalIndex} of walls)
-			this.spawnWall(location, cardinalIndex)
-
-		for (const {location, ordinalIndex} of cornering.concaves) {
-			const {left, right} = getConcaveStumps(location, ordinalIndex, walkables)
-			if (left)
-				this.spawnStump(left, ordinalIndex)
-			if (right)
-				this.spawnStump(right, ordinalIndex + 1)
-		}
-
-		for (const {location, ordinalIndex} of cornering.convexes) {
-			const {left, right} = getConvexStumps(location, ordinalIndex, walkables)
-			if (left)
-				this.spawnStump(left, ordinalIndex + 1)
-			if (right) {
-				this.spawnStump(right, ordinalIndex)
+		for (const unwalkable of unwalkables.list()) {
+			const reports = getWallSkinningReport(unwalkable, walkables)
+			for (const report of reports) {
+				if (report.wall)
+					this.spawnWall(unwalkable.clone().add(report.wall.offset), report.wall.radians)
+				if (report.concave)
+					this.spawnConcave(unwalkable.clone().add(report.concave.offset), report.concave.radians)
+				if (report.convex)
+					this.spawnConvex(unwalkable.clone().add(report.convex.offset), report.convex.radians)
+				if (report.stumps) {
+					for (const stump of report.stumps) {
+						this.spawnStump(unwalkable.clone().add(stump.offset), stump.radians)
+					}
+				}
 			}
 		}
-	}
 
-	getCornering(walkables: Vecset2): Cornering {
-		const concaves: CornerPlacement[] = []
-		const convexes: CornerPlacement[] = []
-
-		for (const walkable of walkables.list()) {
-			corners.forEach((corner, ordinalIndex) => {
-				if (isConcave(walkable, corner, walkables))
-					concaves.push({location: walkable, ordinalIndex})
-
-				else if (isConvex(walkable, corner, walkables))
-					convexes.push({location: walkable, ordinalIndex})
-			})
-		}
-		return {concaves, convexes}
-	}
-
-	getWalls(walkables: Vecset2) {
-		const walls: WallPlacement[] = []
-		for (const walkable of walkables.list()) {
-			for (const cardinalIndex of cardinals.keys()) {
-				if (isWall(walkable, cardinalIndex, walkables))
-					walls.push({location: walkable, cardinalIndex})
-			}
-		}
-		return walls
+		// for (const {location, ordinalIndex} of cornering.concaves)
+		// 	this.spawnConcave(location, ordinalIndex)
+		//
+		// for (const {location, ordinalIndex} of cornering.convexes)
+		// 	this.spawnConvex(location, ordinalIndex)
+		//
+		// for (const {location, cardinalIndex} of walls)
+		// 	this.spawnWall(location, cardinalIndex)
+		//
+		// for (const {location, ordinalIndex} of cornering.concaves) {
+		// 	const {left, right} = getConcaveStumps(location, ordinalIndex, walkables)
+		// 	if (left)
+		// 		this.spawnStump(left, ordinalIndex)
+		// 	if (right)
+		// 		this.spawnStump(right, ordinalIndex + 1)
+		// }
+		//
+		// for (const {location, ordinalIndex} of cornering.convexes) {
+		// 	const {left, right} = getConvexStumps(location, ordinalIndex, walkables)
+		// 	if (left)
+		// 		this.spawnStump(left, ordinalIndex + 1)
+		// 	if (right) {
+		// 		this.spawnStump(right, ordinalIndex)
+		// 	}
+		// }
 	}
 
 	getWalkables() {
@@ -117,16 +112,19 @@ export class DungeonSkin {
 		)
 	}
 
-	// getUnwalkables(walkables: Vecset2) {
-	// 	const walls = new Vecset2(
-	// 		walkables.list().flatMap(
-	// 			tile => cardinals.map(c => tile.clone().add(c))
-	// 		)
-	// 	)
-	// 	return new Vecset2(
-	// 		walls.list().filter(wall => !walkables.has(wall))
-	// 	)
-	// }
+	getUnwalkables(walkables: Vecset2) {
+		const walls = new Vecset2(
+			walkables.list().flatMap(
+				tile => [
+					...cardinals.map(c => tile.clone().add(c)),
+					...ordinals.map(c => tile.clone().add(c)),
+				]
+			)
+		)
+		return new Vecset2(
+			walls.list().filter(wall => !walkables.has(wall))
+		)
+	}
 
 	spawnSectorIndicator(sector: Vec2) {
 		const location = this.dungeon.tilespace(sector)
@@ -173,32 +171,32 @@ export class DungeonSkin {
 		return instance
 	}
 
-	spawnConcave(location: Vec2, cornerIndex: number) {
-		const spatial = this.placer.placeCorner(location, cornerIndex)
+	spawnConcave(location: Vec2, radians: number) {
+		const spatial = this.placer.placeWall(location, radians)
 		const instance = this.spawners.concave(spatial)
 		this.trashbin.disposable(instance)
 		this.stats.concaves++
 		return instance
 	}
 
-	spawnConvex(location: Vec2, ordinalIndex: number) {
-		const spatial = this.placer.placeCorner(location, ordinalIndex)
+	spawnConvex(location: Vec2, radians: number) {
+		const spatial = this.placer.placeWall(location, radians)
 		const instance = this.spawners.convex(spatial)
 		this.trashbin.disposable(instance)
 		this.stats.convexes++
 		return instance
 	}
 
-	spawnWall(tileLocation: Vec2, cardinalIndex: number) {
-		const spatial = this.placer.placeWall(tileLocation, cardinalIndex)
+	spawnWall(tileLocation: Vec2, radians: number) {
+		const spatial = this.placer.placeWall(tileLocation, radians)
 		const instance = this.spawners.wall.size1(spatial)
 		this.trashbin.disposable(instance)
 		this.stats.walls++
 		return instance
 	}
 
-	spawnStump(tileLocation: Vec2, cardinalIndex: number) {
-		const spatial = this.placer.placeWall(tileLocation, cardinalIndex)
+	spawnStump(tileLocation: Vec2, radians: number) {
+		const spatial = this.placer.placeWall(tileLocation, radians)
 		const instance = this.spawners.wall.sizeHalf(spatial)
 		this.trashbin.disposable(instance)
 		this.stats.stumps++

@@ -35,37 +35,14 @@ export class DungeonPlacer {
 		}
 	}
 
-	placeCorner(location: Vec2, cornerIndex: number) {
+	placeWall(location: Vec2, radians: number) {
 		const floor = this.placeFloor(location)
-		const degrees = 180 - ((cornerIndex + 1) * 90)
-		const offset = ordinals.at(cornerIndex)!
-			.clone()
-			.divideBy(2)
 		return {
-			rotation: Quat.rotate_(Degrees.toRadians(degrees), 0, 0),
+			rotation: Quat.rotate_(radians, 0, 0),
 			scale: floor.scale,
 			position: Coordinates.import(location)
 				.multiplyBy(this.mainScale)
 				.add(floor.scale.clone().divideBy(2))
-				.add(offset)
-				.position()
-		}
-	}
-
-	placeWall(location: Vec2, cardinalIndex: number) {
-		cardinalIndex = cardinalIndex % 4
-		const floor = this.placeFloor(location)
-		const degrees = 180 + (cardinalIndex * -90)
-		const offset = cardinals.at(cardinalIndex)!
-			.clone()
-			.divideBy(2)
-		return {
-			rotation: Quat.rotate_(Degrees.toRadians(degrees), 0, 0),
-			scale: floor.scale,
-			position: Coordinates.import(location)
-				.multiplyBy(this.mainScale)
-				.add(floor.scale.clone().divideBy(2))
-				.add(offset)
 				.position()
 		}
 	}
