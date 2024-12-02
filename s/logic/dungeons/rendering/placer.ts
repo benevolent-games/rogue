@@ -9,8 +9,8 @@ import {Spatial} from "../../../tools/babylon/logistics/types.js"
 export class DungeonPlacer {
 	constructor(public mainScale: number) {}
 
-	placeIndicator(location: Vec2, rawScale: Vec2, verticalOffset: number) {
-		const scale = rawScale.clone().multiplyBy(this.mainScale)
+	placeIndicator(location: Vec2, size: Vec2, verticalOffset: number) {
+		const scale = size.clone().multiplyBy(this.mainScale)
 		return {
 			scale: Vec3.new(scale.x, scale.y, scale.y),
 			position: Coordinates.import(location)

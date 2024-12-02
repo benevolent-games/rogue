@@ -1,7 +1,7 @@
 
 import {Trashbin} from "@benev/slate"
 import {Degrees, Quat, Randy, Vec2} from "@benev/toolbox"
-import { AssetContainer } from "@babylonjs/core/assetContainer.js"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
@@ -42,7 +42,8 @@ export class DungeonSkin {
 				location: dungeon.tilespace(sector),
 				crate: realm.env.indicators.sector,
 				offset: -0.02,
-				scale: 0.999,
+				scale: 0.9985,
+				size: dungeon.sectorSize,
 			})
 		}
 
@@ -53,6 +54,7 @@ export class DungeonSkin {
 				crate: realm.env.indicators.cell,
 				offset: -0.01,
 				scale: 0.99,
+				size: dungeon.cellSize,
 			})
 		}
 
@@ -96,6 +98,7 @@ export class DungeonSkin {
 	}
 
 	spawnIndicator(options: {
+			size: Vec2,
 			location: Vec2,
 			crate: Crate
 			offset: number,
@@ -103,7 +106,7 @@ export class DungeonSkin {
 		}) {
 		const {position, scale} = this.placer.placeIndicator(
 			options.location,
-			this.dungeon.sectorSize,
+			options.size,
 			options.offset,
 		)
 		const rotation = Quat.rotate_(0, Degrees.toRadians(90), 0)
