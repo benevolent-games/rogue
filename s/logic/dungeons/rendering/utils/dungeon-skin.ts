@@ -1,17 +1,17 @@
 
 import {Trashbin} from "@benev/slate"
-import {Degrees, loop2d, Quat, Scalar, Vec2} from "@benev/toolbox"
+import {Degrees, loop2d, Quat, Vec2} from "@benev/toolbox"
 
 import {Dungeon} from "../../dungeon.js"
 import {Realm} from "../../../realm/realm.js"
 import {Vecset2} from "../../utils/vecset2.js"
 import {DungeonPlacer} from "./dungeon-placer.js"
 import {DungeonSkinStats} from "./dungeon-skin-stats.js"
-import {getConcaveStumps, isConcave, isConvex, isWall} from "./patterns.js"
 import {DungeonAssets} from "./../utils/dungeon-assets.js"
 import {DungeonSpawners} from "./../utils/dungeon-style.js"
 import {cardinals, corners} from "../../../../tools/directions.js"
 import {Cornering, CornerPlacement, WallPlacement} from "./types.js"
+import {getConcaveStumps, getConvexStumps, isConcave, isConvex, isWall} from "./patterns.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -41,12 +41,13 @@ export class DungeonSkin {
 		for (const {cell, sector} of this.dungeon.cells)
 			this.spawnCellIndicator(cell, sector)
 
-		// // TODO
-		// const walkables = this.getWalkables()
+		// TODO
+		const walkables = this.getWalkables()
 
-		const walkables = new Vecset2([...loop2d([3, 3])].map(
-			([x, y]) => new Vec2(x, y))
-		)
+		// const walkables = new Vecset2([
+		// 	...[...loop2d([4, 4])].map(([x, y]) => new Vec2(x, y)),
+		// 	...[...loop2d([4, 4])].map(([x, y]) => new Vec2(x, y).add_(-2, 2)),
+		// ])
 
 		const cornering = this.getCornering(walkables)
 		const walls = this.getWalls(walkables)
@@ -69,6 +70,15 @@ export class DungeonSkin {
 				this.spawnStump(left, ordinalIndex)
 			if (right)
 				this.spawnStump(right, ordinalIndex + 1)
+		}
+
+		for (const {location, ordinalIndex} of cornering.convexes) {
+			const {left, right} = getConvexStumps(location, ordinalIndex, walkables)
+			if (left)
+				this.spawnStump(left, ordinalIndex + 1)
+			if (right) {
+				this.spawnStump(right, ordinalIndex)
+			}
 		}
 	}
 

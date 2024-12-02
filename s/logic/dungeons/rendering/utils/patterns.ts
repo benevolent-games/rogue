@@ -15,10 +15,8 @@ const wallConsiderations = Object.freeze([
 export function isWall(location: Vec2, cardinalIndex: number, walkables: Vecset2) {
 	const [a, b, c, d, e] = wallConsiderations.at(cardinalIndex)!
 		.map(tile => location.clone().add(tile))
-
 	const sideMatches = [a, b, c].every(tile => !walkables.has(tile))
 	const besideCorner = sideMatches && [d, e].some(tile => !walkables.has(tile))
-
 	return sideMatches && !besideCorner
 }
 
@@ -38,31 +36,65 @@ export function isConvex(location: Vec2, corner: [Vec2, Vec2, Vec2], walkables: 
 	)
 }
 
-// a X X
-// - $ X
-// - - b
-const concaveStumpPattern = [
-	ordinals[3],
-	ordinals[1],
-	Vec2.new(-0.25, 0),
-	Vec2.new(0, -0.25),
-]
+export const getConcaveStumps = (() => {
 
-const concaveStumps = [...ordinals.keys()].map(index =>
-	concaveStumpPattern.map(vector =>
-		vector.clone().rotate(Degrees.toRadians(-90 * index))
+	// a X X
+	// - $ X
+	// - - b
+	const pattern = [
+		ordinals[3],
+		ordinals[1],
+		Vec2.new(-0.25, 0),
+		Vec2.new(0, -0.25),
+	]
+
+	const patterns = [...ordinals.keys()].map(index =>
+		pattern.map(vector =>
+			vector.clone().rotate(Degrees.toRadians(-90 * index))
+		)
 	)
-)
 
-export function getConcaveStumps(location: Vec2, ordinalIndex: number, walkables: Vecset2) {
-	const [a, b, u, v] = concaveStumps.at(ordinalIndex)!
-		.map(tile => location.clone().add(tile))
-	const left = walkables.has(a)
-		? null
-		: u
-	const right = walkables.has(b)
-		? null
-		: v
-	return {left, right}
-}
+	return (location: Vec2, ordinalIndex: number, walkables: Vecset2) => {
+		const [a, b, u, v] = patterns.at(ordinalIndex)!
+			.map(tile => location.clone().add(tile))
+		const left = walkables.has(a)
+			? null
+			: u
+		const right = walkables.has(b)
+			? null
+			: v
+		return {left, right}
+	}
+})()
+
+export const getConvexStumps = (() => {
+
+	// - a -
+	// - X b
+	// $ - -
+	const pattern = [
+		new Vec2(1, 2),
+		new Vec2(2, 1),
+		ordinals[0].clone().add_(-1, 0.25),
+		ordinals[0].clone().add_(0.25, -1),
+	]
+
+	const patterns = [...ordinals.keys()].map(index =>
+		pattern.map(vector =>
+			vector.clone().rotate(Degrees.toRadians(-90 * index))
+		)
+	)
+
+	return (location: Vec2, ordinalIndex: number, walkables: Vecset2) => {
+		const [a, b, u, v] = patterns.at(ordinalIndex)!
+			.map(tile => location.clone().add(tile))
+		const left = walkables.has(a)
+			? null
+			: u
+		const right = walkables.has(b)
+			? null
+			: v
+		return {left, right}
+	}
+})()
 
