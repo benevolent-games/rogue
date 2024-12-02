@@ -109,7 +109,7 @@ export class DungeonSkin {
 			options.size,
 			options.offset,
 		)
-		const rotation = Quat.rotate_(0, Degrees.toRadians(90), 0)
+		const rotation = Quat.rotate_(Degrees.toRadians(90), 0, 0)
 		const instance = options.crate.instance({
 			position,
 			rotation,

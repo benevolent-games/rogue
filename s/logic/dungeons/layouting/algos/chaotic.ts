@@ -15,7 +15,7 @@ export const chaotic = cellAlgo(({
 	}) => {
 
 	const distanceAlgo: DistanceAlgo = "euclidean"
-	const goalCount = Math.round(randy.between(1, 5))
+	const goalCount = Math.round(randy.range(1, 5))
 
 	//
 	// goalposts tile path
@@ -49,13 +49,13 @@ export const chaotic = cellAlgo(({
 	fattener.grow(p(5))
 
 	fattener.knobbify({
-		count: randy.between(p(2), p(3)),
-		size: randy.between(1, 2),
+		count: randy.range(p(2), p(3)),
+		size: randy.range(1, 2),
 	})
 
 	fattener.knobbify({
-		count: randy.between(2, p(1)),
-		size: randy.between(3, 5),
+		count: randy.range(2, p(1)),
+		size: randy.range(3, 5),
 	})
 
 	fattener.makeGoalpostBulbs(goalposts)

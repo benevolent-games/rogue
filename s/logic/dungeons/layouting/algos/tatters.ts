@@ -14,7 +14,7 @@ export const tatters = cellAlgo(({
 	}) => {
 
 	const distanceAlgo: DistanceAlgo = "manhattan"
-	const goalCount = Math.round(randy.between(5, 10))
+	const goalCount = Math.round(randy.range(5, 10))
 
 	//
 	// goalposts tile path
@@ -42,13 +42,13 @@ export const tatters = cellAlgo(({
 	fattener.grow(p(10))
 
 	fattener.knobbify({
-		count: randy.between(p(2), p(3)),
-		size: randy.between(1, 2),
+		count: randy.range(p(2), p(3)),
+		size: randy.range(1, 2),
 	})
 
 	fattener.knobbify({
-		count: randy.between(1, 2),
-		size: randy.between(2, 3),
+		count: randy.range(1, 2),
+		size: randy.range(2, 3),
 	})
 
 	fattener.makeGoalpostBulbs(goalposts)

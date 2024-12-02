@@ -11,8 +11,8 @@ export class Pathfinder {
 
 	pickRandomPoint() {
 		return Vec2.new(
-			Math.floor(this.randy.between(0, this.grid.extent.x)),
-			Math.floor(this.randy.between(0, this.grid.extent.y)),
+			this.randy.integerRange(0, this.grid.extent.x),
+			this.randy.integerRange(0, this.grid.extent.y),
 		)
 	}
 

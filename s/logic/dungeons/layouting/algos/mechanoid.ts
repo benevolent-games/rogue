@@ -16,7 +16,7 @@ export const mechanoid = cellAlgo(({
 	}) => {
 
 	const distanceAlgo: DistanceAlgo = "manhattan"
-	const goalCount = Math.round(randy.between(1, 10))
+	const goalCount = Math.round(randy.range(1, 10))
 
 	//
 	// goalposts tile path
@@ -50,8 +50,8 @@ export const mechanoid = cellAlgo(({
 	)
 
 	fattener.knobbify({
-		count: randy.between(p(0.5), p(1)),
-		size: randy.between(2, 3),
+		count: randy.range(p(0.5), p(1)),
+		size: randy.range(2, 3),
 	})
 
 	fattener.makeGoalpostBulbs(goalposts)

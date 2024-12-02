@@ -89,7 +89,7 @@ export class Fattener {
 
 	#growPortal(hole: Vec2, direction: Vec2, range: [number, number]) {
 		const {grid, randy} = this
-		const growth = Math.round(randy.between(...range))
+		const growth = randy.integerRange(...range)
 		const banned = new Vecset2(
 			grid.list().filter(v => (
 				(grid.isCorner(v)) ||
