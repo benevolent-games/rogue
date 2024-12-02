@@ -2,7 +2,7 @@
 import {loop, Randy, Vec2} from "@benev/toolbox"
 
 import {Vecset2} from "./vecset2.js"
-import {DrunkWalkOptions} from "../types.js"
+import {DrunkWalkOptions} from "./types.js"
 import {cardinals} from "../../../tools/directions.js"
 
 export function drunkWalkToHorizon(options: {randy: Randy} & DrunkWalkOptions) {

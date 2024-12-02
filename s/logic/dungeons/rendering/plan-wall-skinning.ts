@@ -2,8 +2,8 @@
 import {Degrees, loop, Vec2} from "@benev/toolbox"
 
 import {Placement} from "./types.js"
-import {Vecset2} from "../../utils/vecset2.js"
-import {cardinals, ordinals} from "../../../../tools/directions.js"
+import {Vecset2} from "../layouting/vecset2.js"
+import {cardinals, ordinals} from "../../../tools/directions.js"
 
 //   i j k
 // h a e l

@@ -4,13 +4,13 @@ import {Degrees, Quat, Randy, Vec2} from "@benev/toolbox"
 import { AssetContainer } from "@babylonjs/core/assetContainer.js"
 
 import {Placement} from "./types.js"
-import {Dungeon} from "../../dungeon.js"
-import {Realm} from "../../../realm/realm.js"
 import {DungeonPlacer} from "./placer.js"
+import {Realm} from "../../realm/realm.js"
+import {DungeonLayout} from "../dungeon-layout.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
-import {DungeonSpawners, DungeonStyle} from "./../utils/style.js"
-import {Crate} from "../../../../tools/babylon/logistics/crate.js"
+import {DungeonSpawners, DungeonStyle} from "./style.js"
+import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -22,7 +22,7 @@ export class DungeonSkin {
 	spawners: DungeonSpawners
 
 	constructor(
-			public dungeon: Dungeon,
+			public dungeon: DungeonLayout,
 			public container: AssetContainer,
 			public realm: Realm,
 			public mainScale: number,

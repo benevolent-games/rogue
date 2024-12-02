@@ -3,8 +3,8 @@ import {Map2} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
-import {Warehouse} from "../../../../tools/babylon/logistics/warehouse.js"
-import {ManifestQuery} from "../../../../tools/babylon/logistics/types.js"
+import {Warehouse} from "../../../tools/babylon/logistics/warehouse.js"
+import {ManifestQuery} from "../../../tools/babylon/logistics/types.js"
 
 export type DungeonSpawners = ReturnType<DungeonStyle["makeSpawners"]>
 

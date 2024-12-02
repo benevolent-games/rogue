@@ -1,10 +1,10 @@
 
 import {Randy, Vec2, Vec2Array} from "@benev/toolbox"
 
-import {Grid} from "./utils/grid.js"
+import {Grid} from "./grid.js"
+import {Fattener} from "./fattener.js"
 import {CellFlavors} from "./flavors.js"
-import {Fattener} from "./utils/fattener.js"
-import {DistanceAlgo} from "../../tools/distance.js"
+import {DistanceAlgo} from "../../../tools/distance.js"
 
 export type DungeonOptions = {
 	seed: number

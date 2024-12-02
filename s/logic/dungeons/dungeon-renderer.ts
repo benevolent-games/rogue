@@ -1,15 +1,15 @@
 
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
-import {Dungeon} from "../dungeon.js"
-import {Realm} from "../../realm/realm.js"
-import {DungeonSkin} from "./utils/skin.js"
+import {Realm} from "../realm/realm.js"
+import {DungeonLayout} from "./dungeon-layout.js"
+import {DungeonSkin} from "./rendering/skin.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
 	skin: DungeonSkin
 
-	constructor(public realm: Realm, public dungeon: Dungeon) {
+	constructor(public realm: Realm, public dungeon: DungeonLayout) {
 		this.skin = this.makeSkin(realm.glbs.templateGlb.container)
 	}
 

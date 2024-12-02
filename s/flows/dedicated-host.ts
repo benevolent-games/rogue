@@ -3,12 +3,12 @@ import {deep, interval} from "@benev/slate"
 
 import {LagProfile} from "../tools/fake-lag.js"
 import {Station} from "../logic/station/station.js"
-import {Dungeon} from "../logic/dungeons/dungeon.js"
 import {simulas} from "../logic/archetypes/simulas.js"
-import {stdDungeonOptions} from "../logic/dungeons/options.js"
+import {DungeonLayout} from "../logic/dungeons/dungeon-layout.js"
 import {Cathedral} from "../logic/framework/relay/cathedral.js"
 import {Coordinates} from "../logic/realm/utils/coordinates.js"
 import {Simulator} from "../logic/framework/simulation/simulator.js"
+import {stdDungeonOptions} from "../logic/dungeons/layouting/options.js"
 import {MultiplayerHost} from "../logic/multiplayer/multiplayer-host.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
@@ -16,7 +16,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const simulator = new Simulator(station, simulas)
 
 	const dungeonOptions = stdDungeonOptions()
-	const dungeon = new Dungeon(dungeonOptions)
+	const dungeon = new DungeonLayout(dungeonOptions)
 	const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
 
 	simulator.create("level", dungeonOptions)

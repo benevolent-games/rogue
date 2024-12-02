@@ -1,13 +1,13 @@
 
 import {LevelArchetype} from "./types.js"
 import {Realm} from "../../realm/realm.js"
-import {Dungeon} from "../../dungeons/dungeon.js"
-import {DungeonRenderer} from "../../dungeons/rendering/dungeon-renderer.js"
+import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
+import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 
 export const levelReplica = Realm.replica<LevelArchetype>(
 	({realm, facts}) => {
 		const {dungeonOptions} = facts
-		const dungeon = new Dungeon(dungeonOptions)
+		const dungeon = new DungeonLayout(dungeonOptions)
 		const dungeonRenderer = new DungeonRenderer(realm, dungeon)
 
 		const stopDrops = realm.onFilesDropped(files => {

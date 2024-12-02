@@ -1,5 +1,5 @@
 
-import {DungeonOptions} from "../../dungeons/types.js"
+import {DungeonOptions} from "../../dungeons/layouting/types.js"
 
 export type LevelArchetype = {
 	facts: {dungeonOptions: DungeonOptions}

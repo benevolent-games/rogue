@@ -8,7 +8,7 @@ import {Realm} from "../../../logic/realm/realm.js"
 import {QuitPanel} from "../gigamenu/panels/quit/panel.js"
 import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
-import {dungeonDropper} from "../../../logic/dungeons/ui/dungeon-dropper.js"
+import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
 import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
 
 export const Gameplay = shadowView(use => (o: {

@@ -2,18 +2,18 @@
 import {Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
-import {Grid} from "./utils/grid.js"
-import {CellFlavors} from "./flavors.js"
-import {Vecset2} from "./utils/vecset2.js"
-import {Fattener} from "./utils/fattener.js"
+import {Grid} from "./layouting/grid.js"
+import {Vecset2} from "./layouting/vecset2.js"
+import {Fattener} from "./layouting/fattener.js"
 import {distance} from "../../tools/distance.js"
-import {Pathfinder} from "./utils/pathfinder.js"
-import {DungeonOptions, FlavorName} from "./types.js"
+import {CellFlavors} from "./layouting/flavors.js"
+import {Pathfinder} from "./layouting/pathfinder.js"
 import {cardinals, ordinals} from "../../tools/directions.js"
-import {drunkWalkToHorizon} from "./utils/drunk-walk-to-horizon.js"
-import {fixAllDiagonalKisses} from "./utils/fix-diagonal-kissing-tiles.js"
+import {DungeonOptions, FlavorName} from "./layouting/types.js"
+import {drunkWalkToHorizon} from "./layouting/drunk-walk-to-horizon.js"
+import {fixAllDiagonalKisses} from "./layouting/fix-diagonal-kissing-tiles.js"
 
-export class Dungeon {
+export class DungeonLayout {
 	randy: Randy
 	cellGrid: Grid
 	tileGrid: Grid

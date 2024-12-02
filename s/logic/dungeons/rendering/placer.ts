@@ -2,8 +2,8 @@
 import {Quat, Vec2, Vec3} from "@benev/toolbox"
 
 import {Placement} from "./types.js"
-import {Coordinates} from "../../../realm/utils/coordinates.js"
-import {Spatial} from "../../../../tools/babylon/logistics/types.js"
+import {Coordinates} from "../../realm/utils/coordinates.js"
+import {Spatial} from "../../../tools/babylon/logistics/types.js"
 
 /** Calculator for the positions, rotaitons, and scales of dungeon props */
 export class DungeonPlacer {
