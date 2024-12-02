@@ -1,10 +1,10 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Degrees, Vec2} from "@benev/toolbox"
 import {Vecset2} from "../../utils/vecset2.js"
-import { cardinals, ordinals } from "../../../../tools/directions.js"
+import {cardinals, ordinals} from "../../../../tools/directions.js"
 
 // a b c
-// d - e
+// d $ e
 const wallConsiderations = Object.freeze([
 	[ordinals[3], cardinals[0], ordinals[0], cardinals[3], cardinals[1]],
 	[ordinals[0], cardinals[1], ordinals[1], cardinals[0], cardinals[2]],
@@ -36,5 +36,33 @@ export function isConvex(location: Vec2, corner: [Vec2, Vec2, Vec2], walkables: 
 		!walkables.has(middle) &&
 		walkables.has(right)
 	)
+}
+
+// a X X
+// - $ X
+// - - b
+const concaveStumpPattern = [
+	ordinals[3],
+	ordinals[1],
+	Vec2.new(-0.25, 0),
+	Vec2.new(0, -0.25),
+]
+
+const concaveStumps = [...ordinals.keys()].map(index =>
+	concaveStumpPattern.map(vector =>
+		vector.clone().rotate(Degrees.toRadians(-90 * index))
+	)
+)
+
+export function getConcaveStumps(location: Vec2, ordinalIndex: number, walkables: Vecset2) {
+	const [a, b, u, v] = concaveStumps.at(ordinalIndex)!
+		.map(tile => location.clone().add(tile))
+	const left = walkables.has(a)
+		? null
+		: u
+	const right = walkables.has(b)
+		? null
+		: v
+	return {left, right}
 }
 

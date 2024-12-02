@@ -26,7 +26,10 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		onBundle: ({replicatorId}) => {
 			const playerId = simulator.create("player", {
 				owner: replicatorId,
-				coordinates: Coordinates.import(getSpawnpoint()),
+
+				// TODO
+				coordinates: Coordinates.new(0.5, 0.5),
+				// coordinates: Coordinates.import(getSpawnpoint()),
 			})
 			return () => simulator.destroy(playerId)
 		},

@@ -7,5 +7,6 @@ export class DungeonSkinStats {
 	concaves = 0
 	convexes = 0
 	walls = 0
+	stumps = 0
 }
 

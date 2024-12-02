@@ -25,7 +25,6 @@ export class DungeonPlacer {
 	placeFloor(location: Vec2) {
 		const scale = new Vec2(this.mainScale, this.mainScale)
 		const degrees = this.randy.choose([0, -90, 90, 180])
-		// const degrees = 0
 		return {
 			rotation: Quat.rotate_(Degrees.toRadians(degrees), 0, 0),
 			scale: Vec3.new(scale.x, scale.y, scale.y),
@@ -54,6 +53,7 @@ export class DungeonPlacer {
 	}
 
 	placeWall(location: Vec2, cardinalIndex: number) {
+		cardinalIndex = cardinalIndex % 4
 		const floor = this.placeFloor(location)
 		const degrees = 180 + (cardinalIndex * -90)
 		const offset = cardinals.at(cardinalIndex)!
