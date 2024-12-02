@@ -4,14 +4,16 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./layouting/grid.js"
 import {Vecset2} from "./layouting/vecset2.js"
-import {Fattener} from "./layouting/fattener.js"
 import {distance} from "../../tools/distance.js"
-import {CellFlavors} from "./layouting/flavors.js"
+import {DungeonOptions} from "./layouting/types.js"
 import {Pathfinder} from "./layouting/pathfinder.js"
 import {cardinals, ordinals} from "../../tools/directions.js"
-import {DungeonOptions, FlavorName} from "./layouting/types.js"
 import {drunkWalkToHorizon} from "./layouting/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./layouting/fix-diagonal-kissing-tiles.js"
+
+import {chaotic} from "./layouting/algos/chaotic.js"
+import {tatters} from "./layouting/algos/tatters.js"
+import {mechanoid} from "./layouting/algos/mechanoid.js"
 
 export class DungeonLayout {
 	randy: Randy
@@ -26,7 +28,7 @@ export class DungeonLayout {
 		cell: Vec2,
 		tiles: Vec2[],
 		goalposts: Vec2[],
-		flavorName: FlavorName,
+		flavorName: string,
 	}[]
 
 	constructor(public options: DungeonOptions) {
@@ -68,36 +70,28 @@ export class DungeonLayout {
 			},
 		})
 
+		const algos = {
+			chaotic,
+			mechanoid,
+			tatters,
+		}
+
 		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}) => {
-			const [flavorName, makeFlavor] = randy.choose(Object.entries(CellFlavors))
-			const flavor = makeFlavor({randy})
-
-			const pathfinder = new Pathfinder(randy, tileGrid)
-			const innerTiles = tileGrid.excludeBorders()
-
-			const goalposts = [
+			const [flavorName, algo] = randy.choose(Object.entries(algos))
+			const {tiles, goalposts} = algo({
+				randy,
+				tileGrid,
+				cell,
 				start,
-				...Array(flavor.goalposts).fill(undefined)
-					.map(() => randy.yoink(innerTiles)),
 				end,
-			]
-
-			const tilePath = pathfinder.aStarChain(goalposts, flavor.distanceAlgo)
-
-			if (!tilePath)
-				throw new Error("failure to produce tilepath")
-
-			const sector = sectorByCell.require(cell)
-			const fattener = new Fattener(this.randy, this.tileGrid, tilePath)
-
-			const directTiles = flavor.fn({
-				tilePath, fattener, sector, cell, start, end,
-				forwardDirection, backwardDirection, tileGrid,
-				goalposts,
+				sector: sectorByCell.require(cell),
+				nextCellDirection: forwardDirection,
+				previousCellDirection: backwardDirection,
 			})
 
-			const tiles = fixAllDiagonalKisses(tileGrid, directTiles)
-			return {sector, cell, tiles, goalposts, flavorName: flavorName as FlavorName}
+			const sector = sectorByCell.require(cell)
+			const fixedTiles = fixAllDiagonalKisses(tileGrid, tiles)
+			return {sector, cell, tiles: fixedTiles, goalposts, flavorName}
 		})
 	}
 

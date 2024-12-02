@@ -5,6 +5,8 @@ import {Grid} from "./grid.js"
 import {Fattener} from "./fattener.js"
 import {CellFlavors} from "./flavors.js"
 import {DistanceAlgo} from "../../../tools/distance.js"
+import { Vecset2 } from "./vecset2.js"
+import { Map2 } from "@benev/slate"
 
 export type DungeonOptions = {
 	seed: number
@@ -26,26 +28,21 @@ export type DrunkWalkOptions = {
 
 ///////////////////
 
-export type CellFlavor = (options: {randy: Randy}) => {
-	distanceAlgo: DistanceAlgo
-	goalposts: number
-	fn: (params: {
-		tilePath: Vec2[]
-		goalposts: Vec2[]
-		fattener: Fattener
-		sector: Vec2
-		cell: Vec2
-		start: Vec2
-		end: Vec2
-		forwardDirection: Vec2 | null
-		backwardDirection: Vec2 | null
-		tileGrid: Grid,
-	}) => Vec2[]
+export type AlgoParams = {
+	randy: Randy
+	sector: Vec2
+	cell: Vec2
+	tileGrid: Grid
+	start: Vec2
+	end: Vec2
+	nextCellDirection: Vec2 | null
+	previousCellDirection: Vec2 | null
 }
 
-export function flavors<F extends Record<string, CellFlavor>>(f: F) {
-	return f
+export type AlgoResults = {
+	tiles: Vec2[]
+	goalposts: Vec2[]
 }
 
-export type FlavorName = keyof typeof CellFlavors
+export const cellAlgo = (fn: (params: AlgoParams) => AlgoResults) => fn
 
