@@ -1,15 +1,15 @@
 
 import {Randy, Vec2} from "@benev/toolbox"
 
-export class Vecset2 {
-	#vectors: Vec2[] = []
+export class Vecset2<V extends Vec2 = Vec2> {
+	#vectors: V[] = []
 
-	constructor(vectors: Vec2[] = []) {
+	constructor(vectors: V[] = []) {
 		for (const v of vectors)
 			this.add(v)
 	}
 
-	static dedupe(vectors: Vec2[]) {
+	static dedupe<V extends Vec2>(vectors: V[]) {
 		return new this(vectors).list()
 	}
 
@@ -17,18 +17,18 @@ export class Vecset2 {
 		return this.#vectors.length
 	}
 
-	has(vec: Vec2) {
+	has(vec: V) {
 		return this.#vectors.some(v => v.equals(vec))
 	}
 
-	add(...vecs: Vec2[]) {
+	add(...vecs: V[]) {
 		for (const vec of vecs) {
 			if (!this.has(vec))
 				this.#vectors.push(vec)
 		}
 	}
 
-	delete(...vecs: Vec2[]) {
+	delete(...vecs: V[]) {
 		this.#vectors = this.#vectors.filter(a => !vecs.some(b => b.equals(a)))
 	}
 

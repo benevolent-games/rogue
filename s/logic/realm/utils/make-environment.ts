@@ -1,5 +1,5 @@
 
-import {make_envmap, Radians} from "@benev/toolbox"
+import {Degrees, make_envmap, Radians} from "@benev/toolbox"
 
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
@@ -79,8 +79,8 @@ export function makeEnvironment(world: World) {
 
 	const camera: ArcRotateCamera = new ArcRotateCamera(
 		"camera",
-		Radians.from.degrees(-90),
-		Radians.from.degrees(20),
+		Degrees.toRadians(-90) - constants.game.cameraRotation,
+		Degrees.toRadians(20),
 		20,
 		Vector3.Zero(),
 		scene,

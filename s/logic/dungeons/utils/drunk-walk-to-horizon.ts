@@ -12,8 +12,6 @@ export function drunkWalkToHorizon(options: {randy: Randy} & DrunkWalkOptions) {
 	const bannedDirection = Vec2.array(options.horizonDirection).multiplyBy(-1)
 	let current = new Vec2(0, 0)
 
-	steps.add(current)
-
 	for (const _ of loop(options.stepCount)) {
 		const neighbors = cardinals
 			.filter(c => !c.equals(bannedDirection))

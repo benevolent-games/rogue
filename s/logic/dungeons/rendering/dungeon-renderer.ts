@@ -1,18 +1,10 @@
 
-import {Quat, Radians, Vec2, Vec3} from "@benev/toolbox"
-
 import {Dungeon} from "../dungeon.js"
 import {Realm} from "../../realm/realm.js"
+import {DungeonSkin} from "./utils/dungeon-skin.js"
 import {DungeonAssets} from "./utils/dungeon-assets.js"
-import {Coordinates} from "../../realm/utils/coordinates.js"
-import { Trashbin } from "@benev/slate"
-import { Quaternion } from "@babylonjs/core/Maths/math.vector.js"
 
-type DungeonSkin = {
-	assets: DungeonAssets
-	trashbin: Trashbin
-}
-
+/** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
 	skin: DungeonSkin
 
@@ -35,69 +27,19 @@ export class DungeonRenderer {
 
 	makeSkin(assets: DungeonAssets): DungeonSkin {
 		const {dungeon, realm} = this
-		const [style] = [...assets.styles.values()]
-		const spawners = style.makeSpawners()
-		const trashbin = new Trashbin()
-
-		const mainScale = 100 / 100
-		const counts = {sectors: 0, cells: 0, tiles: 0}
-
-		// TODO fix broken quat rotation methods in toolbox
-		const rotation = Quat.import(Quaternion.RotationYawPitchRoll(0, Radians.from.degrees(90), 0))
-
-		function place(location: Vec2, rawScale: Vec2, verticalOffset: number) {
-			const scale = rawScale.clone().multiplyBy(mainScale)
-			return {
-				scale: Vec3.new(scale.x, scale.y, scale.y),
-				position: Coordinates.import(location)
-					.multiplyBy(mainScale)
-					.add(scale.divideBy(2))
-					.position()
-					.add_(0, verticalOffset, 0),
-			}
-		}
-
-		for (const sector of dungeon.sectors) {
-			counts.sectors++
-			const location = dungeon.tilespace(sector)
-			const {position, scale} = place(location, dungeon.sectorSize, -0.02)
-			const instance = realm.env.indicators.sector.instance({
-				position,
-				rotation,
-				scale: scale.multiplyBy(0.999),
-			})
-			trashbin.disposable(instance)
-		}
-
-		for (const {sector, cell, tiles} of dungeon.cells) {
-			counts.cells++
-			const location = dungeon.tilespace(sector, cell)
-			const {position, scale} = place(location, dungeon.cellSize, -0.01)
-			const instance = realm.env.indicators.cell.instance({
-				position,
-				rotation,
-				scale: scale.multiplyBy(0.99),
-			})
-			trashbin.disposable(instance)
-
-			for (const tile of tiles) {
-				counts.tiles++
-				const location = dungeon.tilespace(sector, cell, tile)
-				const {position, scale} = place(location, Vec2.new(1, 1), 0)
-				spawners.floor.size1x1({position, scale})
-			}
-		}
-
-		console.log("sectors", counts.sectors)
-		console.log("cells", counts.cells)
-		console.log("tiles", counts.tiles)
-
-		return {assets, trashbin}
+		const mainScale = 1.0
+		const skin = new DungeonSkin(
+			dungeon,
+			assets,
+			realm,
+			mainScale,
+		)
+		console.log("dungeon skinner stats", skin.stats)
+		return skin
 	}
 
 	dispose() {
-		this.skin.assets.dispose()
-		this.skin.trashbin.dispose()
+		this.skin.dispose()
 
 		// don't delete the original template glb,
 		// (so when user exits game and reboots a new level,
