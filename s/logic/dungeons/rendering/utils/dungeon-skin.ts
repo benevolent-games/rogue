@@ -1,17 +1,17 @@
 
 import {Trashbin} from "@benev/slate"
-import {Degrees, loop2d, Quat, Vec2} from "@benev/toolbox"
+import {Degrees, Quat, Vec2} from "@benev/toolbox"
 
-import {Cornering, CornerPlacement, WallPlacement} from "./types.js"
 import {Dungeon} from "../../dungeon.js"
 import {Realm} from "../../../realm/realm.js"
 import {Vecset2} from "../../utils/vecset2.js"
 import {DungeonPlacer} from "./dungeon-placer.js"
-import {isConcave, isConvex, isWall} from "./patterns.js"
 import {DungeonSkinStats} from "./dungeon-skin-stats.js"
+import {isConcave, isConvex, isWall} from "./patterns.js"
 import {DungeonAssets} from "./../utils/dungeon-assets.js"
 import {DungeonSpawners} from "./../utils/dungeon-style.js"
-import {cardinals, corners, sides} from "../../../../tools/directions.js"
+import {cardinals, corners} from "../../../../tools/directions.js"
+import {Cornering, CornerPlacement, WallPlacement} from "./types.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {

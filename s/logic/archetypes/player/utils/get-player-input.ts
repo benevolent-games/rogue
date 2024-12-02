@@ -2,6 +2,7 @@
 
 import {Vec2} from "@benev/toolbox"
 import {PlayerInput} from "../types.js"
+import {constants} from "../../../../constants.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {GameTact} from "../../../realm/utils/make-tact.js"
 
@@ -25,7 +26,10 @@ export function getPlayerInput(tact: GameTact): PlayerInput {
 
 	return {
 		sprint,
-		intent: intent.normalize().array(),
+		intent: intent
+			.normalize()
+			.rotate(constants.game.cameraRotation)
+			.array(),
 	}
 }
 

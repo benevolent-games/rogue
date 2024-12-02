@@ -1,4 +1,6 @@
 
+import {Degrees} from "@benev/toolbox"
+
 export const constants = {
 
 	urls: {
@@ -10,6 +12,10 @@ export const constants = {
 
 	ui: {
 		animTime: 250,
+	},
+
+	game: {
+		cameraRotation: Degrees.toRadians(45)
 	},
 }
 
