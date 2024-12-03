@@ -6,8 +6,8 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
-import {DungeonLayout} from "../dungeon-layout.js"
 import {DungeonSkinStats} from "./skin-stats.js"
+import {DungeonLayout} from "../dungeon-layout.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
@@ -58,7 +58,7 @@ export class DungeonSkin {
 			})
 		}
 
-		const walkables = dungeon.getWalkables()
+		const walkables = dungeon.getAllWalkables()
 		const unwalkables = dungeon.getUnwalkables(walkables)
 
 		// // TODO

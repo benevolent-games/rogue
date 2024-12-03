@@ -1,5 +1,6 @@
 
 import {cellAlgo} from "../types.js"
+import {Fattener} from "./utils/fattener.js"
 import {goalposting} from "./utils/goalposting.js"
 
 export const chaotic = cellAlgo(options => {
@@ -13,7 +14,7 @@ export const chaotic = cellAlgo(options => {
 	} = options
 
 	const p = tileGrid.percentageFn()
-	const {fattener, goalposts} = goalposting({
+	const {walkables, goalposts} = goalposting({
 		end,
 		start,
 		randy,
@@ -21,6 +22,7 @@ export const chaotic = cellAlgo(options => {
 		goalcountRange: [1, p(1)],
 		distanceAlgo: "euclidean",
 	})
+	const fattener = new Fattener(randy, tileGrid, walkables)
 
 	fattener.growBorderPortals(
 		[1, 4],
@@ -42,6 +44,6 @@ export const chaotic = cellAlgo(options => {
 
 	fattener.makeGoalpostBulbs(goalposts)
 
-	return {tiles: fattener.tiles, goalposts}
+	return {walkables, goalposts}
 })
 

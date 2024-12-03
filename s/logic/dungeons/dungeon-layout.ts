@@ -7,13 +7,10 @@ import {Vecset2} from "./layouting/vecset2.js"
 import {distance} from "../../tools/distance.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {Pathfinder} from "./layouting/pathfinder.js"
+import {chooseAlgo} from "./layouting/choose-algo.js"
 import {cardinals, ordinals} from "../../tools/directions.js"
 import {drunkWalkToHorizon} from "./layouting/drunk-walk-to-horizon.js"
 import {fixAllDiagonalKisses} from "./layouting/fix-diagonal-kissing-tiles.js"
-
-import {chaotic} from "./layouting/algos/chaotic.js"
-import {tatters} from "./layouting/algos/tatters.js"
-import {mechanoid} from "./layouting/algos/mechanoid.js"
 
 export class DungeonLayout {
 	randy: Randy
@@ -24,11 +21,10 @@ export class DungeonLayout {
 
 	sectors: Vec2[]
 	cells: {
-		sector: Vec2,
-		cell: Vec2,
-		tiles: Vec2[],
-		goalposts: Vec2[],
-		flavorName: string,
+		sector: Vec2
+		cell: Vec2
+		goalposts: Vec2[]
+		walkables: Vecset2
 	}[]
 
 	constructor(public options: DungeonOptions) {
@@ -70,15 +66,14 @@ export class DungeonLayout {
 			},
 		})
 
-		const algos = {
-			chaotic,
-			mechanoid,
-			tatters,
-		}
+		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}, cellIndex) => {
+			const algo = chooseAlgo({
+				randy,
+				isFirstCell: cellIndex === 0,
+				isLastCell: cellIndex === (cellGoals.length - 1),
+			})
 
-		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}) => {
-			const [flavorName, algo] = randy.choose(Object.entries(algos))
-			const {tiles, goalposts} = algo({
+			const {walkables, goalposts} = algo({
 				randy,
 				tileGrid,
 				cell,
@@ -88,15 +83,17 @@ export class DungeonLayout {
 				nextCellDirection: forwardDirection,
 				previousCellDirection: backwardDirection,
 			})
+
 			const sector = sectorByCell.require(cell)
-			const fixedTiles = fixAllDiagonalKisses(tileGrid, tiles)
-			return {sector, cell, tiles: fixedTiles, goalposts, flavorName}
+			fixAllDiagonalKisses(tileGrid, walkables)
+			return {sector, cell, walkables, goalposts}
 		})
 	}
 
 	makeSpawnpointGetterFn() {
-		const [{sector, cell, tiles, goalposts}] = this.cells
+		const [{sector, cell, walkables, goalposts}] = this.cells
 		const [goalpost] = goalposts
+		const tiles = walkables.list()
 		const sortedTiles = tiles.sort((a, b) => distance(goalpost, b) - distance(goalpost, a))
 		let pipe = sortedTiles
 		return () => {
@@ -118,10 +115,10 @@ export class DungeonLayout {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
 	}
 
-	getWalkables() {
+	getAllWalkables() {
 		return new Vecset2(
-			this.cells.flatMap(({sector, cell, tiles}) =>
-				tiles.map(tile => this.tilespace(sector, cell, tile))
+			this.cells.flatMap(({sector, cell, walkables}) =>
+				walkables.list().map(tile => this.tilespace(sector, cell, tile))
 			)
 		)
 	}

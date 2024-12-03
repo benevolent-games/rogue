@@ -1,5 +1,6 @@
 
 import {cellAlgo} from "../types.js"
+import {Fattener} from "./utils/fattener.js"
 import {goalposting} from "./utils/goalposting.js"
 
 export const mechanoid = cellAlgo(options => {
@@ -13,7 +14,7 @@ export const mechanoid = cellAlgo(options => {
 	} = options
 
 	const p = tileGrid.percentageFn()
-	const {fattener, goalposts} = goalposting({
+	const {walkables, goalposts} = goalposting({
 		end,
 		start,
 		randy,
@@ -21,6 +22,7 @@ export const mechanoid = cellAlgo(options => {
 		distanceAlgo: "manhattan",
 		goalcountRange: [1, p(2)],
 	})
+	const fattener = new Fattener(randy, tileGrid, walkables)
 
 	fattener.shadow()
 
@@ -37,6 +39,6 @@ export const mechanoid = cellAlgo(options => {
 
 	fattener.makeGoalpostBulbs(goalposts)
 
-	return {tiles: fattener.tiles, goalposts}
+	return {walkables, goalposts}
 })
 

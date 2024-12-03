@@ -1,10 +1,11 @@
 
 import {Randy, Vec2} from "@benev/toolbox"
 import {Grid} from "../../grid.js"
-import {Fattener} from "../../fattener.js"
+import {Fattener} from "./fattener.js"
 import {Pathfinder} from "../../pathfinder.js"
 import {range} from "../../../../../tools/range.js"
 import {DistanceAlgo} from "../../../../../tools/distance.js"
+import { Vecset2 } from "../../vecset2.js"
 
 export function goalposting(options: {
 		end: Vec2
@@ -24,10 +25,9 @@ export function goalposting(options: {
 		goalcountRange,
 	} = options
 
+	const walkables = new Vecset2()
 	const pathfinder = new Pathfinder(randy, tileGrid)
-
 	const innerTiles = tileGrid.excludeBorders()
-
 	const goalposts = [
 		start,
 		...range(randy.integerRange(...goalcountRange))
@@ -39,7 +39,7 @@ export function goalposting(options: {
 	if (!tilePath)
 		throw new Error("failure to produce tilepath")
 
-	const fattener = new Fattener(randy, tileGrid, tilePath)
-	return {tilePath, goalposts, innerTiles, fattener}
+	walkables.add(...tilePath)
+	return {tilePath, goalposts, innerTiles, walkables}
 }
 

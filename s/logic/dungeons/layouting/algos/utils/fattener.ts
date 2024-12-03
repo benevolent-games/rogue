@@ -1,23 +1,14 @@
 
 import {Randy, Vec2} from "@benev/toolbox"
-
-import {Grid} from "./grid.js"
-import {Vecset2} from "./vecset2.js"
-import {distance, DistanceAlgo} from "../../../tools/distance.js"
+import {Grid} from "../../grid.js"
+import {Vecset2} from "../../vecset2.js"
+import {distance, DistanceAlgo} from "../../../../../tools/distance.js"
 
 export class Fattener {
-	#tiles = new Vecset2()
-
-	get tiles() {
-		return this.#tiles.list()
-	}
-
-	constructor(public randy: Randy, public grid: Grid, tiles: Vec2[]) {
-		this.#tiles.add(...tiles)
-	}
+	constructor(public randy: Randy, public grid: Grid, public walkables: Vecset2) {}
 
 	makeRoom(center: Vec2, radius: number, algo: DistanceAlgo = "chebyshev") {
-		this.#tiles.add(
+		this.walkables.add(
 			...this.grid.nearby(center, Math.round(radius), algo)
 				.filter(v => !this.grid.isBorder(v))
 		)
@@ -38,8 +29,8 @@ export class Fattener {
 			size: number
 		}) {
 		for (const _ of Array(Math.floor(count))) {
-			const knob = this.randy.choose(this.tiles)
-			this.#tiles.add(
+			const knob = this.randy.choose(this.walkables.list())
+			this.walkables.add(
 				...this.grid.nearby(
 					knob,
 					Math.round(size),
@@ -50,8 +41,8 @@ export class Fattener {
 	}
 
 	shadow() {
-		this.#tiles.add(
-			...this.tiles
+		this.walkables.add(
+			...this.walkables.list()
 				.map(tile => {
 					let shadow = tile.clone().add_(1, 1)
 					return (this.grid.isBorder(shadow))
@@ -64,13 +55,13 @@ export class Fattener {
 
 	grow(count: number) {
 		for (const _ of Array(Math.floor(count))) {
-			const target = this.randy.choose(this.tiles)
+			const target = this.randy.choose(this.walkables.list())
 			const neighbors = this.grid.neighbors(target)
-				.filter(v => !this.#tiles.has(v))
+				.filter(v => !this.walkables.has(v))
 				.filter(v => !this.grid.isBorder(v))
 			const chosen = this.randy.choose(neighbors)
 			if (chosen)
-				this.#tiles.add(chosen)
+				this.walkables.add(chosen)
 		}
 	}
 
@@ -99,7 +90,7 @@ export class Fattener {
 		const additions = grid.list()
 			.filter(v => !banned.has(v))
 			.filter(v => distance(hole, v, "euclidean") <= growth)
-		this.#tiles.add(...additions)
+		this.walkables.add(...additions)
 	}
 }
 

@@ -33,16 +33,15 @@ const badPatterns: Pat[][][] = [
 	],
 ]
 
-export function fixAllDiagonalKisses(grid: Grid, tiles: Vec2[]) {
+export function fixAllDiagonalKisses(grid: Grid, walkables: Vecset2) {
 	const attempts = 100
-	const allTiles = new Vecset2(tiles)
 	for (const _ of Array(attempts)) {
-		const fixes = fixDiagonalKissingTiles(grid, allTiles.list())
+		const fixes = fixDiagonalKissingTiles(grid, walkables.list())
 		if (fixes.length === 0)
 			break
-		allTiles.add(...fixes)
+		walkables.add(...fixes)
 	}
-	return allTiles.list()
+	return walkables
 }
 
 export function fixDiagonalKissingTiles(grid: Grid, tiles: Vec2[]) {

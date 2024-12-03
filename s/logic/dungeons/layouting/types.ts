@@ -2,6 +2,7 @@
 import {Randy, Vec2, Vec2Array} from "@benev/toolbox"
 
 import {Grid} from "./grid.js"
+import {Vecset2} from "./vecset2.js"
 
 export type DungeonOptions = {
 	seed: number
@@ -35,9 +36,11 @@ export type AlgoParams = {
 }
 
 export type AlgoResults = {
-	tiles: Vec2[]
+	walkables: Vecset2
 	goalposts: Vec2[]
 }
 
-export const cellAlgo = (fn: (params: AlgoParams) => AlgoResults) => fn
+export type AlgoFn = (params: AlgoParams) => AlgoResults
+
+export const cellAlgo = (fn: AlgoFn) => fn
 
