@@ -55,7 +55,10 @@ export function fixDiagonalKissingTiles(grid: Grid, tiles: Vec2[]) {
 	}
 
 	const considerableTiles = grid.list()
-		.filter(tile => !grid.isBorder(tile))
+		// // TODO
+		// // worry about this if kissing-diagonals are found,
+		// // or if cells are unintentionally connected when they should not be..
+		// .filter(tile => !grid.isBorder(tile))
 
 	const fixes = new Vecset2()
 
