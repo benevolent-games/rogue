@@ -4,7 +4,6 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./layouting/grid.js"
 import {Vecset2} from "./layouting/vecset2.js"
-import {distance} from "../../tools/distance.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {Pathfinder} from "./layouting/pathfinder.js"
 import {chooseAlgo} from "./layouting/choose-algo.js"
