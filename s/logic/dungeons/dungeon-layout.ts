@@ -25,6 +25,8 @@ export class DungeonLayout {
 		cell: Vec2
 		goalposts: Vec2[]
 		walkables: Vecset2
+		start: Vec2
+		end: Vec2
 	}[]
 
 	constructor(public options: DungeonOptions) {
@@ -66,7 +68,9 @@ export class DungeonLayout {
 			},
 		})
 
-		this.cells = cellGoals.map(({unit: cell, start, end, forwardDirection, backwardDirection}, cellIndex) => {
+		this.cells = cellGoals.map(({
+				unit: cell, start, end, forwardDirection, backwardDirection,
+			}, cellIndex) => {
 			const algo = chooseAlgo({
 				randy,
 				isFirstCell: cellIndex === 0,
@@ -86,15 +90,14 @@ export class DungeonLayout {
 
 			const sector = sectorByCell.require(cell)
 			fixAllDiagonalKisses(tileGrid, walkables)
-			return {sector, cell, walkables, goalposts}
+			return {sector, cell, walkables, goalposts, start, end}
 		})
 	}
 
 	makeSpawnpointGetterFn() {
-		const [{sector, cell, walkables, goalposts}] = this.cells
-		const [goalpost] = goalposts
+		const [{sector, cell, walkables, start}] = this.cells
 		const tiles = walkables.list()
-		const sortedTiles = tiles.sort((a, b) => distance(goalpost, b) - distance(goalpost, a))
+		const sortedTiles = tiles.sort((a, b) => distance(start, b) - distance(start, a))
 		let pipe = sortedTiles
 		return () => {
 			if (pipe.length === 0)

@@ -4,33 +4,17 @@ import {Fattener} from "./utils/fattener.js"
 import {goalposting} from "./utils/goalposting.js"
 
 export const mechanoid = cellAlgo(options => {
-	const {
-		end,
-		start,
-		randy,
-		tileGrid,
-		nextCellDirection,
-		previousCellDirection,
-	} = options
-
+	const {randy, tileGrid} = options
 	const p = tileGrid.percentageFn()
 	const {walkables, goalposts} = goalposting({
-		end,
-		start,
-		randy,
-		tileGrid,
+		...options,
 		distanceAlgo: "manhattan",
 		goalcountRange: [1, p(2)],
 	})
-	const fattener = new Fattener(randy, tileGrid, walkables)
+	const fattener = new Fattener(walkables, options)
 
 	fattener.shadow()
-
-	fattener.growBorderPortals(
-		[2, 2],
-		[start, previousCellDirection],
-		[end, nextCellDirection],
-	)
+	fattener.makeBorderRooms({sizeRange: [3, 5]})
 
 	fattener.knobbify({
 		count: randy.range(p(0.5), p(1)),

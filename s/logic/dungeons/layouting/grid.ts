@@ -87,7 +87,7 @@ export class Grid {
 	}
 
 	percentageFn() {
-		return (p: number) => ((p / 100) * (this.extent.x * this.extent.y))
+		return (p: number) => Math.round((p / 100) * (this.extent.x * this.extent.y))
 	}
 }
 

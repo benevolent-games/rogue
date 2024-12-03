@@ -85,6 +85,11 @@ export class Pathfinder {
 			return cardinals
 				.map(c => location.clone().add(c))
 				.filter(step => grid.inBounds(step))
+				.filter(step => (
+					(step.equals(start)) ||
+					(step.equals(end)) ||
+					!grid.isBorder(step)
+				))
 		}
 
 		while (openNodes.length > 0) {
