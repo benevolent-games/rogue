@@ -7,6 +7,7 @@ import {Spatial} from "../../../tools/babylon/logistics/types.js"
 
 /** Calculator for the positions, rotaitons, and scales of dungeon props */
 export class DungeonPlacer {
+
 	constructor(public mainScale: number) {}
 
 	placeIndicator(location: Vec2, size: Vec2, verticalOffset: number) {

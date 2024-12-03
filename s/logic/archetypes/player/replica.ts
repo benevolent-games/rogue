@@ -16,7 +16,6 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 			.array()
 	}
 
-
 	// full clientside prediction
 	if (facts.config.owner === replicator.id) {
 		const cameraPosition = Vec3.zero()

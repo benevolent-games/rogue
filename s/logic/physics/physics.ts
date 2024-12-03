@@ -1,5 +1,5 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Scalar, Vec2} from "@benev/toolbox"
 import {Hashgrid} from "./facilities/hashgrid.js"
 
 export class Physics {
@@ -17,16 +17,13 @@ export class Physics {
 	}
 
 	#circleIntersectsSquare(point: Vec2, radius: number, tile: Vec2) {
-		// clamp the circle's center to the tile's bounds
-		const clampedX = Math.max(tile.x, Math.min(point.x, tile.x + 1))
-		const clampedY = Math.max(tile.y, Math.min(point.y, tile.y + 1))
-
-		// calculate the distance from the circle's center to the clamped point
+		const clampedX = Scalar.clamp(point.x, tile.x, tile.x + 1)
+		const clampedY = Scalar.clamp(point.y, tile.y, tile.y + 1)
 		const dx = point.x - clampedX
 		const dy = point.y - clampedY
-
-		// check if the distance is less than the circle's radius
-		return (dx * dx + dy * dy) < (radius * radius)
+		const d2 = (dx ** 2) + (dy ** 2)
+		const r2 = radius ** 2
+		return d2 <= r2
 	}
 }
 

@@ -1,5 +1,6 @@
 
 import {Vec2} from "@benev/toolbox"
+import {constants} from "../../../../constants.js"
 import {PlayerConfig, PlayerWorld} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
@@ -57,6 +58,8 @@ export class PlayerRollbackDriver {
 	}
 
 	#applyMovement({input, physics}: PlayerWorld) {
+		const radius = constants.game.crusaderRadius
+
 		const {config} = this.options
 		const effectiveSpeed = input.sprint
 			? config.speedSprint
@@ -68,9 +71,8 @@ export class PlayerRollbackDriver {
 
 		const newlyProposedCoordinates = this.coordinates.clone().add(movement)
 
-		if (physics.isWalkable(newlyProposedCoordinates, 0.5)) {
+		if (physics.isWalkable(newlyProposedCoordinates, radius))
 			this.coordinates.set(newlyProposedCoordinates)
-		}
 	}
 }
 

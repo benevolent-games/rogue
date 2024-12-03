@@ -15,7 +15,8 @@ export const constants = {
 	},
 
 	game: {
-		cameraRotation: Degrees.toRadians(45)
+		cameraRotation: Degrees.toRadians(45),
+		crusaderRadius: 0.4,
 	},
 }
 
