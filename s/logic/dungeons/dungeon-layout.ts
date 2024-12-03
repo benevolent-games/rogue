@@ -26,6 +26,8 @@ export class DungeonLayout {
 		walkables: Vecset2
 		spawnpoints: Vec2[]
 	}[]
+	walkables: Vecset2
+	unwalkables: Vecset2
 
 	constructor(public options: DungeonOptions) {
 		const {seed, gridExtents, sectorWalk} = options
@@ -90,6 +92,9 @@ export class DungeonLayout {
 			fixAllDiagonalKisses(tileGrid, walkables)
 			return {sector, cell, walkables, goalposts, spawnpoints}
 		})
+
+		this.walkables = this.#getAllWalkables()
+		this.unwalkables = this.#getUnwalkables(this.walkables)
 	}
 
 	makeSpawnpointGetterFn() {
@@ -111,7 +116,7 @@ export class DungeonLayout {
 		return this.cellGrid.extent.clone().multiply(sector).add(cell)
 	}
 
-	getAllWalkables() {
+	#getAllWalkables() {
 		return new Vecset2(
 			this.cells.flatMap(({sector, cell, walkables}) =>
 				walkables.list().map(tile => this.tilespace(sector, cell, tile))
@@ -119,7 +124,7 @@ export class DungeonLayout {
 		)
 	}
 
-	getUnwalkables(walkables: Vecset2) {
+	#getUnwalkables(walkables: Vecset2) {
 		const walls = new Vecset2(
 			walkables.list().flatMap(
 				tile => [

@@ -33,5 +33,5 @@ export type Replicant<Ar extends Archetype> = {
 export type Replica<Re, Ar extends Archetype> = (pack: ReplicaPack<Re, Ar>) => Replicant<Ar>
 export type Replicas = Record<string, Replica<any, any>>
 export const replica = <Re>() => <Ar extends Archetype>(r: Replica<Re, Ar>) => r
-export const asReplicas = <Re, S extends Simulas<Re>>(r: Record<keyof S, Replica<Re, any>>) => r
+export const asReplicas = <Re, S extends Simulas<any>>(r: Record<keyof S, Replica<Re, any>>) => r
 

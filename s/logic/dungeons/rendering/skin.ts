@@ -58,8 +58,7 @@ export class DungeonSkin {
 			})
 		}
 
-		const walkables = dungeon.getAllWalkables()
-		const unwalkables = dungeon.getUnwalkables(walkables)
+		const {walkables, unwalkables} = dungeon
 
 		// // TODO
 		// const walkables = new Vecset2([

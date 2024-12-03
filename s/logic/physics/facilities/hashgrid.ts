@@ -24,25 +24,27 @@ export class Hashgrid {
 		}
 	}
 
-	near({x, y}: Vec2, distance: number) {
+	near(point: Vec2, distance: number) {
+		const {x, y} = point
 		const size = this.#zoneSize
-		const xMin = Math.round((x - distance) / size)
-		const xMax = Math.round((x + distance) / size)
-		const yMin = Math.round((y - distance) / size)
-		const yMax = Math.round((y + distance) / size)
+		const xMin = Math.floor((x - distance) / size)
+		const xMax = Math.floor((x + distance) / size)
+		const yMin = Math.floor((y - distance) / size)
+		const yMax = Math.floor((y + distance) / size)
 
-		const results: Vec2[] = []
+		const resultsFromZones: Vec2[] = []
 
 		for (let zoneX = xMin; zoneX <= xMax; zoneX++) {
 			for (let zoneY = yMin; zoneY <= yMax; zoneY++) {
 				const key = `${zoneX},${zoneY}`
 				const zone = this.#zones.get(key)
 				if (zone)
-					results.push(...zone)
+					resultsFromZones.push(...zone)
 			}
 		}
 
-		return results
+		const d2 = distance * distance
+		return resultsFromZones.filter(tile => tile.distanceSquared(point) <= d2)
 	}
 }
 

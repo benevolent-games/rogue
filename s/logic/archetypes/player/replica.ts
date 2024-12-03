@@ -21,6 +21,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 	if (facts.config.owner === replicator.id) {
 		const cameraPosition = Vec3.zero()
 
+		const {physics} = realm
 		const driver = new PlayerRollbackDriver({
 			config: facts.config,
 			maxChronicleEntries: 30,
@@ -55,7 +56,7 @@ export const playerReplica = Realm.replica<PlayerArchetype>(
 					driver.rollbackAndCatchUp(estimatedTime, hostRaw)
 				}
 
-				driver.simulate({input, obstacles: []})
+				driver.simulate({input, physics})
 				const clientRaw = driver.coordinates
 
 				hostSmooth.lerp(hostRaw, 30 / 100)

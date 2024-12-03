@@ -1,5 +1,6 @@
 
 import {Vec2Array} from "@benev/toolbox"
+import {Physics} from "../../physics/physics.js"
 import {ReplicatorId} from "../../framework/types.js"
 
 export type PlayerArchetype = {
@@ -27,6 +28,6 @@ export type PlayerInput = {
 
 export type PlayerWorld = {
 	input: PlayerInput
-	obstacles: any[]
+	physics: Physics
 }
 

@@ -1,7 +1,7 @@
 
+import {Vec2} from "@benev/toolbox"
 import {PlayerConfig, PlayerWorld} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
-import { Vec2 } from "@benev/toolbox"
 
 export class PlayerRollbackDriver {
 	coordinates: Coordinates
@@ -56,17 +56,21 @@ export class PlayerRollbackDriver {
 			this.chronicle.shift()
 	}
 
-	#applyMovement({input}: PlayerWorld) {
+	#applyMovement({input, physics}: PlayerWorld) {
 		const {config} = this.options
-		const movement = Vec2.array(input.intent).clampMagnitude(1)
-
 		const effectiveSpeed = input.sprint
 			? config.speedSprint
 			: config.speed
 
-		movement.multiplyBy(effectiveSpeed)
+		const movement = Vec2.array(input.intent)
+			.clampMagnitude(1)
+			.multiplyBy(effectiveSpeed)
 
-		this.coordinates.add(movement)
+		const newlyProposedCoordinates = this.coordinates.clone().add(movement)
+
+		if (physics.isWalkable(newlyProposedCoordinates, 0.5)) {
+			this.coordinates.set(newlyProposedCoordinates)
+		}
 	}
 }
 

@@ -9,6 +9,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		const {dungeonOptions} = facts
 		const dungeon = new DungeonLayout(dungeonOptions)
 		const dungeonRenderer = new DungeonRenderer(realm, dungeon)
+		realm.physics.resetUnwalkableHashgrid(dungeon.unwalkables.list())
 
 		const stopDrops = realm.onFilesDropped(files => {
 			for (const file of files) {
@@ -24,6 +25,7 @@ export const levelReplica = Realm.replica<LevelArchetype>(
 		return {
 			replicate({feed, feedback}) {},
 			dispose() {
+				realm.physics.resetUnwalkableHashgrid([])
 				dungeonRenderer.dispose()
 				stopDrops()
 			},

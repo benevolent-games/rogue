@@ -12,7 +12,9 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 	({owner, coordinates}: {
 		owner: ReplicatorId
 		coordinates: Coordinates
-	}) => () => {
+	}) => ({station}) => {
+
+	const {physics} = station
 
 	const config: PlayerConfig = {
 		owner,
@@ -42,7 +44,7 @@ export const playerSimula = Station.simula<PlayerArchetype>()(
 			for (const data of dataFromReplicator(owner, feedback))
 				input = data.input
 
-			driver.simulate({input, obstacles: []})
+			driver.simulate({input, physics})
 			feed.facts = getFacts()
 		},
 		dispose() {},
