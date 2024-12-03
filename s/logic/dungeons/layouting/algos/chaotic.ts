@@ -23,6 +23,6 @@ export const chaotic = cellAlgo(options => {
 		fattener.spawnRectangle(roomRoot, [5, 11])
 	}
 
-	return {walkables, goalposts}
+	return {walkables, goalposts, spawnpoints: []}
 })
 

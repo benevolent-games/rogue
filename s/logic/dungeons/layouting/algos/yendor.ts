@@ -15,6 +15,6 @@ export const yendor = cellAlgo(options => {
 	fattener.spawnRectangle(options.end, [5, 10], true)
 	fattener.makeBorderRooms({sizeRange: [2, 3]})
 
-	return {walkables, goalposts}
+	return {walkables, goalposts, spawnpoints: []}
 })
 

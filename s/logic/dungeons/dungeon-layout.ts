@@ -1,5 +1,5 @@
 
-import {Map2} from "@benev/slate"
+import {Hat, Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./layouting/grid.js"
@@ -25,8 +25,7 @@ export class DungeonLayout {
 		cell: Vec2
 		goalposts: Vec2[]
 		walkables: Vecset2
-		start: Vec2
-		end: Vec2
+		spawnpoints: Vec2[]
 	}[]
 
 	constructor(public options: DungeonOptions) {
@@ -77,7 +76,7 @@ export class DungeonLayout {
 				isLastCell: cellIndex === (cellGoals.length - 1),
 			})
 
-			const {walkables, goalposts} = algo({
+			const {walkables, goalposts, spawnpoints} = algo({
 				randy,
 				tileGrid,
 				cell,
@@ -90,21 +89,16 @@ export class DungeonLayout {
 
 			const sector = sectorByCell.require(cell)
 			fixAllDiagonalKisses(tileGrid, walkables)
-			return {sector, cell, walkables, goalposts, start, end}
+			return {sector, cell, walkables, goalposts, spawnpoints}
 		})
 	}
 
 	makeSpawnpointGetterFn() {
-		const [{sector, cell, walkables, start}] = this.cells
-		const tiles = walkables.list()
-		const sortedTiles = tiles.sort((a, b) => distance(start, b) - distance(start, a))
-		let pipe = sortedTiles
-		return () => {
-			if (pipe.length === 0)
-				pipe = sortedTiles
-			const tile = pipe.pop()!
-			return this.tilespace(sector, cell, tile).add_(0.5, 0.5)
-		}
+		const [{sector, cell, spawnpoints}] = this.cells
+		if (spawnpoints.length === 0)
+			throw new Error("no valid spawnpoints!")
+		const hat = new Hat(spawnpoints)
+		return () => this.tilespace(sector, cell, hat.pull()).add_(0.5, 0.5)
 	}
 
 	tilespace(sector: Vec2, cell = Vec2.zero(), tile = Vec2.zero()) {
