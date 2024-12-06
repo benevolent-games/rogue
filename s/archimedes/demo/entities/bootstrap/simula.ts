@@ -7,7 +7,9 @@ export const bootstrapSimula = simula<GameEntities, Station>()<"bootstrap">(
 	({gameState}) => {
 
 	return {
-		simulate: (tick, state, inputs) => {},
+		simulate: (tick, state, inputs) => {
+			console.log(tick)
+		},
 		dispose: () => {},
 	}
 })

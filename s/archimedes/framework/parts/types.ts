@@ -1,10 +1,14 @@
 
 export type Input = {
+	kind: string
+	sticky: boolean
+	data: any
+}
+
+export type InputShell<xInput extends Input> = {
 	author: number | null
 	entity: number
-	sticky: boolean
-	kind: string
-	payload: any
+	input: xInput
 }
 
 export type Entity = {

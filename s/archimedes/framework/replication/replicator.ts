@@ -11,6 +11,7 @@ export class Replicator<xEntities extends Entities, xRealm> {
 			public realm: xRealm,
 			public replicas: Replicas<xEntities, xRealm>,
 		) {
+
 		this.lifecycles = new Lifecycles<ReplicaReturn<any>>(
 			new Map2(Object.entries(replicas).map(([kind, replica]) => {
 				const fn = (id: number, state: any) => replica(realm, id, state)

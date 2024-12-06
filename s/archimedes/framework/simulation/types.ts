@@ -1,10 +1,14 @@
 
 import {GameState} from "../parts/game-state.js"
-import {Entities, Entity} from "../parts/types.js"
+import {Entities, Entity, InputShell} from "../parts/types.js"
 
 export type SimulaReturn<xEntity extends Entity> = {
-	simulate: (tick: number, state: xEntity["state"], inputs: xEntity["input"][]) => void
 	dispose: () => void
+	simulate: (
+		tick: number,
+		state: xEntity["state"],
+		inputs: InputShell<xEntity["input"]>[],
+	) => void
 }
 
 export type SimulaPack<xEntities extends Entities, xKind extends keyof xEntities, xStation> = {

@@ -4,8 +4,8 @@ import {AsEntities} from "../../framework/parts/types.js"
 
 export type GameEntities = AsEntities<{
 	bootstrap: {
-		input: any
-		state: any
+		input: {kind: "spawn", sticky: false, data: {spawn: string}}
+		state: null
 	}
 	// player: {
 	// 	input: any
