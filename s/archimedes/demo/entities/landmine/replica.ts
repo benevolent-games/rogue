@@ -3,7 +3,7 @@ import {DemoRealm} from "../../realm.js"
 import {GameEntities} from "../entities.js"
 import {replica} from "../../../framework/replication/types.js"
 
-export const bootstrapReplica = replica<GameEntities, DemoRealm>()<"bootstrap">(
+export const landmineReplica = replica<GameEntities, DemoRealm>()<"landmine">(
 	({realm, id}) => {
 
 	return {

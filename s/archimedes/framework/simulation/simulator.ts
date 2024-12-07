@@ -1,10 +1,10 @@
 
 import {Map2} from "@benev/slate"
 
-import {SimulaReturn, Simulas} from "./types.js"
 import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {Entities, InputShell} from "../parts/types.js"
+import {SimulaPack, SimulaReturn, Simulas} from "./types.js"
 
 export class Simulator<xEntities extends Entities, xStation> {
 	lifecycles: Lifecycles<SimulaReturn<any>>
@@ -17,7 +17,12 @@ export class Simulator<xEntities extends Entities, xStation> {
 
 		this.lifecycles = new Lifecycles<SimulaReturn<any>>(
 			new Map2(Object.entries(simulas).map(([kind, simula]) => {
-				const fn = (id: number, state: any) => simula(station, id, state)
+				const fn = (id: number, state: any) => simula({
+					gameState,
+					station,
+					id,
+					state,
+				} as SimulaPack<any, any, xStation>)
 				return [kind, fn]
 			}))
 		)
@@ -28,7 +33,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 
 		for (const [id, entity] of this.lifecycles.entities) {
 			const entityState = this.gameState.entityStates.require(id)
-			const entityInputs = inputs.filter(input => input.entity === id)
+			const entityInputs = inputs.filter(input => input.address.entity === id)
 			entity.simulate(tick, entityState, entityInputs)
 		}
 	}

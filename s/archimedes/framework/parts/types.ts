@@ -1,14 +1,23 @@
 
+export type Snapshot = {
+	id: number
+	entities: [string, any][]
+}
+
 export type Input = {
-	kind: string
-	sticky: boolean
 	data: any
+	message: any
+}
+
+export type InputAddress = {
+	author: number | null
+	entity: number
 }
 
 export type InputShell<xInput extends Input> = {
-	author: number | null
-	entity: number
-	input: xInput
+	address: InputAddress
+	data: xInput["data"] | null
+	messages: xInput["message"][]
 }
 
 export type Entity = {

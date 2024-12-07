@@ -1,3 +1,3 @@
 
-export class Realm {}
+export class DemoRealm {}
 
