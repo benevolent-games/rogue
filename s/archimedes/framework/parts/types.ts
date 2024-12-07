@@ -9,13 +9,9 @@ export type Input = {
 	message: any
 }
 
-export type InputAddress = {
+export type InputShell<xInput extends Input> = {
 	author: number | null
 	entity: number
-}
-
-export type InputShell<xInput extends Input> = {
-	address: InputAddress
 	data: xInput["data"] | null
 	messages: xInput["message"][]
 }

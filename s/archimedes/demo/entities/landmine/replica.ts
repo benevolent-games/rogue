@@ -8,7 +8,12 @@ export const landmineReplica = replica<GameEntities, DemoRealm>()<"landmine">(
 
 	return {
 		replicate: (tick, state) => {
-			return {inputs: []}
+			return {
+				input: {
+					data: undefined,
+					messages: [],
+				},
+			}
 		},
 		dispose: () => {},
 	}

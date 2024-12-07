@@ -2,12 +2,17 @@
 import {Entities, Entity} from "../parts/types.js"
 
 export type ReplicaPack<xRealm> = {
-	realm: xRealm
 	id: number
+	realm: xRealm
+}
+
+export type InputMadeByReplica<xEntity extends Entity> = {
+	data: undefined | xEntity["input"]["data"],
+	messages: undefined | xEntity["input"]["message"][],
 }
 
 export type Replicated<xEntity extends Entity> = {
-	inputs: xEntity["input"][]
+	input: InputMadeByReplica<xEntity>
 }
 
 export type ReplicaReturn<xEntity extends Entity> = {

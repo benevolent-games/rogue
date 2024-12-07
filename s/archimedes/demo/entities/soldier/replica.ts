@@ -8,7 +8,9 @@ export const soldierReplica = replica<GameEntities, DemoRealm>()<"soldier">(
 
 	return {
 		replicate: (tick, state) => {
-			return {inputs: []}
+			return {
+				input: {data: undefined, messages: []},
+			}
 		},
 		dispose: () => {},
 	}
