@@ -20,7 +20,7 @@ export type Seat = {
 }
 
 export type Bundle = {
-	authorId: number
+	author: number
 	liaison: Liaison
 	metaClient: MetaClient
 	connection: Connection | undefined
@@ -37,9 +37,9 @@ export type Lobby = {
 
 export type LobbySeat = {
 	kind: "local" | "remote"
+	author: number | undefined
 	agent: AgentInfo | undefined
 	identity: Identity | undefined
-	authorId: number | undefined
 	connectionStats: LobbyConnectionStats | undefined
 }
 
@@ -75,8 +75,8 @@ export class Cathedral {
 				return {
 					kind,
 					agent,
+					author: bundle?.author,
 					identity: bundle?.identity,
-					authorId: bundle?.authorId,
 					connectionStats: bundle?.connectionStats,
 				}
 			}),
@@ -147,7 +147,7 @@ export class Cathedral {
 	}
 
 	#bundlize(fibers: MultiplayerFibers, connection: Connection | undefined) {
-		const replicatorId = this.authorIds.next()
+		const author = this.authorIds.next()
 		const liaison = new Liaison(fibers.game, this.options.lag)
 
 		const updateIdentity = (id: Identity) => { bundle.identity = id }
@@ -155,7 +155,7 @@ export class Cathedral {
 		const metaClient = renrakuChannel<MetaHost, MetaClient>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
-			localFns: metaHostApi({replicatorId, updateIdentity}),
+			localFns: metaHostApi({author, updateIdentity}),
 		})
 
 		const connectionStats: LobbyConnectionStats = {
@@ -178,7 +178,7 @@ export class Cathedral {
 
 		const bundle: Bundle = {
 			connection,
-			authorId: replicatorId,
+			author: author,
 			liaison,
 			metaClient,
 			connectionStats,

@@ -13,8 +13,8 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	const world = await World.load()
 	const glbs = await Glbs.load(world)
 	const realm = new Realm(world, glbs)
-	const replicator = new Replicator(realm, replicas, multiplayer.replicatorId)
 	const liaison = new Liaison(multiplayer.gameFiber)
+	const replicator = new Replicator(realm, replicas, multiplayer.replicatorId)
 
 	const stopTicking = interval.hz(60, () => {
 		const {snapshot, feed} = liaison.take()

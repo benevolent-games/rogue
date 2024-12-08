@@ -37,9 +37,9 @@ export class MultiplayerClient extends Multiplayer {
 			bicomm: fibers.meta.reliable,
 			localFns: metaClientApi({lobby}),
 		})
-		const {replicatorId} = await metaHost.hello(identity.value)
+		const {author} = await metaHost.hello(identity.value)
 		identity.on(identity => { metaHost.hello(identity) })
-		return new this(replicatorId, fibers.game, identity, lobby, dispose, disconnected)
+		return new this(author, fibers.game, identity, lobby, dispose, disconnected)
 	}
 
 	static async join(invite: string, identity: Signal<Identity>, disconnected: () => void) {

@@ -25,9 +25,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const cathedral = new Cathedral({
 		lag,
-		onBundle: ({authorId}) => {
+		onBundle: ({author}) => {
 			const playerId = simulator.create("crusader", {
-				author: authorId,
+				author,
 				speed: 1,
 				speedSprint: 1.5,
 				coordinates: Coordinates.import(getSpawnpoint()).array(),
@@ -45,7 +45,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const stopTicks = interval.hz(60, () => {
 		const {inputs} = cathedral.collectivize()
-		simulator.simulate(tick, inputs)
+		simulator.simulate(tick++, inputs)
 		cathedral.broadcastInputs(inputs)
 	})
 

@@ -13,7 +13,7 @@ export type InputMadeByReplica<xEntity extends Entity> = {
 }
 
 export type Replicated<xEntity extends Entity> = {
-	input: InputMadeByReplica<xEntity>
+	input?: InputMadeByReplica<xEntity>
 }
 
 export type ReplicaReturn<xEntity extends Entity> = {

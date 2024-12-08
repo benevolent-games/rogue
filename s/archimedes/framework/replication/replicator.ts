@@ -1,14 +1,15 @@
 
-import {Map2} from "@benev/slate"
-import {Entities} from "../parts/types.js"
+import {deep, Map2} from "@benev/slate"
 import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {ReplicaReturn, Replicas} from "./types.js"
+import {Entities, InputShell} from "../parts/types.js"
 
 export class Replicator<xEntities extends Entities, xRealm> {
 	lifecycles: Lifecycles<ReplicaReturn<any>>
 
 	constructor(
+			public author: number,
 			public realm: xRealm,
 			public gameState: GameState<xEntities>,
 			public replicas: Replicas<xEntities, xRealm>,
@@ -22,13 +23,21 @@ export class Replicator<xEntities extends Entities, xRealm> {
 		)
 	}
 
-	replicate(tick: number) {
+	replicate(tick: number): InputShell<any>[] {
 		this.lifecycles.conform(this.gameState)
 
-		for (const [id, entity] of this.lifecycles.entities) {
-			const [,state] = this.gameState.entities.require(id)
-			entity.replicate(tick, state)
-		}
+		return [...this.lifecycles.entities]
+			.map(([id, entity]) => {
+				const [,state] = this.gameState.entities.require(id)
+				const {input} = entity.replicate(tick, state)
+				return input && deep.clone({
+					entity: id,
+					author: this.author,
+					data: input.data,
+					messages: input.messages ?? [],
+				})
+			})
+			.filter(input => !!input)
 	}
 }
 

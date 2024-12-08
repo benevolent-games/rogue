@@ -23,10 +23,8 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	})
 
 	return {
-		replicate: (tick, state) => {
-			return {
-				input: {data: undefined, messages: undefined},
-			}
+		replicate: (_) => {
+			return {input: undefined}
 		},
 		dispose: () => {
 			dungeonRenderer.dispose()
