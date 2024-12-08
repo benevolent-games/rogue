@@ -10,7 +10,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	console.log("TODO crusader replica")
 
 	return {
-		replicate: (tick, state) => {
+		replicate: (_) => {
 			return {
 				input: {
 					data: getPlayerInput(realm.tact),

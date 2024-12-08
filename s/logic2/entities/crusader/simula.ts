@@ -4,7 +4,7 @@ import {Station} from "../../station/station.js"
 import {simula} from "../../../archimedes/exports.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
-	({station, simulator, id}) => {
+	(_) => {
 
 	return {
 		inputData: {

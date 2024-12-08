@@ -1,5 +1,10 @@
 
 export type Snapshot = {
+	tick: number
+	data: SnapshotData
+}
+
+export type SnapshotData = {
 	id: number
 	entities: [number, EntityEntry][]
 }

@@ -1,13 +1,16 @@
 
-import {deep, interval} from "@benev/slate"
+import {interval} from "@benev/slate"
 
 import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
 import {LagProfile} from "../../tools/fake-lag.js"
-import {GameState, Simulator} from "../../archimedes/exports.js"
 import {RogueEntities} from "../entities/entities.js"
-import {stdDungeonOptions} from "../dungeons/layouting/options.js"
+import {Coordinates} from "../realm/utils/coordinates.js"
 import {DungeonLayout} from "../dungeons/dungeon-layout.js"
+import {GameState, Simulator} from "../../archimedes/exports.js"
+import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
+import {stdDungeonOptions} from "../dungeons/layouting/options.js"
+import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
@@ -20,46 +23,42 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	simulator.create("dungeon", {options: dungeonOptions})
 
-	// TODO
+	const cathedral = new Cathedral({
+		lag,
+		onBundle: ({authorId}) => {
+			const playerId = simulator.create("crusader", {
+				author: authorId,
+				speed: 1,
+				speedSprint: 1.5,
+				coordinates: Coordinates.import(getSpawnpoint()).array(),
+			})
+			return () => simulator.delete(playerId)
+		},
+	})
 
-	// const cathedral = new Cathedral({
-	// 	lag,
-	// 	onBundle: ({replicatorId}) => {
-	// 		const playerId = simulator.create("player", {
-	// 			owner: replicatorId,
-	//
-	// 			coordinates: Coordinates.import(getSpawnpoint()),
-	//
-	// 			// // TODO
-	// 			// coordinates: Coordinates.new(0.5, 0.5),
-	// 		})
-	// 		return () => simulator.destroy(playerId)
-	// 	},
-	// })
-	//
-	// const stopSnapshots = interval(1000, () => {
-	// 	const snapshot = deep.clone(simulator.snapshot())
-	// 	cathedral.broadcastSnapshot(snapshot)
-	// })
-	//
-	// const stopTicks = interval.hz(60, () => {
-	// 	const feedbacks = cathedral.collectAllFeedbacks()
-	// 	simulator.simulate(feedbacks)
-	// 	const feed = deep.clone(simulator.collector.take())
-	// 	cathedral.broadcastFeed(feed)
-	// })
-	//
-	// async function startMultiplayer() {
-	// 	return MultiplayerHost.host(cathedral)
-	// }
-	//
-	// const dispose = () => {
-	// 	stopSnapshots()
-	// 	stopTicks()
-	// 	cathedral.dispose()
-	// }
-	//
-	// return {cathedral, station, simulator, startMultiplayer, dispose}
+	let tick = 0
+
+	const stopSnapshots = interval(1000, () => {
+		const data = simulator.gameState.snapshot()
+		cathedral.broadcastSnapshot({tick, data})
+	})
+
+	const stopTicks = interval.hz(60, () => {
+		const {inputs} = cathedral.collectivize()
+		simulator.simulate(tick, inputs)
+		cathedral.broadcastInputs(inputs)
+	})
+
+	async function startMultiplayer() {
+		return MultiplayerHost.host(cathedral)
+	}
+
+	const dispose = () => {
+		stopSnapshots()
+		stopTicks()
+		cathedral.dispose()
+	}
+
+	return {cathedral, station, simulator, startMultiplayer, dispose}
 }
-
 
