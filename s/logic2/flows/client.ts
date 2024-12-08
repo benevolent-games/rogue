@@ -17,7 +17,9 @@ import {InputHistory} from "../../archimedes/framework/parts/input-history.js"
 import {Replicator} from "../../archimedes/framework/replication/replicator.js"
 import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
 
-export async function clientFlow(author: number, multiplayer: MultiplayerClient) {
+export async function clientFlow(multiplayer: MultiplayerClient) {
+	const {author} = multiplayer
+
 	const station = new Station()
 	const world = await World.load()
 	const glbs = await Glbs.load(world)

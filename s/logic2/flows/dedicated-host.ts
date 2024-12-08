@@ -1,6 +1,7 @@
 
 import {interval} from "@benev/slate"
 
+import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
 import {LagProfile} from "../../tools/fake-lag.js"
@@ -43,7 +44,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		cathedral.broadcastSnapshot({tick, data})
 	})
 
-	const stopTicks = interval.hz(60, () => {
+	const stopTicks = interval.hz(constants.game.tickRate, () => {
 		const {inputs} = cathedral.collectivize()
 		simulator.simulate(tick++, inputs)
 		cathedral.broadcastInputs(inputs)

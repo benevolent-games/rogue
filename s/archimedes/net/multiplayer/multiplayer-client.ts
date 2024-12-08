@@ -15,7 +15,7 @@ import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.j
 
 export class MultiplayerClient extends Multiplayer {
 	constructor(
-			public replicatorId: number,
+			public author: number,
 			public gameFiber: Fiber<Parcel<GameMessage>>,
 			public identity: Signal<Identity>,
 			public lobby: Signal<Lobby>,

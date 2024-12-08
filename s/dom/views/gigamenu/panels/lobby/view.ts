@@ -6,8 +6,8 @@ import stylesCss from "./styles.css.js"
 import {IdView} from "../../../id/view.js"
 import themeCss from "../../../../theme.css.js"
 import {AccountCardView} from "../../../account-card/view.js"
-import {LobbySeat} from "../../../../../logic/framework/relay/cathedral.js"
-import {MultiplayerClient} from "../../../../../logic/multiplayer/multiplayer-client.js"
+import {LobbySeat} from "../../../../../archimedes/net/relay/cathedral.js"
+import {MultiplayerClient} from "../../../../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
@@ -21,7 +21,7 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	)
 
 	const renderLobbySeat = (seat: LobbySeat) => html`
-		<li data-id="${seat.replicatorId}">
+		<li data-id="${seat.author}">
 			<div x-card>
 				${seat.identity && AccountCardView([seat.identity, false])}
 			</div>
