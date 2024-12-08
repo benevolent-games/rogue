@@ -1,20 +1,27 @@
 
 import {deep, interval} from "@benev/slate"
 
+import {Station} from "../station/station.js"
+import {simulas} from "../entities/simulas.js"
 import {LagProfile} from "../../tools/fake-lag.js"
+import {GameState, Simulator} from "../../archimedes/exports.js"
+import {RogueEntities} from "../entities/entities.js"
+import {stdDungeonOptions} from "../dungeons/layouting/options.js"
+import {DungeonLayout} from "../dungeons/dungeon-layout.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
+	const station = new Station()
+	const gameState = new GameState()
+	const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
 
+	const dungeonOptions = stdDungeonOptions()
+	const dungeon = new DungeonLayout(dungeonOptions)
+	const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
 
-	// const station = new Station()
-	// const simulator = new Simulator(station, simulas)
-	//
-	// const dungeonOptions = stdDungeonOptions()
-	// const dungeon = new DungeonLayout(dungeonOptions)
-	// const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
-	//
-	// simulator.create("level", dungeonOptions)
-	//
+	simulator.create("dungeon", {options: dungeonOptions})
+
+	// TODO
+
 	// const cathedral = new Cathedral({
 	// 	lag,
 	// 	onBundle: ({replicatorId}) => {

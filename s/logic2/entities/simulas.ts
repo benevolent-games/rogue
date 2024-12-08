@@ -6,7 +6,7 @@ import {Station} from "../station/station.js"
 import {dungeonSimula} from "./dungeon/simula.js"
 import {crusaderSimula} from "./crusader/simula.js"
 
-export const demoSimulas: Simulas<RogueEntities, Station> = {
+export const simulas: Simulas<RogueEntities, Station> = {
 	crusader: crusaderSimula,
 	dungeon: dungeonSimula,
 }

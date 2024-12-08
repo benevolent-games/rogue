@@ -6,7 +6,7 @@ import {Replicas} from "../../archimedes/exports.js"
 import {crusaderReplica} from "./crusader/replica.js"
 import {dungeonReplica} from "./dungeon/replica.js"
 
-export const demoReplicas: Replicas<RogueEntities, Realm> = {
+export const replicas: Replicas<RogueEntities, Realm> = {
 	crusader: crusaderReplica,
 	dungeon: dungeonReplica,
 }
