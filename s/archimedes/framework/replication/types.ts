@@ -1,9 +1,10 @@
 
 import {Entities, Entity} from "../parts/types.js"
 
-export type ReplicaPack<xRealm> = {
+export type ReplicaPack<xEntity extends Entity, xRealm> = {
 	id: number
 	realm: xRealm
+	state: xEntity["state"]
 }
 
 export type InputMadeByReplica<xEntity extends Entity> = {
@@ -21,7 +22,7 @@ export type ReplicaReturn<xEntity extends Entity> = {
 }
 
 export type Replica<xEntity extends Entity, xRealm> = (
-	(pack: ReplicaPack<xRealm>) => ReplicaReturn<xEntity>
+	(pack: ReplicaPack<xEntity, xRealm>) => ReplicaReturn<xEntity>
 )
 
 export type Replicas<xEntities extends Entities, xRealm> = {

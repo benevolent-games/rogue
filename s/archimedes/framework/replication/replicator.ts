@@ -1,6 +1,7 @@
 
 import {Map2} from "@benev/slate"
 import {Entities} from "../parts/types.js"
+import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {ReplicaReturn, Replicas} from "./types.js"
 
@@ -9,6 +10,7 @@ export class Replicator<xEntities extends Entities, xRealm> {
 
 	constructor(
 			public realm: xRealm,
+			public gameState: GameState<xEntities>,
 			public replicas: Replicas<xEntities, xRealm>,
 		) {
 
@@ -18,6 +20,15 @@ export class Replicator<xEntities extends Entities, xRealm> {
 				return [kind, fn]
 			}))
 		)
+	}
+
+	replicate(tick: number) {
+		this.lifecycles.conform(this.gameState)
+
+		for (const [id, entity] of this.lifecycles.entities) {
+			const [,state] = this.gameState.entities.require(id)
+			entity.replicate(tick, state)
+		}
 	}
 }
 
