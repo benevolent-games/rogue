@@ -32,6 +32,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 	create<xKind extends keyof xEntities>(kind: xKind, state: xEntities[xKind]["state"]) {
 		const id = this.gameState.create(kind, state)
 		this.lifecycles.add(id, kind as string, state)
+		return id
 	}
 
 	delete(id: number) {
@@ -44,7 +45,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 
 		for (const [id, entity] of this.lifecycles.entities) {
 			const entityMessages = []
-			const entityState = this.gameState.entityStates.require(id)
+			const [,entityState] = this.gameState.entities.require(id)
 
 			for (const input of inputs) {
 				if (input.data) {

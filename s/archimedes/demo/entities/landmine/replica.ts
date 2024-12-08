@@ -4,10 +4,10 @@ import {GameEntities} from "../entities.js"
 import {replica} from "../../../framework/replication/types.js"
 
 export const landmineReplica = replica<GameEntities, DemoRealm>()<"landmine">(
-	({realm, id}) => {
+	(_) => {
 
 	return {
-		replicate: (tick, state) => {
+		replicate: (_) => {
 			return {
 				input: {
 					data: undefined,

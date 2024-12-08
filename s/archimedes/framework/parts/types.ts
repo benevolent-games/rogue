@@ -1,7 +1,7 @@
 
 export type Snapshot = {
 	id: number
-	entities: [string, any][]
+	entities: [number, EntityEntry][]
 }
 
 export type Input = {

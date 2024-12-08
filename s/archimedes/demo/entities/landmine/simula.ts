@@ -10,14 +10,14 @@ export const landmineSimula = simula<GameEntities, DemoStation>()<"landmine">(
 	const unregisterMine = station.registerLandmine(
 		new MineTicket(
 			Vec2.new(10, 0),
-			2,
+			0.5,
 			() => simulator.delete(id),
 		)
 	)
 
 	return {
 		inputData: null,
-		simulate: (tick, state, inputs) => {},
+		simulate: (_) => {},
 		dispose: () => {
 			unregisterMine()
 		},

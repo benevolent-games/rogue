@@ -1,52 +1,42 @@
 
-import {Suite} from "cynic"
+import {expect, Suite} from "cynic"
 import {loop, Vec2} from "@benev/toolbox"
 
-import {DemoRealm} from "./demo/realm.js"
 import {DemoStation} from "./demo/station.js"
 import {demoSimulas} from "./demo/entities/simulas.js"
-import {demoReplicas} from "./demo/entities/replicas.js"
 import {GameEntities} from "./demo/entities/entities.js"
 import {GameState} from "./framework/parts/game-state.js"
 import {Simulator} from "./framework/simulation/simulator.js"
-import {Replicator} from "./framework/replication/replicator.js"
 
-function setupSimulation() {
+function setupSimulator() {
 	const station = new DemoStation()
 	const gameState = new GameState<GameEntities>()
-	const simulator = new Simulator<GameEntities, DemoStation>(station, gameState, demoSimulas)
-	return {station, gameState, simulator}
-}
-
-function setupReplication() {
-	const simulation = setupSimulation()
-	const realm = new DemoRealm()
-	const replication = new Replicator<GameEntities, DemoRealm>(realm, demoReplicas)
-	return {...simulation, realm, replication}
+	return new Simulator<GameEntities, DemoStation>(station, gameState, demoSimulas)
 }
 
 export default <Suite>{
 	async "local simulation"() {
-		const simulation = setupSimulation()
-		simulation.simulator.create("landmine", {
+		const simulator = setupSimulator()
+
+		const landmineId = simulator.create("landmine", {
 			detonationProximity: 2,
 			location: Vec2.new(10, 0).array(),
 		})
+
+		const soldierId = simulator.create("soldier", {
+			location: Vec2.new(0, 0).array(),
+		})
+
 		for (const tick of loop(10))
-			simulation.simulator.simulate(tick, [])
+			simulator.simulate(tick, [{
+				author: null,
+				entity: soldierId,
+				messages: [],
+				data: {movement: Vec2.new(1, 0).array()},
+			}])
+
+		expect(simulator.gameState.entities.has(landmineId)).equals(false)
+		expect(simulator.gameState.entities.has(soldierId)).equals(false)
 	},
-	// async "replicated simulation agrees"() {
-	// 	const station = new DemoStation()
-	// 	const gameState = new GameState<GameEntities>()
-	// 	const simulation = new Simulator<GameEntities, DemoStation>(station, gameState, demoSimulas)
-	//
-	// 	const realm = new DemoRealm()
-	// 	const replication = new Replicator<GameEntities, DemoRealm>(realm, demoReplicas)
-	//
-	// 	gameState.create("bootstrap", null)
-	//
-	// 	for (const tick of loop(10))
-	// 		simulation.simulate(tick, [])
-	// },
 }
 

@@ -27,14 +27,14 @@ export class Lifecycles<T extends {dispose: () => void}> {
 	conform(gameState: GameState<any>) {
 
 		// creations
-		for (const [id, [kind, state]] of gameState.entityStates) {
+		for (const [id, [kind, state]] of gameState.entities) {
 			if (!this.entities.has(id))
 				this.add(id, kind, state)
 		}
 
 		// deletions
 		for (const [id, entityInstance] of this.entities) {
-			if (!gameState.entityStates.has(id)) {
+			if (!gameState.entities.has(id)) {
 				entityInstance.dispose()
 				this.entities.delete(id)
 			}
