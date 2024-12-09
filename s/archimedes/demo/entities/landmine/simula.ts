@@ -16,7 +16,6 @@ export const landmineSimula = simula<GameEntities, DemoStation>()<"landmine">(
 	)
 
 	return {
-		inputData: null,
 		simulate: (_) => {},
 		dispose: () => {
 			unregisterMine()

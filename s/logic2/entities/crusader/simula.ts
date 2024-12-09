@@ -4,6 +4,7 @@ import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
 import {simula} from "../../../archimedes/exports.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
+import { collectInputFromAuthor } from "../../../archimedes/framework/simulation/utils/collect-input-from-author.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	({station}) => {
@@ -11,17 +12,14 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	const {physics} = station
 
 	return {
-		inputData: {
-			movementIntent: [0, 0],
-			sprint: false,
-		},
-		simulate: (_, state, input) => {
+		simulate: (_tick, state, inputs) => {
 			const speed = state.speed
 			const speedSprint = state.speedSprint
 			const coordinates = Coordinates.from(state.coordinates)
 
-			const sprint = input.data.sprint
-			const movementIntent = Coordinates.from(input.data.movementIntent)
+			const {data} = collectInputFromAuthor<RogueEntities["crusader"]>(state.author, inputs)
+			const sprint = data?.sprint ?? false
+			const movementIntent = Coordinates.from(data?.movementIntent ?? [0, 0])
 
 			const proposedCoordinates = coordinates.clone().add(
 				movementIntent.clampMagnitude(1).multiplyBy(

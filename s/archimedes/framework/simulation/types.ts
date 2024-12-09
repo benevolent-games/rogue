@@ -1,6 +1,6 @@
 
 import {Simulator} from "./simulator.js"
-import {Entities, Entity} from "../parts/types.js"
+import {Entities, Entity, InputShell} from "../parts/types.js"
 
 export type SimulaInput<xEntity extends Entity> = {
 	data: xEntity["input"]["data"]
@@ -8,12 +8,11 @@ export type SimulaInput<xEntity extends Entity> = {
 }
 
 export type SimulaReturn<xEntity extends Entity> = {
-	inputData: xEntity["input"]["data"]
 	dispose: () => void
 	simulate: (
 		tick: number,
 		state: xEntity["state"],
-		input: SimulaInput<xEntity>,
+		inputs: InputShell<xEntity["input"]>[],
 	) => void
 }
 

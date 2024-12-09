@@ -31,16 +31,16 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 		replicate: (_, state) => {
 			guyCoordinates.lerp_(...state.coordinates, 30 / 100)
-
-			cameraCoordinates.lerp(guyCoordinates, 10 / 100)
-
 			guy.position.set(...guyPosition(guyCoordinates))
 
-			realm.env.camera.target.set(
-				...cameraCoordinates
-					.position()
-					.array()
-			)
+			if (inControl) {
+				cameraCoordinates.lerp(guyCoordinates, 10 / 100)
+				realm.env.camera.target.set(
+					...cameraCoordinates
+						.position()
+						.array()
+				)
+			}
 		},
 
 		dispose: () => {

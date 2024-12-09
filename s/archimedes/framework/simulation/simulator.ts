@@ -4,7 +4,7 @@ import {Map2} from "@benev/slate"
 import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {Entities, InputShell} from "../parts/types.js"
-import {SimulaInput, SimulaPack, SimulaReturn, Simulas} from "./types.js"
+import {SimulaPack, SimulaReturn, Simulas} from "./types.js"
 
 export class Simulator<xEntities extends Entities, xStation> {
 	lifecycles: Lifecycles<SimulaReturn<any>>
@@ -44,24 +44,9 @@ export class Simulator<xEntities extends Entities, xStation> {
 		this.lifecycles.conform(this.gameState)
 
 		for (const [id, entity] of this.lifecycles.entities) {
-			const entityMessages = []
 			const [,entityState] = this.gameState.entities.require(id)
-
-			for (const input of inputs) {
-				if (input.data) {
-					entity.inputData = input.data
-				}
-				if (input.messages) {
-					entityMessages.push(...input.messages)
-				}
-			}
-
-			const input: SimulaInput<any> = {
-				data: entity.inputData,
-				messages: entityMessages,
-			}
-
-			entity.simulate(tick, entityState, input)
+			const relevantInputs = inputs.filter(shell => shell.entity === id)
+			entity.simulate(tick, entityState, relevantInputs)
 		}
 	}
 }

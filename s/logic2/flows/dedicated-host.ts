@@ -27,6 +27,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const cathedral = new Cathedral({
 		lag,
 		onBundle: ({author}) => {
+			console.log("CREATE AUTHOR", author)
 			const playerId = simulator.create("crusader", {
 				author,
 				speed: 5 / 100,
