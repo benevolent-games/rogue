@@ -24,7 +24,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	return {
 		replicate: (_, state) => {
-			guyCoordinates.set_(...state.coordinates)
+			guyCoordinates.lerp_(...state.coordinates, 50 / 100)
 			cameraCoordinates.lerp(guyCoordinates, 10 / 100)
 
 			guy.position.set(...guyPosition(guyCoordinates))

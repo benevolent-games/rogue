@@ -35,9 +35,9 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
 		const authoritative = liaison.take()
-		const averageRtt = liaison.pingponger.averageRtt
+		const discrepancy = liaison.pingponger.averageRtt / 2
 		const ticksToPredictAhead = Scalar.clamp(
-			Math.floor(averageRtt / (1000 / constants.game.tickRate)),
+			Math.round(discrepancy / (1000 / constants.game.tickRate)),
 			1, // always predicting 1 tick ahead, minimum
 			20, // never predict more than 20 ticks
 		)

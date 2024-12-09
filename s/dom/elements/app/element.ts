@@ -12,7 +12,7 @@ import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
-import { lagProfiles } from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
+import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
