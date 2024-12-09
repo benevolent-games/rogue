@@ -29,8 +29,8 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		onBundle: ({author}) => {
 			const playerId = simulator.create("crusader", {
 				author,
-				speed: 1,
-				speedSprint: 1.5,
+				speed: 5 / 100,
+				speedSprint: 10 / 100,
 				coordinates: Coordinates.import(getSpawnpoint()).array(),
 			})
 			return () => simulator.delete(playerId)
@@ -47,7 +47,8 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const stopTicks = interval.hz(constants.game.tickRate, () => {
 		const {inputs} = cathedral.collectivize()
 		simulator.simulate(tick++, inputs)
-		cathedral.broadcastInputs(inputs)
+		if (inputs.length > 0)
+			cathedral.broadcastInputs(inputs)
 	})
 
 	async function startMultiplayer() {

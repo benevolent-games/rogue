@@ -5,7 +5,7 @@ import {simula} from "../../../archimedes/exports.js"
 import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
 
 export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
-	({station, simulator, id, state}) => {
+	({station, state}) => {
 
 	const dungeon = new DungeonLayout(state.options)
 	station.physics.resetUnwalkableHashgrid(dungeon.unwalkables.list())

@@ -1,10 +1,12 @@
 
+import {Replicator} from "./replicator.js"
 import {Entities, Entity} from "../parts/types.js"
 
-export type ReplicaPack<xEntity extends Entity, xRealm> = {
+export type ReplicaPack<xEntities extends Entities, xKind extends keyof xEntities, xRealm> = {
 	id: number
 	realm: xRealm
-	state: xEntity["state"]
+	state: xEntities[xKind]["state"]
+	replicator: Replicator<xEntities, xRealm>
 }
 
 export type InputMadeByReplica<xEntity extends Entity> = {
@@ -13,7 +15,7 @@ export type InputMadeByReplica<xEntity extends Entity> = {
 }
 
 export type Replicated<xEntity extends Entity> = {
-	input?: InputMadeByReplica<xEntity>
+	input: InputMadeByReplica<xEntity> | undefined
 }
 
 export type ReplicaReturn<xEntity extends Entity> = {
@@ -21,17 +23,17 @@ export type ReplicaReturn<xEntity extends Entity> = {
 	dispose: () => void
 }
 
-export type Replica<xEntity extends Entity, xRealm> = (
-	(pack: ReplicaPack<xEntity, xRealm>) => ReplicaReturn<xEntity>
+export type Replica<xEntities extends Entities, xKind extends keyof xEntities, xRealm> = (
+	(pack: ReplicaPack<xEntities, xKind, xRealm>) => ReplicaReturn<xEntities[xKind]>
 )
 
 export type Replicas<xEntities extends Entities, xRealm> = {
-	[K in keyof xEntities]: Replica<xEntities[K], xRealm>
+	[K in keyof xEntities]: Replica<xEntities, K, xRealm>
 }
 
 export const replica = (
 	<xEntities extends Entities, xRealm>() =>
-	<xKind extends keyof xEntities>(replica: Replica<xEntities[xKind], xRealm>) =>
+	<xKind extends keyof xEntities>(replica: Replica<xEntities, xKind, xRealm>) =>
 	replica
 )
 
