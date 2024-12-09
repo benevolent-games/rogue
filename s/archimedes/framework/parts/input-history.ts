@@ -8,7 +8,7 @@ export class InputHistory {
 	add(tick: number, inputs: InputShell<any>[]) {
 		const historical = this.history.guarantee(tick, () => [])
 		historical.push(...inputs)
-		this.cullHistoryOlderThan(tick - 60)
+		this.cullHistoryOlderThan(tick - 100)
 	}
 
 	cullHistoryOlderThan(oldest: number) {

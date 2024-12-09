@@ -9,7 +9,7 @@ export const soldierSimula = simula<GameEntities, DemoStation>()<"soldier">(
 
 	return {
 		inputData: {movement: Vec2.zero().array()},
-		simulate: (tick, state, input) => {
+		simulate: (_, state, input) => {
 
 			// process movement
 			const movement = Vec2.from(input.data.movement)

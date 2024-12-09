@@ -25,13 +25,10 @@ export class Replicator<xEntities extends Entities, xRealm> {
 		)
 	}
 
-	replicate(tick: number): InputShell<any>[] {
-		this.lifecycles.conform(this.gameState)
-
+	gatherInputs(tick: number): InputShell<any>[] {
 		return [...this.lifecycles.entities]
 			.map(([id, entity]) => {
-				const [,state] = this.gameState.entities.require(id)
-				const {input} = entity.replicate(tick, state)
+				const input = entity.gatherInputs(tick)
 				return input && deep.clone({
 					entity: id,
 					author: this.author,
@@ -40,6 +37,14 @@ export class Replicator<xEntities extends Entities, xRealm> {
 				})
 			})
 			.filter(input => !!input)
+	}
+
+	replicate(tick: number) {
+		this.lifecycles.conform(this.gameState)
+		for (const [id, entity] of [...this.lifecycles.entities]) {
+			const [,state] = this.gameState.entities.require(id)
+			entity.replicate(tick, state)
+		}
 	}
 }
 

@@ -34,13 +34,22 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	const inputHistory = new InputHistory()
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
+		tick += 1
+
 		const authoritative = liaison.take()
-		const discrepancy = liaison.pingponger.averageRtt / 2
+		const discrepancy = liaison.pingponger.averageRtt
 		const ticksToPredictAhead = Scalar.clamp(
 			Math.round(discrepancy / (1000 / constants.game.tickRate)),
 			1, // always predicting 1 tick ahead, minimum
-			20, // never predict more than 20 ticks
+			100, // maximum ticks to predict
 		)
+
+		const localTick = tick + ticksToPredictAhead
+		const localInputs = replicator.gatherInputs(localTick)
+		if (localInputs.length > 0) {
+			inputHistory.add(localTick, localInputs)
+			liaison.sendInputs(localInputs)
+		}
 
 		// rollback correction
 		if (authoritative.snapshot) {
@@ -54,16 +63,14 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 		// simulate normal non-rollback frames
 		else {
-			simulator.simulate(tick++, authoritative.inputs)
+			simulator.simulate(localTick, localInputs)
+			// // TODO perform rollbacks for each authoritative input
+			// // according to the number of ticks between the authoritative inputs
+			// // and the predicted localTick
+			// simulator.simulate(localTick, authoritative.inputs)
 		}
 
-		// 3d replication (rendering), gather and send local inputs
-		const replicatedTick = tick++
-		const localInputs = replicator.replicate(replicatedTick)
-		if (localInputs.length > 0) {
-			inputHistory.add(replicatedTick, localInputs)
-			liaison.sendInputs(localInputs)
-		}
+		replicator.replicate(localTick)
 	})
 
 	// init 3d rendering

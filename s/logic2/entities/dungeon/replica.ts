@@ -23,6 +23,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	})
 
 	return {
+		gatherInputs: () => undefined,
 		replicate: (_) => {
 			return {input: undefined}
 		},

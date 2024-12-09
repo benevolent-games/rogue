@@ -8,16 +8,11 @@ export const soldierReplica = replica<GameEntities, DemoRealm>()<"soldier">(
 	(_) => {
 
 	return {
-		replicate: (tick, state) => {
-			return {
-				input: {
-					messages: [],
-					data: {
-						movement: Vec2.new(1, 0).array(),
-					},
-				},
-			}
-		},
+		gatherInputs: () => ({
+			messages: [],
+			data: {movement: Vec2.new(1, 0).array()},
+		}),
+		replicate: (_) => {},
 		dispose: () => {},
 	}
 })

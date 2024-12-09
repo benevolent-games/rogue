@@ -23,8 +23,15 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const cameraCoordinates = initial.clone()
 
 	return {
+		gatherInputs: () => {
+			return inControl
+				? {data: getPlayerInput(realm.tact), messages: []}
+				: undefined
+		},
+
 		replicate: (_, state) => {
-			guyCoordinates.lerp_(...state.coordinates, 50 / 100)
+			guyCoordinates.lerp_(...state.coordinates, 30 / 100)
+
 			cameraCoordinates.lerp(guyCoordinates, 10 / 100)
 
 			guy.position.set(...guyPosition(guyCoordinates))
@@ -34,15 +41,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 					.position()
 					.array()
 			)
-
-			if (inControl) {
-				const data = getPlayerInput(realm.tact)
-				return {input: {data, messages: []}}
-			}
-			else {
-				return {input: undefined}
-			}
 		},
+
 		dispose: () => {
 			guy.dispose()
 		},

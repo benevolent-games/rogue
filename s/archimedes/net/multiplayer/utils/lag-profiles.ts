@@ -39,5 +39,14 @@ export const lagProfiles = {
 		spikeTime: 1000,
 		smoothTime: 5000,
 	},
+
+	longsmooth: {
+		ping: 1000,
+		jitter: 0,
+		loss: 0 / 100,
+		spikeMultiplier: 1,
+		spikeTime: 1000,
+		smoothTime: 5000,
+	},
 } satisfies Record<string, LagProfile | null>
 

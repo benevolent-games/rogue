@@ -14,12 +14,9 @@ export type InputMadeByReplica<xEntity extends Entity> = {
 	messages: undefined | xEntity["input"]["message"][],
 }
 
-export type Replicated<xEntity extends Entity> = {
-	input: InputMadeByReplica<xEntity> | undefined
-}
-
 export type ReplicaReturn<xEntity extends Entity> = {
-	replicate: (tick: number, state: xEntity["state"]) => Replicated<xEntity>
+	gatherInputs: (tick: number) => (InputMadeByReplica<xEntity> | undefined)
+	replicate: (tick: number, state: xEntity["state"]) => void
 	dispose: () => void
 }
 
