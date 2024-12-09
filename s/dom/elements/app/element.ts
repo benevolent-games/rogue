@@ -13,6 +13,8 @@ import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
+import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
+import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -26,8 +28,7 @@ export const GameApp = shadowComponent(use => {
 			dispose: () => {},
 			template: () => MainMenu([{
 				nav: {
-					// TODO
-					play: () => goExhibit.offline(),
+					play: () => goExhibit.host(),
 				},
 			}]),
 		})
@@ -80,51 +81,51 @@ export const GameApp = shadowComponent(use => {
 				}
 			}),
 
-			// host: makeNav(async() => {
-			// 	const {playerHostFlow} = await import("../../../flows/player-host.js")
-			// 	const flow = await playerHostFlow({lag: null, identity})
-			// 	const {host, multiplayerClient, client, dispose} = flow
-			//
-			// 	const multiplayerOp = opSignal<MultiplayerHost>()
-			// 	multiplayerOp.load(async() => host.startMultiplayer())
-			//
-			// 	return {
-			// 		dispose,
-			// 		template: () => Gameplay([{
-			// 			realm: client.realm,
-			// 			multiplayerClient,
-			// 			exitToMainMenu: () => goExhibit.mainMenu(),
-			// 		}]),
-			// 	}
-			// }),
-			//
-			// client: makeNav(async(invite: string) => {
-			// 	const multiplayerClient = await MultiplayerClient.join(
-			// 		invite,
-			// 		identity,
-			// 		() => { goExhibit.mainMenu() },
-			// 	)
-			// 	const {clientFlow} = await import("../../../flows/client.js")
-			// 	const {realm, dispose} = await clientFlow(multiplayerClient)
-			// 	return {
-			// 		dispose,
-			// 		template: () => Gameplay([{
-			// 			realm,
-			// 			multiplayerClient,
-			// 			exitToMainMenu: () => goExhibit.mainMenu(),
-			// 		}]),
-			// 	}
-			// }),
+			host: makeNav(async() => {
+				const {playerHostFlow} = await import("../../../logic2/flows/player-host.js")
+				const flow = await playerHostFlow({lag: null, identity})
+				const {host, multiplayerClient, client, dispose} = flow
+
+				const multiplayerOp = opSignal<MultiplayerHost>()
+				multiplayerOp.load(async() => host.startMultiplayer())
+
+				return {
+					dispose,
+					template: () => Gameplay([{
+						realm: client.realm,
+						multiplayerClient,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+				}
+			}),
+
+			client: makeNav(async(invite: string) => {
+				const multiplayerClient = await MultiplayerClient.join(
+					invite,
+					identity,
+					() => { goExhibit.mainMenu() },
+				)
+				const {clientFlow} = await import("../../../logic2/flows/client.js")
+				const {realm, dispose} = await clientFlow(multiplayerClient)
+				return {
+					dispose,
+					template: () => Gameplay([{
+						realm,
+						multiplayerClient,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+				}
+			}),
 		}
 
-		// if (invite)
-		// 	goExhibit.client(invite)
+		if (invite)
+			goExhibit.client(invite)
 
 		if (location.hash.includes("offline"))
 			goExhibit.offline()
 
-		// else if (location.hash.includes("play"))
-		// 	goExhibit.host()
+		else if (location.hash.includes("play"))
+			goExhibit.host()
 
 		return orchestrator
 	})
