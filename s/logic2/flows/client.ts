@@ -33,9 +33,10 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	}
 
 	const real = makeSituation()
-	const predicted = makeSituation()
+	// const predicted = makeSituation()
 
-	const replicator = new Replicator<RogueEntities, Realm>(author, realm, predicted.gameState, replicas)
+	// TODO predicted gameState?
+	const replicator = new Replicator<RogueEntities, Realm>(author, realm, real.gameState, replicas)
 	const liaison = new Liaison(multiplayer.gameFiber)
 
 	const inputHistory = new Chronicle<InputShell<any>[]>(50)
@@ -52,20 +53,19 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		)
 	}
 
-	function repredict(tick: number, snapshot: Snapshot) {
-		const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
-		predictedTick = tick + ticksToPredictAhead
-
-		predicted.gameState.restore(snapshot)
-		for (const ahead of loop(ticksToPredictAhead)) {
-			const t = tick + ahead
-			const localHistoricalInputs = inputHistory.load(t) ?? []
-			predicted.simulator.simulate(t, localHistoricalInputs)
-		}
-	}
+	// function repredict(tick: number, snapshot: Snapshot) {
+	// 	const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
+	// 	predictedTick = tick + ticksToPredictAhead
+	//
+	// 	predicted.gameState.restore(snapshot)
+	// 	for (const ahead of loop(ticksToPredictAhead)) {
+	// 		const t = tick + ahead
+	// 		const localHistoricalInputs = inputHistory.load(t) ?? []
+	// 		predicted.simulator.simulate(t, localHistoricalInputs)
+	// 	}
+	// }
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
-		realTick += 1
 		predictedTick += 1
 
 		const authoritative = liaison.take()
@@ -81,29 +81,28 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		if (authoritative.snapshot) {
 			realTick = authoritative.snapshot.tick
 			real.gameState.restore(authoritative.snapshot.data)
-			repredict(realTick, authoritative.snapshot.data)
+			// repredict(realTick, authoritative.snapshot.data)
 		}
 
 		else {
 
-			// // inputs from server
-			// if (authoritative.inputPayloads.length > 0) {
-			// 	for (const {tick, inputs} of authoritative.inputPayloads) {
-			// 		for (let impliedTick = realTick + 1; impliedTick < tick; impliedTick++)
-			// 			real.simulator.simulate(impliedTick, [])
-			// 		real.simulator.simulate(tick, inputs)
-			// 		realTick = tick
-			// 	}
-			// 	// repredict(realTick, real.gameState.snapshot())
+			// inputs from server
+			if (authoritative.inputPayloads.length > 0) {
+				for (const {tick, inputs} of authoritative.inputPayloads) {
+					for (let missingTick = realTick + 1; missingTick < tick; missingTick++)
+						real.simulator.simulate(missingTick, [])
+					real.simulator.simulate(tick, inputs)
+					realTick = tick
+				}
+				// repredict(realTick, real.gameState.snapshot())
+			}
+			// else {
+			// 	predicted.simulator.simulate(predictedTick, localInputs)
 			// }
-
-			const realInputs = authoritative.inputPayloads.flatMap(p => p.inputs)
-
-			// real.simulator.simulate(realTick, [...realInputs, ...localInputs])
-			predicted.simulator.simulate(predictedTick, [...realInputs, ...localInputs])
 		}
 
-		replicator.replicate(predictedTick)
+		// TODO predicted tick?
+		replicator.replicate(realTick)
 	})
 
 	// init 3d rendering
