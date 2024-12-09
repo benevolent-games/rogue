@@ -96,7 +96,7 @@ export class Inbox<P> {
 
 	constructor(
 			public delay = 25,
-			public smoothing = 20,
+			public smoothing = 5,
 			private now = () => Date.now(),
 		) {
 		this.#start = now()

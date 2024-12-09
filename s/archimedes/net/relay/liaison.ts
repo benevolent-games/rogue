@@ -13,7 +13,7 @@ export class Liaison {
 	pingponger: Pingponger
 	pingPeriod = 1_000
 
-	inbox = new Inbox<GameMessage>(25, 10)
+	inbox = new Inbox<GameMessage>()
 	outbox = new Outbox<GameMessage>()
 
 	lag: LagFn
