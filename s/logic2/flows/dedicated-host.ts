@@ -41,7 +41,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const stopSnapshots = interval.hz(constants.game.snapshotRate, () => {
 		const data = simulator.gameState.snapshot()
-		cathedral.broadcastSnapshot({tick, data})
+		cathedral.broadcastSnapshot({tick, data: data})
 	})
 
 	const stopTicks = interval.hz(constants.game.tickRate, () => {

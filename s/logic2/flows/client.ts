@@ -11,40 +11,38 @@ import {replicas} from "../entities/replicas.js"
 import {World} from "../../tools/babylon/world.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
-import {InputShell} from "../../archimedes/framework/parts/types.js"
 import {Chronicle} from "../../archimedes/framework/parts/chronicle.js"
 import {GameState} from "../../archimedes/framework/parts/game-state.js"
 import {Simulator} from "../../archimedes/framework/simulation/simulator.js"
+import {InputShell, Snapshot} from "../../archimedes/framework/parts/types.js"
 import {Replicator} from "../../archimedes/framework/replication/replicator.js"
 import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export async function clientFlow(multiplayer: MultiplayerClient) {
 	const {author} = multiplayer
 
-	const station = new Station()
 	const world = await World.load()
 	const glbs = await Glbs.load(world)
 	const realm = new Realm(world, glbs)
 
-	// function makeSituation() {
-	// 	const gameState = new GameState<RogueEntities>()
-	// 	const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
-	// 	return {gameState, simulator}
-	// }
-	//
-	// const realSituation = makeSituation()
-	// const predictedSituation = makeSituation()
+	function makeSituation() {
+		const station = new Station()
+		const gameState = new GameState<RogueEntities>()
+		const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
+		return {gameState, simulator}
+	}
 
-	const gameState = new GameState<RogueEntities>()
-	const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
+	const real = makeSituation()
+	// const predicted = makeSituation()
 
-	const replicator = new Replicator<RogueEntities, Realm>(author, realm, gameState, replicas)
+	// TODO predicted gamestate
+	const replicator = new Replicator<RogueEntities, Realm>(author, realm, real.gameState, replicas)
 	const liaison = new Liaison(multiplayer.gameFiber)
 
 	const inputHistory = new Chronicle<InputShell<any>[]>(50)
 
-	let serverTick = 0
-	let localTick = 0
+	let realTick = 0
+	let predictedTick = 0
 
 	function calculateNumberOfLocalPredictionTicks() {
 		const discrepancy = liaison.pingponger.averageRtt
@@ -56,64 +54,67 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	}
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
-		localTick += 1
+		predictedTick += 1
 
 		const authoritative = liaison.take()
 
 		// gather, record, and send local inputs
-		const localInputs = replicator.gatherInputs(localTick)
+		const localInputs = replicator.gatherInputs(predictedTick)
 		if (localInputs.length > 0) {
-			inputHistory.save(localTick, localInputs)
-			liaison.sendInputs({tick: localTick, inputs: localInputs})
+			inputHistory.save(predictedTick, localInputs)
+			liaison.sendInputs({tick: predictedTick, inputs: localInputs})
 		}
 
-		// snapshot from server, full rollback correction
-		if (authoritative.snapshot) {
-			serverTick = authoritative.snapshot.tick
-			const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
-			localTick = serverTick + ticksToPredictAhead
+		// function predictAhead(snapshot: Snapshot) {
+		// 	predicted.gameState.restore(snapshot)
+		// }
 
-			gameState.restore(authoritative.snapshot.data)
-			for (const ahead of loop(ticksToPredictAhead)) {
-				const tick = serverTick + ahead
-				const localHistoricalInputs = inputHistory.load(tick) ?? []
-				simulator.simulate(tick, localHistoricalInputs)
-			}
+		// snapshot rollback correction
+		if (authoritative.snapshot) {
+			realTick = authoritative.snapshot.tick
+			const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
+			predictedTick = realTick + ticksToPredictAhead
+
+			real.gameState.restore(authoritative.snapshot.data)
+
+			// predicted.gameState.restore(authoritative.snapshot.data)
+			// for (const ahead of loop(ticksToPredictAhead)) {
+			// 	const tick = serverTick + ahead
+			// 	const localHistoricalInputs = inputHistory.load(tick) ?? []
+			// 	predicted.simulator.simulate(tick, localHistoricalInputs)
+			// }
 		}
 
 		// inputs from server, rollback correction
 		else if (authoritative.inputPayloads.length > 0) {
-			console.log("tick")
 
-			// perform each server tick
+			// perform each real server tick
 			for (const {tick, inputs} of authoritative.inputPayloads) {
-				const relevantLocalInputs = inputHistory.load(tick) ?? []
+				for (let impliedTick = realTick + 1; impliedTick < tick; impliedTick++)
+					real.simulator.simulate(impliedTick, [])
+				real.simulator.simulate(tick, [...inputs])
+				realTick = tick
 			}
 
-			authoritative.inputPayloads.forEach(p => {
-				console.log(" - ", p.tick)
-			})
-
-			const latestAuthorityTick = authoritative.inputPayloads.reduce((p, c) => Math.max(p, c.tick), serverTick)
-			const authorityInputs = authoritative.inputPayloads.flatMap(p => p.inputs)
-
-			const tickGap = localTick - latestAuthorityTick
-			// console.log("gap", tickGap)
-
-			simulator.simulate(localTick, localInputs)
-
-			// // TODO perform rollbacks for each authoritative input
-			// // according to the number of ticks between the authoritative inputs
-			// // and the predicted localTick
-			// simulator.simulate(localTick, authoritative.inputs)
+			// // re-predict from that point forward
+			// predicted.gameState.restore(real.gameState.snapshot())
+			// const diff = localTick - serverTick
+			// console.log("diff lol", diff)
+			//
+			// for (const ahead of loop(diff)) {
+			// 	const tick = serverTick + ahead
+			// 	const localHistoricalInputs = inputHistory.load(tick) ?? []
+			// 	predicted.simulator.simulate(tick, localHistoricalInputs)
+			// }
 		}
 
 		// simulate local prediction
 		else {
-			simulator.simulate(localTick, localInputs)
+			// real.simulator.simulate(localTick, localInputs)
 		}
 
-		replicator.replicate(localTick)
+		// TODO local tick
+		replicator.replicate(realTick)
 	})
 
 	// init 3d rendering
