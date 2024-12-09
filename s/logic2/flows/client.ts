@@ -58,9 +58,12 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		}
 
 		// 3d replication (rendering), gather and send local inputs
-		const localInputs = replicator.replicate(tick++)
-		if (localInputs.length > 0)
+		const replicatedTick = tick++
+		const localInputs = replicator.replicate(replicatedTick)
+		if (localInputs.length > 0) {
+			inputHistory.add(replicatedTick, localInputs)
 			liaison.sendInputs(localInputs)
+		}
 	})
 
 	// init 3d rendering

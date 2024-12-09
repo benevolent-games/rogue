@@ -5,9 +5,9 @@ import {InputShell} from "./types.js"
 export class InputHistory {
 	history = new Map2<number, InputShell<any>[]>
 
-	add(tick: number, input: InputShell<any>) {
-		const inputs = this.history.guarantee(tick, () => [])
-		inputs.push(input)
+	add(tick: number, inputs: InputShell<any>[]) {
+		const historical = this.history.guarantee(tick, () => [])
+		historical.push(...inputs)
 		this.cullHistoryOlderThan(tick - 60)
 	}
 
