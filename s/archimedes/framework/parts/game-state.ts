@@ -1,6 +1,6 @@
 
 import {deep, Map2} from "@benev/slate"
-import {Entities, EntityEntry, SnapshotData} from "./types.js"
+import {Entities, EntityEntry, Snapshot} from "./types.js"
 
 export class GameState<xEntities extends Entities> {
 	id = 0
@@ -16,14 +16,14 @@ export class GameState<xEntities extends Entities> {
 		this.entities.delete(id)
 	}
 
-	snapshot(): SnapshotData {
+	snapshot(): Snapshot {
 		return deep.clone({
 			id: this.id,
 			entities: [...this.entities.entries()],
 		})
 	}
 
-	restore(snapshot: SnapshotData) {
+	restore(snapshot: Snapshot) {
 		this.id = snapshot.id
 		this.entities = new Map2(snapshot.entities)
 	}

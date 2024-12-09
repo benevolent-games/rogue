@@ -45,10 +45,12 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	})
 
 	const stopTicks = interval.hz(constants.game.tickRate, () => {
-		const {inputs} = cathedral.collectivize()
-		simulator.simulate(tick++, inputs)
+		tick += 1
+		const {inputPayloads} = cathedral.collectivize()
+		const inputs = inputPayloads.flatMap(payload => payload.inputs)
+		simulator.simulate(tick, inputs)
 		if (inputs.length > 0)
-			cathedral.broadcastInputs(inputs)
+			cathedral.broadcastInputs({tick, inputs})
 	})
 
 	async function startMultiplayer() {

@@ -1,10 +1,15 @@
 
-export type Snapshot = {
+export type SnapshotPayload = {
 	tick: number
-	data: SnapshotData
+	data: Snapshot
 }
 
-export type SnapshotData = {
+export type InputPayload = {
+	tick: number
+	inputs: InputShell<any>[]
+}
+
+export type Snapshot = {
 	id: number
 	entities: [number, EntityEntry][]
 }

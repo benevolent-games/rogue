@@ -2,8 +2,8 @@
 import {deep, Map2} from "@benev/slate"
 import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
-import {ReplicaPack, ReplicaReturn, Replicas} from "./types.js"
 import {Entities, InputShell} from "../parts/types.js"
+import {ReplicaPack, ReplicaReturn, Replicas} from "./types.js"
 
 export class Replicator<xEntities extends Entities, xRealm> {
 	lifecycles: Lifecycles<ReplicaReturn<any>>

@@ -6,8 +6,8 @@ import {Pingponger} from "./pingponger.js"
 import {Fiber} from "../../../tools/fiber.js"
 import {disposers} from "../../../tools/disposers.js"
 import {Inbox, Outbox, Parcel} from "./inbox-outbox.js"
-import {InputShell, Snapshot} from "../../framework/parts/types.js"
 import {fakeLag, LagFn, LagProfile} from "../../../tools/fake-lag.js"
+import {InputPayload, SnapshotPayload} from "../../framework/parts/types.js"
 
 export class Liaison {
 	pingponger: Pingponger
@@ -41,19 +41,19 @@ export class Liaison {
 		)
 	}
 
-	sendSnapshot(snapshot: Snapshot) {
+	sendSnapshot(snapshot: SnapshotPayload) {
 		const parcel = this.outbox.wrap(["snapshot", snapshot])
 		this.lag(() => this.fiber.unreliable.send(parcel))
 	}
 
-	sendInputs(inputs: InputShell<any>[]) {
+	sendInputs(inputs: InputPayload) {
 		const parcel = this.outbox.wrap(["inputs", inputs])
 		this.lag(() => this.fiber.unreliable.send(parcel))
 	}
 
 	take() {
-		let snapshot: Snapshot | null = null
-		const inputs: InputShell<any>[] = []
+		let snapshot: SnapshotPayload | null = null
+		const inputPayloads: InputPayload[] = []
 
 		for (const message of this.inbox.take()) {
 			const [kind, x] = message
@@ -68,7 +68,7 @@ export class Liaison {
 					break
 
 				case "inputs":
-					inputs.push(...x)
+					inputPayloads.push(x)
 					break
 
 				default:
@@ -76,7 +76,7 @@ export class Liaison {
 			}
 		}
 
-		return {inputs, snapshot}
+		return {snapshot, inputPayloads}
 	}
 }
 

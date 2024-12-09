@@ -9,7 +9,7 @@ import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../multiplayer/meta/host.js"
-import {InputShell, Snapshot} from "../../framework/parts/types.js"
+import {InputPayload, InputShell, SnapshotPayload} from "../../framework/parts/types.js"
 import {renrakuChannel} from "../multiplayer/utils/renraku-channel.js"
 import {MultiplayerFibers, multiplayerFibers} from "../multiplayer/utils/multiplayer-fibers.js"
 
@@ -120,25 +120,25 @@ export class Cathedral {
 	}
 
 	collectivize() {
-		type Result = {snapshot: Snapshot | null, inputs: InputShell<any>[]}
-		const result: Result = {snapshot: null, inputs: []}
+		type Result = {snapshot: SnapshotPayload | null, inputPayloads: InputPayload[]}
+		const result: Result = {snapshot: null, inputPayloads: []}
 		for (const bundle of this.getBundles()) {
-			const {snapshot, inputs} = bundle.liaison.take()
+			const {snapshot, inputPayloads} = bundle.liaison.take()
 			if (snapshot)
 				result.snapshot = snapshot
-			result.inputs.push(...inputs)
+			result.inputPayloads.push(...inputPayloads)
 		}
 		return result
 	}
 
-	broadcastSnapshot(snapshot: Snapshot) {
+	broadcastSnapshot(snapshot: SnapshotPayload) {
 		for (const bundle of this.getBundles())
 			bundle.liaison.sendSnapshot(snapshot)
 	}
 
-	broadcastInputs(inputs: InputShell<any>[]) {
+	broadcastInputs(inputPayload: InputPayload) {
 		for (const bundle of this.getBundles())
-			bundle.liaison.sendInputs(inputs)
+			bundle.liaison.sendInputs(inputPayload)
 	}
 
 	dispose() {
