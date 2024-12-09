@@ -65,6 +65,7 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	}
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
+		realTick += 1
 		predictedTick += 1
 
 		const authoritative = liaison.take()
@@ -83,20 +84,23 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 			repredict(realTick, authoritative.snapshot.data)
 		}
 
-		// // inputs from server, rollback correction
-		// else if (authoritative.inputPayloads.length > 0) {
-		// 	for (const {tick, inputs} of authoritative.inputPayloads) {
-		// 		for (let impliedTick = realTick + 1; impliedTick < tick; impliedTick++)
-		// 			real.simulator.simulate(impliedTick, [])
-		// 		real.simulator.simulate(tick, [...inputs])
-		// 		realTick = tick
-		// 	}
-		// 	repredict(realTick, real.gameState.snapshot())
-		// }
-
-		// simulate local prediction
 		else {
-			predicted.simulator.simulate(predictedTick, localInputs)
+
+			// // inputs from server
+			// if (authoritative.inputPayloads.length > 0) {
+			// 	for (const {tick, inputs} of authoritative.inputPayloads) {
+			// 		for (let impliedTick = realTick + 1; impliedTick < tick; impliedTick++)
+			// 			real.simulator.simulate(impliedTick, [])
+			// 		real.simulator.simulate(tick, inputs)
+			// 		realTick = tick
+			// 	}
+			// 	// repredict(realTick, real.gameState.snapshot())
+			// }
+
+			const realInputs = authoritative.inputPayloads.flatMap(p => p.inputs)
+
+			// real.simulator.simulate(realTick, [...realInputs, ...localInputs])
+			predicted.simulator.simulate(predictedTick, [...realInputs, ...localInputs])
 		}
 
 		replicator.replicate(predictedTick)

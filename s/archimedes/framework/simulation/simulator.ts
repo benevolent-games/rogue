@@ -5,6 +5,7 @@ import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {Entities, InputShell} from "../parts/types.js"
 import {SimulaPack, SimulaReturn, Simulas} from "./types.js"
+import {inputsFromAuthor} from "./utils/inputs-from-author.js"
 
 export class Simulator<xEntities extends Entities, xStation> {
 	lifecycles: Lifecycles<SimulaReturn<any>>
@@ -23,6 +24,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 					station,
 					id,
 					state,
+					fromAuthor: (author, inputs) => inputsFromAuthor(author, inputs),
 				} as SimulaPack<any, any, xStation>)
 				return [kind, fn]
 			}))

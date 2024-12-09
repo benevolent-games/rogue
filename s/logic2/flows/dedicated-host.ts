@@ -27,7 +27,6 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const cathedral = new Cathedral({
 		lag,
 		onBundle: ({author}) => {
-			console.log("CREATE AUTHOR", author)
 			const playerId = simulator.create("crusader", {
 				author,
 				speed: 5 / 100,
@@ -42,7 +41,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const stopSnapshots = interval.hz(constants.game.snapshotRate, () => {
 		const data = simulator.gameState.snapshot()
-		cathedral.broadcastSnapshot({tick, data: data})
+		cathedral.broadcastSnapshot({tick, data})
 	})
 
 	const stopTicks = interval.hz(constants.game.tickRate, () => {

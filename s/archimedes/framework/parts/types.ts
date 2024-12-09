@@ -14,21 +14,15 @@ export type Snapshot = {
 	entities: [number, EntityEntry][]
 }
 
-export type Input = {
-	data: any
-	message: any
-}
-
-export type InputShell<xInput extends Input> = {
+export type InputShell<xInput> = {
 	author: number | null
 	entity: number
-	data: xInput["data"] | null
-	messages: xInput["message"][]
+	messages: xInput[]
 }
 
 export type Entity = {
 	state: any
-	input: Input
+	input: any
 }
 
 export type EntityEntry = [string, any]

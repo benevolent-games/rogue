@@ -21,6 +21,7 @@ export type SimulaPack<xEntities extends Entities, xKind extends keyof xEntities
 	station: xStation
 	id: number
 	state: xEntities[xKind]["state"]
+	fromAuthor: (author: null | number, inputs: InputShell<xEntities[xKind]["input"]>[]) => xEntities[xKind]["input"][]
 }
 
 export type Simula<xEntities extends Entities, xKind extends keyof xEntities, xStation> = (

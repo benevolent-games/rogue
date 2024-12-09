@@ -9,13 +9,8 @@ export type ReplicaPack<xEntities extends Entities, xKind extends keyof xEntitie
 	replicator: Replicator<xEntities, xRealm>
 }
 
-export type InputMadeByReplica<xEntity extends Entity> = {
-	data: undefined | xEntity["input"]["data"],
-	messages: undefined | xEntity["input"]["message"][],
-}
-
 export type ReplicaReturn<xEntity extends Entity> = {
-	gatherInputs: (tick: number) => (InputMadeByReplica<xEntity> | undefined)
+	gatherInputs: (tick: number) => (xEntity["input"][] | undefined)
 	replicate: (tick: number, state: xEntity["state"]) => void
 	dispose: () => void
 }

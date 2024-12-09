@@ -6,11 +6,11 @@ import {DungeonOptions} from "../../logic/dungeons/layouting/types.js"
 export type RogueEntities = AsEntities<{
 	dungeon: {
 		state: {options: DungeonOptions}
-		input: {data: undefined, message: undefined}
+		input: undefined
 	}
 	crusader: {
 		state: CrusaderState
-		input: {data: CrusaderInputData, message: undefined}
+		input: CrusaderInputData
 	}
 }>
 

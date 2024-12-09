@@ -6,12 +6,12 @@ export type GameEntities = AsEntities<{
 
 	landmine: {
 		state: {location: Vec2Array, detonationProximity: number}
-		input: {data: null, message: null}
+		input: undefined
 	}
 
 	soldier: {
 		state: {location: Vec2Array}
-		input: {data: {movement: Vec2Array}, message: null}
+		input: {movement: Vec2Array}
 	}
 
 }>

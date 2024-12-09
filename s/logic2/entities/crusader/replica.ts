@@ -24,9 +24,10 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	return {
 		gatherInputs: () => {
-			return inControl
-				? {data: getPlayerInput(realm.tact), messages: []}
-				: undefined
+			if (inControl) {
+				const input = getPlayerInput(realm.tact)
+				return [input]
+			}
 		},
 
 		replicate: (_, state) => {

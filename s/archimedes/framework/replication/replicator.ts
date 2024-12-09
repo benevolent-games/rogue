@@ -28,13 +28,14 @@ export class Replicator<xEntities extends Entities, xRealm> {
 	gatherInputs(tick: number): InputShell<any>[] {
 		return [...this.lifecycles.entities]
 			.map(([id, entity]) => {
-				const input = entity.gatherInputs(tick)
-				return input && deep.clone({
-					entity: id,
-					author: this.author,
-					data: input.data,
-					messages: input.messages ?? [],
-				})
+				const inputs = entity.gatherInputs(tick)
+				return (inputs && inputs.length > 0)
+					? deep.clone({
+						entity: id,
+						author: this.author,
+						messages: inputs ?? [],
+					})
+					: undefined
 			})
 			.filter(input => !!input)
 	}

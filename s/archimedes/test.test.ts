@@ -31,8 +31,7 @@ export default <Suite>{
 			simulator.simulate(tick, [{
 				author: null,
 				entity: soldierId,
-				messages: [],
-				data: {movement: Vec2.new(1, 0).array()},
+				messages: [{movement: Vec2.new(1, 0).array()}],
 			}])
 
 		expect(simulator.gameState.entities.has(landmineId)).equals(false)
