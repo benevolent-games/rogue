@@ -4,11 +4,11 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Gigamenu} from "../gigamenu/view.js"
-import {Realm} from "../../../logic2/realm/realm.js"
+import {Realm} from "../../../logic/realm/realm.js"
 import {QuitPanel} from "../gigamenu/panels/quit/panel.js"
 import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
-import {dungeonDropper} from "../../../logic2/dungeons/ui/dropper.js"
+import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export const Gameplay = shadowView(use => (o: {

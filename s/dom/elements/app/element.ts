@@ -67,7 +67,7 @@ export const GameApp = shadowComponent(use => {
 			mainMenu: makeNav(async() => mainMenu),
 
 			offline: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../logic2/flows/player-host.js")
+				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const lag = lagProfiles.bad
 				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
@@ -82,7 +82,7 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			host: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../logic2/flows/player-host.js")
+				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const flow = await playerHostFlow({lag: null, identity})
 				const {host, multiplayerClient, client, dispose} = flow
 
@@ -105,7 +105,7 @@ export const GameApp = shadowComponent(use => {
 					identity,
 					() => { goExhibit.mainMenu() },
 				)
-				const {clientFlow} = await import("../../../logic2/flows/client.js")
+				const {clientFlow} = await import("../../../logic/flows/client.js")
 				const {realm, dispose} = await clientFlow(multiplayerClient)
 				return {
 					dispose,
