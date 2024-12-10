@@ -27,24 +27,23 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	const glbs = await Glbs.load(world)
 	const realm = new Realm(world, glbs)
 
-	function makeSituation() {
+	function makeSimulator() {
 		const station = new Station()
 		const gameState = new GameState<RogueEntities>()
-		const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
-		return {gameState, simulator}
+		return new Simulator<RogueEntities, Station>(station, gameState, simulas)
 	}
 
-	const real = makeSituation()
-	const predicted = makeSituation()
+	const baseSimulator = makeSimulator()
+	const futureSimulator = makeSimulator()
 
-	const activeGameState = csp ? predicted.gameState : real.gameState
+	const activeGameState = csp ? futureSimulator.gameState : baseSimulator.gameState
 	const replicator = new Replicator<RogueEntities, Realm>(author, realm, activeGameState, replicas)
 	const liaison = new Liaison(multiplayer.gameFiber)
 
 	const inputHistory = new Chronicle<InputShell<any>[]>(50)
 
-	let realTick = 0
-	let predictedTick = 0
+	let baseTick = 0
+	let futureTick = 0
 
 	function calculateNumberOfLocalPredictionTicks() {
 		const discrepancy = liaison.pingponger.averageRtt
@@ -57,13 +56,13 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 	function repredict(tick: number, snapshot: Snapshot) {
 		const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
-		predictedTick = tick + ticksToPredictAhead
+		futureTick = tick + ticksToPredictAhead
 
-		predicted.gameState.restore(snapshot)
+		futureSimulator.gameState.restore(snapshot)
 		for (const ahead of loop(ticksToPredictAhead)) {
 			const t = tick + ahead
 			const localHistoricalInputs = inputHistory.load(t) ?? []
-			predicted.simulator.simulate(t, localHistoricalInputs)
+			futureSimulator.simulate(t, localHistoricalInputs)
 		}
 	}
 
@@ -71,32 +70,32 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		const authoritative = liaison.take()
 
 		// gather, record, and send local inputs
-		const localInputs = replicator.gatherInputs(predictedTick)
+		const localInputs = replicator.gatherInputs(futureTick)
 		if (localInputs.length > 0) {
-			inputHistory.save(predictedTick, localInputs)
-			liaison.sendInputs({tick: predictedTick, inputs: localInputs})
+			inputHistory.save(futureTick, localInputs)
+			liaison.sendInputs({tick: futureTick, inputs: localInputs})
 		}
 
 		// snapshots from host
 		if (authoritative.snapshot) {
-			realTick = authoritative.snapshot.tick
-			real.gameState.restore(authoritative.snapshot.data)
+			baseTick = authoritative.snapshot.tick
+			baseSimulator.gameState.restore(authoritative.snapshot.data)
 		}
 
 		// inputs from host
 		else if (authoritative.inputPayloads.length > 0) {
 			for (const {tick, inputs} of authoritative.inputPayloads) {
-				for (let missingTick = realTick + 1; missingTick < tick; missingTick++)
-					real.simulator.simulate(missingTick, [])
-				real.simulator.simulate(tick, inputs)
-				realTick = tick
+				for (let missingTick = baseTick + 1; missingTick < tick; missingTick++)
+					baseSimulator.simulate(missingTick, [])
+				baseSimulator.simulate(tick, inputs)
+				baseTick = tick
 			}
 		}
 
-		repredict(realTick, real.gameState.snapshot())
+		// forward prediction
+		repredict(baseTick, baseSimulator.gameState.snapshot())
 
-		const activeTick = csp ? predictedTick : realTick
-		replicator.replicate(activeTick)
+		replicator.replicate(csp ? futureTick : baseTick)
 	})
 
 	// init 3d rendering

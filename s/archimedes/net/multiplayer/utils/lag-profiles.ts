@@ -31,6 +31,15 @@ export const lagProfiles = {
 		smoothTime: 5000,
 	},
 
+	spotty: {
+		ping: 120,
+		jitter: 20,
+		loss: 75 / 100,
+		spikeMultiplier: 2,
+		spikeTime: 400,
+		smoothTime: 2000,
+	},
+
 	terrible: {
 		ping: 300,
 		jitter: 100,
