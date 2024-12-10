@@ -43,6 +43,7 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 	let baseTick = 0
 	let slipTick = 0
+	let renderTick = 0
 
 	function getLatencyInTicks() {
 		const discrepancy = liaison.pingponger.averageRtt
@@ -81,6 +82,7 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 
 		const ticksAhead = getLatencyInTicks() + slipTick
 		const futureTick = baseTick + ticksAhead
+		renderTick = csp ? futureTick : baseTick
 
 		// gather, record, and send local inputs
 		const localInputs = replicator.gatherInputs(futureTick)
@@ -98,13 +100,11 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 				futureSimulator.simulate(t, localHistoricalInputs)
 			}
 		}
-
-		// replicate (3d rendering)
-		replicator.replicate(csp ? futureTick : baseTick)
 	})
 
 	// init 3d rendering
 	world.rendering.setCamera(realm.env.camera)
+	world.gameloop.on(() => replicator.replicate(renderTick))
 	world.gameloop.start()
 
 	function dispose() {
