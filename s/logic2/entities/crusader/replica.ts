@@ -17,7 +17,12 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			.array()
 	}
 
-	const guy = realm.instance(realm.env.guys.target)
+	const guy = realm.instance(
+		inControl
+			? realm.env.guys.local
+			: realm.env.guys.remote
+	)
+
 	const initial = Coordinates.from(state.coordinates)
 	const guyCoordinates = initial.clone()
 	const cameraCoordinates = initial.clone()

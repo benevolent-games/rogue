@@ -13,7 +13,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 	let data: RogueEntities["crusader"]["input"] = {
 		sprint: false,
-		movementIntent: Vec2.new(.123, .123).array(),
+		movementIntent: Vec2.zero().array(),
 	}
 
 	return {
