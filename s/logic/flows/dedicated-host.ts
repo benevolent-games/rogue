@@ -1,9 +1,10 @@
 
-import {interval} from "@benev/slate"
+import {repeat} from "@benev/slate"
 
 import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
+import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
@@ -12,11 +13,13 @@ import {GameState, Simulator} from "../../archimedes/exports.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
+import { Watchman } from "../../tools/watchman.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
 	const gameState = new GameState()
 	const simulator = new Simulator<RogueEntities, Station>(station, gameState, simulas)
+	const watchman = new Watchman(constants.game.tickRate)
 
 	const dungeonOptions = stdDungeonOptions()
 	const dungeon = new DungeonLayout(dungeonOptions)
@@ -29,23 +32,22 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		onBundle: ({author}) => {
 			const playerId = simulator.create("crusader", {
 				author,
-				speed: 5 / 100,
-				speedSprint: 10 / 100,
+				speed: watchman.perSecond(2),
+				speedSprint: watchman.perSecond(5),
 				coordinates: Coordinates.import(getSpawnpoint()).array(),
 			})
 			return () => simulator.delete(playerId)
 		},
 	})
 
-	let tick = 0
+	const smartloop = new Smartloop(constants.game.tickRate)
 
-	const stopSnapshots = interval.hz(constants.game.snapshotRate, () => {
+	const stopSnapshots = repeat.hz(constants.game.snapshotRate, async() => {
 		const data = simulator.gameState.snapshot()
-		cathedral.broadcastSnapshot({tick, data})
+		cathedral.broadcastSnapshot({tick: smartloop.tick, data})
 	})
 
-	const stopTicks = interval.hz(constants.game.tickRate, () => {
-		tick += 1
+	const stopTicks = smartloop.start(tick => {
 		const {inputPayloads} = cathedral.collectivize()
 		const inputs = inputPayloads.flatMap(payload => payload.inputs)
 		simulator.simulate(tick, inputs)
@@ -63,6 +65,6 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		cathedral.dispose()
 	}
 
-	return {cathedral, station, simulator, startMultiplayer, dispose}
+	return {cathedral, station, simulator, smartloop, startMultiplayer, dispose}
 }
 

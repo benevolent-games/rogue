@@ -68,7 +68,7 @@ export const GameApp = shadowComponent(use => {
 
 			offline: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
-				const lag = lagProfiles.bad
+				const lag = lagProfiles.none
 				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
 				return {

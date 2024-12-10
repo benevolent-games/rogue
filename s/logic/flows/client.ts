@@ -1,5 +1,4 @@
 
-import {interval} from "@benev/slate"
 import {loop, Scalar} from "@benev/toolbox"
 
 import {Glbs} from "../realm/glbs.js"
@@ -9,6 +8,7 @@ import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
 import {replicas} from "../entities/replicas.js"
 import {World} from "../../tools/babylon/world.js"
+import {Smartloop} from "../../tools/smartloop.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
 import {InputShell} from "../../archimedes/framework/parts/types.js"
@@ -18,7 +18,7 @@ import {Simulator} from "../../archimedes/framework/simulation/simulator.js"
 import {Replicator} from "../../archimedes/framework/replication/replicator.js"
 import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
 
-export async function clientFlow(multiplayer: MultiplayerClient) {
+export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new Smartloop(constants.game.tickRate)) {
 	const {author} = multiplayer
 
 	const csp = true
@@ -50,11 +50,11 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		return Scalar.clamp(
 			Math.round(discrepancy / (1000 / constants.game.tickRate)),
 			1, // always predicting 1 tick ahead, minimum
-			100, // maximum ticks to predict
+			20, // maximum ticks to predict
 		)
 	}
 
-	const stopTicking = interval.hz(constants.game.tickRate, () => {
+	const stopTicking = smartloop.on(() => {
 		const authoritative = liaison.take()
 
 		// snapshots from host

@@ -3,19 +3,20 @@ import {pubsub} from "@benev/slate"
 import {Scalar} from "@benev/toolbox"
 
 export class Smartloop {
+	tick = 0
 	maxCatchUp = 5
-	#active = false
-	#tick = 0
-
 	on = pubsub<[number]>()
 
-	constructor(public hz: number, fn: (tick: number) => void) {
-		this.on(fn)
+	#active = false
+
+	constructor(public hz: number, fn?: (tick: number) => void) {
+		if (fn)
+			this.on(fn)
 	}
 
-	start() {
+	start(fn: (tick: number) => void = () => {}) {
 		if (this.#active)
-			return
+			return () => this.stop()
 
 		this.#active = true
 
@@ -33,8 +34,11 @@ export class Smartloop {
 			const ticksNotDone = ticksSince - lastTick
 			const howManyTicksToActuallyDo = Scalar.clamp(ticksNotDone, 0, maxCatchUp)
 
-			for (let i = 0; i < howManyTicksToActuallyDo; i++)
-				on.publish(this.#tick++)
+			for (let i = 0; i < howManyTicksToActuallyDo; i++) {
+				const tick = this.tick++
+				fn(tick)
+				on.publish(tick)
+			}
 
 			lastTick = ticksSince
 			requestAnimationFrame(looper)

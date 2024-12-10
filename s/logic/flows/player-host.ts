@@ -29,7 +29,7 @@ export async function playerHostFlow(o: {
 		disconnected: () => {},
 	})
 
-	const client = await clientFlow(multiplayerClient)
+	const client = await clientFlow(multiplayerClient, host.smartloop)
 
 	function dispose() {
 		multiplayerClient.dispose()
