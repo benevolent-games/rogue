@@ -5,7 +5,7 @@ import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {JsonStorage} from "../tools/json-storage.js"
 import {Avatar} from "../features/accounts/avatars.js"
-import {RandoIdentity, Identity} from "../logic/multiplayer/types.js"
+import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
 import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
 
 export type Session = {

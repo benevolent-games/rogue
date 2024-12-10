@@ -4,7 +4,7 @@ import {Vec2} from "@benev/toolbox"
 import {CrusaderInputData} from "../types.js"
 import {constants} from "../../../../constants.js"
 import {cardinals} from "../../../../tools/directions.js"
-import {GameTact} from "../../../../logic/realm/utils/make-tact.js"
+import {GameTact} from "../../../realm/utils/make-tact.js"
 
 export function getPlayerInput(tact: GameTact): CrusaderInputData {
 	const {buttons} = tact.inputs.basic
