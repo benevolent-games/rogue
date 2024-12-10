@@ -10,7 +10,7 @@ export class Hashgrid {
 		this.#zoneSize = zoneSize
 	}
 
-	#hashcode({x, y}: Vec2): string {
+	hashcode({x, y}: Vec2): string {
 		const zoneX = Math.floor(x / this.#zoneSize)
 		const zoneY = Math.floor(y / this.#zoneSize)
 		return `${zoneX},${zoneY}`
@@ -18,7 +18,7 @@ export class Hashgrid {
 
 	add(...vecs: Vec2[]) {
 		for (const vec of vecs) {
-			const hash = this.#hashcode(vec)
+			const hash = this.hashcode(vec)
 			const zone = this.#zones.guarantee(hash, () => [])
 			zone.push(vec)
 		}

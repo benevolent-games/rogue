@@ -24,8 +24,12 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	return {
 		gatherInputs: () => undefined,
-		replicate: (_) => {
-			return {input: undefined}
+		replicate: (tick) => {
+			if (tick % 60 === 0) {
+				const start = performance.now()
+				dungeonRenderer.skin.culler.cull(realm.cameraman.coordinates, 40)
+				console.log("culltime", performance.now() - start)
+			}
 		},
 		dispose: () => {
 			dungeonRenderer.dispose()

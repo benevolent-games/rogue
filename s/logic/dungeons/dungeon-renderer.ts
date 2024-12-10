@@ -1,4 +1,5 @@
 
+import {Vec2} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Realm} from "../realm/realm.js"

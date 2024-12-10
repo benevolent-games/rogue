@@ -35,6 +35,7 @@
 	"dependencies": {
 		"@authduo/authduo": "^0.2.0-5",
 		"@babylonjs/core": "^7.37.0",
+		"@babylonjs/inspector": "^7.39.1",
 		"@babylonjs/loaders": "^7.37.0",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-1",

@@ -12,6 +12,8 @@ import {constants} from "../../../constants.js"
 import {World} from "../../../tools/babylon/world.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
+export type Env = ReturnType<typeof makeEnvironment>
+
 export function makeEnvironment(world: World) {
 	const {scene} = world
 
