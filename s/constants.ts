@@ -15,6 +15,8 @@ export const constants = {
 	},
 
 	game: {
+		tickRate: 60,
+		snapshotRate: 1,
 		cameraRotation: Degrees.toRadians(45),
 		crusaderRadius: 0.4,
 	},

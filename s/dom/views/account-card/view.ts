@@ -7,7 +7,7 @@ import {AvatarView} from "../avatar/view.js"
 import themeCss from "../../../dom/theme.css.js"
 import {IdView} from "../../../dom/views/id/view.js"
 import {Avatar} from "../../../features/accounts/avatars.js"
-import {Identity} from "../../../logic/multiplayer/types.js"
+import {Identity} from "../../../archimedes/net/multiplayer/types.js"
 import {AccountPayload, isAvatarAllowed} from "../../../features/accounts/sketch.js"
 
 type Info = {

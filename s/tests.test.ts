@@ -2,10 +2,12 @@
 import "@benev/slate/x/node.js"
 
 import {Suite, expect} from "cynic"
-import inboxOutboxTest from "./logic/framework/relay/inbox-outbox.test.js"
+import archimedes from "./archimedes/test.test.js"
+import inboxOutbox from "./archimedes/net/relay/inbox-outbox.test.js"
 
 export default <Suite>{
-	inboxOutboxTest,
+	archimedes,
+	inboxOutbox,
 	test: async() => expect(true).ok(),
 }
 

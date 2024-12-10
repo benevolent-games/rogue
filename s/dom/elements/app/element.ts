@@ -12,9 +12,9 @@ import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
-import {lagProfiles} from "../../../logic/framework/utils/lag-profiles.js"
-import {MultiplayerHost} from "../../../logic/multiplayer/multiplayer-host.js"
-import {MultiplayerClient} from "../../../logic/multiplayer/multiplayer-client.js"
+import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
+import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
+import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -67,8 +67,9 @@ export const GameApp = shadowComponent(use => {
 			mainMenu: makeNav(async() => mainMenu),
 
 			offline: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../flows/player-host.js")
-				const flow = await playerHostFlow({lag: lagProfiles.bad, identity})
+				const {playerHostFlow} = await import("../../../logic2/flows/player-host.js")
+				const lag = lagProfiles.bad
+				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
 				return {
 					dispose,
@@ -81,7 +82,7 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			host: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../flows/player-host.js")
+				const {playerHostFlow} = await import("../../../logic2/flows/player-host.js")
 				const flow = await playerHostFlow({lag: null, identity})
 				const {host, multiplayerClient, client, dispose} = flow
 
@@ -104,7 +105,7 @@ export const GameApp = shadowComponent(use => {
 					identity,
 					() => { goExhibit.mainMenu() },
 				)
-				const {clientFlow} = await import("../../../flows/client.js")
+				const {clientFlow} = await import("../../../logic2/flows/client.js")
 				const {realm, dispose} = await clientFlow(multiplayerClient)
 				return {
 					dispose,
@@ -120,7 +121,7 @@ export const GameApp = shadowComponent(use => {
 		if (invite)
 			goExhibit.client(invite)
 
-		else if (location.hash.includes("offline"))
+		if (location.hash.includes("offline"))
 			goExhibit.offline()
 
 		else if (location.hash.includes("play"))
