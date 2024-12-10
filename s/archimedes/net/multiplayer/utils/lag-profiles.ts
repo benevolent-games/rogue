@@ -41,7 +41,7 @@ export const lagProfiles = {
 	},
 
 	longsmooth: {
-		ping: 1000,
+		ping: 500,
 		jitter: 0,
 		loss: 0 / 100,
 		spikeMultiplier: 1,

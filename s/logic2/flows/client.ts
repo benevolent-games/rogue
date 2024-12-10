@@ -21,6 +21,8 @@ import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-cl
 export async function clientFlow(multiplayer: MultiplayerClient) {
 	const {author} = multiplayer
 
+	const csp = true
+
 	const world = await World.load()
 	const glbs = await Glbs.load(world)
 	const realm = new Realm(world, glbs)
@@ -33,10 +35,10 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 	}
 
 	const real = makeSituation()
-	// const predicted = makeSituation()
+	const predicted = makeSituation()
 
-	// TODO predicted gameState?
-	const replicator = new Replicator<RogueEntities, Realm>(author, realm, real.gameState, replicas)
+	const activeGameState = csp ? predicted.gameState : real.gameState
+	const replicator = new Replicator<RogueEntities, Realm>(author, realm, activeGameState, replicas)
 	const liaison = new Liaison(multiplayer.gameFiber)
 
 	const inputHistory = new Chronicle<InputShell<any>[]>(50)
@@ -53,21 +55,19 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 		)
 	}
 
-	// function repredict(tick: number, snapshot: Snapshot) {
-	// 	const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
-	// 	predictedTick = tick + ticksToPredictAhead
-	//
-	// 	predicted.gameState.restore(snapshot)
-	// 	for (const ahead of loop(ticksToPredictAhead)) {
-	// 		const t = tick + ahead
-	// 		const localHistoricalInputs = inputHistory.load(t) ?? []
-	// 		predicted.simulator.simulate(t, localHistoricalInputs)
-	// 	}
-	// }
+	function repredict(tick: number, snapshot: Snapshot) {
+		const ticksToPredictAhead = calculateNumberOfLocalPredictionTicks()
+		predictedTick = tick + ticksToPredictAhead
+
+		predicted.gameState.restore(snapshot)
+		for (const ahead of loop(ticksToPredictAhead)) {
+			const t = tick + ahead
+			const localHistoricalInputs = inputHistory.load(t) ?? []
+			predicted.simulator.simulate(t, localHistoricalInputs)
+		}
+	}
 
 	const stopTicking = interval.hz(constants.game.tickRate, () => {
-		predictedTick += 1
-
 		const authoritative = liaison.take()
 
 		// gather, record, and send local inputs
@@ -77,32 +77,26 @@ export async function clientFlow(multiplayer: MultiplayerClient) {
 			liaison.sendInputs({tick: predictedTick, inputs: localInputs})
 		}
 
-		// snapshot rollback correction
+		// snapshots from host
 		if (authoritative.snapshot) {
 			realTick = authoritative.snapshot.tick
 			real.gameState.restore(authoritative.snapshot.data)
-			// repredict(realTick, authoritative.snapshot.data)
 		}
 
-		else {
-
-			// inputs from server
-			if (authoritative.inputPayloads.length > 0) {
-				for (const {tick, inputs} of authoritative.inputPayloads) {
-					for (let missingTick = realTick + 1; missingTick < tick; missingTick++)
-						real.simulator.simulate(missingTick, [])
-					real.simulator.simulate(tick, inputs)
-					realTick = tick
-				}
-				// repredict(realTick, real.gameState.snapshot())
+		// inputs from host
+		else if (authoritative.inputPayloads.length > 0) {
+			for (const {tick, inputs} of authoritative.inputPayloads) {
+				for (let missingTick = realTick + 1; missingTick < tick; missingTick++)
+					real.simulator.simulate(missingTick, [])
+				real.simulator.simulate(tick, inputs)
+				realTick = tick
 			}
-			// else {
-			// 	predicted.simulator.simulate(predictedTick, localInputs)
-			// }
 		}
 
-		// TODO predicted tick?
-		replicator.replicate(realTick)
+		repredict(realTick, real.gameState.snapshot())
+
+		const activeTick = csp ? predictedTick : realTick
+		replicator.replicate(activeTick)
 	})
 
 	// init 3d rendering
