@@ -14,6 +14,12 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 	const activeIndex = use.signal(0)
 	const activePanel = panels.at(activeIndex.value)
 
+	use.mount(() => ev(window, {keydown: (event: KeyboardEvent) => {
+		if (event.code === "Tab")
+			menuOpen.value = !menuOpen.value
+		event.preventDefault()
+	}}))
+
 	const plate = use.defer(() => use.shadow.querySelector(".plate"))
 
 	use.mount(() => ev(window, {
