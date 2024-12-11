@@ -6,13 +6,12 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
+import {Culler} from "./culling/sketch.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {DungeonLayout} from "../dungeon-layout.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
-
-import {Culler, CullingSubject} from "./culling/sketch.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
@@ -106,8 +105,6 @@ export class DungeonSkin {
 				}
 			}
 		}
-
-		culler.indexZones()
 	}
 
 	spawnIndicator(options: {

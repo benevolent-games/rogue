@@ -3,8 +3,8 @@ import {Scalar, Vec2} from "@benev/toolbox"
 import {Box} from "../shapes/box.js"
 import {Circle} from "../shapes/circle.js"
 
-export const Intersections = {
-	pointInBox(point: Vec2, box: Box) {
+export const Collisions = {
+	pointVsBox(point: Vec2, box: Box) {
 		return (
 			point.x >= box.corner.x &&
 			point.x <= box.corner2.x &&
@@ -13,13 +13,13 @@ export const Intersections = {
 		)
 	},
 
-	pointInCircle(point: Vec2, circle: Circle) {
+	pointVsCircle(point: Vec2, circle: Circle) {
 		const difference = point.clone().subtract(circle.center)
 		const distanceSquared = (difference.x ** 2) + (difference.y ** 2)
 		return distanceSquared <= (circle.radius ** 2)
 	},
 
-	boxIntersectsBox(boxA: Box, boxB: Box) {
+	boxVsBox(boxA: Box, boxB: Box) {
 		return !(
 			boxA.corner2.x <= boxB.corner.x ||
 			boxA.corner.x >= boxB.corner2.x ||
@@ -28,7 +28,7 @@ export const Intersections = {
 		)
 	},
 
-	boxIntersectsCircle(box: Box, circle: Circle) {
+	boxVsCircle(box: Box, circle: Circle) {
 		const clamped = new Vec2(
 			Scalar.clamp(circle.center.x, box.corner.x, box.corner2.x),
 			Scalar.clamp(circle.center.y, box.corner.y, box.corner2.y),

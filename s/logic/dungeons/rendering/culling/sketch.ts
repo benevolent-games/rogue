@@ -1,8 +1,11 @@
 
 import {Map2} from "@benev/slate"
-import {Prop, Vec2} from "@benev/toolbox"
+import {measure, Prop, Vec2} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core"
-import {Gridzone, Hashgrid} from "../../../physics/facilities/hashgrid.js"
+import {Circle} from "../../../physics/shapes/circle.js"
+import {Hypergrid, Hyperzone} from "../../../physics/facilities/hypergrid.js"
+import { Stopwatch } from "../../../../tools/stopwatch.js"
+import { Queue } from "../../../../tools/queue.js"
 
 export class CullingSubject {
 	#prop: Prop | undefined
@@ -21,6 +24,7 @@ export class CullingSubject {
 	dispose() {
 		if (this.#prop) {
 			this.#prop.dispose()
+			this.#prop = undefined
 		}
 	}
 }
@@ -29,80 +33,54 @@ export class CullingZone {
 	enabled = false
 
 	constructor(
-		public zone: Gridzone,
+		public zone: Hyperzone,
 		public subjects: CullingSubject[],
 	) {}
 }
 
 export class Culler {
-	#hashgrid = new Hashgrid(16)
+	#hypergrid = new Hypergrid(Vec2.new(16, 16))
 	#subjectsByLocation = new Map2<Vec2, CullingSubject>()
-	#subjectsByZone = new Map2<Gridzone, CullingSubject[]>
-	#enabled = new Set<Gridzone>()
+	#subjectsByZone = new Map2<Hyperzone, CullingSubject[]>()
+	#enabled = new Set<Hyperzone>()
+	#queue = new Queue<() => void>()
 
 	add(location: Vec2, spawner: () => TransformNode) {
 		const subject = new CullingSubject(location, spawner)
-		this.#hashgrid.add(subject.location)
+		const zone = this.#hypergrid.add(subject.location)
 		this.#subjectsByLocation.set(subject.location, subject)
+		const subjectArray = this.#subjectsByZone.guarantee(zone, () => [])
+		subjectArray.push(subject)
 	}
 
-	indexZones() {
-		for (const zone of this.#hashgrid.getZones()) {
-			const subjects = zone.children.map(v => this.#subjectsByLocation.require(v))
-			this.#subjectsByZone.set(zone, subjects)
-		}
-	}
+	plan(point: Vec2, radius: number) {
+		this.#queue.clear()
+		const circle = new Circle(point, radius)
+		const activeZones = this.#hypergrid.getZonesTouchingCircle(circle)
 
-	cull(point: Vec2, radius: number) {
-		console.log("point", point)
-
-		const report = {enabled: 0, disabled: 0}
-		const nearby = this.#hashgrid.zonesNear(point, radius)
-
-		console.log(" - nearby", nearby.length)
-
-		for (const zone of this.#hashgrid.getZones()) {
-			const isNearby = nearby.includes(zone)
+		for (const [zone, subjects] of this.#subjectsByZone) {
+			const nowEnabled = activeZones.includes(zone)
 			const wasEnabled = this.#enabled.has(zone)
 
-			// spawn nearby subject
-			if (isNearby && !wasEnabled) {
-				report.enabled++
+			if (nowEnabled && !wasEnabled) {
 				this.#enabled.add(zone)
-				for (const subject of this.#subjectsByZone.require(zone)) {
-					subject.spawn()
-				}
+				for (const subject of subjects)
+					this.#queue.give(() => subject.spawn())
 			}
-
-			// dispose distant subject
-			else if (!isNearby && wasEnabled) {
-				report.disabled++
+			else if (!nowEnabled && wasEnabled) {
 				this.#enabled.delete(zone)
-				for (const subject of this.#subjectsByZone.require(zone)) {
+				for (const subject of subjects)
 					subject.dispose()
-				}
+					// this.#queue.give(() => subject.dispose())
 			}
 		}
+	}
 
-		return report
+	execute(n: number) {
+		const fns = this.#queue.take(n)
+		for (const fn of fns)
+			fn()
+		return fns.length
 	}
 }
 
-// export class CullingScheduler {
-// 	#queue: (() => void)[] = []
-//
-// 	clear() {
-// 		this.#queue = []
-// 	}
-//
-// 	give(fn: () => void) {
-// 		this.#queue.push(fn)
-// 	}
-//
-// 	take(n: number) {
-// 		if (this.#queue.length === 0)
-// 			return []
-// 		return this.#queue.splice(0, Math.min(n, this.#queue.length))
-// 	}
-// }
-//
