@@ -1,10 +1,9 @@
 
-import {Vec2} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Realm} from "../realm/realm.js"
-import {DungeonLayout} from "./dungeon-layout.js"
 import {DungeonSkin} from "./rendering/skin.js"
+import {DungeonLayout} from "./dungeon-layout.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {

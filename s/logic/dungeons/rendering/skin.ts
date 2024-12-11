@@ -11,14 +11,15 @@ import {DungeonLayout} from "../dungeon-layout.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
-import {DistanceCuller} from "../../realm/utils/distance-culler.js"
+
+import {Culler, CullingSubject} from "./culling/sketch.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
 	randy = Randy.seed(1)
 	trashbin = new Trashbin()
-	culler = new DistanceCuller()
 	stats = new DungeonSkinStats()
+	culler = new Culler()
 
 	placer: DungeonPlacer
 	spawners: DungeonSpawners
@@ -73,8 +74,8 @@ export class DungeonSkin {
 
 		for (const walkable of walkables.list()) {
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
-			const prop = this.spawn({location: walkable, radians}, spawners.floor.size1x1)
-			culler.add(prop, walkable)
+			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
+			culler.add(walkable, spawner)
 			stats.floors++
 		}
 
@@ -82,29 +83,31 @@ export class DungeonSkin {
 			for (const report of planWallSkinning(unwalkable, walkables)) {
 				if (report.wall) {
 					stats.walls++
-					const prop = this.spawn(report.wall, spawners.wall.size1)
-					culler.add(prop, report.wall.location)
+					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
+					culler.add(report.wall.location, spawner)
 				}
 
 				if (report.concave) {
 					stats.concaves++
-					const prop = this.spawn(report.concave, spawners.concave)
-					culler.add(prop, report.concave.location)
+					const spawner = () => this.spawn(report.concave!, spawners.concave)
+					culler.add(report.concave.location, spawner)
 				}
 
 				if (report.convex) {
 					stats.convexes++
-					const prop = this.spawn(report.convex, spawners.convex)
-					culler.add(prop, report.convex.location)
+					const spawner = () => this.spawn(report.convex!, spawners.convex)
+					culler.add(report.convex.location, spawner)
 				}
 
 				for (const stump of report.stumps) {
 					stats.stumps++
-					const prop = this.spawn(stump, spawners.wall.sizeHalf)
-					culler.add(prop, stump.location)
+					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
+					culler.add(stump.location, spawner)
 				}
 			}
 		}
+
+		culler.indexZones()
 	}
 
 	spawnIndicator(options: {
