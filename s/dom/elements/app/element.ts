@@ -84,17 +84,26 @@ export const GameApp = shadowComponent(use => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const flow = await playerHostFlow({lag: null, identity})
 				const {host, multiplayerClient, client, dispose} = flow
-
 				const multiplayerOp = opSignal<MultiplayerHost>()
-				multiplayerOp.load(async() => host.startMultiplayer())
+
+				multiplayerOp.load(async() => {
+					const multiplayer = await host.startMultiplayer()
+					const {invite} = multiplayer.cathedral
+					if (invite)
+						SparrowInvites.writeInviteToWindowHash(invite)
+					return multiplayer
+				})
 
 				return {
-					dispose,
 					template: () => Gameplay([{
 						realm: client.realm,
 						multiplayerClient,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
+					dispose: () => {
+						SparrowInvites.deleteInviteFromWindowHash()
+						dispose()
+					},
 				}
 			}),
 
@@ -107,12 +116,15 @@ export const GameApp = shadowComponent(use => {
 				const {clientFlow} = await import("../../../logic/flows/client.js")
 				const {realm, dispose} = await clientFlow(multiplayerClient)
 				return {
-					dispose,
 					template: () => Gameplay([{
 						realm,
 						multiplayerClient,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
+					dispose: () => {
+						SparrowInvites.deleteInviteFromWindowHash()
+						dispose()
+					},
 				}
 			}),
 		}

@@ -15,5 +15,14 @@ export const SparrowInvites = {
 			Base58.string(Hex.bytes(hex))
 		)
 	},
+
+	writeInviteToWindowHash(invite: string) {
+		const inviteUrl = SparrowInvites.url(invite)
+		history.replaceState(null, "", inviteUrl)
+	},
+
+	deleteInviteFromWindowHash() {
+		history.replaceState(null, "", window.location.pathname + window.location.search)
+	},
 }
 
