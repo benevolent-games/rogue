@@ -73,8 +73,8 @@ export class AccountRecollection {
 }
 
 export class Context {
-	randy = Randy.seed(Math.random())
-	
+	randy = new Randy()
+
 	auth = Auth.get()
 	accounting = accountingApi(new Accountant()).v1
 	accountingPubkey = this.accounting.pubkey()

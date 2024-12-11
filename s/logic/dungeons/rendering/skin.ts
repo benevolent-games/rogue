@@ -6,6 +6,7 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
+import {Culler} from "./culling/sketch.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {DungeonLayout} from "../dungeon-layout.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
@@ -14,9 +15,10 @@ import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
-	randy = Randy.seed(1)
+	randy = new Randy(1)
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
+	culler = new Culler()
 
 	placer: DungeonPlacer
 	spawners: DungeonSpawners
@@ -30,11 +32,15 @@ export class DungeonSkin {
 		const [style] = [...DungeonStyle.extractFromContainer(container).values()]
 		this.placer = new DungeonPlacer(mainScale)
 		this.spawners = style.makeSpawners()
+
+		for (const material of container.materials)
+			material.freeze()
+
 		this.actuate()
 	}
 
 	actuate() {
-		const {dungeon, realm, stats, spawners} = this
+		const {dungeon, realm, stats, spawners, culler} = this
 
 		for (const sector of this.dungeon.sectors) {
 			stats.sectors++
@@ -67,7 +73,8 @@ export class DungeonSkin {
 
 		for (const walkable of walkables.list()) {
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
-			this.spawn({location: walkable, radians}, spawners.floor.size1x1)
+			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
+			culler.add(walkable, spawner)
 			stats.floors++
 		}
 
@@ -75,22 +82,26 @@ export class DungeonSkin {
 			for (const report of planWallSkinning(unwalkable, walkables)) {
 				if (report.wall) {
 					stats.walls++
-					this.spawn(report.wall, spawners.wall.size1)
+					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
+					culler.add(report.wall.location, spawner)
 				}
 
 				if (report.concave) {
 					stats.concaves++
-					this.spawn(report.concave, spawners.concave)
+					const spawner = () => this.spawn(report.concave!, spawners.concave)
+					culler.add(report.concave.location, spawner)
 				}
 
 				if (report.convex) {
 					stats.convexes++
-					this.spawn(report.convex, spawners.convex)
+					const spawner = () => this.spawn(report.convex!, spawners.convex)
+					culler.add(report.convex.location, spawner)
 				}
 
 				for (const stump of report.stumps) {
 					stats.stumps++
-					this.spawn(stump, spawners.wall.sizeHalf)
+					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
+					culler.add(stump.location, spawner)
 				}
 			}
 		}
@@ -121,6 +132,7 @@ export class DungeonSkin {
 	spawn(placement: Placement, crate: Crate) {
 		const spatial = this.placer.placeProp(placement)
 		const instance = crate.instance(spatial)
+		instance.freezeWorldMatrix()
 		this.trashbin.disposable(instance)
 		return instance
 	}

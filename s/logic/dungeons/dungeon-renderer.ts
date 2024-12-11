@@ -2,8 +2,9 @@
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Realm} from "../realm/realm.js"
-import {DungeonLayout} from "./dungeon-layout.js"
+import {Clock} from "../../tools/clock.js"
 import {DungeonSkin} from "./rendering/skin.js"
+import {DungeonLayout} from "./dungeon-layout.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
@@ -25,6 +26,7 @@ export class DungeonRenderer {
 	}
 
 	makeSkin(container: AssetContainer): DungeonSkin {
+		const clock = new Clock()
 		const {dungeon, realm} = this
 		const mainScale = 1.0
 		const skin = new DungeonSkin(
@@ -33,6 +35,7 @@ export class DungeonRenderer {
 			realm,
 			mainScale,
 		)
+		clock.log("dungeon-skinning")
 		console.log("dungeon skinner stats", skin.stats)
 		return skin
 	}

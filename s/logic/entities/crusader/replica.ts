@@ -41,11 +41,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 			if (inControl) {
 				cameraCoordinates.lerp(guyCoordinates, 10 / 100)
-				realm.env.camera.target.set(
-					...cameraCoordinates
-						.position()
-						.array()
-				)
+				realm.cameraman.coordinates = cameraCoordinates
 			}
 		},
 

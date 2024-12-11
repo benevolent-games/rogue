@@ -3,6 +3,7 @@ import {Hat, Map2} from "@benev/slate"
 import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./layouting/grid.js"
+import {Clock} from "../../tools/clock.js"
 import {Vecset2} from "./layouting/vecset2.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {Pathfinder} from "./layouting/pathfinder.js"
@@ -29,9 +30,13 @@ export class DungeonLayout {
 	walkables: Vecset2
 	unwalkables: Vecset2
 
-	constructor(public options: DungeonOptions) {
+	constructor(public options: DungeonOptions, logging = false) {
+		if (logging)
+			console.log("🏰 dungeon options", options)
+
 		const {seed, gridExtents, sectorWalk} = options
-		const randy = this.randy = Randy.seed(seed)
+		const clock = new Clock()
+		const randy = this.randy = new Randy(seed)
 		const cellGrid = this.cellGrid = new Grid(Vec2.array(gridExtents.cells))
 		const tileGrid = this.tileGrid = new Grid(Vec2.array(gridExtents.tiles))
 		this.cellSize = tileGrid.extent.clone()
@@ -95,6 +100,9 @@ export class DungeonLayout {
 
 		this.walkables = this.#getAllWalkables()
 		this.unwalkables = this.#getUnwalkables(this.walkables)
+
+		if (logging)
+			clock.log("dungeon-layout")
 	}
 
 	makeSpawnpointGetterFn() {

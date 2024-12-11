@@ -8,13 +8,13 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	({station, state}) => {
 
 	const dungeon = new DungeonLayout(state.options)
-	station.physics.resetUnwalkableHashgrid(dungeon.unwalkables.list())
+	station.physics.resetUnwalkableHypergrid(dungeon.unwalkables.list())
 
 	return {
 		inputData: undefined,
 		simulate: (_) => {},
 		dispose: () => {
-			station.physics.resetUnwalkableHashgrid([])
+			station.physics.resetUnwalkableHypergrid([])
 		},
 	}
 })

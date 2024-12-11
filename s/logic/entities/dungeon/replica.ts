@@ -1,6 +1,7 @@
 
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
+import {Clock} from "../../../tools/clock.js"
 import {replica} from "../../../archimedes/exports.js"
 import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
@@ -8,7 +9,9 @@ import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
-	const dungeon = new DungeonLayout(state.options)
+	const cullingRange = 30
+	const workloadLimit = 10
+	const dungeon = new DungeonLayout(state.options, true)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeon)
 
 	const stopDrops = realm.onFilesDropped(files => {
@@ -25,7 +28,15 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	return {
 		gatherInputs: () => undefined,
 		replicate: (_) => {
-			return {input: undefined}
+			const clock = new Clock()
+			const {culler} = dungeonRenderer.skin
+			const done = culler.execute(workloadLimit)
+			if (done === 0) {
+				culler.plan(realm.cameraman.coordinates, cullingRange)
+				culler.execute(workloadLimit)
+			}
+			if (clock.elapsed > 3)
+				clock.log("culling was slow")
 		},
 		dispose: () => {
 			dungeonRenderer.dispose()
