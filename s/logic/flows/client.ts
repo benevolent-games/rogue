@@ -107,6 +107,8 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 	world.gameloop.on(() => replicator.replicate(renderTick))
 	world.gameloop.start()
 
+	smartloop.start()
+
 	function dispose() {
 		stopTicking()
 		glbs.dispose()

@@ -4,6 +4,7 @@ import {repeat} from "@benev/slate"
 import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
+import {Watchman} from "../../tools/watchman.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
 import {RogueEntities} from "../entities/entities.js"
@@ -13,7 +14,6 @@ import {GameState, Simulator} from "../../archimedes/exports.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
-import { Watchman } from "../../tools/watchman.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const station = new Station()
