@@ -27,8 +27,8 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		replicate: (tick) => {
 			if (tick % 120 === 0) {
 				const start = performance.now()
-				dungeonRenderer.skin.culler.cull(realm.cameraman.coordinates, 40)
-				console.log("culltime", performance.now() - start)
+				const report = dungeonRenderer.skin.culler.cull(realm.cameraman.coordinates, 20)
+				console.log("culltime", performance.now() - start, report)
 			}
 		},
 		dispose: () => {

@@ -35,7 +35,7 @@ export class CullingZone {
 }
 
 export class Culler {
-	#hashgrid = new Hashgrid(32)
+	#hashgrid = new Hashgrid(16)
 	#subjectsByLocation = new Map2<Vec2, CullingSubject>()
 	#subjectsByZone = new Map2<Gridzone, CullingSubject[]>
 	#enabled = new Set<Gridzone>()
@@ -54,7 +54,9 @@ export class Culler {
 	}
 
 	cull(point: Vec2, radius: number) {
+		const report = {enabled: 0, disabled: 0}
 		const nearby = this.#hashgrid.zonesNear(point, radius)
+
 		for (const zone of this.#hashgrid.getZones()) {
 			const isNearby = nearby.includes(zone)
 			const wasEnabled = this.#enabled.has(zone)
@@ -62,17 +64,23 @@ export class Culler {
 			// spawn nearby subject
 			if (isNearby && !wasEnabled) {
 				this.#enabled.add(zone)
-				for (const subject of this.#subjectsByZone.require(zone))
+				for (const subject of this.#subjectsByZone.require(zone)) {
 					subject.spawn()
+					report.enabled++
+				}
 			}
 
 			// dispose distant subject
 			else if (!isNearby && wasEnabled) {
 				this.#enabled.delete(zone)
-				for (const subject of this.#subjectsByZone.require(zone))
+				for (const subject of this.#subjectsByZone.require(zone)) {
 					subject.dispose()
+					report.disabled++
+				}
 			}
 		}
+
+		return report
 	}
 }
 
