@@ -1,6 +1,4 @@
 
-import "@babylonjs/core/Debug/debugLayer.js"
-import "@babylonjs/inspector"
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {pubsub} from "@benev/slate"
@@ -21,11 +19,6 @@ export class Realm {
 	constructor(public world: World, public glbs: Glbs) {
 		this.env = makeEnvironment(world)
 		this.cameraman = new Cameraman(this.env)
-
-		this.world.scene.debugLayer.show({
-			embedMode: true,
-			overlay: true,
-		})
 	}
 
 	instance(source: Mesh) {
