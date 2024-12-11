@@ -10,7 +10,7 @@ export type DungeonSpawners = ReturnType<DungeonStyle["makeSpawners"]>
 
 /** Props specific to a single style within a dungeon glb */
 export class DungeonStyle {
-	randy = Randy.seed(1)
+	randy = new Randy(1)
 
 	constructor(
 		public style: string,

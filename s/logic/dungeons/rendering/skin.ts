@@ -15,7 +15,7 @@ import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
-	randy = Randy.seed(1)
+	randy = new Randy(1)
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
 	culler = new Culler()

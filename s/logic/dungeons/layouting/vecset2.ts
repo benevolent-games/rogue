@@ -2,7 +2,11 @@
 import {Randy, Vec2} from "@benev/toolbox"
 
 export class Vecset2<V extends Vec2 = Vec2> {
-	#vectors: V[] = []
+	#map = new Map<string, V>()
+
+	static toKey(vec: Vec2): string {
+		return `${vec.x},${vec.y}`
+	}
 
 	constructor(vectors: V[] = []) {
 		for (const v of vectors)
@@ -14,30 +18,33 @@ export class Vecset2<V extends Vec2 = Vec2> {
 	}
 
 	get size() {
-		return this.#vectors.length
+		return this.#map.size
 	}
 
 	has(vec: V) {
-		return this.#vectors.some(v => v.equals(vec))
+		return this.#map.has(Vecset2.toKey(vec))
 	}
 
 	add(...vecs: V[]) {
 		for (const vec of vecs) {
-			if (!this.has(vec))
-				this.#vectors.push(vec)
+			const key = Vecset2.toKey(vec)
+			if (!this.#map.has(key))
+				this.#map.set(key, vec)
 		}
 	}
 
 	delete(...vecs: V[]) {
-		this.#vectors = this.#vectors.filter(a => !vecs.some(b => b.equals(a)))
+		for (const vec of vecs) {
+			this.#map.delete(Vecset2.toKey(vec))
+		}
 	}
 
 	list() {
-		return [...this.#vectors]
+		return Array.from(this.#map.values())
 	}
 
 	yoink(randy: Randy) {
-		return randy.yoink(this.#vectors)
+		return randy.yoink(this.list())
 	}
 }
 

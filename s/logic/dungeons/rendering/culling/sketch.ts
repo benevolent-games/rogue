@@ -1,11 +1,10 @@
 
 import {Map2} from "@benev/slate"
-import {measure, Prop, Vec2} from "@benev/toolbox"
+import {Prop, Vec2} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core"
+import {Queue} from "../../../../tools/queue.js"
 import {Circle} from "../../../physics/shapes/circle.js"
 import {Hypergrid, Hyperzone} from "../../../physics/facilities/hypergrid.js"
-import { Stopwatch } from "../../../../tools/stopwatch.js"
-import { Queue } from "../../../../tools/queue.js"
 
 export class CullingSubject {
 	#prop: Prop | undefined
