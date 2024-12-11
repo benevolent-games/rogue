@@ -1,5 +1,4 @@
 
-import Sparrow from "sparrow-rtc"
 import {html, opSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
@@ -12,6 +11,7 @@ import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
+import {SparrowInvites} from "../../../tools/sparrow/sparrow-invites.js"
 import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
 import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
@@ -42,8 +42,7 @@ export const GameApp = shadowComponent(use => {
 			template: () => null,
 		})
 
-		const invite = Sparrow.invites.parse(window.location.hash)
-		if (invite) window.location.hash = ""
+		const invite = SparrowInvites.obtainFromWindow()
 
 		const orchestrator = new Orchestrator({
 			animTime: constants.ui.animTime,

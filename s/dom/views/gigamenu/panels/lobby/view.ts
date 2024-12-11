@@ -1,5 +1,4 @@
 
-import Sparrow from "sparrow-rtc"
 import {Bytename, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
@@ -7,13 +6,14 @@ import {IdView} from "../../../id/view.js"
 import themeCss from "../../../../theme.css.js"
 import {AccountCardView} from "../../../account-card/view.js"
 import {LobbySeat} from "../../../../../archimedes/net/relay/cathedral.js"
+import {SparrowInvites} from "../../../../../tools/sparrow/sparrow-invites.js"
 import {MultiplayerClient} from "../../../../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	use.styles(themeCss, stylesCss)
 
 	const lobby = multiplayer.lobby.value
-	const inviteUrl = lobby.invite && Sparrow.invites.url(lobby.invite)
+	const inviteUrl = lobby.invite && SparrowInvites.url(lobby.invite)
 
 	const fullName = (hex: string) => Bytename.string(
 		Hex.bytes(hex).slice(0, 5),
