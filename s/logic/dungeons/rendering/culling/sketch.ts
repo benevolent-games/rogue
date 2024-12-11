@@ -48,14 +48,18 @@ export class Culler {
 
 	indexZones() {
 		for (const zone of this.#hashgrid.getZones()) {
-			const subjects = zone.vectors.map(v => this.#subjectsByLocation.require(v))
+			const subjects = zone.children.map(v => this.#subjectsByLocation.require(v))
 			this.#subjectsByZone.set(zone, subjects)
 		}
 	}
 
 	cull(point: Vec2, radius: number) {
+		console.log("point", point)
+
 		const report = {enabled: 0, disabled: 0}
 		const nearby = this.#hashgrid.zonesNear(point, radius)
+
+		console.log(" - nearby", nearby.length)
 
 		for (const zone of this.#hashgrid.getZones()) {
 			const isNearby = nearby.includes(zone)
@@ -63,19 +67,19 @@ export class Culler {
 
 			// spawn nearby subject
 			if (isNearby && !wasEnabled) {
+				report.enabled++
 				this.#enabled.add(zone)
 				for (const subject of this.#subjectsByZone.require(zone)) {
 					subject.spawn()
-					report.enabled++
 				}
 			}
 
 			// dispose distant subject
 			else if (!isNearby && wasEnabled) {
+				report.disabled++
 				this.#enabled.delete(zone)
 				for (const subject of this.#subjectsByZone.require(zone)) {
 					subject.dispose()
-					report.disabled++
 				}
 			}
 		}
