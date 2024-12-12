@@ -132,7 +132,7 @@ export class DungeonSkin {
 
 	spawn(placement: Placement, crate: Crate) {
 		const spatial = this.placer.placeProp(placement)
-		const instance = crate.instance(spatial)
+		const instance = crate.clone(spatial)
 		instance.freezeWorldMatrix()
 		this.trashbin.disposable(instance)
 		return instance
