@@ -21,7 +21,7 @@ header {
 	align-items: end;
 
 	> * { flex: 0 1 auto; }
-	> button { font-size: 0.7em; min-width: 11em; }
+	> button { font-size: 0.8em; min-width: 11em; }
 }
 
 ol {
