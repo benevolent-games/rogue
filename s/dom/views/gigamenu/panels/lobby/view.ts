@@ -1,5 +1,5 @@
 
-import {Bytename, Hex, html, shadowView} from "@benev/slate"
+import {Bytename, Hex, html, nap, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {IdView} from "../../../id/view.js"
@@ -40,16 +40,34 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 		</li>
 	`
 
+	const copyStatus = use.signal<boolean | null>(null)
+
+	const clickToCopy = async() => {
+		if (inviteUrl) {
+			const url = new URL(window.location.href)
+			url.hash = inviteUrl
+			copyStatus.value = await navigator.clipboard.writeText(url.toString())
+				.then(() => true)
+				.catch(() => false)
+			await nap(1100)
+			copyStatus.value = null
+		}
+	}
+
 	return html`
 		<section>
 			<header>
 				<div>
-					<span>${lobby.online ? "🟢 online" : "❌ offline"}</span>
+					${lobby.online ? "🟢 online" : "❌ offline"}
 				</div>
 				${inviteUrl && html`
-					<div>
-						<a href="${inviteUrl}" target="_blank">${inviteUrl.slice(0, 14)}..</a>
-					</div>
+					<button @click="${clickToCopy}" ?disabled="${copyStatus.value !== null}">
+						${(() => {switch (copyStatus.value) {
+							case null: return "🔗 Copy Invite Link"
+							case true: return "✅ Copied"
+							case false: return "❌ Failed"
+						}})()}
+					</button>
 				`}
 			</header>
 

@@ -17,10 +17,11 @@ header {
 	display: flex;
 	width: 100%;
 	padding: 0 1em;
+	justify-content: space-between;
+	align-items: end;
 
-	> * { flex: 1 1 auto; }
-	> *:first-child { text-align: left; }
-	> *:last-child { text-align: right; }
+	> * { flex: 0 1 auto; }
+	> button { font-size: 0.7em; min-width: 11em; }
 }
 
 ol {
