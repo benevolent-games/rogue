@@ -66,11 +66,6 @@ export class DungeonSkin {
 
 		const {walkables, unwalkables} = dungeon
 
-		// // TODO
-		// const walkables = new Vecset2([
-		// 	...[...loop2d([4, 4])].map(v => Vec2.array(v)),
-		// ])
-
 		for (const walkable of walkables.list()) {
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
 			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
