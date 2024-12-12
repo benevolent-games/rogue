@@ -9,7 +9,7 @@ import {Hyperzone} from "../../../physics/facilities/hypergrid.js"
 import {Collisions} from "../../../physics/facilities/collisions.js"
 
 export class WallFader {
-	speed = 10 / 100
+	speed = 3 / 100
 	#proximalZones = new Set<Hyperzone>()
 	#fadeOutWorkload = new Map2<Hyperzone, Set<WallSubject>>()
 	#fadeInWorkload = new Map2<Hyperzone, Set<WallSubject>>()
@@ -19,9 +19,6 @@ export class WallFader {
 	animate(point: Vec2, radius: number) {
 		this.#plan(point, radius)
 		this.#work()
-		// const remaining = this.#work()
-		// if (remaining === 0)
-		// 	this.#plan(point, radius)
 	}
 
 	#plan(point: Vec2, radius: number) {
