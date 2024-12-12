@@ -1,5 +1,5 @@
 
-import {Content} from "../../../../temp/content.js"
+import {Content} from "@benev/slate"
 
 export type Gigapanel = {
 	label: string
