@@ -5,6 +5,7 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Warehouse} from "../../../tools/babylon/logistics/warehouse.js"
 import {ManifestQuery} from "../../../tools/babylon/logistics/types.js"
+import { getMeshoids, getTopMeshes } from "../../../tools/babylon/babylon-helpers.js"
 
 export type DungeonSpawners = ReturnType<DungeonStyle["makeSpawners"]>
 
@@ -19,6 +20,10 @@ export class DungeonStyle {
 
 	static extractFromContainer(container: AssetContainer) {
 		const dungeonWarehouse = Warehouse.from(container)
+
+		// TODO is this a hack??
+		for (const material of container.materials)
+			material.backFaceCulling = true
 
 		// each style has its own complete set of dungeon props, floors/walls/etc
 		return new Map2(
