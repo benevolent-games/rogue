@@ -10,7 +10,6 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
 	const cullingRange = 30
-	const workloadLimit = 10
 	const dungeon = new DungeonLayout(state.options, true)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeon)
 
@@ -30,11 +29,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		replicate: (_) => {
 			const clock = new Clock()
 			const {culler} = dungeonRenderer.skin
-			const done = culler.execute(workloadLimit)
-			if (done === 0) {
-				culler.plan(realm.cameraman.coordinates, cullingRange)
-				culler.execute(workloadLimit)
-			}
+			culler.cull(realm.cameraman.coordinates, cullingRange)
 			if (clock.elapsed > 3)
 				clock.log("culling was slow")
 		},
