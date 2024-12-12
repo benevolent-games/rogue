@@ -3,6 +3,7 @@ import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import {Invites} from "../../utils/invites.js"
 import {Exhibit, Orchestrator} from "@benev/toolbox"
 
 export async function handleExhibitErrors(back: () => void, fn: () => Promise<Exhibit>) {
@@ -10,9 +11,10 @@ export async function handleExhibitErrors(back: () => void, fn: () => Promise<Ex
 		return await fn()
 	}
 	catch (error) {
+		Invites.deleteInviteFromWindowHash()
 		return Orchestrator.makeExhibit({
-			dispose: () => {},
 			template: () => ErrorScreen([error, back]),
+			dispose: () => {},
 		})
 	}
 }

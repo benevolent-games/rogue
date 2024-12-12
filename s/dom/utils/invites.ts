@@ -2,8 +2,8 @@
 import Sparrow from "sparrow-rtc"
 import {Base58, Hex} from "@benev/slate"
 
-/** for presenting invites to users in base58 format (sparrow natively uses hex) */
-export const SparrowInvites = {
+/** for presenting sparrow invites to users in base58 format (sparrow natively uses hex) */
+export const Invites = {
 
 	obtainFromWindow() {
 		const b58 = Sparrow.invites.parse(window.location.hash)
@@ -17,7 +17,7 @@ export const SparrowInvites = {
 	},
 
 	writeInviteToWindowHash(invite: string) {
-		const inviteUrl = SparrowInvites.url(invite)
+		const inviteUrl = Invites.url(invite)
 		history.replaceState(null, "", inviteUrl)
 	},
 

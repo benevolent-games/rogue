@@ -5,13 +5,13 @@ import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@be
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
 import themeCss from "../../theme.css.js"
+import {Invites} from "../../utils/invites.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
-import {SparrowInvites} from "../../../tools/sparrow/sparrow-invites.js"
 import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
 import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
@@ -42,7 +42,7 @@ export const GameApp = shadowComponent(use => {
 			template: () => null,
 		})
 
-		const invite = SparrowInvites.obtainFromWindow()
+		const invite = Invites.obtainFromWindow()
 
 		const orchestrator = new Orchestrator({
 			animTime: constants.ui.animTime,
@@ -71,12 +71,15 @@ export const GameApp = shadowComponent(use => {
 				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
 				return {
-					dispose,
 					template: () => Gameplay([{
 						multiplayerClient,
 						realm: client.realm,
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
+					dispose: () => {
+						Invites.deleteInviteFromWindowHash()
+						dispose()
+					},
 				}
 			}),
 
@@ -90,7 +93,7 @@ export const GameApp = shadowComponent(use => {
 					const multiplayer = await host.startMultiplayer()
 					const {invite} = multiplayer.cathedral
 					if (invite)
-						SparrowInvites.writeInviteToWindowHash(invite)
+						Invites.writeInviteToWindowHash(invite)
 					return multiplayer
 				})
 
@@ -101,7 +104,7 @@ export const GameApp = shadowComponent(use => {
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 					dispose: () => {
-						SparrowInvites.deleteInviteFromWindowHash()
+						Invites.deleteInviteFromWindowHash()
 						dispose()
 					},
 				}
@@ -122,7 +125,7 @@ export const GameApp = shadowComponent(use => {
 						exitToMainMenu: () => goExhibit.mainMenu(),
 					}]),
 					dispose: () => {
-						SparrowInvites.deleteInviteFromWindowHash()
+						Invites.deleteInviteFromWindowHash()
 						dispose()
 					},
 				}
