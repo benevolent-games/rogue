@@ -19,7 +19,6 @@ export class WallSubject extends CullingSubject {
 	spawn() {
 		super.spawn()
 		this.meshes = getTopMeshes(this.prop!)
-		this.animateOpacity()
 	}
 
 	dispose() {
@@ -27,9 +26,9 @@ export class WallSubject extends CullingSubject {
 		this.meshes = []
 	}
 
-	animateOpacity() {
+	animateOpacity(speed: number) {
 		const newOpacity = (Math.abs(this.targetOpacity - this.currentOpacity) > (2 / 100))
-			? Scalar.lerp(this.currentOpacity, this.targetOpacity, 5 / 100)
+			? Scalar.lerp(this.currentOpacity, this.targetOpacity, speed)
 			: this.targetOpacity
 
 		this.currentOpacity = newOpacity

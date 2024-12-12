@@ -9,7 +9,7 @@ import {Hyperzone} from "../../../physics/facilities/hypergrid.js"
 import {Collisions} from "../../../physics/facilities/collisions.js"
 
 export class WallFader {
-	workLimit = 10
+	speed = 10 / 100
 	#proximalZones = new Set<Hyperzone>()
 	#fadeOutWorkload = new Map2<Hyperzone, Set<WallSubject>>()
 	#fadeInWorkload = new Map2<Hyperzone, Set<WallSubject>>()
@@ -17,9 +17,11 @@ export class WallFader {
 	constructor(public subjectGrid: SubjectGrid<WallSubject>) {}
 
 	animate(point: Vec2, radius: number) {
-		const remaining = this.#work()
-		if (remaining === 0)
-			this.#plan(point, radius)
+		this.#plan(point, radius)
+		this.#work()
+		// const remaining = this.#work()
+		// if (remaining === 0)
+		// 	this.#plan(point, radius)
 	}
 
 	#plan(point: Vec2, radius: number) {
@@ -32,20 +34,18 @@ export class WallFader {
 
 		// handle new zones entering proximity
 		for (const zone of newProximalZones) {
-			if (!this.#proximalZones.has(zone)) {
 
-				// fade out walls in new zones
-				const jobs = this.#fadeOutWorkload.guarantee(zone, () => new Set())
+			// fade out walls in new zones
+			const jobs = this.#fadeOutWorkload.guarantee(zone, () => new Set())
 
-				// subject grid
-				for (const subject of this.subjectGrid.subjectsByZone.get(zone) ?? []) {
-					const inProximity = Collisions.pointVsCircle(subject.location, circle)
-					subject.targetOpacity = (inProximity)
-						? 0
-						: 1
-					if (!subject.done)
-						jobs.add(subject)
-				}
+			// subject grid
+			for (const subject of this.subjectGrid.subjectsByZone.get(zone) ?? []) {
+				const inProximity = Collisions.pointVsCircle(subject.location, circle)
+				subject.targetOpacity = (inProximity)
+					? 0
+					: 1
+				if (!subject.done)
+					jobs.add(subject)
 			}
 		}
 
@@ -68,23 +68,21 @@ export class WallFader {
 	}
 
 	#work() {
-		for (const work of this.#fadeOutWorkload)
-			this.#executeWorkload(work)
-
-		for (const work of this.#fadeInWorkload)
-			this.#executeWorkload(work)
-
+		this.#executeWorkload(this.#fadeOutWorkload)
+		this.#executeWorkload(this.#fadeInWorkload)
 		return this.#fadeOutWorkload.size + this.#fadeInWorkload.size
 	}
 
-	#executeWorkload([zone, subjects]: [zone: Hyperzone, subjects: Set<WallSubject>]) {
-		for (const subject of subjects) {
-			subject.animateOpacity()
-			if (subject.done)
-				subjects.delete(subject)
+	#executeWorkload(workload: Map2<Hyperzone, Set<WallSubject>>) {
+		for (const [zone, subjects] of workload) {
+			for (const subject of subjects) {
+				subject.animateOpacity(this.speed)
+				if (subject.done)
+					subjects.delete(subject)
+			}
+			if (subjects.size === 0)
+				workload.delete(zone)
 		}
-		if (subjects.size === 0)
-			this.#fadeOutWorkload.delete(zone)
 	}
 }
 

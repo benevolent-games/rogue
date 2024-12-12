@@ -14,8 +14,9 @@ export const Collisions = {
 	},
 
 	pointVsCircle(point: Vec2, circle: Circle) {
-		const difference = point.clone().subtract(circle.center)
-		const distanceSquared = (difference.x ** 2) + (difference.y ** 2)
+		const dx = point.x - circle.center.x
+		const dy = point.y - circle.center.y
+		const distanceSquared = (dx ** 2) + (dy ** 2)
 		return distanceSquared <= (circle.radius ** 2)
 	},
 

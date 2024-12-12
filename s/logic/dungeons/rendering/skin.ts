@@ -22,9 +22,11 @@ export class DungeonSkin {
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
 
-	subjectGrid = new SubjectGrid<WallSubject>()
-	culler = new Culler(this.subjectGrid)
-	wallFader = new WallFader(this.subjectGrid)
+	fadingGrid = new SubjectGrid<WallSubject>()
+	cullableGrid = new SubjectGrid<WallSubject>()
+
+	culler = new Culler(this.cullableGrid)
+	wallFader = new WallFader(this.fadingGrid)
 
 	placer: DungeonPlacer
 	spawners: DungeonSpawners
@@ -46,7 +48,7 @@ export class DungeonSkin {
 	}
 
 	actuate() {
-		const {dungeon, realm, stats, spawners, subjectGrid} = this
+		const {dungeon, realm, stats, spawners, cullableGrid, fadingGrid} = this
 
 		for (const sector of this.dungeon.sectors) {
 			stats.sectors++
@@ -73,10 +75,11 @@ export class DungeonSkin {
 		const {walkables, unwalkables} = dungeon
 
 		for (const walkable of walkables.list()) {
+			stats.floors++
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
 			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
-			subjectGrid.add(new WallSubject(walkable, spawner))
-			stats.floors++
+			const subject = new WallSubject(walkable, spawner)
+			cullableGrid.add(subject)
 		}
 
 		for (const unwalkable of unwalkables.list()) {
@@ -84,25 +87,33 @@ export class DungeonSkin {
 				if (report.wall) {
 					stats.walls++
 					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
-					subjectGrid.add(new WallSubject(report.wall.location, spawner))
+					const subject = new WallSubject(report.wall.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				if (report.concave) {
 					stats.concaves++
 					const spawner = () => this.spawn(report.concave!, spawners.concave)
-					subjectGrid.add(new WallSubject(report.concave.location, spawner))
+					const subject = new WallSubject(report.concave.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				if (report.convex) {
 					stats.convexes++
 					const spawner = () => this.spawn(report.convex!, spawners.convex)
-					subjectGrid.add(new WallSubject(report.convex.location, spawner))
+					const subject = new WallSubject(report.convex.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				for (const stump of report.stumps) {
 					stats.stumps++
 					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
-					subjectGrid.add(new WallSubject(stump.location, spawner))
+					const subject = new WallSubject(stump.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 			}
 		}
