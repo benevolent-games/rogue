@@ -21,7 +21,7 @@ const northPattern = [
 
 export function planWallSkinning(unwalkable: Vec2, walkables: Vecset2) {
 	const considerOneSide = (pattern: Vec2[], radians: number) => {
-		const [a, b, c, d, e, f, g, h, i, j, k, l, m] = pattern.map(p => p.clone().rotate(radians).round())
+		const [a, b, c, d, e, f, _g, h, i, j, _k, l, m] = pattern.map(p => p.clone().rotate(radians).round())
 		const isWalkable = (tile: Vec2) => walkables.has(unwalkable.clone().add(tile))
 		const notWalkable = (tile: Vec2) => !walkables.has(unwalkable.clone().add(tile))
 

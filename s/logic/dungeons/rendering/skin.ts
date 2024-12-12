@@ -6,9 +6,12 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
-import {Culler} from "./culling/sketch.js"
+import {Culler} from "./culling/culler.js"
+import {WallFader} from "./walls/wall-fader.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {DungeonLayout} from "../dungeon-layout.js"
+import {WallSubject} from "./walls/wall-subject.js"
+import {SubjectGrid} from "./culling/subject-grid.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
@@ -18,7 +21,12 @@ export class DungeonSkin {
 	randy = new Randy(1)
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
-	culler = new Culler()
+
+	fadingGrid = new SubjectGrid<WallSubject>()
+	cullableGrid = new SubjectGrid<WallSubject>()
+
+	culler = new Culler(this.cullableGrid)
+	wallFader = new WallFader(this.fadingGrid)
 
 	placer: DungeonPlacer
 	spawners: DungeonSpawners
@@ -40,7 +48,7 @@ export class DungeonSkin {
 	}
 
 	actuate() {
-		const {dungeon, realm, stats, spawners, culler} = this
+		const {dungeon, realm, stats, spawners, cullableGrid, fadingGrid} = this
 
 		for (const sector of this.dungeon.sectors) {
 			stats.sectors++
@@ -66,16 +74,12 @@ export class DungeonSkin {
 
 		const {walkables, unwalkables} = dungeon
 
-		// // TODO
-		// const walkables = new Vecset2([
-		// 	...[...loop2d([4, 4])].map(v => Vec2.array(v)),
-		// ])
-
 		for (const walkable of walkables.list()) {
+			stats.floors++
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
 			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
-			culler.add(walkable, spawner)
-			stats.floors++
+			const subject = new WallSubject(walkable, spawner)
+			cullableGrid.add(subject)
 		}
 
 		for (const unwalkable of unwalkables.list()) {
@@ -83,25 +87,33 @@ export class DungeonSkin {
 				if (report.wall) {
 					stats.walls++
 					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
-					culler.add(report.wall.location, spawner)
+					const subject = new WallSubject(report.wall.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				if (report.concave) {
 					stats.concaves++
 					const spawner = () => this.spawn(report.concave!, spawners.concave)
-					culler.add(report.concave.location, spawner)
+					const subject = new WallSubject(report.concave.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				if (report.convex) {
 					stats.convexes++
 					const spawner = () => this.spawn(report.convex!, spawners.convex)
-					culler.add(report.convex.location, spawner)
+					const subject = new WallSubject(report.convex.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 
 				for (const stump of report.stumps) {
 					stats.stumps++
 					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
-					culler.add(stump.location, spawner)
+					const subject = new WallSubject(stump.location, spawner)
+					cullableGrid.add(subject)
+					fadingGrid.add(subject)
 				}
 			}
 		}
@@ -131,7 +143,7 @@ export class DungeonSkin {
 
 	spawn(placement: Placement, crate: Crate) {
 		const spatial = this.placer.placeProp(placement)
-		const instance = crate.instance(spatial)
+		const instance = crate.clone(spatial)
 		instance.freezeWorldMatrix()
 		this.trashbin.disposable(instance)
 		return instance
