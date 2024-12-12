@@ -7,8 +7,11 @@ import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
 import {Culler} from "./culling/culler.js"
+import {WallFader} from "./walls/wall-fader.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {DungeonLayout} from "../dungeon-layout.js"
+import {WallSubject} from "./walls/wall-subject.js"
+import {SubjectGrid} from "./culling/subject-grid.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
@@ -18,7 +21,10 @@ export class DungeonSkin {
 	randy = new Randy(1)
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
-	culler = new Culler()
+
+	subjectGrid = new SubjectGrid<WallSubject>()
+	culler = new Culler(this.subjectGrid)
+	wallFader = new WallFader(this.subjectGrid)
 
 	placer: DungeonPlacer
 	spawners: DungeonSpawners
@@ -40,7 +46,7 @@ export class DungeonSkin {
 	}
 
 	actuate() {
-		const {dungeon, realm, stats, spawners, culler} = this
+		const {dungeon, realm, stats, spawners, subjectGrid} = this
 
 		for (const sector of this.dungeon.sectors) {
 			stats.sectors++
@@ -69,7 +75,7 @@ export class DungeonSkin {
 		for (const walkable of walkables.list()) {
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
 			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
-			culler.add(walkable, spawner)
+			subjectGrid.add(new WallSubject(walkable, spawner))
 			stats.floors++
 		}
 
@@ -78,25 +84,25 @@ export class DungeonSkin {
 				if (report.wall) {
 					stats.walls++
 					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
-					culler.add(report.wall.location, spawner)
+					subjectGrid.add(new WallSubject(report.wall.location, spawner))
 				}
 
 				if (report.concave) {
 					stats.concaves++
 					const spawner = () => this.spawn(report.concave!, spawners.concave)
-					culler.add(report.concave.location, spawner)
+					subjectGrid.add(new WallSubject(report.concave.location, spawner))
 				}
 
 				if (report.convex) {
 					stats.convexes++
 					const spawner = () => this.spawn(report.convex!, spawners.convex)
-					culler.add(report.convex.location, spawner)
+					subjectGrid.add(new WallSubject(report.convex.location, spawner))
 				}
 
 				for (const stump of report.stumps) {
 					stats.stumps++
 					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
-					culler.add(stump.location, spawner)
+					subjectGrid.add(new WallSubject(stump.location, spawner))
 				}
 			}
 		}

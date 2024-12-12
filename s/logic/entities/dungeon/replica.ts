@@ -9,6 +9,7 @@ import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
+	const fadeRange = 8
 	const cullingRange = 30
 	const dungeon = new DungeonLayout(state.options, true)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeon)
@@ -28,8 +29,11 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		gatherInputs: () => undefined,
 		replicate: (_) => {
 			const clock = new Clock()
-			const {culler} = dungeonRenderer.skin
+			const {culler, wallFader} = dungeonRenderer.skin
+
 			culler.cull(realm.cameraman.coordinates, cullingRange)
+			wallFader.animate(realm.cameraman.coordinates, fadeRange)
+
 			if (clock.elapsed > 3)
 				clock.log("culling was slow")
 		},
