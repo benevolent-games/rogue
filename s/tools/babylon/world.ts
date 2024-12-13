@@ -3,7 +3,7 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Iron, AnyEngine, CanvasScaler, Gameloop, Rendering, loadGlb} from "@benev/toolbox"
 
-import {constants} from "../../constants"
+import {constants} from "../../constants.js"
 
 export class World {
 	static load = async() => {

@@ -1,13 +1,12 @@
 
-import {Degrees, make_envmap} from "@benev/toolbox"
+import {Degrees} from "@benev/toolbox"
 
-import {Constants, Light, NodeMaterial, PointLight, PostProcess} from "@babylonjs/core"
+import {Constants, Light, NodeMaterial, PointLight} from "@babylonjs/core"
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
-import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 
 import {constants} from "../../../constants.js"
 import {World} from "../../../tools/babylon/world.js"
@@ -84,9 +83,6 @@ export function makeEnvironment(world: World) {
 			cell: mk(materials.happy, 0.1),
 		}
 	})()
-
-	// const envmap = make_envmap(scene, constants.urls.envmap)
-	// scene.environmentIntensity = 0.001
 
 	const camera: ArcRotateCamera = new ArcRotateCamera(
 		"camera",
