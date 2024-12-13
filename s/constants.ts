@@ -9,7 +9,7 @@ export const constants = {
 		envmap: "/assets/studiolights.env",
 		templateGlb: "/assets/dungeons/byzantium.glb",
 		shaders: {
-			retro: "/assets/shaders/retro.json",
+			retro: "/assets/shaders/retro2.json",
 		},
 	},
 
