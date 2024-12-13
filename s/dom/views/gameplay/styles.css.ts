@@ -15,6 +15,8 @@ export default css`
 }
 
 canvas {
+	image-rendering: pixelated;
+
 	display: block;
 	width: 100%;
 	height: 100%;

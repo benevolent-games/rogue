@@ -9,7 +9,7 @@ export const constants = {
 		envmap: "/assets/studiolights.env",
 		templateGlb: "/assets/dungeons/byzantium.glb",
 		shaders: {
-			retro: "/assets/shaders/retro2.json",
+			retro: "/assets/shaders/retro-nopix.json",
 		},
 	},
 
@@ -18,6 +18,8 @@ export const constants = {
 	},
 
 	game: {
+		antialiasing: false,
+		resolution: 0.375,
 		tickRate: 60,
 		snapshotRate: 1,
 		cameraRotation: Degrees.toRadians(45),

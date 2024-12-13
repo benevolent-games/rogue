@@ -3,6 +3,8 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Iron, AnyEngine, CanvasScaler, Gameloop, Rendering, loadGlb} from "@benev/toolbox"
 
+import {constants} from "../../constants"
+
 export class World {
 	static load = async() => {
 		const canvas = document.createElement("canvas")
@@ -11,6 +13,7 @@ export class World {
 			canvas,
 			webgl: {
 				alpha: false,
+				antialias: constants.game.antialiasing,
 				desynchronized: true,
 				preserveDrawingBuffer: false,
 				powerPreference: "high-performance",
@@ -23,9 +26,11 @@ export class World {
 		})
 
 		const scaler = Iron.canvasScaler(canvas)
-		const scene = Iron.scene({engine, background: [.05, .05, .05, 1]})
+		const scene = Iron.scene({engine, background: [0, 0, 0, 1]})
 		const gameloop = Iron.gameloop(engine, [scene])
 		const rendering = Iron.rendering(scene)
+
+		scaler.resolution = constants.game.resolution
 
 		function dispose() {
 			gameloop.stop()
