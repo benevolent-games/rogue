@@ -1,4 +1,5 @@
 
+import {Vec3} from "@benev/toolbox"
 import {Env} from "./make-environment.js"
 import {Coordinates} from "./coordinates.js"
 
@@ -18,6 +19,10 @@ export class Cameraman {
 				.position()
 				.array()
 		)
+	}
+
+	get position() {
+		return Vec3.from(this.env.camera.position.asArray())
 	}
 }
 

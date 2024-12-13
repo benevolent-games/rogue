@@ -1,13 +1,14 @@
 
 import {Degrees} from "@benev/toolbox"
+import {Constants, NodeMaterial} from "@babylonjs/core"
 
-import {Constants, Light, NodeMaterial, PointLight} from "@babylonjs/core"
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
 
+import {Lighting} from "./lighting.js"
 import {constants} from "../../../constants.js"
 import {World} from "../../../tools/babylon/world.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
@@ -17,12 +18,7 @@ export type Env = ReturnType<typeof makeEnvironment>
 export function makeEnvironment(world: World) {
 	const {scene} = world
 
-	const torch = new PointLight("torch", new Vector3(0, 0, 0), scene)
-	torch.diffuse = new Color3(1, 0.4, 0.1)
-	torch.specular = new Color3(1, 0.4, 0.1)
-	// torch.radius = 3
-	torch.intensity = 30
-	torch.falloffType = Light.FALLOFF_GLTF
+	const lighting = new Lighting(scene)
 
 	const materials = (() => {
 		const mk = (r: number, g: number, b: number) => {
@@ -98,7 +94,7 @@ export function makeEnvironment(world: World) {
 	})
 
 	return {
-		torch,
+		lighting,
 		camera,
 		materials,
 		guys,
