@@ -1,6 +1,7 @@
 
 import "@benev/toolbox/x/babylon-side-effects.js"
 
+import {Vec3} from "@benev/toolbox"
 import {pubsub} from "@benev/slate"
 import {Mesh} from "@babylonjs/core"
 
@@ -15,6 +16,8 @@ export class Realm {
 	env: Env
 	cameraman: Cameraman
 	onFilesDropped = pubsub<[File[]]>()
+
+	playerPosition = Vec3.zero()
 
 	constructor(public world: World, public glbs: Glbs) {
 		this.env = makeEnvironment(world)

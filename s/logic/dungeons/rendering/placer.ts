@@ -5,7 +5,7 @@ import {Placement} from "./types.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {Spatial} from "../../../tools/babylon/logistics/types.js"
 
-/** Calculator for the positions, rotaitons, and scales of dungeon props */
+/** Calculator for the positions, rotations, and scales of dungeon props */
 export class DungeonPlacer {
 
 	constructor(public mainScale: number) {}

@@ -8,11 +8,11 @@ export class Cameraman {
 
 	constructor(private env: Env) {}
 
-	get coordinates() {
+	get target() {
 		return this.#coordinates
 	}
 
-	set coordinates(coords: Coordinates) {
+	set target(coords: Coordinates) {
 		this.#coordinates = coords
 		this.env.camera.target.set(
 			...coords

@@ -36,13 +36,14 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		replicate: (_, state) => {
-			const position = guyPosition(guyCoordinates)
 			guyCoordinates.lerp_(...state.coordinates, 30 / 100)
+			const position = guyPosition(guyCoordinates)
 			guy.position.set(...position.array())
 
 			if (inControl) {
 				cameraCoordinates.lerp(guyCoordinates, 10 / 100)
-				realm.cameraman.coordinates = cameraCoordinates
+				realm.cameraman.target = cameraCoordinates
+				realm.playerPosition = position
 
 				const cameraPosition = realm.cameraman.position
 				const cameraLookingVector = position.clone().subtract(cameraPosition)

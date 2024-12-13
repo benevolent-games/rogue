@@ -1,12 +1,14 @@
 
 import {Vec2} from "@benev/toolbox"
+
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Clock} from "../../../tools/clock.js"
 import {constants} from "../../../constants.js"
-import {replica} from "../../../archimedes/exports.js"
 import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
+import {replica} from "../../../archimedes/framework/replication/types.js"
+import {WallDetector} from "../../dungeons/rendering/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
@@ -28,26 +30,31 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		}
 	})
 
+	const wallDetector = new WallDetector(realm)
+
 	return {
 		gatherInputs: () => undefined,
 		replicate: (_) => {
 			const {culler, wallFader} = dungeonRenderer.skin
+			const playerPosition = realm.playerPosition.clone()
+			const cameraPosition = realm.cameraman.position.clone()
 
 			const c1 = new Clock()
-			culler.cull(realm.cameraman.coordinates, cullingRange)
+			culler.cull(realm.cameraman.target, cullingRange)
 			if (c1.elapsed > 3)
 				c1.log("culling was slow")
 
 			const c2 = new Clock()
 			wallFader.animate(
-				realm.cameraman.coordinates.clone().add(camfadeOffset),
+				realm.cameraman.target.clone().add(camfadeOffset),
 				fadeRange,
-				_subject => true,
+				wall => wallDetector.detect(wall, playerPosition, cameraPosition),
 			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")
 		},
 		dispose: () => {
+			wallDetector.dispose()
 			dungeonRenderer.dispose()
 			stopDrops()
 		},
