@@ -1,6 +1,7 @@
 
 import {Degrees, make_envmap} from "@benev/toolbox"
 
+import {Constants, Light, NodeMaterial, PointLight, PostProcess} from "@babylonjs/core"
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
@@ -16,6 +17,13 @@ export type Env = ReturnType<typeof makeEnvironment>
 
 export function makeEnvironment(world: World) {
 	const {scene} = world
+
+	const torch = new PointLight("torch", new Vector3(0, 0, 0), scene)
+	torch.diffuse = new Color3(1, 0.4, 0.1)
+	torch.specular = new Color3(1, 0.4, 0.1)
+	// torch.radius = 3
+	torch.intensity = 30
+	torch.falloffType = Light.FALLOFF_GLTF
 
 	const materials = (() => {
 		const mk = (r: number, g: number, b: number) => {
@@ -52,8 +60,8 @@ export function makeEnvironment(world: World) {
 		}
 
 		return {
-			local: mk(materials.happy, 0.95),
-			remote: mk(materials.spicy, 0.95),
+			local: mk(materials.happy, 1),
+			remote: mk(materials.spicy, 1),
 		}
 	})()
 
@@ -77,8 +85,8 @@ export function makeEnvironment(world: World) {
 		}
 	})()
 
-	const envmap = make_envmap(scene, constants.urls.envmap)
-	scene.environmentIntensity = 0.1
+	// const envmap = make_envmap(scene, constants.urls.envmap)
+	// scene.environmentIntensity = 0.001
 
 	const camera: ArcRotateCamera = new ArcRotateCamera(
 		"camera",
@@ -89,9 +97,13 @@ export function makeEnvironment(world: World) {
 		scene,
 	)
 
+	NodeMaterial.ParseFromFileAsync("retro", constants.urls.shaders.retro, scene).then(retro => {
+		retro.createPostProcess(camera, 1.0, Constants.TEXTURE_LINEAR_LINEAR)
+	})
+
 	return {
+		torch,
 		camera,
-		envmap,
 		materials,
 		guys,
 		indicators,

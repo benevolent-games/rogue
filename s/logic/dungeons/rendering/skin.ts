@@ -48,29 +48,31 @@ export class DungeonSkin {
 	}
 
 	actuate() {
-		const {dungeon, realm, stats, spawners, cullableGrid, fadingGrid} = this
+		const {dungeon, stats, spawners, cullableGrid, fadingGrid} = this
 
-		for (const sector of this.dungeon.sectors) {
-			stats.sectors++
-			this.spawnIndicator({
-				location: dungeon.tilespace(sector),
-				crate: realm.env.indicators.sector,
-				offset: -0.02,
-				scale: 0.9985,
-				size: dungeon.sectorSize,
-			})
-		}
+		// // TODO extract this to a separate optional facility
 
-		for (const {cell, sector} of this.dungeon.cells) {
-			stats.cells++
-			this.spawnIndicator({
-				location: dungeon.tilespace(sector, cell),
-				crate: realm.env.indicators.cell,
-				offset: -0.01,
-				scale: 0.99,
-				size: dungeon.cellSize,
-			})
-		}
+		// for (const sector of this.dungeon.sectors) {
+		// 	stats.sectors++
+		// 	this.spawnIndicator({
+		// 		location: dungeon.tilespace(sector),
+		// 		crate: realm.env.indicators.sector,
+		// 		offset: -0.02,
+		// 		scale: 0.9985,
+		// 		size: dungeon.sectorSize,
+		// 	})
+		// }
+		//
+		// for (const {cell, sector} of this.dungeon.cells) {
+		// 	stats.cells++
+		// 	this.spawnIndicator({
+		// 		location: dungeon.tilespace(sector, cell),
+		// 		crate: realm.env.indicators.cell,
+		// 		offset: -0.01,
+		// 		scale: 0.99,
+		// 		size: dungeon.cellSize,
+		// 	})
+		// }
 
 		const {walkables, unwalkables} = dungeon
 

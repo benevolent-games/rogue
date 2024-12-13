@@ -8,6 +8,9 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		templateGlb: "/assets/dungeons/byzantium.glb",
+		shaders: {
+			retro: "/assets/shaders/retro.json",
+		},
 	},
 
 	ui: {

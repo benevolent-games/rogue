@@ -38,10 +38,10 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		replicate: (_, state) => {
 			guyCoordinates.lerp_(...state.coordinates, 30 / 100)
 			guy.position.set(...guyPosition(guyCoordinates))
-
 			if (inControl) {
 				cameraCoordinates.lerp(guyCoordinates, 10 / 100)
 				realm.cameraman.coordinates = cameraCoordinates
+				realm.env.torch.position.set(...guyCoordinates.position().add_(0, 3, 0).array())
 			}
 		},
 
