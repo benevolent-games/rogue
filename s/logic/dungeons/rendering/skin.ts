@@ -14,6 +14,7 @@ import {WallSubject} from "./walls/wall-subject.js"
 import {SubjectGrid} from "./culling/subject-grid.js"
 import {planWallSkinning} from "./plan-wall-skinning.js"
 import {DungeonSpawners, DungeonStyle} from "./style.js"
+import {CullingSubject} from "./culling/culling-subject.js"
 import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
 /** Graphical representation of a dungeon */
@@ -22,8 +23,8 @@ export class DungeonSkin {
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
 
+	cullableGrid = new SubjectGrid()
 	fadingGrid = new SubjectGrid<WallSubject>()
-	cullableGrid = new SubjectGrid<WallSubject>()
 
 	culler = new Culler(this.cullableGrid)
 	wallFader = new WallFader(this.fadingGrid)
@@ -80,7 +81,7 @@ export class DungeonSkin {
 			stats.floors++
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, 90, 180]))
 			const spawner = () => this.spawn({location: walkable, radians}, spawners.floor.size1x1)
-			const subject = new WallSubject(walkable, spawner)
+			const subject = new CullingSubject(walkable, spawner)
 			cullableGrid.add(subject)
 		}
 
@@ -89,7 +90,7 @@ export class DungeonSkin {
 				if (report.wall) {
 					stats.walls++
 					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
-					const subject = new WallSubject(report.wall.location, spawner)
+					const subject = new WallSubject(unwalkable, report.wall.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
 				}
@@ -97,7 +98,7 @@ export class DungeonSkin {
 				if (report.concave) {
 					stats.concaves++
 					const spawner = () => this.spawn(report.concave!, spawners.concave)
-					const subject = new WallSubject(report.concave.location, spawner)
+					const subject = new WallSubject(unwalkable, report.concave.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
 				}
@@ -105,7 +106,7 @@ export class DungeonSkin {
 				if (report.convex) {
 					stats.convexes++
 					const spawner = () => this.spawn(report.convex!, spawners.convex)
-					const subject = new WallSubject(report.convex.location, spawner)
+					const subject = new WallSubject(unwalkable, report.convex.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
 				}
@@ -113,7 +114,7 @@ export class DungeonSkin {
 				for (const stump of report.stumps) {
 					stats.stumps++
 					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
-					const subject = new WallSubject(stump.location, spawner)
+					const subject = new WallSubject(unwalkable, stump.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
 				}

@@ -12,7 +12,7 @@ export class WallSubject extends CullingSubject {
 		return this.currentOpacity === this.targetOpacity
 	}
 
-	constructor(location: Vec2, spawner: () => Prop) {
+	constructor(public tile: Vec2, location: Vec2, spawner: () => Prop) {
 		super(location, spawner)
 	}
 

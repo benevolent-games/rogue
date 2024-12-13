@@ -16,12 +16,12 @@ export class WallFader {
 
 	constructor(public subjectGrid: SubjectGrid<WallSubject>) {}
 
-	animate(point: Vec2, radius: number) {
-		this.#plan(point, radius)
+	animate(point: Vec2, radius: number, shouldFade: (subject: WallSubject) => boolean) {
+		this.#plan(point, radius, shouldFade)
 		this.#work()
 	}
 
-	#plan(point: Vec2, radius: number) {
+	#plan(point: Vec2, radius: number, shouldFade: (subject: WallSubject) => boolean) {
 		const circle = new Circle(point, radius)
 
 		// find which zones touch the circle
@@ -31,15 +31,11 @@ export class WallFader {
 
 		// handle new zones entering proximity
 		for (const zone of newProximalZones) {
-
-			// fade out walls in new zones
 			const jobs = this.#fadeOutWorkload.guarantee(zone, () => new Set())
-
-			// subject grid
 			for (const subject of this.subjectGrid.subjectsByZone.get(zone) ?? []) {
 				const inProximity = Collisions.pointVsCircle(subject.location, circle)
 				subject.targetOpacity = (inProximity)
-					? 0
+					? (shouldFade(subject) ? 0 : 1)
 					: 1
 				if (!subject.done)
 					jobs.add(subject)
@@ -49,10 +45,7 @@ export class WallFader {
 		// handle zones leaving proximity
 		for (const zone of this.#proximalZones) {
 			if (!newProximalZones.has(zone)) {
-
-				// fade in walls in zones that left proximity
 				const jobs = this.#fadeInWorkload.guarantee(zone, () => new Set())
-
 				for (const subject of this.subjectGrid.subjectsByZone.get(zone) ?? []) {
 					subject.targetOpacity = 1
 					if (!subject.done)

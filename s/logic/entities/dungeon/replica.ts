@@ -39,7 +39,11 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 				c1.log("culling was slow")
 
 			const c2 = new Clock()
-			wallFader.animate(realm.cameraman.coordinates.clone().add(camfadeOffset), fadeRange)
+			wallFader.animate(
+				realm.cameraman.coordinates.clone().add(camfadeOffset),
+				fadeRange,
+				_subject => true,
+			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")
 		},
