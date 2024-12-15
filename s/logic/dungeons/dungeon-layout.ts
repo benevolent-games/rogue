@@ -10,7 +10,7 @@ import {Pathfinder} from "./layouting/pathfinder.js"
 import {chooseAlgo} from "./layouting/choose-algo.js"
 import {cardinals, ordinals} from "../../tools/directions.js"
 import {drunkWalkToHorizon} from "./layouting/drunk-walk-to-horizon.js"
-import {fixAllDiagonalKisses} from "./layouting/fix-diagonal-kissing-tiles.js"
+import {eliminateKissingCorners} from "./layouting/eliminate-kissing-corners.js"
 
 export class DungeonLayout {
 	randy: Randy
@@ -94,11 +94,12 @@ export class DungeonLayout {
 			})
 
 			const sector = sectorByCell.require(cell)
-			fixAllDiagonalKisses(tileGrid, walkables)
 			return {sector, cell, walkables, goalposts, spawnpoints}
 		})
 
 		this.walkables = this.#getAllWalkables()
+		eliminateKissingCorners(this.walkables)
+
 		this.unwalkables = this.#getUnwalkables(this.walkables)
 
 		if (logging)
