@@ -7,7 +7,7 @@ export const constants = {
 		cover: "/assets/images/rogue-crusade-poster.webp",
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
-		templateGlb: "/assets/dungeons/byzantium.glb",
+		templateGlb: "/assets/dungeons/byzantium-001.glb",
 		shaders: {
 			retro: "/assets/shaders/retro.json",
 		},
