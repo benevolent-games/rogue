@@ -19,7 +19,7 @@ import {Crate} from "../../../tools/babylon/logistics/crate.js"
 
 /** Graphical representation of a dungeon */
 export class DungeonSkin {
-	randy = new Randy(1)
+	randy: Randy
 	trashbin = new Trashbin()
 	stats = new DungeonSkinStats()
 
@@ -38,7 +38,9 @@ export class DungeonSkin {
 			public realm: Realm,
 			public mainScale: number,
 		) {
-		const [style] = [...DungeonStyle.extractFromContainer(container).values()]
+		const {seed} = dungeon.options
+		this.randy = new Randy(seed)
+		const [style] = [...DungeonStyle.extractFromContainer(seed, container).values()]
 		this.placer = new DungeonPlacer(mainScale)
 		this.spawners = style.makeSpawners()
 

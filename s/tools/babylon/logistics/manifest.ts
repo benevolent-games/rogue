@@ -1,27 +1,32 @@
 
 import {Map2} from "@benev/slate"
+import {Prop} from "@benev/toolbox"
 
-/** Name format for our GLB objects, for smuggling in key-value properties */
+/** A label for a GLB object, which contains the name and custom properties */
 export class Manifest extends Map2<string, string> {
+	label: string
 
-	static parse(string: string) {
-		string = string
+	constructor(public name: string, entries: [string, string][]) {
+		super(entries)
+
+		this.label = name
 			.replace(/_primitive\d*$/i, "")
 			.replace(/\.\d+$/i, "")
+	}
 
-		return new this(
-			string.split(/[\s,]+/gm).map(part => {
-				const [key, ...valueParts] = part.split("=")
-				const value = valueParts.join("=")
-				return [key, value]
-			})
-		)
+	static scan(prop: Prop) {
+		const extras = prop.metadata?.gltf?.extras as Record<string, any>
+		return new this(prop.name, Object.entries(extras).map(([key, value]) => [
+			key,
+			String(value),
+		]))
 	}
 
 	toString() {
-		return [...this]
+		const data = [...this]
 			.map(([key, value]) => `${key}=${value}`)
 			.join(", ")
+		return `(${this.name} :: ${data})`
 	}
 }
 

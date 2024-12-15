@@ -12,7 +12,9 @@ export class Warehouse extends Set<Cargo> {
 			[...container.meshes, ...container.transformNodes]
 				.filter(prop => !prop.name.includes("_primitive"))
 				.map(prop => {
-					const manifest = Manifest.parse(prop.name)
+					console.log(prop.name)
+					debugger
+					const manifest = Manifest.scan(prop)
 					return new Cargo(manifest, prop)
 				})
 		)

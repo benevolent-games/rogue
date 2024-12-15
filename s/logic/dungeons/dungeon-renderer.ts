@@ -11,7 +11,7 @@ export class DungeonRenderer {
 	skin: DungeonSkin
 
 	constructor(public realm: Realm, public dungeon: DungeonLayout) {
-		this.skin = this.makeSkin(realm.glbs.templateGlb.container)
+		this.skin = this.makeSkin(realm.glbs.dungeonContainer)
 	}
 
 	async loadGlb(url: string) {
@@ -46,7 +46,7 @@ export class DungeonRenderer {
 		// don't delete the original template glb,
 		// (so when user exits game and reboots a new level,
 		// the standard default skin is always available)
-		if (this.skin.container !== this.realm.glbs.templateGlb.container)
+		if (this.skin.container !== this.realm.glbs.dungeonContainer)
 			this.skin.container.dispose()
 	}
 }

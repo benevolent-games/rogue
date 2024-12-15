@@ -5,20 +5,22 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Warehouse} from "../../../tools/babylon/logistics/warehouse.js"
 import {ManifestQuery} from "../../../tools/babylon/logistics/types.js"
-import { getMeshoids, getTopMeshes } from "../../../tools/babylon/babylon-helpers.js"
 
 export type DungeonSpawners = ReturnType<DungeonStyle["makeSpawners"]>
 
 /** Props specific to a single style within a dungeon glb */
 export class DungeonStyle {
-	randy = new Randy(1)
+	randy: Randy
 
 	constructor(
-		public style: string,
-		public styleWarehouse: Warehouse,
-	) {}
+			public seed: number,
+			public style: string,
+			public styleWarehouse: Warehouse,
+		) {
+		this.randy = new Randy(seed)
+	}
 
-	static extractFromContainer(container: AssetContainer) {
+	static extractFromContainer(seed: number, container: AssetContainer) {
 		const dungeonWarehouse = Warehouse.from(container)
 
 		// TODO is this a hack??
@@ -30,7 +32,7 @@ export class DungeonStyle {
 			[...dungeonWarehouse.categorize("style")]
 				.map(([style, styleWarehouse]) => [
 					style,
-					new DungeonStyle(style, styleWarehouse),
+					new DungeonStyle(seed, style, styleWarehouse),
 				])
 		)
 	}
