@@ -23,7 +23,7 @@ export class DungeonPlacer {
 	}
 
 	placeProp(placement: Placement): Spatial {
-		const scale = new Vec2(this.mainScale, this.mainScale)
+		const scale = Vec2.all(this.mainScale)
 		return {
 			rotation: Quat.rotate_(0, placement.radians, 0),
 			scale: Vec3.new(scale.x, scale.y, scale.y),

@@ -3,6 +3,7 @@ import {Map2} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
+import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {Warehouse} from "../../../tools/babylon/logistics/warehouse.js"
 import {ManifestQuery} from "../../../tools/babylon/logistics/types.js"
 
@@ -54,11 +55,21 @@ export class DungeonStyle {
 		})(),
 
 		wall: (() => {
-			const size1 = this.#require({label: "wall", size: "1"})
-			const sizeHalf = this.#require({label: "wall", size: "0.5"})
+			const wallWarehouse = this.styleWarehouse.require({label: "wall", size: true})
+			const stumpsWarehouse = this.styleWarehouse.require({label: "wall", size: "0.5"})
+
+			for (const stump of stumpsWarehouse)
+				wallWarehouse.delete(stump)
+
 			return {
-				size1: this.randy.choose(size1),
-				sizeHalf: this.randy.choose(sizeHalf),
+				stump: () => this.randy.choose(stumpsWarehouse.list()),
+				walls: new Map2<number, () => Cargo>(
+					[...wallWarehouse.categorize("size").entries()]
+						.map(([size, warehouse]) => [
+							Number(size),
+							() => this.randy.choose(warehouse.list()),
+						])
+				),
 			}
 		})(),
 

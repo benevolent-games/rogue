@@ -1,5 +1,5 @@
 
-import {Trashbin} from "@benev/slate"
+import {Map2, Trashbin} from "@benev/slate"
 import {Degrees, Quat, Randy, Vec2} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
@@ -7,7 +7,9 @@ import {Placement} from "./types.js"
 import {DungeonPlacer} from "./placer.js"
 import {Realm} from "../../realm/realm.js"
 import {Culler} from "./culling/culler.js"
+import {range} from "../../../tools/range.js"
 import {WallFader} from "./walls/wall-fader.js"
+import {Vecset2} from "../layouting/vecset2.js"
 import {DungeonSkinStats} from "./skin-stats.js"
 import {DungeonLayout} from "../dungeon-layout.js"
 import {WallSubject} from "./walls/wall-subject.js"
@@ -87,11 +89,16 @@ export class DungeonSkin {
 			cullableGrid.add(subject)
 		}
 
+		const wallPlans: {tile: Vec2, placement: Placement}[] = []
+
 		for (const unwalkable of unwalkables.list()) {
 			for (const report of planWallSkinning(unwalkable, walkables)) {
 				if (report.wall) {
 					stats.walls++
-					const spawner = () => this.spawn(report.wall!, spawners.wall.size1)
+
+					wallPlans.push({tile: unwalkable, placement: report.wall})
+
+					const spawner = () => this.spawn(report.wall!, spawners.wall.walls.require(1)!())
 					const subject = new WallSubject(unwalkable, report.wall.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
@@ -115,13 +122,33 @@ export class DungeonSkin {
 
 				for (const stump of report.stumps) {
 					stats.stumps++
-					const spawner = () => this.spawn(stump!, spawners.wall.sizeHalf)
+					const spawner = () => this.spawn(stump!, spawners.wall.stump())
 					const subject = new WallSubject(unwalkable, stump.location, spawner)
 					cullableGrid.add(subject)
 					fadingGrid.add(subject)
 				}
 			}
 		}
+
+		// const wallPlanVectors = new Vecset2(wallPlans.map(w => w.tile))
+		// const wallPlanByVector = new Map2(wallPlans.map(w => [w.tile, w]))
+		// const sizesDescending = [...spawners.wall.walls.keys()].sort((a, b) => b - a)
+		// const northbound = new Vec2(0, 1)
+		// const westbound = new Vec2(-1, 0)
+		// const cardinalRadians = [
+		// 	Degrees.toRadians(0), // north
+		// 	Degrees.toRadians(-90), // west
+		// 	Degrees.toRadians(-180), // south
+		// 	Degrees.toRadians(-270), // east
+		// ]
+		//
+		// for (const wallPlan of wallPlans) {
+		// 	wallPlan.tile // Vec2 (integers)
+		// 	wallPlan.placement // {location: Vec2, radians: number}
+		// 	for (const size of sizesDescending) {
+		// 		const neighbors = range(size)
+		// 	}
+		// }
 	}
 
 	spawnIndicator(options: {
