@@ -37,15 +37,15 @@ export class DungeonStyle {
 		)
 	}
 
-	#query(search: ManifestQuery) {
-		return this.styleWarehouse.query(search, true).list()
+	#require(query: ManifestQuery) {
+		return this.styleWarehouse.require(query).list()
 	}
 
 	makeSpawners = () => ({
 		floor: (() => {
-			const size1x1 = this.#query({part: "floor", size: "1x1"})
-			const size2x2 = this.#query({part: "floor", size: "2x2"})
-			const size3x3 = this.#query({part: "floor", size: "3x3"})
+			const size1x1 = this.#require({label: "floor", size: "1x1"})
+			const size2x2 = this.#require({label: "floor", size: "2x2"})
+			const size3x3 = this.#require({label: "floor", size: "3x3"})
 			return {
 				size1x1: this.randy.choose(size1x1),
 				size2x2: this.randy.choose(size2x2),
@@ -54,8 +54,8 @@ export class DungeonStyle {
 		})(),
 
 		wall: (() => {
-			const size1 = this.#query({part: "wall", size: "1"})
-			const sizeHalf = this.#query({part: "wall", size: "0.5"})
+			const size1 = this.#require({label: "wall", size: "1"})
+			const sizeHalf = this.#require({label: "wall", size: "0.5"})
 			return {
 				size1: this.randy.choose(size1),
 				sizeHalf: this.randy.choose(sizeHalf),
@@ -63,12 +63,12 @@ export class DungeonStyle {
 		})(),
 
 		concave: (() => {
-			const cargos = this.#query({part: "concave"})
+			const cargos = this.#require({label: "concave"})
 			return this.randy.choose(cargos)
 		})(),
 
 		convex: (() => {
-			const cargos = this.#query({part: "convex"})
+			const cargos = this.#require({label: "convex"})
 			return this.randy.choose(cargos)
 		})(),
 	})

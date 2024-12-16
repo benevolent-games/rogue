@@ -12,14 +12,14 @@ export class Manifest extends Map2<string, string> {
 		this.label = name
 			.replace(/_primitive\d*$/i, "")
 			.replace(/\.\d+$/i, "")
+
+		this.set("label", this.label)
 	}
 
 	static scan(prop: Prop) {
-		const extras = prop.metadata?.gltf?.extras as Record<string, any>
-		return new this(prop.name, Object.entries(extras).map(([key, value]) => [
-			key,
-			String(value),
-		]))
+		const extras = (prop.metadata?.gltf?.extras ?? {}) as Record<string, any>
+		return new this(prop.name, Object.entries(extras)
+			.map(([key, value]) => [key, String(value)]))
 	}
 
 	toString() {
