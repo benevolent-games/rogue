@@ -19,6 +19,8 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	const dungeonLayout = new DungeonLayout(state.options)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
 
+	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
+
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {
 			if (file.name.endsWith(".glb")) {

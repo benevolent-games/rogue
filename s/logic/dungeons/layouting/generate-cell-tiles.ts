@@ -1,4 +1,5 @@
 
+import {Vec2} from "@benev/toolbox"
 import {DungeonSpace} from "./space.js"
 import {chooseAlgo} from "./choose-algo.js"
 import {generateBroadplan} from "./generate-broadplan.js"
@@ -32,8 +33,15 @@ export function *generateCellTiles(
 		})
 
 		const sector = sectorByCell.require(cell)
-		const floorTiles = walkables.list().map(tile => space.toGlobalTileSpace(sector, cell, tile))
-		yield {sector, cell, walkables, floorTiles, goalposts, spawnpoints}
+		const toGlobalTileSpace = (tile: Vec2) => space.toGlobalTileSpace(sector, cell, tile)
+
+		yield {
+			sector,
+			cell,
+			goalposts: goalposts.map(toGlobalTileSpace),
+			spawnpoints: spawnpoints.map(toGlobalTileSpace),
+			floorTiles: walkables.list().map(toGlobalTileSpace),
+		}
 	}
 }
 

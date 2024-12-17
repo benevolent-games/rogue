@@ -12,6 +12,7 @@ export function stdDungeonOptions(): DungeonOptions {
 		},
 		sectorWalk: {
 			stepCount: 20,
+			// stepCount: 3,
 			horizonDirection: [0, 1],
 		},
 	}

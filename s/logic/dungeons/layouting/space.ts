@@ -43,10 +43,8 @@ export class DungeonSpace {
 			const sectorBox = new Box(this.toGlobalTileSpace(sector), this.sectorSize)
 			return Collisions.pointVsBox(tile, sectorBox)
 		})
-		if (!sector) {
-			debugger
+		if (!sector)
 			throw new Error("no sector for tile")
-		}
 		return sector
 	}
 }

@@ -5,6 +5,7 @@ import {Realm} from "../realm/realm.js"
 import {DungeonLayout} from "./layout.js"
 import {Clock} from "../../tools/clock.js"
 import {DungeonSkin} from "./skinning/skin.js"
+import {prepareDungeonContainer} from "./skinning/prepare-dungeon-container.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
@@ -17,6 +18,7 @@ export class DungeonRenderer {
 	async loadGlb(url: string) {
 		try {
 			const container = await this.realm.world.loadContainer(url)
+			prepareDungeonContainer(container)
 			this.dispose()
 			this.skin = this.makeSkin(container)
 		}

@@ -7,13 +7,13 @@ import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonLayout} from "../layout.js"
 import {DungeonPlacer} from "../rendering/placer.js"
-import {WallSubject} from "../rendering/walls/wall-subject.js"
-import {SubjectGrid} from "../rendering/culling/subject-grid.js"
-import {CullingSubject} from "../rendering/culling/culling-subject.js"
 import {Culler} from "../rendering/culling/culler.js"
 import {WallFader} from "../rendering/walls/wall-fader.js"
-import {Spatial} from "../../../tools/babylon/logistics/types.js"
+import {WallSubject} from "../rendering/walls/wall-subject.js"
 import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
+import {SubjectGrid} from "../rendering/culling/subject-grid.js"
+import {Spatial} from "../../../tools/babylon/logistics/types.js"
+import {CullingSubject} from "../rendering/culling/culling-subject.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -56,7 +56,9 @@ export class DungeonSkin {
 	}
 
 	#createFlooring() {
-		for (const tile of this.layout.floorTiles.list()) {
+		const floorTiles = this.layout.floorTiles.list()
+
+		for (const tile of floorTiles) {
 			const sector = this.layout.sectorByTiles.require(tile)
 			const styleKey = this.styleBySector.require(sector)
 			const style = this.assets.styles.require(styleKey)
