@@ -25,7 +25,7 @@ export class DungeonLayout {
 		this.sectors = broadplan.sectors
 
 		for (const result of generateCellTiles(this.space, broadplan)) {
-			this.floorTiles.add(...result.walkables.list())
+			this.floorTiles.add(...result.floorTiles)
 			this.spawnpoints.add(...result.spawnpoints)
 		}
 

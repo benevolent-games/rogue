@@ -32,7 +32,8 @@ export function *generateCellTiles(
 		})
 
 		const sector = sectorByCell.require(cell)
-		yield {sector, cell, walkables, goalposts, spawnpoints}
+		const floorTiles = walkables.list().map(tile => space.toGlobalTileSpace(sector, cell, tile))
+		yield {sector, cell, walkables, floorTiles, goalposts, spawnpoints}
 	}
 }
 

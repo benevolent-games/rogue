@@ -40,11 +40,13 @@ export class DungeonSpace {
 
 	getSectorThatContainsTile(tile: Vec2, sectors: Vec2[]) {
 		const sector = sectors.find(sector => {
-			const sectorBox = new Box(this.toGlobalTileSpace(sector), this.cellSize)
+			const sectorBox = new Box(this.toGlobalTileSpace(sector), this.sectorSize)
 			return Collisions.pointVsBox(tile, sectorBox)
 		})
-		if (!sector)
+		if (!sector) {
+			debugger
 			throw new Error("no sector for tile")
+		}
 		return sector
 	}
 }
