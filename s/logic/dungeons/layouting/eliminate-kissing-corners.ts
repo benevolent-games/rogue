@@ -1,45 +1,48 @@
 
-import {Vecset2} from "./vecset2.js"
 import {Degrees, loop, Vec2} from "@benev/toolbox"
 
-const counterClockwise = [
-	Degrees.toRadians(0),
-	Degrees.toRadians(90),
-	Degrees.toRadians(180),
-	Degrees.toRadians(270),
+import {Vecset2} from "./vecset2.js"
+import {range} from "../../../tools/range.js"
+
+// b c -
+// a @ -
+// - - -
+const northEastCorner = [
+	Vec2.new(-1, 0), // a
+	Vec2.new(-1, 1), // b
+	Vec2.new(0, 1), // c
 ]
 
-/*
-the pattern is as follows:
-	b c -
-	a @ -
-	- - -
+const fourCornerPatterns = range(4).map(i => northEastCorner.map(
+	tile => tile.clone()
+		.rotate(i * Degrees.toRadians(90))
+		.round()
+))
 
-we can rotate this in 90 degree increments to repeat this check on every corner
-*/
-function investigateCorner(walkables: Vecset2, tile: Vec2, radians: number) {
-	const a = tile.clone().add_(-1, 0).rotate(radians).round()
-	const b = tile.clone().add_(-1, 1).rotate(radians).round()
-	const c = tile.clone().add_(0, 1).rotate(radians).round()
+function investigateCorner(floorTiles: Vecset2, tile: Vec2, pattern: Vec2[]) {
+	const [offsetA, offsetB, offsetC] = pattern
+	const a = tile.clone().add(offsetA)
+	const b = tile.clone().add(offsetB)
+	const c = tile.clone().add(offsetC)
 
 	const isKissing = (
-		!walkables.has(a) &&
-		walkables.has(b) &&
-		!walkables.has(c)
+		!floorTiles.has(a) &&
+		floorTiles.has(b) &&
+		!floorTiles.has(c)
 	)
 
 	return {isKissing, a, b, c}
 }
 
-export function eliminateKissingCorners(walkables: Vecset2) {
+export function eliminateKissingCorners(floorTiles: Vecset2) {
 	for (const _ of loop(100)) {
 		let fixes = 0
 
-		for (const tile of walkables.list()) {
-			for (const radians of counterClockwise) {
-				const corner = investigateCorner(walkables, tile, radians)
+		for (const tile of floorTiles.list()) {
+			for (const pattern of fourCornerPatterns) {
+				const corner = investigateCorner(floorTiles, tile, pattern)
 				if (corner.isKissing) {
-					walkables.add(corner.a)
+					floorTiles.add(corner.a)
 					fixes += 1
 				}
 			}
