@@ -1,5 +1,5 @@
 
-import {repeat} from "@benev/slate"
+import {Hat, repeat} from "@benev/slate"
 
 import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
@@ -7,9 +7,9 @@ import {simulas} from "../entities/simulas.js"
 import {Watchman} from "../../tools/watchman.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
+import {DungeonLayout} from "../dungeons/layout.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
-import {DungeonLayout} from "../dungeons/dungeon-layout.js"
 import {GameState, Simulator} from "../../archimedes/exports.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
@@ -22,8 +22,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const watchman = new Watchman(constants.game.tickRate)
 
 	const dungeonOptions = stdDungeonOptions()
-	const dungeon = new DungeonLayout(dungeonOptions)
-	const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
+	const dungeonLayout = new DungeonLayout(dungeonOptions)
+	const spawnHat = new Hat(dungeonLayout.spawnpoints.list())
+	const getSpawnpoint = () => spawnHat.pull()
 
 	simulator.create("dungeon", {options: dungeonOptions})
 
