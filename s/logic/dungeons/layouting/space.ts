@@ -3,8 +3,6 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Grid} from "./grid.js"
 import {DungeonOptions} from "./types.js"
-import {Box} from "../../physics/shapes/box.js"
-import {Collisions} from "../../physics/facilities/collisions.js"
 
 export type GlobalSectorVec2 = Vec2
 export type LocalCellVec2 = Vec2
@@ -36,16 +34,6 @@ export class DungeonSpace {
 		const cellOffset = this.cellSize.clone().multiply(localCell)
 		const tileOffset = localTile.clone()
 		return Vec2.zero().add(sectorOffset, cellOffset, tileOffset)
-	}
-
-	getSectorThatContainsTile(tile: Vec2, sectors: Vec2[]) {
-		const sector = sectors.find(sector => {
-			const sectorBox = new Box(this.toGlobalTileSpace(sector), this.sectorSize)
-			return Collisions.pointVsBox(tile, sectorBox)
-		})
-		if (!sector)
-			throw new Error("no sector for tile")
-		return sector
 	}
 }
 

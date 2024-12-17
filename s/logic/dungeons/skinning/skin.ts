@@ -1,6 +1,6 @@
 
 import {Map2, Trashbin} from "@benev/slate"
-import {Degrees, Randy, Vec2} from "@benev/toolbox"
+import {Degrees, Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {DungeonAssets} from "./assets.js"
@@ -13,6 +13,7 @@ import {WallSubject} from "../rendering/walls/wall-subject.js"
 import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {SubjectGrid} from "../rendering/culling/subject-grid.js"
 import {Spatial} from "../../../tools/babylon/logistics/types.js"
+import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 import {CullingSubject} from "../rendering/culling/culling-subject.js"
 
 export class DungeonSkin {
@@ -21,7 +22,7 @@ export class DungeonSkin {
 	placer: DungeonPlacer
 
 	assets: DungeonAssets
-	styleBySector = new Map2<Vec2, string>()
+	styleKeyByCell = new Map2<LocalCellVec2, string>()
 
 	cullableGrid = new SubjectGrid()
 	fadingGrid = new SubjectGrid<WallSubject>()
@@ -41,27 +42,28 @@ export class DungeonSkin {
 		this.placer = new DungeonPlacer(mainScale)
 
 		const styles = [...this.assets.styles.keys()]
-		for (const sector of this.layout.sectors.keys())
-			this.styleBySector.set(sector, this.randy.choose(styles))
+
+		for (const cell of this.layout.cells)
+			this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
 		this.#createFlooring()
 	}
 
+	#getStyle(tile: GlobalTileVec2) {
+		const {cell} = this.layout.lookupTile(tile)
+		const key = this.styleKeyByCell.require(cell)
+		return this.assets.styles.require(key)
+	}
+
 	#makeSpawner(cargo: Cargo, spatial: Partial<Spatial>) {
-		return () => {
-			const instance = cargo.instance(spatial)
-			this.trashbin.disposable(instance)
-			return instance
-		}
+		return () => this.trashbin.disposable(cargo.instance(spatial))
 	}
 
 	#createFlooring() {
 		const floorTiles = this.layout.floorTiles.list()
 
 		for (const tile of floorTiles) {
-			const sector = this.layout.sectorByTiles.require(tile)
-			const styleKey = this.styleBySector.require(sector)
-			const style = this.assets.styles.require(styleKey)
+			const style = this.#getStyle(tile)
 
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, -180, -270]))
 			const cargo = style.floors.require("1x1")()

@@ -14,6 +14,7 @@ export function *generateCellTiles(
 
 	for (const [cellIndex, goal] of cellGoals.entries()) {
 		const {unit: cell, start, end, forwardDirection, backwardDirection} = goal
+		const sector = sectorByCell.require(cell)
 
 		const algo = chooseAlgo({
 			randy,
@@ -27,12 +28,11 @@ export function *generateCellTiles(
 			cell,
 			start,
 			end,
-			sector: sectorByCell.require(cell),
+			sector,
 			nextCellDirection: forwardDirection,
 			previousCellDirection: backwardDirection,
 		})
 
-		const sector = sectorByCell.require(cell)
 		const toGlobalTileSpace = (tile: Vec2) => space.toGlobalTileSpace(sector, cell, tile)
 
 		yield {
