@@ -15,5 +15,10 @@ export class SubjectGrid<S extends CullingSubject = CullingSubject> {
 		const subjectArray = this.subjectsByZone.guarantee(zone, () => [])
 		subjectArray.push(subject)
 	}
+
+	dispose() {
+		for (const subject of this.subjectsByLocation.values())
+			subject.dispose()
+	}
 }
 

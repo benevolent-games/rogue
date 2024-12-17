@@ -1,5 +1,5 @@
 
-import {Map2, Trashbin} from "@benev/slate"
+import {Map2} from "@benev/slate"
 import {Degrees, Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
@@ -18,7 +18,6 @@ import {CullingSubject} from "../rendering/culling/culling-subject.js"
 
 export class DungeonSkin {
 	randy: Randy
-	trashbin = new Trashbin()
 	placer: DungeonPlacer
 
 	assets: DungeonAssets
@@ -47,6 +46,7 @@ export class DungeonSkin {
 			this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
 		this.#createFlooring()
+		this.#createWalls()
 	}
 
 	#getStyle(tile: GlobalTileVec2) {
@@ -56,13 +56,11 @@ export class DungeonSkin {
 	}
 
 	#makeSpawner(cargo: Cargo, spatial: Partial<Spatial>) {
-		return () => this.trashbin.disposable(cargo.instance(spatial))
+		return () => cargo.instance(spatial)
 	}
 
 	#createFlooring() {
-		const floorTiles = this.layout.floorTiles.list()
-
-		for (const tile of floorTiles) {
+		for (const tile of this.layout.floorTiles.values()) {
 			const style = this.#getStyle(tile)
 
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, -180, -270]))
@@ -75,8 +73,15 @@ export class DungeonSkin {
 		}
 	}
 
+	#createWalls() {
+		// for (const tile of this.layout.wallTiles.values()) {
+		// 	const style = this.#getStyle(tile)
+		// }
+	}
+
 	dispose() {
-		this.trashbin.dispose()
+		this.cullableGrid.dispose()
+		this.fadingGrid.dispose()
 	}
 }
 

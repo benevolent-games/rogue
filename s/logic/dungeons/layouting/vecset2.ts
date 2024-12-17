@@ -43,6 +43,10 @@ export class Vecset2<V extends Vec2 = Vec2> {
 		return Array.from(this.#map.values())
 	}
 
+	values() {
+		return this.#map.values()
+	}
+
 	yoink(randy: Randy) {
 		return randy.yoink(this.list())
 	}
