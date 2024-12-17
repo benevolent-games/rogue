@@ -1,6 +1,6 @@
 
-import {Degrees, Randy, Vec2} from "@benev/toolbox"
 import {Map2, Trashbin} from "@benev/slate"
+import {Degrees, Randy, Vec2} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {DungeonAssets} from "./assets.js"
