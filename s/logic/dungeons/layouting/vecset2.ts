@@ -21,6 +21,10 @@ export class Vecset2<V extends Vec2 = Vec2> {
 		return this.#map.size
 	}
 
+	get(vec: V) {
+		return this.#map.get(Vecset2.toKey(vec))
+	}
+
 	has(vec: V) {
 		return this.#map.has(Vecset2.toKey(vec))
 	}
