@@ -2,7 +2,7 @@
 import {Map2} from "@benev/slate"
 import {Degrees, Randy, Vec2} from "@benev/toolbox"
 
-import {WallInfo} from "./types.js"
+import {WallSegment} from "./types.js"
 import {DungeonStyle} from "../style.js"
 import {mergeWalls} from "./merge-walls.js"
 import {range} from "../../../../tools/range.js"
@@ -43,10 +43,10 @@ export function planWalls(
 		getStyle: (tile: Vec2) => DungeonStyle
 	) {
 
-	const wallSegments: WallInfo[] = []
-	// const concaves: WallInfo[] = []
-	// const convexes: WallInfo[] = []
-	// const wallStumps: WallInfo[] = []
+	const wallSegments: WallSegment[] = []
+	// const concaves: WallSegment[] = []
+	// const convexes: WallSegment[] = []
+	// const wallStumps: WallSegment[] = []
 
 	const considerPattern = (wallTile: Vec2, index: number) => {
 		const radians = index * Degrees.toRadians(90)
@@ -56,7 +56,8 @@ export function planWalls(
 		const notFloor = (tile: Vec2) => !floorTiles.has(wallTile.clone().add(tile))
 
 		const place = (
-			(draft: {offset: Vec2, radians: number}): WallInfo => ({
+			(draft: {offset: Vec2, radians: number}): WallSegment => ({
+				size: 1,
 				tile: wallTile,
 				radians: draft.radians + radians,
 				location: wallTile.clone().add(draft.offset.rotate(radians)),
@@ -74,7 +75,7 @@ export function planWalls(
 		for (const index of fourPatterns.keys())
 			considerPattern(wallTile, index)
 
-	const wallSegmentsByStyle = new Map2<DungeonStyle, WallInfo[]>()
+	const wallSegmentsByStyle = new Map2<DungeonStyle, WallSegment[]>()
 	for (const wall of wallSegments) {
 		const style = getStyle(wall.tile)
 		const walls = wallSegmentsByStyle.guarantee(style, () => [])
@@ -82,6 +83,8 @@ export function planWalls(
 	}
 
 	return {
+		// wallSegments: wallSegments.map(wall => ({...wall, size: 1})),
+
 		wallSegments: [...wallSegmentsByStyle.entries()]
 			.flatMap(([style, walls]) => mergeWalls(randy, [...style.walls.keys()], walls)),
 	}

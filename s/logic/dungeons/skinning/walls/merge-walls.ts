@@ -1,9 +1,9 @@
 
 import {Degrees, Randy, Vec2} from "@benev/toolbox"
 
+import {WallSegment} from "./types.js"
 import {range} from "../../../../tools/range.js"
-import {Vecmap2} from "../../layouting/vecmap2.js"
-import {FinalWallSegments, WallInfo} from "./types.js"
+import {HashSet} from "../../../../tools/hash/set.js"
 import {randyShuffle} from "../../../../tools/temp/randy-shuffle.js"
 
 const north = new Vec2(0, 1)
@@ -17,41 +17,56 @@ const angles = [
 
 const neighbors = angles.map(r => north.clone().rotate(r).round())
 
+class WallSegmentSet extends HashSet<WallSegment> {
+	constructor(walls: WallSegment[]) {
+		super(wall => `${wall.size},${wall.radians},${wall.tile.x},${wall.tile.y}`, walls)
+	}
+}
+
 export function mergeWalls(
 		randy: Randy,
-		sizes: number[],
-		walls: WallInfo[],
+		rawSizes: number[],
+		rawWalls: WallSegment[],
 	) {
 
-	walls = randyShuffle(randy, [...walls])
-
-	const wallMap = new Vecmap2<FinalWallSegments>(
-		walls.map(w => [w.tile, {...w, size: 1}])
+	const wallSet = new WallSegmentSet(
+		randyShuffle(randy, [...rawWalls])
 	)
 
 	// descending
-	sizes.sort((a, b) => b - a)
+	const sizes = rawSizes.toSorted((a, b) => b - a)
 
+	// first, we consider contiguousness by directionality
 	for (const angleIndex of angles.keys()) {
-		for (const size of sizes) {
-			if (size === 1) break
 
-			for (const wall of walls) {
+		// second, we consider the largest to smallest sizes
+		for (const size of sizes) {
+
+			// walls at size 1 or less do not need merging
+			if (size <= 1) break
+
+			// thirdly, we consider each wall
+			for (const wall of wallSet.values()) {
+
+				// we identify contiguous strips
 				const strip = range(size)
 					.map(n => wall.tile.clone()
 						.add(neighbors.at(angleIndex)!.clone().multiplyBy(n))
 					)
-					.map(vector => wallMap.get(vector))
+					.map(tile => wallSet.get({
+						tile,
+						size: 1,
+						radians: wall.radians,
+						location: wall.location,
+					}))
 					.filter(v => !!v)
 
-				const wholeStripIsContiguous = (strip.length === size) && strip.every(stripWall =>
-					(stripWall.size === 1 && stripWall.radians === wall.radians)
-				)
+				// if the strip reaches the target size, we perform a merge
+				if (strip.length === size) {
+					const [first] = strip
 
-				if (wholeStripIsContiguous) {
-					// delete little walls of size 1
-					for (const {tile} of strip)
-						wallMap.delete(tile)
+					// delete the strip's original walls
+					wallSet.delete(...strip)
 
 					// calculate the "middle" location of the strip
 					const averageLocation = strip
@@ -59,11 +74,11 @@ export function mergeWalls(
 						.reduce((p, c) => p.add(c), Vec2.zero())
 						.divideBy(strip.length)
 
-					// add bigger wall segment to account for the whole strip
-					wallMap.set(wall.tile, {
+					// add the bigger replacement wall segment representing the whole strip
+					wallSet.add({
 						size,
-						tile: wall.tile,
-						radians: wall.radians,
+						tile: first.tile,
+						radians: first.radians,
 						location: averageLocation,
 					})
 				}
@@ -71,6 +86,6 @@ export function mergeWalls(
 		}
 	}
 
-	return [...wallMap.values()]
+	return wallSet.array()
 }
 
