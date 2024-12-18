@@ -44,9 +44,9 @@ export function planWalls(
 	) {
 
 	const wallSegments: WallSegment[] = []
-	// const concaves: WallSegment[] = []
-	// const convexes: WallSegment[] = []
-	// const wallStumps: WallSegment[] = []
+	const concaves: WallSegment[] = []
+	const convexes: WallSegment[] = []
+	const stumps: WallSegment[] = []
 
 	const considerPattern = (wallTile: Vec2, index: number) => {
 		const radians = index * Degrees.toRadians(90)
@@ -69,6 +69,54 @@ export function planWalls(
 				radians: 0,
 				offset: Vec2.new(0, 0.5),
 			}))
+
+		// concave
+		else if ([e, i].every(notFloor) && isFloor(f)) {
+			concaves.push(place({
+				offset: new Vec2(0.5, 0.5),
+				radians: Degrees.toRadians(-90),
+			}))
+
+			// left stump
+			if (notFloor(a) && isFloor(b)) {
+				stumps.push(place({
+					offset: new Vec2(0.5, 1.25),
+					radians: Degrees.toRadians(-90),
+				}))
+			}
+
+			// right stump
+			if (notFloor(j) && isFloor(g)) {
+				stumps.push(place({
+					offset: new Vec2(1.25, 0.5),
+					radians: Degrees.toRadians(0),
+				}))
+			}
+		}
+
+		// convex
+		else if ([e, f, i].every(isFloor)) {
+			convexes.push(place({
+				offset: new Vec2(0.5, 0.5),
+				radians: Degrees.toRadians(-90),
+			}))
+
+			// left stump
+			if (notFloor(l) && isFloor(m)) {
+				stumps.push(place({
+					offset: new Vec2(0.5, -0.25),
+					radians: Degrees.toRadians(-90),
+				}))
+			}
+
+			// right stump
+			if (notFloor(h) && isFloor(d)) {
+				stumps.push(place({
+					offset: new Vec2(-0.25, 0.5),
+					radians: Degrees.toRadians(0),
+				}))
+			}
+		}
 	}
 
 	for (const wallTile of wallTiles.values())
@@ -76,6 +124,7 @@ export function planWalls(
 			considerPattern(wallTile, index)
 
 	const wallSegmentsByStyle = new Map2<DungeonStyle, WallSegment[]>()
+
 	for (const wall of wallSegments) {
 		const style = getStyle(wall.tile)
 		const walls = wallSegmentsByStyle.guarantee(style, () => [])
@@ -83,10 +132,15 @@ export function planWalls(
 	}
 
 	return {
-		// wallSegments: wallSegments.map(wall => ({...wall, size: 1})),
-
+		concaves,
+		convexes,
+		stumps,
 		wallSegments: [...wallSegmentsByStyle.entries()]
-			.flatMap(([style, walls]) => mergeWalls(randy, [...style.walls.keys()], walls)),
+			.flatMap(([style, walls]) => mergeWalls(
+				randy,
+				[...style.walls.keys()],
+				walls,
+			)),
 	}
 }
 

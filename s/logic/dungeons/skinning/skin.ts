@@ -1,15 +1,18 @@
 
 import {Map2} from "@benev/slate"
-import {Degrees, Randy, Vec2} from "@benev/toolbox"
+import {Degrees, Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
+import {DungeonStyle} from "./style.js"
 import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonLayout} from "../layout.js"
+import {WallSegment} from "./walls/types.js"
 import {planWalls} from "./walls/plan-walls.js"
 import {DungeonPlacer} from "../rendering/placer.js"
 import {Culler} from "../rendering/culling/culler.js"
 import {WallFader} from "../rendering/walls/wall-fader.js"
+import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {WallSubject} from "../rendering/walls/wall-subject.js"
 import {SubjectGrid} from "../rendering/culling/subject-grid.js"
 import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
@@ -76,15 +79,27 @@ export class DungeonSkin {
 			this.#getStyle,
 		)
 
-		for (const wall of plan.wallSegments) {
+		const make = (wall: WallSegment, getCargo: (style: DungeonStyle) => Cargo) => {
 			const style = this.#getStyle(wall.tile)
-			const cargo = style.walls.require(wall.size)()
+			const cargo = getCargo(style)
 			const spatial = this.placer.placeProp(wall)
 			const spawn = () => cargo.clone(spatial)
 			const subject = new WallSubject(wall.tile, wall.location, spawn)
 			this.cullableGrid.add(subject)
 			this.fadingGrid.add(subject)
 		}
+
+		for (const wall of plan.wallSegments)
+			make(wall, style => style.walls.require(wall.size)())
+
+		for (const concave of plan.concaves)
+			make(concave, style => style.concave())
+
+		for (const convex of plan.convexes)
+			make(convex, style => style.convex())
+
+		for (const stump of plan.stumps)
+			make(stump, style => style.stump())
 	}
 
 	dispose() {

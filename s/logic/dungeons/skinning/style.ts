@@ -9,6 +9,7 @@ export class DungeonStyle {
 	floors: Map2<string, () => Cargo>
 	walls: Map2<number, () => Cargo>
 
+	stump: () => Cargo
 	convex: () => Cargo
 	concave: () => Cargo
 
@@ -26,14 +27,14 @@ export class DungeonStyle {
 				})
 		)
 
-		const convexes = warehouse.require({label: "convex"}).list()
-		this.convex = () => randy.choose(convexes)
-
-		const concaves = warehouse.require({label: "concave"}).list()
-		this.concave = () => randy.choose(concaves)
-
 		const walls = warehouse.require({label: "wall", size: true})
-		const stumps = warehouse.require({label: "wall", size: "0.5"})
+		const stumps = warehouse.require({label: "wall", size: "0.5"}).list()
+		const concaves = warehouse.require({label: "concave"}).list()
+		const convexes = warehouse.require({label: "convex"}).list()
+
+		this.stump = () => randy.choose(stumps)
+		this.convex = () => randy.choose(convexes)
+		this.concave = () => randy.choose(concaves)
 
 		// remove stumps from walls
 		for (const stump of stumps)
