@@ -15,6 +15,7 @@ import {SubjectGrid} from "../rendering/culling/subject-grid.js"
 import {Spatial} from "../../../tools/babylon/logistics/types.js"
 import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 import {CullingSubject} from "../rendering/culling/culling-subject.js"
+import { planWalls } from "./plan-walls.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -55,10 +56,6 @@ export class DungeonSkin {
 		return this.assets.styles.require(key)
 	}
 
-	#makeSpawner(cargo: Cargo, spatial: Partial<Spatial>) {
-		return () => cargo.instance(spatial)
-	}
-
 	#createFlooring() {
 		for (const tile of this.layout.floorTiles.values()) {
 			const style = this.#getStyle(tile)
@@ -66,7 +63,7 @@ export class DungeonSkin {
 			const radians = Degrees.toRadians(this.randy.choose([0, -90, -180, -270]))
 			const cargo = style.floors.require("1x1")()
 			const spatial = this.placer.placeProp({location: tile, radians})
-			const spawn = this.#makeSpawner(cargo, spatial)
+			const spawn = () => cargo.instance(spatial)
 
 			const subject = new CullingSubject(tile, spawn)
 			this.cullableGrid.add(subject)
@@ -74,9 +71,18 @@ export class DungeonSkin {
 	}
 
 	#createWalls() {
-		// for (const tile of this.layout.wallTiles.values()) {
-		// 	const style = this.#getStyle(tile)
-		// }
+		const plan = planWalls(this.layout.wallTiles, this.layout.floorTiles)
+		console.log(plan)
+
+		for (const info of plan.wallSegments) {
+			const style = this.#getStyle(info.tile)
+			const cargo = style.walls.require(1)()
+			const spatial = this.placer.placeProp(info)
+			const spawn = () => cargo.clone(spatial)
+			const subject = new WallSubject(info.tile, info.location, spawn)
+			this.cullableGrid.add(subject)
+			this.fadingGrid.add(subject)
+		}
 	}
 
 	dispose() {

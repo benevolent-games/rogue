@@ -4,7 +4,8 @@ import {DungeonOptions} from "./types.js"
 
 export function stdDungeonOptions(): DungeonOptions {
 	return {
-		seed: Randy.randomSeed(),
+		seed: 703900105,
+		// seed: Randy.randomSeed(),
 		gridExtents: {
 			cells: [3, 3],
 			tiles: [24, 24],

@@ -1,5 +1,6 @@
 
-import {Hat, repeat} from "@benev/slate"
+import {Randy} from "@benev/toolbox"
+import {repeat} from "@benev/slate"
 
 import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
@@ -23,8 +24,10 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const dungeonOptions = stdDungeonOptions()
 	const dungeonLayout = new DungeonLayout(dungeonOptions)
-	const spawnHat = new Hat(dungeonLayout.spawnpoints.list())
-	const getSpawnpoint = () => spawnHat.pull()
+	const randy = new Randy(dungeonOptions.seed)
+
+	const getSpawnpoint = () => randy.choose(dungeonLayout.spawnpoints.list())
+		.clone().add_(0.5, 0.5)
 
 	simulator.create("dungeon", {options: dungeonOptions})
 
