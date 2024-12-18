@@ -1,5 +1,7 @@
 
+import {Map2} from "@benev/slate"
 import {Degrees, Vec2} from "@benev/toolbox"
+
 import {range} from "../../../tools/range.js"
 import {Vecset2} from "../layouting/vecset2.js"
 
@@ -37,7 +39,35 @@ export type WallInfo = {
 	radians: number
 }
 
-export function planWalls(wallTiles: Vecset2, floorTiles: Vecset2) {
+export type BetterWallSegments = {
+	size: number
+	tile: Vec2
+	location: Vec2
+	radians: number
+}
+
+export function mergeWalls(sizes: number[], walls: WallInfo[]) {
+	const betterTileMap = new Map2(walls.map(w => [w.tile, {...w, size: 1}]))
+
+	for (const wall of walls) {
+		for (const size of sizes) {
+
+			// ignore the default size 1
+			if (size === 1)
+				break
+
+			// TODO: search for contiguous wall segments along cardinal directions according with size, replacing existing tiles with the new ones
+		}
+	}
+
+	return [...betterTileMap.values()]
+}
+
+export function planWalls(
+		wallTiles: Vecset2,
+		floorTiles: Vecset2,
+	) {
+
 	const wallSegments: WallInfo[] = []
 	// const concaves: WallInfo[] = []
 	// const convexes: WallInfo[] = []
@@ -58,9 +88,11 @@ export function planWalls(wallTiles: Vecset2, floorTiles: Vecset2) {
 			})
 		)
 
-		if ([d, e, f].every(isFloor) && [h, i].every(notFloor)) {
-			wallSegments.push(place({radians: 0, offset: Vec2.new(0, 0.5)}))
-		}
+		if ([d, e, f].every(isFloor) && [h, i].every(notFloor))
+			wallSegments.push(place({
+				radians: 0,
+				offset: Vec2.new(0, 0.5),
+			}))
 	}
 
 	for (const wallTile of wallTiles.values())
