@@ -48,7 +48,7 @@ export class DungeonSkin {
 		this.#createWalls()
 	}
 
-	#getStyle(tile: GlobalTileVec2) {
+	#getStyle = (tile: GlobalTileVec2) => {
 		const {cell} = this.layout.lookupTile(tile)
 		const key = this.styleKeyByCell.require(cell)
 		return this.assets.styles.require(key)
@@ -69,13 +69,12 @@ export class DungeonSkin {
 	}
 
 	#createWalls() {
-		const getAvailableWallSizes = (tile: Vec2) => {
-			const style = this.#getStyle(tile)
-			return [...style.walls.keys()]
-		}
-
-		const plan = planWalls(this.layout.wallTiles, this.layout.floorTiles, getAvailableWallSizes)
-		console.log(plan)
+		const plan = planWalls(
+			this.randy,
+			this.layout.wallTiles,
+			this.layout.floorTiles,
+			this.#getStyle,
+		)
 
 		for (const wall of plan.wallSegments) {
 			const style = this.#getStyle(wall.tile)

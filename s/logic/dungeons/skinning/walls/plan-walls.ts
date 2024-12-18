@@ -1,7 +1,9 @@
 
-import {Degrees, Vec2} from "@benev/toolbox"
+import {Map2} from "@benev/slate"
+import {Degrees, Randy, Vec2} from "@benev/toolbox"
 
 import {WallInfo} from "./types.js"
+import {DungeonStyle} from "../style.js"
 import {mergeWalls} from "./merge-walls.js"
 import {range} from "../../../../tools/range.js"
 import {Vecset2} from "../../layouting/vecset2.js"
@@ -35,9 +37,10 @@ const fourPatterns = range(4).map(i =>
 )
 
 export function planWalls(
+		randy: Randy,
 		wallTiles: Vecset2,
 		floorTiles: Vecset2,
-		getAvailableWallSizes: (tile: Vec2) => number[],
+		getStyle: (tile: Vec2) => DungeonStyle
 	) {
 
 	const wallSegments: WallInfo[] = []
@@ -71,8 +74,16 @@ export function planWalls(
 		for (const index of fourPatterns.keys())
 			considerPattern(wallTile, index)
 
+	const wallSegmentsByStyle = new Map2<DungeonStyle, WallInfo[]>()
+	for (const wall of wallSegments) {
+		const style = getStyle(wall.tile)
+		const walls = wallSegmentsByStyle.guarantee(style, () => [])
+		walls.push(wall)
+	}
+
 	return {
-		wallSegments: mergeWalls([1, 2, 3], wallSegments, getAvailableWallSizes),
+		wallSegments: [...wallSegmentsByStyle.entries()]
+			.flatMap(([style, walls]) => mergeWalls(randy, [...style.walls.keys()], walls)),
 	}
 }
 

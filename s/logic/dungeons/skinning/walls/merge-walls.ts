@@ -1,9 +1,10 @@
 
-import {Degrees, Scalar, Vec2} from "@benev/toolbox"
+import {Degrees, Randy, Vec2} from "@benev/toolbox"
 
 import {range} from "../../../../tools/range.js"
 import {Vecmap2} from "../../layouting/vecmap2.js"
 import {FinalWallSegments, WallInfo} from "./types.js"
+import {randyShuffle} from "../../../../tools/temp/randy-shuffle.js"
 
 const north = new Vec2(0, 1)
 
@@ -17,10 +18,12 @@ const angles = [
 const neighbors = angles.map(r => north.clone().rotate(r).round())
 
 export function mergeWalls(
+		randy: Randy,
 		sizes: number[],
 		walls: WallInfo[],
-		getAvailableWallSizes: (tile: Vec2) => number[],
 	) {
+
+	walls = randyShuffle(randy, [...walls])
 
 	const wallMap = new Vecmap2<FinalWallSegments>(
 		walls.map(w => [w.tile, {...w, size: 1}])
@@ -29,7 +32,7 @@ export function mergeWalls(
 	// descending
 	sizes.sort((a, b) => b - a)
 
-	for (const [angleIndex, radians] of angles.entries()) {
+	for (const angleIndex of angles.keys()) {
 		for (const size of sizes) {
 			if (size === 1) break
 
@@ -45,12 +48,7 @@ export function mergeWalls(
 					(stripWall.size === 1 && stripWall.radians === wall.radians)
 				)
 
-				// if (strip.length === size)
-				// 	debugger
-
 				if (wholeStripIsContiguous) {
-					// debugger
-
 					// delete little walls of size 1
 					for (const {tile} of strip)
 						wallMap.delete(tile)
@@ -61,7 +59,6 @@ export function mergeWalls(
 						.reduce((p, c) => p.add(c), Vec2.zero())
 						.divideBy(strip.length)
 
-					
 					// add bigger wall segment to account for the whole strip
 					wallMap.set(wall.tile, {
 						size,
