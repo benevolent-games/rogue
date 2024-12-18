@@ -1,21 +1,19 @@
 
 import {Map2} from "@benev/slate"
-import {Degrees, Randy} from "@benev/toolbox"
+import {Degrees, Randy, Vec2} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonLayout} from "../layout.js"
+import {planWalls} from "./walls/plan-walls.js"
 import {DungeonPlacer} from "../rendering/placer.js"
 import {Culler} from "../rendering/culling/culler.js"
 import {WallFader} from "../rendering/walls/wall-fader.js"
 import {WallSubject} from "../rendering/walls/wall-subject.js"
-import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {SubjectGrid} from "../rendering/culling/subject-grid.js"
-import {Spatial} from "../../../tools/babylon/logistics/types.js"
 import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 import {CullingSubject} from "../rendering/culling/culling-subject.js"
-import { planWalls } from "./plan-walls.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -71,15 +69,20 @@ export class DungeonSkin {
 	}
 
 	#createWalls() {
-		const plan = planWalls(this.layout.wallTiles, this.layout.floorTiles)
+		const getAvailableWallSizes = (tile: Vec2) => {
+			const style = this.#getStyle(tile)
+			return [...style.walls.keys()]
+		}
+
+		const plan = planWalls(this.layout.wallTiles, this.layout.floorTiles, getAvailableWallSizes)
 		console.log(plan)
 
-		for (const info of plan.wallSegments) {
-			const style = this.#getStyle(info.tile)
-			const cargo = style.walls.require(1)()
-			const spatial = this.placer.placeProp(info)
+		for (const wall of plan.wallSegments) {
+			const style = this.#getStyle(wall.tile)
+			const cargo = style.walls.require(wall.size)()
+			const spatial = this.placer.placeProp(wall)
 			const spawn = () => cargo.clone(spatial)
-			const subject = new WallSubject(info.tile, info.location, spawn)
+			const subject = new WallSubject(wall.tile, wall.location, spawn)
 			this.cullableGrid.add(subject)
 			this.fadingGrid.add(subject)
 		}

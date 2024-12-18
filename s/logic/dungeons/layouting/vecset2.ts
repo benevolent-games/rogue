@@ -4,7 +4,7 @@ import {Randy, Vec2} from "@benev/toolbox"
 export class Vecset2<V extends Vec2 = Vec2> {
 	#map = new Map<string, V>()
 
-	static toKey(vector: Vec2): string {
+	static toKey(vector: Vec2) {
 		return `${vector.x},${vector.y}`
 	}
 

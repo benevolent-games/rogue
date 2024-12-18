@@ -1,9 +1,10 @@
 
-import {Map2} from "@benev/slate"
 import {Degrees, Vec2} from "@benev/toolbox"
 
-import {range} from "../../../tools/range.js"
-import {Vecset2} from "../layouting/vecset2.js"
+import {WallInfo} from "./types.js"
+import {mergeWalls} from "./merge-walls.js"
+import {range} from "../../../../tools/range.js"
+import {Vecset2} from "../../layouting/vecset2.js"
 
 //   a b c
 // d e f g
@@ -33,39 +34,10 @@ const fourPatterns = range(4).map(i =>
 	)
 )
 
-export type WallInfo = {
-	tile: Vec2
-	location: Vec2
-	radians: number
-}
-
-export type BetterWallSegments = {
-	size: number
-	tile: Vec2
-	location: Vec2
-	radians: number
-}
-
-export function mergeWalls(sizes: number[], walls: WallInfo[]) {
-	const betterTileMap = new Map2(walls.map(w => [w.tile, {...w, size: 1}]))
-
-	for (const wall of walls) {
-		for (const size of sizes) {
-
-			// ignore the default size 1
-			if (size === 1)
-				break
-
-			// TODO: search for contiguous wall segments along cardinal directions according with size, replacing existing tiles with the new ones
-		}
-	}
-
-	return [...betterTileMap.values()]
-}
-
 export function planWalls(
 		wallTiles: Vecset2,
 		floorTiles: Vecset2,
+		getAvailableWallSizes: (tile: Vec2) => number[],
 	) {
 
 	const wallSegments: WallInfo[] = []
@@ -99,6 +71,8 @@ export function planWalls(
 		for (const index of fourPatterns.keys())
 			considerPattern(wallTile, index)
 
-	return {wallSegments}
+	return {
+		wallSegments: mergeWalls([1, 2, 3], wallSegments, getAvailableWallSizes),
+	}
 }
 
