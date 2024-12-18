@@ -4,8 +4,8 @@ import {Randy, Vec2} from "@benev/toolbox"
 export class Vecset2<V extends Vec2 = Vec2> {
 	#map = new Map<string, V>()
 
-	static toKey(vec: Vec2): string {
-		return `${vec.x},${vec.y}`
+	static toKey(vector: Vec2): string {
+		return `${vector.x},${vector.y}`
 	}
 
 	constructor(vectors: V[] = []) {
@@ -21,25 +21,25 @@ export class Vecset2<V extends Vec2 = Vec2> {
 		return this.#map.size
 	}
 
-	get(vec: V) {
-		return this.#map.get(Vecset2.toKey(vec))
+	get(vector: V) {
+		return this.#map.get(Vecset2.toKey(vector))
 	}
 
-	has(vec: V) {
-		return this.#map.has(Vecset2.toKey(vec))
+	has(vector: V) {
+		return this.#map.has(Vecset2.toKey(vector))
 	}
 
-	add(...vecs: V[]) {
-		for (const vec of vecs) {
-			const key = Vecset2.toKey(vec)
+	add(...vectors: V[]) {
+		for (const vector of vectors) {
+			const key = Vecset2.toKey(vector)
 			if (!this.#map.has(key))
-				this.#map.set(key, vec)
+				this.#map.set(key, vector)
 		}
 	}
 
-	delete(...vecs: V[]) {
-		for (const vec of vecs) {
-			this.#map.delete(Vecset2.toKey(vec))
+	delete(...vectors: V[]) {
+		for (const vector of vectors) {
+			this.#map.delete(Vecset2.toKey(vector))
 		}
 	}
 
