@@ -44,14 +44,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 				cameraCoordinates.lerp(buddyCoordinates, 10 / 100)
 				realm.cameraman.target = cameraCoordinates
 				realm.playerPosition = position
-
-				const cameraPosition = realm.cameraman.position
-				const cameraLookingVector = position.clone().subtract(cameraPosition)
-				const cameraNormal = cameraLookingVector.clone().normalize()
-
 				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
-				lighting.spot.position.set(...cameraPosition.array())
-				lighting.spot.direction.set(...cameraNormal.array())
 			}
 		},
 

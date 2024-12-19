@@ -34,7 +34,7 @@ export class Realm {
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.indicators = new Indicators(world.scene, this.materials)
-		this.cameraman = new Cameraman(world.scene)
+		this.cameraman = new Cameraman(world.scene, lighting)
 	}
 
 	static async load() {
