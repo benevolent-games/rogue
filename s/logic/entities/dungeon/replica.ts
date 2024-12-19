@@ -14,7 +14,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	const fadeRange = 4
 	const cullingRange = 30
-	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.swivel)
+	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.state.swivel)
 	const dungeonLayout = new DungeonLayout(state.options)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
 
@@ -40,13 +40,13 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			const playerPosition = realm.playerPosition.clone()
 
 			const c1 = new Clock()
-			culler.cull(realm.cameraman.target, cullingRange)
+			culler.cull(realm.cameraman.state.pivot, cullingRange)
 			if (c1.elapsed > 3)
 				c1.log("culling was slow")
 
 			const c2 = new Clock()
 			wallFader.animate(
-				realm.cameraman.target.clone().add(camfadeOffset),
+				realm.cameraman.state.pivot.clone().add(camfadeOffset),
 				fadeRange,
 				wall => wallDetector.detect(wall, playerPosition, realm.cameraman),
 			)

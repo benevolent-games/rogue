@@ -52,5 +52,9 @@ export class Realm {
 				Constants.TEXTURE_LINEAR_LINEAR,
 			))
 	}
+
+	tick() {
+		this.cameraman.tick()
+	}
 }
 

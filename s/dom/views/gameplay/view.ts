@@ -33,8 +33,8 @@ export const Gameplay = shadowView(use => (o: {
 			onAnyDrag: () => {},
 			onAnyClick: () => {},
 			onIntendedDrag: event => {
-				cameraman.swivel -= event.movementX * sensitivity
-				cameraman.tilt -= event.movementY * sensitivity
+				cameraman.state.swivel -= event.movementX * sensitivity
+				cameraman.state.tilt -= event.movementY * sensitivity
 			},
 			onIntendedClick: () => {},
 		})

@@ -25,7 +25,6 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
-	const cameraCoordinates = initial.clone()
 
 	return {
 		gatherInputs: () => {
@@ -41,8 +40,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			buddy.position.set(...position.array())
 
 			if (inControl) {
-				cameraCoordinates.lerp(buddyCoordinates, 10 / 100)
-				realm.cameraman.target = cameraCoordinates
+				realm.cameraman.state.pivot = buddyCoordinates
 				realm.playerPosition = position
 				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
 			}

@@ -103,6 +103,7 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 	// init 3d rendering
 	world.rendering.setCamera(realm.cameraman.camera)
 	world.gameloop.on(() => replicator.replicate(renderTick))
+	world.gameloop.on(() => realm.tick())
 	world.gameloop.start()
 
 	smartloop.start()

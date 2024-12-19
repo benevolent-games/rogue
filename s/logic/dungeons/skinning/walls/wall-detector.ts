@@ -66,7 +66,7 @@ export class WallDetector {
 
 		const camdir = new Coordinates(0, 1)
 			.multiply_(this.rugExtent.x / 2, this.rugExtent.z / 2)
-			.rotate(cameraman.swivel)
+			.rotate(cameraman.state.swivel)
 			.position()
 
 		const rugBox = Box3.centered(
