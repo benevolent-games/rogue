@@ -50,7 +50,7 @@ export function planWalls(
 
 	const considerPattern = (wallTile: Vec2, index: number) => {
 		const radians = index * Degrees.toRadians(90)
-		const [a, b, c, d, e, f, g, h, i, j, k, l, m] = fourPatterns.at(index)!
+		const [a, b, _c, d, e, f, g, h, i, j, _k, l, m] = fourPatterns.at(index)!
 
 		const isFloor = (tile: Vec2) => floorTiles.has(wallTile.clone().add(tile))
 		const notFloor = (tile: Vec2) => !floorTiles.has(wallTile.clone().add(tile))

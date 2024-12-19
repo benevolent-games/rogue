@@ -1,6 +1,6 @@
 
 import {Map2} from "@benev/slate"
-import {Degrees, Randy, Vec2, Vec2Array} from "@benev/toolbox"
+import {Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {DungeonStyle} from "./style.js"
@@ -68,10 +68,7 @@ export class DungeonSkin {
 		for (const floor of floorPlan.values()) {
 			const size = `${floor.size.x}x${floor.size.y}`
 			const cargo = floor.style.floors.require(size)()
-			const isSquare = floor.size.x === floor.size.y
-			const radians = (isSquare && !cargo.manifest.has("shader"))
-				? Degrees.toRadians(this.randy.choose([0, -90, -180, -270]))
-				: floor.rotation
+			const radians = floor.rotation
 			const spatial = this.placer.placeProp({location: floor.location, radians})
 			const spawn = () => cargo.instance(spatial)
 			const subject = new CullingSubject(floor.location, spawn)

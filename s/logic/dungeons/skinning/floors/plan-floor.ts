@@ -35,7 +35,7 @@ export function planFloor(
 				location: tile.clone(),
 			}))),
 		)
-		mergeFlooring(style, floorPlan)
+		mergeFlooring(randy, style, floorPlan)
 		return floorPlan.array()
 	})
 }
