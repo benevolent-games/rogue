@@ -28,7 +28,7 @@ export class WallDetector {
 	#makeRugGraphic() {
 		const {realm} = this
 		const mesh = MeshBuilder.CreateBox("b", {size: 1}, realm.world.scene)
-		const material = realm.env.materials.sad.clone("sadclone")
+		const material = realm.materials.sad.clone("sadclone")
 		material.alpha = 0.5
 		mesh.material = material
 		return mesh
@@ -37,7 +37,7 @@ export class WallDetector {
 	#makeWallGraphic() {
 		const {realm} = this
 		const mesh = MeshBuilder.CreateBox("b", {size: 1}, realm.world.scene)
-		const material = realm.env.materials.spicy.clone("spicy")
+		const material = realm.materials.spicy.clone("spicy")
 		material.alpha = 0.1
 		mesh.material = material
 		return mesh

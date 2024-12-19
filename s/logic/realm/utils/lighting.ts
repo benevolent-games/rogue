@@ -14,6 +14,7 @@ export class Lighting {
 	constructor(public scene: Scene) {
 		this.spot = this.#makeSpot()
 		this.torch = this.#makeTorch()
+		console.log("LIGHTING DONE")
 	}
 
 	#makeSpot() {

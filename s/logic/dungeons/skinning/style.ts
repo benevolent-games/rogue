@@ -20,6 +20,11 @@ export class DungeonStyle {
 		) {
 
 		const floors = warehouse.require({label: "floor", size: true})
+		const walls = warehouse.require({label: "wall", size: true})
+		const stumps = warehouse.require({label: "wall", size: "0.5"}).list()
+		const concaves = warehouse.require({label: "concave"}).list()
+		const convexes = warehouse.require({label: "convex"}).list()
+
 		this.floors = new Map2(
 			[...floors.categorize("size").entries()]
 				.map(([size, warehouse]) => {
@@ -27,11 +32,6 @@ export class DungeonStyle {
 					return [size, () => this.randy.choose(cargos)]
 				})
 		)
-
-		const walls = warehouse.require({label: "wall", size: true})
-		const stumps = warehouse.require({label: "wall", size: "0.5"}).list()
-		const concaves = warehouse.require({label: "concave"}).list()
-		const convexes = warehouse.require({label: "convex"}).list()
 
 		this.stump = () => randy.choose(stumps)
 		this.convex = () => randy.choose(convexes)

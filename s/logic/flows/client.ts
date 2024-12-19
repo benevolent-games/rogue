@@ -23,6 +23,8 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 	const realm = await Realm.load()
 	const {world, glbs} = realm
 
+	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
+
 	function makeSimulator() {
 		const station = new Station()
 		const gameState = new GameState<RogueEntities>()
@@ -99,7 +101,7 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 	})
 
 	// init 3d rendering
-	world.rendering.setCamera(realm.env.camera)
+	world.rendering.setCamera(realm.cameraman.camera)
 	world.gameloop.on(() => replicator.replicate(renderTick))
 	world.gameloop.start()
 

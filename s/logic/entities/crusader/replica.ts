@@ -8,24 +8,24 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
+	const {lighting, buddies, materials} = realm
 	const inControl = state.author === replicator.author
 
-	function guyPosition(coordinates: Coordinates) {
+	function buddyPosition(coordinates: Coordinates) {
 		return coordinates
 			.position()
 			.add_(0, 1, 0)
 	}
 
-	const guy = realm.instance(
+	const buddy = (
 		inControl
-			? realm.env.guys.local
-			: realm.env.guys.remote
+			? buddies.create(materials.happy)
+			: buddies.create(materials.spicy)
 	)
 
 	const initial = Coordinates.from(state.coordinates)
-	const guyCoordinates = initial.clone()
+	const buddyCoordinates = initial.clone()
 	const cameraCoordinates = initial.clone()
-	const {lighting} = realm.env
 
 	return {
 		gatherInputs: () => {
@@ -36,12 +36,12 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		replicate: (_, state) => {
-			guyCoordinates.lerp_(...state.coordinates, 30 / 100)
-			const position = guyPosition(guyCoordinates)
-			guy.position.set(...position.array())
+			buddyCoordinates.lerp_(...state.coordinates, 30 / 100)
+			const position = buddyPosition(buddyCoordinates)
+			buddy.position.set(...position.array())
 
 			if (inControl) {
-				cameraCoordinates.lerp(guyCoordinates, 10 / 100)
+				cameraCoordinates.lerp(buddyCoordinates, 10 / 100)
 				realm.cameraman.target = cameraCoordinates
 				realm.playerPosition = position
 
@@ -49,14 +49,14 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 				const cameraLookingVector = position.clone().subtract(cameraPosition)
 				const cameraNormal = cameraLookingVector.clone().normalize()
 
-				lighting.torch.position.set(...guyCoordinates.position().add_(0, 3, 0).array())
+				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
 				lighting.spot.position.set(...cameraPosition.array())
 				lighting.spot.direction.set(...cameraNormal.array())
 			}
 		},
 
 		dispose: () => {
-			guy.dispose()
+			buddy.dispose()
 		},
 	}
 })

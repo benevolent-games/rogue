@@ -3,37 +3,54 @@ import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Vec3} from "@benev/toolbox"
 import {pubsub} from "@benev/slate"
-import {Mesh} from "@babylonjs/core"
+import {Constants} from "@babylonjs/core/Engines/constants.js"
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {Glbs} from "./glbs.js"
+import {Lighting} from "./utils/lighting.js"
 import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
+import {Indicators} from "./utils/indicators.js"
 import {World} from "../../tools/babylon/world.js"
-import {Env, makeEnvironment} from "./utils/make-environment.js"
+import {CoolMaterials} from "./utils/cool-materials.js"
+import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 
 export class Realm {
-	tact = makeTact(window)
+	materials: CoolMaterials
+	buddies: CapsuleBuddies
 	cameraman: Cameraman
-	onFilesDropped = pubsub<[File[]]>()
+	indicators: Indicators
+
+	tact = makeTact(window)
 	playerPosition = Vec3.zero()
+	onFilesDropped = pubsub<[File[]]>()
 
 	constructor(
 			public world: World,
-			public env: Env,
+			public lighting: Lighting,
 			public glbs: Glbs,
 		) {
-		this.cameraman = new Cameraman(env)
+
+		this.buddies = new CapsuleBuddies(world.scene)
+		this.materials = new CoolMaterials(world.scene)
+		this.indicators = new Indicators(world.scene, this.materials)
+		this.cameraman = new Cameraman(world.scene)
 	}
 
 	static async load() {
 		const world = await World.load()
-		const env = makeEnvironment(world)
+		const lighting = new Lighting(world.scene)
 		const glbs = await Glbs.load(world)
-		return new this(world, env, glbs)
+		return new this(world, lighting, glbs)
 	}
 
-	instance(source: Mesh) {
-		return source.createInstance("instance")
+	async loadPostProcessShader(name: string, url: string) {
+		await NodeMaterial.ParseFromFileAsync(name, url, this.world.scene)
+			.then(material => material.createPostProcess(
+				this.cameraman.camera,
+				1.0,
+				Constants.TEXTURE_LINEAR_LINEAR,
+			))
 	}
 }
 
