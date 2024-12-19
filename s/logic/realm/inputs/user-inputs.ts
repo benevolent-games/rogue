@@ -20,7 +20,9 @@ export class UserInputs {
 				isMiddleMouse(event)
 			),
 			onAnyDrag: () => {},
-			onAnyClick: () => {},
+			onAnyClick: event => {
+				event.preventDefault()
+			},
 			onIntendedDrag: event => {
 				cameraman.state.swivel -= event.movementX * sensitivityRadians
 				cameraman.state.tilt -= event.movementY * sensitivityRadians
