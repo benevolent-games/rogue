@@ -8,6 +8,7 @@ import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonLayout} from "../layout.js"
 import {WallSegment} from "./walls/types.js"
+import {FloorSegment} from "./floors/types.js"
 import {range2d} from "../../../tools/range.js"
 import {planWalls} from "./walls/plan-walls.js"
 import {HashSet} from "../../../tools/hash/set.js"
@@ -20,6 +21,7 @@ import {SubjectGrid} from "../rendering/culling/subject-grid.js"
 import {randyShuffle} from "../../../tools/temp/randy-shuffle.js"
 import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 import {CullingSubject} from "../rendering/culling/culling-subject.js"
+import { planFloor } from "./floors/plan-floor.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -61,67 +63,11 @@ export class DungeonSkin {
 	}
 
 	#createFlooring() {
-		type FloorSegment = {
-			tile: Vec2
-			size: Vec2
-			location: Vec2
-			style: DungeonStyle
-		}
-
-		const size1 = new Vec2(1, 1)
-
-		const floorPlan = new HashSet<FloorSegment>(
-			({style, size, tile}) => [
-				style.name,
-				size.x,
-				size.y,
-				tile.x,
-				tile.y,
-			].join(","),
-			randyShuffle(this.randy, this.layout.floorTiles.array().map(tile => ({
-				tile,
-				size: size1,
-				location: tile.clone(),
-				style: this.#getStyle(tile),
-			}))),
+		const floorPlan = planFloor(
+			this.randy,
+			this.layout.floorTiles,
+			this.#getStyle,
 		)
-
-		for (const floor of floorPlan.values()) {
-			if (!floor.size.equals(size1))
-				continue
-
-			const sizes = [...floor.style.floors.keys()]
-				.map(string => Vec2.from(string.split("x").map(x => parseInt(x)) as Vec2Array))
-				.sort((a, b) => (b.x * b.y) - (a.x * a.y))
-
-			for (const size of sizes) {
-				if (size.equals(size1))
-					continue
-
-				const area = size.x * size.y
-				const boxTiles = range2d(size)
-					.map(vector => ({
-						tile: floor.tile.clone().add(vector),
-						size: size1,
-						style: floor.style,
-						location: floor.location.clone().add(vector),
-					}))
-					.filter(tile2 => floorPlan.has(tile2))
-				const wholeBoxIsIntact = boxTiles.length === area
-
-				if (wholeBoxIsIntact) {
-					floorPlan.delete(...boxTiles)
-					floorPlan.add({
-						tile: floor.tile,
-						size,
-						style: floor.style,
-						location: Vec2.zero()
-							.add(...boxTiles.map(t => t.location))
-							.divideBy(boxTiles.length),
-					})
-				}
-			}
-		}
 
 		for (const floor of floorPlan.values()) {
 			const size = `${floor.size.x}x${floor.size.y}`
