@@ -23,8 +23,8 @@ export class Indicators {
 			return new Crate(clone)
 		}
 
-		this.sector = mk(materials.sad, 0.1)
-		this.cell = mk(materials.happy, 0.1)
+		this.sector = mk(materials.deepPurple, 0.1)
+		this.cell = mk(materials.cyan, 0.1)
 	}
 }
 

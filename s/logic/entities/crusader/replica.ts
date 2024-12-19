@@ -19,8 +19,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	const buddy = (
 		inControl
-			? buddies.create(materials.happy)
-			: buddies.create(materials.spicy)
+			? buddies.create(materials.cyan)
+			: buddies.create(materials.yellow)
 	)
 
 	const initial = Coordinates.from(state.coordinates)

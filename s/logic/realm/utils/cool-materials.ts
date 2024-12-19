@@ -6,18 +6,18 @@ import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 export class CoolMaterials {
 	gray: PBRMaterial
 	pearl: PBRMaterial
-	happy: PBRMaterial
-	angry: PBRMaterial
-	spicy: PBRMaterial
-	sad: PBRMaterial
+	cyan: PBRMaterial
+	red: PBRMaterial
+	yellow: PBRMaterial
+	deepPurple: PBRMaterial
 
 	constructor(private scene: Scene) {
 		this.gray = this.create(.1, .1, .1)
 		this.pearl = this.create(.7, .7, .7)
-		this.happy = this.create(.1, .7, .7)
-		this.angry = this.create(.7, .1, .1)
-		this.spicy = this.create(.6, .5, .1)
-		this.sad = this.create(.2, .1, .7)
+		this.cyan = this.create(.1, .7, .7)
+		this.red = this.create(.7, .1, .1)
+		this.yellow = this.create(.6, .5, .1)
+		this.deepPurple = this.create(.2, .1, .7)
 	}
 
 	create(r: number, g: number, b: number) {
