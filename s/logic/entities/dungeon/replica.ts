@@ -8,7 +8,7 @@ import {constants} from "../../../constants.js"
 import {DungeonLayout} from "../../dungeons/layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
-import {WallDetector} from "../../dungeons/rendering/walls/wall-detector.js"
+import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {

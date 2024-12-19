@@ -3,9 +3,9 @@ import {Map2} from "@benev/slate"
 import {Vec2} from "@benev/toolbox"
 
 import {WallSubject} from "./wall-subject.js"
-import {SubjectGrid} from "../culling/subject-grid.js"
 import {Circle} from "../../../physics/shapes/circle.js"
 import {Hyperzone} from "../../../physics/facilities/hypergrid.js"
+import {SubjectGrid} from "../../skinning/culling/subject-grid.js"
 import {Collisions} from "../../../physics/facilities/collisions.js"
 
 export class WallFader {

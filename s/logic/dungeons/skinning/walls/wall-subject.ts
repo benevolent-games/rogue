@@ -1,6 +1,6 @@
 
 import {Meshoid, Prop, Scalar, Vec2} from "@benev/toolbox"
-import {CullingSubject} from "../culling/culling-subject.js"
+import {CullingSubject} from "../../skinning/culling/culling-subject.js"
 import {getTopMeshes} from "../../../../tools/babylon/babylon-helpers.js"
 
 export class WallSubject extends CullingSubject {
