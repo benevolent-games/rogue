@@ -6,16 +6,19 @@ export default css`
 	display: block;
 	height: 3em;
 	position: relative;
+	--button-size: 3em;
+	--bgcolor1: #222a;
+	--bgcolor2: #4442;
 }
 
 .plate {
 	position: absolute;
 	width: 100%;
 	max-width: 48em;
-	border-radius: 0.5em;
+	border-radius: 0 0 0.5em 0.5em;
 	overflow: hidden;
 
-	background: #000a;
+	background: var(--bgcolor1);
 	backdrop-filter: blur(0.5em);
 	box-shadow: .2em .3em .8em #0004;
 
@@ -28,31 +31,32 @@ export default css`
 			flex-direction: column;
 			align-items: center;
 
+			min-width: calc(var(--button-size) * 2);
+			padding: calc(var(--button-size) / 6);
+
 			color: #aaa;
-			min-width: 6em;
 			gap: 0.1em;
-			padding: 0.5em;
 			border-top: 2px solid transparent;
 
 			&[x-active] {
-				background: #3336;
+				background: var(--bgcolor2);
 				border-top: 2px solid orange;
 			}
 
 			> svg {
 				display: block;
-				width: 3em;
-				height: 3em;
+				width: var(--button-size);
+				height: var(--button-size);
 			}
 
 			> [view="avatar"] {
 				display: block;
-				--size: 3em;
+				--size: var(--button-size);
 			}
 
 			> span {
 				opacity: 0.25;
-				font-size: 0.8em;
+				font-size: calc(var(--button-size) / 4);
 				text-transform: uppercase;
 			}
 
@@ -67,7 +71,7 @@ export default css`
 
 	section {
 		padding: 2em;
-		background: #3336;
+		background: var(--bgcolor2);
 		max-height: 32em;
 		max-height: calc(80vh - 4em);
 		overflow: auto;

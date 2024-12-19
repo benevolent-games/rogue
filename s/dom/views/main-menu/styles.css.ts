@@ -26,8 +26,7 @@ export default css`
 	margin: auto;
 
 	[view="gigamenu"] {
-		padding-top: 0.5em;
-		padding: 1em;
+		--button-size: 2em;
 	}
 }
 

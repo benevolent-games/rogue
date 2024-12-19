@@ -75,7 +75,7 @@ button.naked {
 	background: none;
 	border: none;
 	outline: 0;
-	font-family: inherit;
+	font: inherit;
 }
 
 .spin {

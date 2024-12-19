@@ -33,9 +33,44 @@ canvas {
 	height: 100%;
 	margin: auto;
 
+	--btnsize: 2em;
+
 	[view="gigamenu"] {
-		padding-top: 0.5em;
-		padding: 1em;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		--button-size: var(--btnsize);
+	}
+
+	.buttonbar {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 100%;
+
+		display: flex;
+		padding-left: 5em;
+		justify-content: end;
+		gap: 1em;
+
+		> button {
+			pointer-events: all;
+
+			opacity: 0.2;
+			cursor: pointer;
+			padding: calc(var(--btnsize) / 6);
+			border-top: 2px solid transparent;
+
+			&:hover { opacity: 0.8; }
+			&:active { opacity: 1; }
+
+			> svg {
+				display: block;
+				width: var(--btnsize);
+				height: var(--btnsize);
+			}
+		}
 	}
 }
 
