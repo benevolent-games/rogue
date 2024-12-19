@@ -13,7 +13,7 @@ const baseTilt = Degrees.toRadians(20)
 const baseDistance = 20
 
 const swivelBounds = new Vec2(0, Radians.circle)
-const tiltBounds = new Vec2(1, 60)
+const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(60))
 
 export class Cameraman {
 	camera: ArcRotateCamera
@@ -56,6 +56,7 @@ export class Cameraman {
 
 	set swivel(x: number) {
 		this.#gimbal.x = Scalar.wrap(x, swivelBounds.x, swivelBounds.y)
+		this.camera.alpha = alphaReset - this.#gimbal.x
 	}
 
 	get tilt() {
@@ -63,7 +64,13 @@ export class Cameraman {
 	}
 
 	set tilt(y: number) {
-		this.#gimbal.y = Scalar.wrap(y, tiltBounds.x, tiltBounds.y)
+		this.#gimbal.y = Scalar.clamp(y, tiltBounds.x, tiltBounds.y)
+		this.camera.beta = this.#gimbal.y
+	}
+
+	reset() {
+		this.#gimbal.x = baseSwivel
+		this.#gimbal.y = baseTilt
 	}
 
 	#updateSpotlight() {

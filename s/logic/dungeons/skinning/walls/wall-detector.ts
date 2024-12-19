@@ -7,15 +7,16 @@ import {Realm} from "../../../realm/realm.js"
 import {WallSubject} from "./wall-subject.js"
 import {Vecset2} from "../../layouting/vecset2.js"
 import {Box3} from "../../../physics/shapes/box3.js"
-import {Line3} from "../../../physics/shapes/line3.js"
+import {Cameraman} from "../../../realm/utils/cameraman.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 export class WallDetector {
+	debug = false
+
 	wallExtent = Vec3.new(1, 10, 1)
 	rugExtent = Vec3.new(3, 1, 3)
 
-	debug = false
 	rugGraphic?: Mesh
 	seen = new Vecset2()
 
@@ -48,7 +49,7 @@ export class WallDetector {
 		this.rugGraphic?.dispose()
 	}
 
-	detect(wall: WallSubject, playerPosition: Vec3, cameraPosition: Vec3) {
+	detect(wall: WallSubject, playerPosition: Vec3, cameraman: Cameraman) {
 
 		// TODO wtf cursed! why are all the wall subjects misaligned!?!?
 		const tile = wall.tile.clone().add_(1, 0)
@@ -63,20 +64,14 @@ export class WallDetector {
 			this.seen.add(tile)
 		}
 
-		const line = new Line3(playerPosition, cameraPosition)
-		const direction = line.vector.normalize()
-		// line.start = line.fromStart(sausageRadius * 3.2)
+		const camdir = new Coordinates(0, 1)
+			.multiply_(this.rugExtent.x / 2, this.rugExtent.z / 2)
+			.rotate(cameraman.swivel)
+			.position()
 
 		const rugBox = Box3.centered(
-			playerPosition.clone().add(
-				direction.clone()
-					.multiply_(1, 0, 1)
-					.normalize()
-					.multiply(this.rugExtent)
-					.multiplyBy(Math.SQRT2)
-					.addBy(Number.EPSILON)
-					.add(this.rugExtent.clone().half())
-			),
+			playerPosition.clone()
+				.subtract(camdir),
 			this.rugExtent.clone(),
 		)
 
@@ -84,7 +79,6 @@ export class WallDetector {
 		this.rugGraphic?.scaling.set(...rugBox.extent.array())
 
 		return Collisions3.boxVsBox(rugBox, wallBox)
-		// return Collisions3.sausageVsBox(sausage, wallBox)
 	}
 }
 

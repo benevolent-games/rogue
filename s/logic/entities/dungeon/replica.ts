@@ -4,7 +4,6 @@ import {Vec2} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Clock} from "../../../tools/clock.js"
-import {constants} from "../../../constants.js"
 import {DungeonLayout} from "../../dungeons/layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
@@ -39,7 +38,6 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		replicate: (_) => {
 			const {culler, wallFader} = dungeonRenderer.skin
 			const playerPosition = realm.playerPosition.clone()
-			const cameraPosition = realm.cameraman.position.clone()
 
 			const c1 = new Clock()
 			culler.cull(realm.cameraman.target, cullingRange)
@@ -50,7 +48,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			wallFader.animate(
 				realm.cameraman.target.clone().add(camfadeOffset),
 				fadeRange,
-				wall => wallDetector.detect(wall, playerPosition, cameraPosition),
+				wall => wallDetector.detect(wall, playerPosition, realm.cameraman),
 			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")
