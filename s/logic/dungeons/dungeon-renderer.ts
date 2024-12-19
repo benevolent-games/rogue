@@ -2,21 +2,23 @@
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Realm} from "../realm/realm.js"
+import {DungeonLayout} from "./layout.js"
 import {Clock} from "../../tools/clock.js"
-import {DungeonSkin} from "./rendering/skin.js"
-import {DungeonLayout} from "./dungeon-layout.js"
+import {DungeonSkin} from "./skinning/skin.js"
+import {prepareDungeonContainer} from "./skinning/prepare-dungeon-container.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
 	skin: DungeonSkin
 
-	constructor(public realm: Realm, public dungeon: DungeonLayout) {
-		this.skin = this.makeSkin(realm.glbs.templateGlb.container)
+	constructor(public realm: Realm, public layout: DungeonLayout) {
+		this.skin = this.makeSkin(realm.glbs.dungeonContainer)
 	}
 
 	async loadGlb(url: string) {
 		try {
 			const container = await this.realm.world.loadContainer(url)
+			prepareDungeonContainer(container)
 			this.dispose()
 			this.skin = this.makeSkin(container)
 		}
@@ -27,16 +29,16 @@ export class DungeonRenderer {
 
 	makeSkin(container: AssetContainer): DungeonSkin {
 		const clock = new Clock()
-		const {dungeon, realm} = this
+		const {layout, realm} = this
 		const mainScale = 1.0
 		const skin = new DungeonSkin(
-			dungeon,
+			layout,
 			container,
 			realm,
 			mainScale,
 		)
 		clock.log("dungeon-skinning")
-		console.log("dungeon skinner stats", skin.stats)
+		// console.log("dungeon skinner stats", skin.stats)
 		return skin
 	}
 
@@ -46,7 +48,7 @@ export class DungeonRenderer {
 		// don't delete the original template glb,
 		// (so when user exits game and reboots a new level,
 		// the standard default skin is always available)
-		if (this.skin.container !== this.realm.glbs.templateGlb.container)
+		if (this.skin.container !== this.realm.glbs.dungeonContainer)
 			this.skin.container.dispose()
 	}
 }

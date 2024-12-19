@@ -2,13 +2,13 @@
 import {RogueEntities} from "../entities.js"
 import {Station} from "../../station/station.js"
 import {simula} from "../../../archimedes/exports.js"
-import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
+import {DungeonLayout} from "../../dungeons/layout.js"
 
 export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	({station, state}) => {
 
-	const dungeon = new DungeonLayout(state.options)
-	station.physics.resetUnwalkableHypergrid(dungeon.unwalkables.list())
+	const dungeonLayout = new DungeonLayout(state.options)
+	station.physics.resetUnwalkableHypergrid(dungeonLayout.wallTiles.list())
 
 	return {
 		inputData: undefined,

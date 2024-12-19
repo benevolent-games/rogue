@@ -1,4 +1,5 @@
 
+import {Randy} from "@benev/toolbox"
 import {repeat} from "@benev/slate"
 
 import {constants} from "../../constants.js"
@@ -7,9 +8,9 @@ import {simulas} from "../entities/simulas.js"
 import {Watchman} from "../../tools/watchman.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
+import {DungeonLayout} from "../dungeons/layout.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
-import {DungeonLayout} from "../dungeons/dungeon-layout.js"
 import {GameState, Simulator} from "../../archimedes/exports.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
@@ -22,8 +23,11 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const watchman = new Watchman(constants.game.tickRate)
 
 	const dungeonOptions = stdDungeonOptions()
-	const dungeon = new DungeonLayout(dungeonOptions)
-	const getSpawnpoint = dungeon.makeSpawnpointGetterFn()
+	const dungeonLayout = new DungeonLayout(dungeonOptions)
+	const randy = new Randy(dungeonOptions.seed)
+
+	const getSpawnpoint = () => randy.choose(dungeonLayout.spawnpoints.list())
+		.clone().add_(0.5, 0.5)
 
 	simulator.create("dungeon", {options: dungeonOptions})
 

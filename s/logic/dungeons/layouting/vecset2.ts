@@ -1,50 +1,16 @@
 
-import {Randy, Vec2} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
+import {HashSet} from "../../../tools/hash/set.js"
 
-export class Vecset2<V extends Vec2 = Vec2> {
-	#map = new Map<string, V>()
+const hash = (vector: Vec2) => `${vector.x},${vector.y}`
 
-	static toKey(vec: Vec2): string {
-		return `${vec.x},${vec.y}`
+export class Vecset2<Value extends Vec2 = Vec2> extends HashSet<Value> {
+	constructor(values: Value[] = []) {
+		super(hash, values)
 	}
 
-	constructor(vectors: V[] = []) {
-		for (const v of vectors)
-			this.add(v)
-	}
-
-	static dedupe<V extends Vec2>(vectors: V[]) {
-		return new this(vectors).list()
-	}
-
-	get size() {
-		return this.#map.size
-	}
-
-	has(vec: V) {
-		return this.#map.has(Vecset2.toKey(vec))
-	}
-
-	add(...vecs: V[]) {
-		for (const vec of vecs) {
-			const key = Vecset2.toKey(vec)
-			if (!this.#map.has(key))
-				this.#map.set(key, vec)
-		}
-	}
-
-	delete(...vecs: V[]) {
-		for (const vec of vecs) {
-			this.#map.delete(Vecset2.toKey(vec))
-		}
-	}
-
-	list() {
-		return Array.from(this.#map.values())
-	}
-
-	yoink(randy: Randy) {
-		return randy.yoink(this.list())
+	static dedupe<Value extends Vec2 = Vec2>(values: Value[]) {
+		return new this(values).array()
 	}
 }
 

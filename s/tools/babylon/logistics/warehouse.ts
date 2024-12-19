@@ -11,10 +11,7 @@ export class Warehouse extends Set<Cargo> {
 		return new this(
 			[...container.meshes, ...container.transformNodes]
 				.filter(prop => !prop.name.includes("_primitive"))
-				.map(prop => {
-					const manifest = Manifest.parse(prop.name)
-					return new Cargo(manifest, prop)
-				})
+				.map(prop => new Cargo(Manifest.scan(prop), prop))
 		)
 	}
 
@@ -23,7 +20,7 @@ export class Warehouse extends Set<Cargo> {
 	}
 
 	/** get all cargo that matches the manifest query */
-	query(search: ManifestQuery, required: boolean = false) {
+	#query(search: ManifestQuery, required: boolean = false) {
 		const result = new Warehouse(
 			[...this].filter(cargo =>
 				Object.entries(search).every(([key, value]) => (
@@ -36,6 +33,14 @@ export class Warehouse extends Set<Cargo> {
 		if (required && result.size === 0)
 			throw new Error(`search query failed ${JSON.stringify(search)}`)
 		return result
+	}
+
+	search(query: ManifestQuery) {
+		return this.#query(query, false)
+	}
+
+	require(query: ManifestQuery) {
+		return this.#query(query, true)
 	}
 
 	/** organize objects by their value for the given manifest key */

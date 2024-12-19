@@ -13,15 +13,23 @@ import {Env, makeEnvironment} from "./utils/make-environment.js"
 
 export class Realm {
 	tact = makeTact(window)
-	env: Env
 	cameraman: Cameraman
 	onFilesDropped = pubsub<[File[]]>()
-
 	playerPosition = Vec3.zero()
 
-	constructor(public world: World, public glbs: Glbs) {
-		this.env = makeEnvironment(world)
-		this.cameraman = new Cameraman(this.env)
+	constructor(
+			public world: World,
+			public env: Env,
+			public glbs: Glbs,
+		) {
+		this.cameraman = new Cameraman(env)
+	}
+
+	static async load() {
+		const world = await World.load()
+		const env = makeEnvironment(world)
+		const glbs = await Glbs.load(world)
+		return new this(world, env, glbs)
 	}
 
 	instance(source: Mesh) {

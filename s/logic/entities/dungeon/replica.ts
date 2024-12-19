@@ -5,7 +5,7 @@ import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Clock} from "../../../tools/clock.js"
 import {constants} from "../../../constants.js"
-import {DungeonLayout} from "../../dungeons/dungeon-layout.js"
+import {DungeonLayout} from "../../dungeons/layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 import {WallDetector} from "../../dungeons/rendering/walls/wall-detector.js"
@@ -16,8 +16,10 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	const fadeRange = 4
 	const cullingRange = 30
 	const camfadeOffset = Vec2.new(0, 0).rotate(constants.game.cameraRotation)
-	const dungeon = new DungeonLayout(state.options, true)
-	const dungeonRenderer = new DungeonRenderer(realm, dungeon)
+	const dungeonLayout = new DungeonLayout(state.options)
+	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
+
+	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
 
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {

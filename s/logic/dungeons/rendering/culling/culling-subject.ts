@@ -10,9 +10,8 @@ export class CullingSubject {
 	) {}
 
 	spawn() {
-		if (!this.prop) {
+		if (!this.prop)
 			this.prop = this.spawner()
-		}
 	}
 
 	dispose() {

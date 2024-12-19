@@ -1,13 +1,11 @@
 
 import {loop, Scalar} from "@benev/toolbox"
 
-import {Glbs} from "../realm/glbs.js"
 import {Realm} from "../realm/realm.js"
 import {constants} from "../../constants.js"
 import {Station} from "../station/station.js"
 import {simulas} from "../entities/simulas.js"
 import {replicas} from "../entities/replicas.js"
-import {World} from "../../tools/babylon/world.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
@@ -22,10 +20,8 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 	const {author} = multiplayer
 
 	const csp = true
-
-	const world = await World.load()
-	const glbs = await Glbs.load(world)
-	const realm = new Realm(world, glbs)
+	const realm = await Realm.load()
+	const {world, glbs} = realm
 
 	function makeSimulator() {
 		const station = new Station()
