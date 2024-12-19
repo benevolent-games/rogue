@@ -6,10 +6,10 @@ import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {Realm} from "../../../realm/realm.js"
 import {WallSubject} from "./wall-subject.js"
 import {Vecset2} from "../../layouting/vecset2.js"
-import {Box3} from "../../../physics/shapes/box.js"
-import {Line3} from "../../../physics/shapes/line.js"
+import {Box3} from "../../../physics/shapes/box3.js"
+import {Line3} from "../../../physics/shapes/line3.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
-import {Collisions3} from "../../../physics/facilities/collisions.js"
+import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 export class WallDetector {
 	wallExtent = Vec3.new(1, 10, 1)

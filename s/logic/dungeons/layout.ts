@@ -2,11 +2,11 @@
 import {Map2} from "@benev/slate"
 
 import {Vec2} from "@benev/toolbox"
-import {Box} from "../physics/shapes/box.js"
+import {Box2} from "../physics/shapes/box2.js"
 import {Vecset2} from "./layouting/vecset2.js"
 import {DungeonOptions} from "./layouting/types.js"
-import {Collisions} from "../physics/facilities/collisions.js"
 import {inferWallTiles} from "./layouting/infer-wall-tiles.js"
+import {Collisions2} from "../physics/facilities/collisions2.js"
 import {generateBroadplan} from "./layouting/generate-broadplan.js"
 import {generateCellTiles} from "./layouting/generate-cell-tiles.js"
 import {eliminateKissingCorners} from "./layouting/eliminate-kissing-corners.js"
@@ -42,8 +42,8 @@ export class DungeonLayout {
 			for (const [sector, cells] of broadplan.sectors) {
 				for (const cell of cells) {
 					const cellCorner = this.space.toGlobalTileSpace(sector, cell)
-					const cellBox = new Box(cellCorner, this.space.cellSize)
-					if (Collisions.pointVsBox(tile, cellBox))
+					const cellBox = new Box2(cellCorner, this.space.cellSize)
+					if (Collisions2.pointVsBox(tile, cellBox))
 						this.#tileLookups.set(tile, {sector, cell})
 				}
 			}

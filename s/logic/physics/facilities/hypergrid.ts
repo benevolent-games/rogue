@@ -1,11 +1,11 @@
 
 import {Map2} from "@benev/slate"
 import {Vec2} from "@benev/toolbox"
-import {Box} from "../shapes/box.js"
+import {Box2} from "../shapes/box2.js"
 import {Circle} from "../shapes/circle.js"
-import {Collisions} from "./collisions.js"
+import {Collisions2} from "./collisions2.js"
 
-export class Hyperzone extends Box {
+export class Hyperzone extends Box2 {
 	points: Vec2[] = []
 }
 
@@ -38,7 +38,7 @@ export class Hypergrid {
 
 	getZonesTouchingCircle(circle: Circle) {
 		return this.listZones()
-			.filter(zone => Collisions.boxVsCircle(zone, circle))
+			.filter(zone => Collisions2.boxVsCircle(zone, circle))
 	}
 }
 

@@ -6,7 +6,7 @@ import {WallSubject} from "./wall-subject.js"
 import {Circle} from "../../../physics/shapes/circle.js"
 import {Hyperzone} from "../../../physics/facilities/hypergrid.js"
 import {SubjectGrid} from "../../skinning/culling/subject-grid.js"
-import {Collisions} from "../../../physics/facilities/collisions.js"
+import {Collisions2} from "../../../physics/facilities/collisions2.js"
 
 export class WallFader {
 	speed = 3 / 100
@@ -33,7 +33,7 @@ export class WallFader {
 		for (const zone of newProximalZones) {
 			const jobs = this.#fadeOutWorkload.guarantee(zone, () => new Set())
 			for (const subject of this.subjectGrid.subjectsByZone.get(zone) ?? []) {
-				const inProximity = Collisions.pointVsCircle(subject.location, circle)
+				const inProximity = Collisions2.pointVsCircle(subject.location, circle)
 				subject.targetOpacity = (inProximity)
 					? (shouldFade(subject) ? 0 : 1)
 					: 1

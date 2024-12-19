@@ -1,9 +1,9 @@
 
 import {Vec2} from "@benev/toolbox"
-import {Box} from "./shapes/box.js"
+import {Box2} from "./shapes/box2.js"
 import {Circle} from "./shapes/circle.js"
 import {Hypergrid} from "./facilities/hypergrid.js"
-import {Collisions} from "./facilities/collisions.js"
+import {Collisions2} from "./facilities/collisions2.js"
 
 export class Physics {
 	unwalkableHypergrid = new Hypergrid(Vec2.new(16, 16))
@@ -19,8 +19,8 @@ export class Physics {
 		const zones = this.unwalkableHypergrid.getZonesTouchingCircle(circle)
 		const tiles = zones.flatMap(zone => zone.points)
 		const tileExtent = new Vec2(1, 1)
-		return !tiles.some(tile => Collisions.boxVsCircle(
-			new Box(tile, tileExtent),
+		return !tiles.some(tile => Collisions2.boxVsCircle(
+			new Box2(tile, tileExtent),
 			circle,
 		))
 	}

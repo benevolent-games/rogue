@@ -1,5 +1,5 @@
 
-import {Box} from "./box.js"
+import {Box2} from "./box2.js"
 import {Vec2} from "@benev/toolbox"
 
 export class Circle {
@@ -13,7 +13,7 @@ export class Circle {
 		const doubleRadius = this.radius * 2
 		const corner = this.center.clone().subtract_(radius, radius)
 		const extent = corner.clone().add_(doubleRadius, doubleRadius)
-		return new Box(corner, extent)
+		return new Box2(corner, extent)
 	}
 }
 
