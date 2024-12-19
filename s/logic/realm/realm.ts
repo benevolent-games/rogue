@@ -12,6 +12,7 @@ import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
 import {Indicators} from "./utils/indicators.js"
 import {World} from "../../tools/babylon/world.js"
+import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 
@@ -20,6 +21,7 @@ export class Realm {
 	buddies: CapsuleBuddies
 	cameraman: Cameraman
 	indicators: Indicators
+	userInputs: UserInputs
 
 	tact = makeTact(window)
 	playerPosition = Vec3.zero()
@@ -35,6 +37,7 @@ export class Realm {
 		this.materials = new CoolMaterials(world.scene)
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
+		this.userInputs = new UserInputs(this.cameraman)
 	}
 
 	static async load() {
