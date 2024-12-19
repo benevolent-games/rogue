@@ -12,44 +12,47 @@ type CameramanState = {
 	pivot: Coordinates
 	swivel: number
 	tilt: number
-	distance: number
 }
-
-const blankState = (): CameramanState => ({
-	pivot: new Coordinates(0, 0),
-	swivel: Degrees.toRadians(45),
-	tilt: Degrees.toRadians(20),
-	distance: 20,
-})
 
 const alphaReset = Degrees.toRadians(-90)
 const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(60))
 
 export class Cameraman {
+	static blankState(): CameramanState {
+		return {
+			pivot: new Coordinates(0, 0),
+			swivel: Degrees.toRadians(45),
+			tilt: Degrees.toRadians(20),
+		}
+	}
+
 	camera: ArcRotateCamera
-	state = blankState()
-	#smooth = blankState()
+	state = Cameraman.blankState()
+	#smooth = Cameraman.blankState()
 
 	lerp = 10 / 100
 
 	constructor(scene: Scene, public lighting: Lighting) {
 		this.camera = new ArcRotateCamera(
 			"camera",
-			alphaReset - this.state.swivel,
-			this.state.tilt,
-			this.state.distance,
+			alphaReset - this.#smooth.swivel,
+			this.#smooth.tilt,
+			this.#calculateDistance(),
 			Vector3.Zero(),
 			scene,
 		)
 	}
 
-	reset() {
-		this.state = blankState()
+	resetRotations() {
+		const blank = Cameraman.blankState()
+		this.state.swivel = blank.swivel
+		this.state.tilt = blank.tilt
 	}
 
-	setStateWithoutSmoothing(state: CameramanState) {
-		this.state = state
-		this.#smooth = state
+	pivotInstantly(pivot: Coordinates) {
+		this.state.pivot.set(pivot)
+		this.#smooth.pivot.set(pivot)
+		this.#updateCamera()
 	}
 
 	tick() {
@@ -57,6 +60,10 @@ export class Cameraman {
 		this.#updateSmoothedState()
 		this.#updateCamera()
 		this.#updateSpotlight()
+	}
+
+	#calculateDistance() {
+		return Scalar.remap(this.#smooth.tilt, tiltBounds.x, tiltBounds.y, 30, 10)
 	}
 
 	#enforceConstraints() {
@@ -68,14 +75,13 @@ export class Cameraman {
 		this.#smooth.pivot.lerp(this.state.pivot, lerp)
 		this.#smooth.swivel = Scalar.lerp(this.#smooth.swivel, this.state.swivel, lerp)
 		this.#smooth.tilt = Scalar.lerp(this.#smooth.tilt, this.state.tilt, lerp)
-		this.#smooth.distance = Scalar.lerp(this.#smooth.distance, this.state.distance, lerp)
 	}
 
 	#updateCamera() {
 		this.camera.target.set(...this.#smooth.pivot.position().array())
 		this.camera.alpha = alphaReset - this.#smooth.swivel
 		this.camera.beta = this.#smooth.tilt
-		this.camera.radius = Scalar.remap(this.#smooth.tilt, tiltBounds.x, tiltBounds.y, 30, 10)
+		this.camera.radius = this.#calculateDistance()
 	}
 
 	#updateSpotlight() {

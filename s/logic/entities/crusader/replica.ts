@@ -2,6 +2,7 @@
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {replica} from "../../../archimedes/exports.js"
+import {Cameraman} from "../../realm/utils/cameraman.js"
 import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
@@ -25,6 +26,9 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
+
+	if (inControl)
+		realm.cameraman.pivotInstantly(buddyCoordinates.clone())
 
 	return {
 		gatherInputs: () => {
