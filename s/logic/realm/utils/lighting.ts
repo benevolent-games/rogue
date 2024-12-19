@@ -19,13 +19,14 @@ export class Lighting {
 	#makeSpot() {
 		const position = new Vector3(0, 10, 0)
 		const direction = new Vector3(0, -10, 0)
-		const coneAngle = Degrees.toRadians(180)
+		const coneAngle = Degrees.toRadians(120)
 		const exponent = 1000
 		const light = new SpotLight("spot", position, direction, coneAngle, exponent, this.scene)
-		light.diffuse = new Color3(1, 1, 1)
-		light.specular = new Color3(1, 1, 1)
+		const color = new Color3(0.5, 0.6, 1)
+		light.diffuse = color
+		light.specular = color
 		light.range = 50
-		light.intensity = 20
+		light.intensity = 40
 		light.falloffType = Light.FALLOFF_GLTF
 		return light
 	}
@@ -33,9 +34,10 @@ export class Lighting {
 	#makeTorch() {
 		const position = Vector3.Zero()
 		const light = new PointLight("torch", position, this.scene)
-		light.diffuse = new Color3(1, 0.4, 0.1)
-		light.specular = new Color3(1, 0.4, 0.1)
-		light.intensity = 30
+		const color = new Color3(1, 0.4, 0.1)
+		light.diffuse = color
+		light.specular = color
+		light.intensity = 40
 		light.range = 10
 		light.falloffType = Light.FALLOFF_GLTF
 		return light
