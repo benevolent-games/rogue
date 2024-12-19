@@ -11,7 +11,7 @@ export const LoadingScreen = shadowView(use => (active: boolean) => {
 
 	return html`
 		<div class=plate ?data-show="${active}">
-			<img class=benev src="${constants.urls.benevLogo}" alt=""/>
+			<img class=benev src="${constants.urls.benevLogo}" alt="" draggable="false"/>
 			<h2>benevolent.games</h2>
 			<div>
 				<p>now loading...</p>

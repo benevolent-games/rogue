@@ -6,6 +6,11 @@ export default css`
 	display: block;
 }
 
+* {
+	user-drag: none;
+	user-select: none;
+}
+
 .logo {
 	margin: auto;
 	width: 24em;
