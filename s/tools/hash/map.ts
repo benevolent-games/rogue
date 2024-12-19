@@ -23,6 +23,10 @@ export class HashMap<Key, Value> {
 			return result[1]
 	}
 
+	require(key: Key) {
+		return this.#map.require(this.hash(key))[1]
+	}
+
 	has(key: Key) {
 		return this.#map.has(this.hash(key))
 	}

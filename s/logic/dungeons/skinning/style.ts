@@ -14,6 +14,7 @@ export class DungeonStyle {
 	concave: () => Cargo
 
 	constructor(
+			public name: string,
 			public warehouse: Warehouse,
 			public randy: Randy,
 		) {

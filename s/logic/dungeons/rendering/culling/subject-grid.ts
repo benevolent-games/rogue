@@ -6,19 +6,19 @@ import {Hypergrid, Hyperzone} from "../../../physics/facilities/hypergrid.js"
 
 export class SubjectGrid<S extends CullingSubject = CullingSubject> {
 	hypergrid = new Hypergrid(Vec2.new(16, 16))
-	subjectsByLocation = new Map2<Vec2, S>()
 	subjectsByZone = new Map2<Hyperzone, S[]>()
 
 	add(subject: S) {
 		const zone = this.hypergrid.add(subject.location)
-		this.subjectsByLocation.set(subject.location, subject)
-		const subjectArray = this.subjectsByZone.guarantee(zone, () => [])
-		subjectArray.push(subject)
+
+		const zoneSubjects = this.subjectsByZone.guarantee(zone, () => [])
+		zoneSubjects.push(subject)
 	}
 
 	dispose() {
-		for (const subject of this.subjectsByLocation.values())
-			subject.dispose()
+		for (const subjects of this.subjectsByZone.values())
+			for (const subject of subjects)
+				subject.dispose()
 	}
 }
 

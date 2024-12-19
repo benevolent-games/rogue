@@ -10,7 +10,7 @@ export function stdDungeonOptions(): DungeonOptions {
 			tiles: [24, 24],
 		},
 		sectorWalk: {
-			stepCount: 20,
+			stepCount: 2,
 			horizonDirection: [0, 1],
 		},
 	}

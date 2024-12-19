@@ -43,7 +43,7 @@ export function mergeWalls(
 		for (const size of sizes) {
 
 			// walls at size 1 or less do not need merging
-			if (size <= 1) break
+			if (size <= 1) continue
 
 			// thirdly, we consider each wall
 			for (const wall of wallSet.values()) {

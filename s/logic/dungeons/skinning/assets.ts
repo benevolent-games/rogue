@@ -19,7 +19,7 @@ export class DungeonAssets {
 
 		this.styles = new Map2(
 			[...this.warehouse.categorize("style")].map(([style, warehouse]) =>
-				[style, new DungeonStyle(warehouse, randy)]
+				[style, new DungeonStyle(style, warehouse, randy)]
 			)
 		)
 	}
