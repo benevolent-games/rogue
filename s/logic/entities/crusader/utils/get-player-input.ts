@@ -2,11 +2,11 @@
 
 import {Vec2} from "@benev/toolbox"
 import {CrusaderInputData} from "../types.js"
-import {constants} from "../../../../constants.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {GameTact} from "../../../realm/utils/make-tact.js"
+import {Cameraman} from "../../../realm/utils/cameraman.js"
 
-export function getPlayerInput(tact: GameTact): CrusaderInputData {
+export function getPlayerInput(tact: GameTact, cameraman: Cameraman): CrusaderInputData {
 	const {buttons} = tact.inputs.basic
 	const intent = Vec2.zero()
 
@@ -28,7 +28,7 @@ export function getPlayerInput(tact: GameTact): CrusaderInputData {
 		sprint,
 		movementIntent: intent
 			.normalize()
-			.rotate(constants.game.cameraRotation)
+			.rotate(cameraman.swivel)
 			.array(),
 	}
 }

@@ -1,6 +1,4 @@
 
-import {Degrees} from "@benev/toolbox"
-
 export const constants = {
 	urls: {
 		cover: "/assets/images/rogue-crusade-poster.webp",
@@ -21,7 +19,6 @@ export const constants = {
 		resolution: 0.375,
 		tickRate: 60,
 		snapshotRate: 1,
-		cameraRotation: Degrees.toRadians(45),
 		crusaderRadius: 0.4,
 	},
 }

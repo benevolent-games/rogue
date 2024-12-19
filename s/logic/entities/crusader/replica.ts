@@ -30,7 +30,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	return {
 		gatherInputs: () => {
 			if (inControl) {
-				const input = getPlayerInput(realm.tact)
+				const input = getPlayerInput(realm.tact, realm.cameraman)
 				return [input]
 			}
 		},
