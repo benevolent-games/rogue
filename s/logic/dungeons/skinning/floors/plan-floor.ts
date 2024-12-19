@@ -30,6 +30,7 @@ export function planFloor(
 			randyShuffle(randy, tiles.map(tile => ({
 				tile,
 				style,
+				rotation: 0,
 				size: size1,
 				location: tile.clone(),
 			}))),

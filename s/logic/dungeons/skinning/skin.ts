@@ -8,20 +8,16 @@ import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
 import {DungeonLayout} from "../layout.js"
 import {WallSegment} from "./walls/types.js"
-import {FloorSegment} from "./floors/types.js"
-import {range2d} from "../../../tools/range.js"
 import {planWalls} from "./walls/plan-walls.js"
-import {HashSet} from "../../../tools/hash/set.js"
+import {planFloor} from "./floors/plan-floor.js"
 import {DungeonPlacer} from "../rendering/placer.js"
 import {Culler} from "../rendering/culling/culler.js"
 import {WallFader} from "../rendering/walls/wall-fader.js"
 import {WallSubject} from "../rendering/walls/wall-subject.js"
 import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {SubjectGrid} from "../rendering/culling/subject-grid.js"
-import {randyShuffle} from "../../../tools/temp/randy-shuffle.js"
 import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 import {CullingSubject} from "../rendering/culling/culling-subject.js"
-import { planFloor } from "./floors/plan-floor.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -75,7 +71,7 @@ export class DungeonSkin {
 			const isSquare = floor.size.x === floor.size.y
 			const radians = (isSquare && !cargo.manifest.has("shader"))
 				? Degrees.toRadians(this.randy.choose([0, -90, -180, -270]))
-				: 0
+				: floor.rotation
 			const spatial = this.placer.placeProp({location: floor.location, radians})
 			const spawn = () => cargo.instance(spatial)
 			const subject = new CullingSubject(floor.location, spawn)

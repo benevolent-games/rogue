@@ -6,6 +6,7 @@ export type FloorSegment = {
 	tile: Vec2
 	size: Vec2
 	location: Vec2
+	rotation: number
 	style: DungeonStyle
 }
 
