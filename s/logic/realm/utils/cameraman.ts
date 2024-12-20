@@ -15,7 +15,8 @@ type CameramanState = {
 }
 
 const alphaReset = Degrees.toRadians(-90)
-const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(60))
+const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(40))
+const distanceBounds = new Vec2(10, 20)
 
 export class Cameraman {
 	static blankState(): CameramanState {
@@ -63,7 +64,13 @@ export class Cameraman {
 	}
 
 	#calculateDistance() {
-		return Scalar.remap(this.#smooth.tilt, tiltBounds.x, tiltBounds.y, 30, 10)
+		return Scalar.remap(
+			this.#smooth.tilt,
+			tiltBounds.x,
+			tiltBounds.y,
+			distanceBounds.y,
+			distanceBounds.x,
+		)
 	}
 
 	#enforceConstraints() {
