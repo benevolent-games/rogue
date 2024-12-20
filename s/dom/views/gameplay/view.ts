@@ -24,8 +24,6 @@ export const Gameplay = shadowView(use => (o: {
 	use.styles(themeCss, stylesCss)
 	use.mount(() => ev(document, {contextmenu: (e: Event) => e.preventDefault()}))
 
-	const {dragQueen} = o.realm.userInputs
-
 	const dropper = use.once(() => dungeonDropper(
 		files => o.realm.onFilesDropped.publish(files))
 	)
@@ -43,12 +41,6 @@ export const Gameplay = shadowView(use => (o: {
 
 	return html`
 		<div class=container
-			@blur="${dragQueen.events.blur}"
-			@pointerup="${dragQueen.events.pointerup}"
-			@pointerdown="${dragQueen.events.pointerdown}"
-			@pointermove="${dragQueen.events.pointermove}"
-			@pointerleave="${dragQueen.events.pointerleave}"
-
 			?x-drop-hover="${dropper.indicator}"
 			@dragover="${dropper.dragover}"
 			@dragleave="${dropper.dragleave}"

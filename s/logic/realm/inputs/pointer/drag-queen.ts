@@ -1,4 +1,5 @@
 
+import { ev } from "@benev/slate"
 import {PointerCaptor} from "./captor.js"
 
 type Activity = {
@@ -62,6 +63,17 @@ export class DragQueen {
 		},
 		blur: this.#cancelActivity,
 		pointerleave: this.#cancelActivity,
+	}
+
+	attach(element: HTMLElement) {
+		const {events} = this
+		return ev(element, {
+			blur: events.blur,
+			pointerup: events.pointerup,
+			pointerdown: events.pointerdown,
+			pointermove: events.pointermove,
+			pointerleave: events.pointerleave,
+		})
 	}
 }
 

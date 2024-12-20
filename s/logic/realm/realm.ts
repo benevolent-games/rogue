@@ -2,7 +2,7 @@
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Vec3} from "@benev/toolbox"
-import {pubsub} from "@benev/slate"
+import {pubsub, Trashbin} from "@benev/slate"
 import {Constants} from "@babylonjs/core/Engines/constants.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
@@ -27,6 +27,8 @@ export class Realm {
 	playerPosition = Vec3.zero()
 	onFilesDropped = pubsub<[File[]]>()
 
+	#trashbin = new Trashbin()
+
 	constructor(
 			public world: World,
 			public lighting: Lighting,
@@ -38,6 +40,10 @@ export class Realm {
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
 		this.userInputs = new UserInputs(this.cameraman)
+
+		this.#trashbin.disposer(
+			this.userInputs.dragQueen.attach(world.canvas)
+		)
 	}
 
 	static async load() {
