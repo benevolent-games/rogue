@@ -6,7 +6,7 @@ import {Circle} from "../shapes/circle.js"
 import {Collisions2} from "./collisions2.js"
 
 export class Exozone<X> extends Box2 {
-	items: X[] = []
+	items = new Set<X>()
 }
 
 export class Exogrid<X> {
@@ -29,28 +29,42 @@ export class Exogrid<X> {
 		).multiply(this.zoneExtent)
 	}
 
-	add(item: X) {
+	#calculateZoneForItem(item: X) {
 		const point = this.locator(item)
 		const zoneCorner = this.#calculateZoneCorner(point)
 		const hash = this.#hash(zoneCorner)
-		const zone = this.#zones.guarantee(
+		return this.#zones.guarantee(
 			hash,
 			() => new Exozone(zoneCorner, this.zoneExtent),
 		)
-		zone.items.push(item)
+	}
+
+	add(item: X) {
+		const zone = this.#calculateZoneForItem(item)
+		zone.items.add(item)
 		this.#zonesByItem.set(item, zone)
 		return zone
 	}
 
 	remove(item: X) {
 		const zone = this.#zonesByItem.get(item)
-		if (zone)
-			zone.items = zone.items.filter(i => i !== item)
+		if (zone) {
+			zone.items.delete(item)
+			this.#zonesByItem.delete(item)
+		}
 	}
 
 	update(item: X) {
-		this.remove(item)
-		this.add(item)
+		const oldZone = this.#zonesByItem.get(item)
+		const newZone = this.#calculateZoneForItem(item)
+
+		// delete from old zone
+		if (oldZone && oldZone !== newZone)
+			oldZone.items.delete(item)
+
+		// add to new zone
+		newZone.items.add(item)
+		this.#zonesByItem.set(item, newZone)
 	}
 
 	zones() {
