@@ -18,9 +18,15 @@ export class DungeonAssets {
 		this.warehouse = Warehouse.from(container)
 
 		this.styles = new Map2(
-			[...this.warehouse.categorize("style")].map(([style, warehouse]) =>
-				[style, new DungeonStyle(style, warehouse, randy)]
-			)
+			[...this.warehouse.categorize("style")].map(([style, warehouse]) => {
+				try {
+					return [style, new DungeonStyle(style, warehouse, randy)]
+				}
+				catch (error) {
+					console.error(`error reading style "${style}"`)
+					throw error
+				}
+			})
 		)
 	}
 }
