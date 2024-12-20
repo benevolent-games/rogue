@@ -3,23 +3,25 @@ import {Vec3} from "@benev/toolbox"
 
 export class Box3 {
 	constructor(
-		public min: Vec3,
+		public center: Vec3,
 		public extent: Vec3,
 	) {}
 
-	static centered(center: Vec3, extent: Vec3) {
-		const min = center.clone().subtract(extent.clone().half())
-		return new this(min, extent)
+	static fromCorner(min: Vec3, extent: Vec3) {
+		return new this(
+			min.clone().add(extent.clone().half()),
+			extent,
+		)
 	}
 
-	get center() {
-		return this.min.clone()
-			.add(this.extent.clone().half())
+	get min() {
+		return this.center.clone()
+			.subtract(this.extent.clone().half())
 	}
 
 	get max() {
-		return this.min.clone()
-			.add(this.extent)
+		return this.center.clone()
+			.add(this.extent.clone().half())
 	}
 
 	clone() {

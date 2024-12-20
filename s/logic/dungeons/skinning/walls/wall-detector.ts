@@ -12,7 +12,7 @@ import {Coordinates} from "../../../realm/utils/coordinates.js"
 import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 export class WallDetector {
-	debug = false
+	debug = true
 
 	wallExtent = Vec3.new(1, 10, 1)
 	rugExtent = Vec3.new(3, 1, 3)
@@ -38,8 +38,8 @@ export class WallDetector {
 	#makeWallGraphic() {
 		const {realm} = this
 		const mesh = MeshBuilder.CreateBox("b", {size: 1}, realm.world.scene)
-		const material = realm.materials.yellow.clone("spicy")
-		material.alpha = 0.1
+		const material = realm.materials.pearl.clone("")
+		material.alpha = 0.4
 		mesh.material = material
 		return mesh
 	}
@@ -55,7 +55,7 @@ export class WallDetector {
 		const tile = wall.tile.clone().add_(1, 0)
 
 		const wallTilePosition = Coordinates.from(tile).position()
-		const wallBox = new Box3(wallTilePosition, this.wallExtent.clone())
+		const wallBox = Box3.fromCorner(wallTilePosition, this.wallExtent.clone())
 
 		if (this.debug && this.seen.size < 500 && !this.seen.has(tile)) {
 			const mesh = this.#makeWallGraphic()
@@ -69,7 +69,7 @@ export class WallDetector {
 			.rotate(cameraman.state.swivel)
 			.position()
 
-		const rugBox = Box3.centered(
+		const rugBox = new Box3(
 			playerPosition.clone()
 				.subtract(camdir),
 			this.rugExtent.clone(),
