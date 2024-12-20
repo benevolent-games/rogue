@@ -12,7 +12,7 @@ export class CapsuleBuddies {
 	constructor(private scene: Scene) {
 		this.baseBuddy = MeshBuilder.CreateCapsule("capsuleBuddy", {
 			height: 1.8,
-			radius: constants.game.crusaderRadius,
+			radius: constants.game.crusader.radius,
 		})
 		this.baseBuddy.position.y += 1.8 / 2
 		this.scene.removeMesh(this.baseBuddy)

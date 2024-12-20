@@ -17,6 +17,15 @@ export class Box2 {
 			.add(this.extent)
 	}
 
+	offset(delta: Vec2) {
+		this.corner.add(delta)
+		return this
+	}
+
+	boundingBox() {
+		return this
+	}
+
 	clone() {
 		return new Box2(this.corner.clone(), this.extent.clone())
 	}

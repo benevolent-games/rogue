@@ -1,7 +1,7 @@
 
-import {Physics} from "../physics/physics.js"
+import {Phys} from "../physics/phys.js"
 
 export class Station {
-	physics = new Physics()
+	phys = new Phys()
 }
 

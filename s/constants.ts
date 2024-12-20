@@ -19,7 +19,11 @@ export const constants = {
 		resolution: 0.375,
 		tickRate: 60,
 		snapshotRate: 1,
-		crusaderRadius: 0.4,
+		crusader: {
+			radius: 0.4,
+			speed: 2.5,
+			speedSprint: 4,
+		},
 	},
 }
 

@@ -39,5 +39,9 @@ export const Collisions2 = {
 		const radiusSquared = circle.radius ** 2
 		return distanceSquared <= radiusSquared
 	},
+
+	circleVsCircle(circleA: Circle, b: Circle) {
+		// TODO
+	},
 }
 

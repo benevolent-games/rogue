@@ -26,8 +26,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const dungeonLayout = new DungeonLayout(dungeonOptions)
 	const randy = new Randy(dungeonOptions.seed)
 
-	const getSpawnpoint = () => randy.choose(dungeonLayout.spawnpoints.list())
-		.clone().add_(0.5, 0.5)
+	const getSpawnpoint = () => randy.choose(dungeonLayout.spawnpoints.array())
+		.clone()
+		.add_(0.5, 0.5)
 
 	simulator.create("dungeon", {options: dungeonOptions})
 
@@ -36,8 +37,8 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		onBundle: ({author}) => {
 			const playerId = simulator.create("crusader", {
 				author,
-				speed: watchman.perSecond(2),
-				speedSprint: watchman.perSecond(5),
+				speed: watchman.perSecond(constants.game.crusader.speed),
+				speedSprint: watchman.perSecond(constants.game.crusader.speedSprint),
 				coordinates: Coordinates.import(getSpawnpoint()).array(),
 			})
 			return () => simulator.delete(playerId)
