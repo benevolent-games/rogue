@@ -7,7 +7,7 @@ export default css`
 	height: 3em;
 	position: relative;
 	--button-size: 3em;
-	--bgcolor1: #222e;
+	--bgcolor1: #222a;
 	--bgcolor2: #4442;
 }
 
@@ -19,6 +19,7 @@ export default css`
 	overflow: hidden;
 
 	background: var(--bgcolor1);
+	backdrop-filter: blur(0.5em);
 	box-shadow: .2em .3em .8em #0004;
 
 	nav {
@@ -93,6 +94,7 @@ export default css`
 	&:not([x-menu-open]) {
 		background: transparent;
 		box-shadow: none;
+		backdrop-filter: none;
 
 		nav > [x-tab] { opacity: 0; }
 		section { opacity: 0;  }

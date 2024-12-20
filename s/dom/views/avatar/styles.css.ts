@@ -74,7 +74,8 @@ div[part="box"] {
 			display: block;
 			content: "";
 			inset: 0;
-			background: #8888;
+			background: #8884;
+			backdrop-filter: blur(0.1em);
 		}
 	}
 
