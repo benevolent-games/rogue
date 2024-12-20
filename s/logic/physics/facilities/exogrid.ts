@@ -35,7 +35,10 @@ export class Exogrid<X> {
 		const hash = this.#hash(zoneCorner)
 		return this.#zones.guarantee(
 			hash,
-			() => new Exozone(zoneCorner, this.zoneExtent),
+			() => new Exozone(
+				zoneCorner.clone().add(this.zoneExtent.clone().half()),
+				this.zoneExtent,
+			),
 		)
 	}
 

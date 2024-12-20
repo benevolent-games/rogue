@@ -3,22 +3,26 @@ import {Vec2} from "@benev/toolbox"
 
 export class Box2 {
 	constructor(
-		public corner: Vec2,
+		public center: Vec2,
 		public extent: Vec2,
 	) {}
 
-	get center() {
-		return this.corner.clone()
+	static fromCorner(min: Vec2, extent: Vec2) {
+		return new this(min.add(extent.clone().half()), extent)
+	}
+
+	get min() {
+		return this.center.clone()
+			.subtract(this.extent.clone().half())
+	}
+
+	get max() {
+		return this.center.clone()
 			.add(this.extent.clone().half())
 	}
 
-	get corner2() {
-		return this.corner.clone()
-			.add(this.extent)
-	}
-
 	offset(delta: Vec2) {
-		this.corner.add(delta)
+		this.center.add(delta)
 		return this
 	}
 
@@ -27,7 +31,7 @@ export class Box2 {
 	}
 
 	clone() {
-		return new Box2(this.corner.clone(), this.extent.clone())
+		return new Box2(this.center.clone(), this.extent.clone())
 	}
 }
 

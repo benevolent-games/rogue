@@ -38,11 +38,11 @@ export class DungeonLayout {
 		eliminateKissingCorners(this.floorTiles)
 		this.wallTiles = inferWallTiles(this.floorTiles)
 
-		for (const tile of [...this.floorTiles.list(), ...this.wallTiles.list()]) {
+		for (const tile of [...this.floorTiles.values(), ...this.wallTiles.values()]) {
 			for (const [sector, cells] of broadplan.sectors) {
 				for (const cell of cells) {
 					const cellCorner = this.space.toGlobalTileSpace(sector, cell)
-					const cellBox = new Box2(cellCorner, this.space.cellSize)
+					const cellBox = Box2.fromCorner(cellCorner, this.space.cellSize)
 					if (Collisions2.pointVsBox(tile, cellBox))
 						this.#tileLookups.set(tile, {sector, cell})
 				}

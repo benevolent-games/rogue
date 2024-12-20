@@ -16,7 +16,11 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	const tileExtent = new Vec2(1, 1)
 
 	for (const tile of dungeonLayout.wallTiles.values())
-		station.phys.addObstacle(new PhysObstacle(new Box2(tile, tileExtent)))
+		station.phys.addObstacle(
+			new PhysObstacle(
+				Box2.fromCorner(tile, tileExtent)
+			)
+		)
 
 	return {
 		inputData: undefined,

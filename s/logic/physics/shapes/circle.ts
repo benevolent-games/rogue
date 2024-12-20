@@ -18,7 +18,7 @@ export class Circle {
 		const doubleRadius = this.radius * 2
 		const corner = this.center.clone().subtract_(radius, radius)
 		const extent = corner.clone().add_(doubleRadius, doubleRadius)
-		return new Box2(corner, extent)
+		return Box2.fromCorner(corner, extent)
 	}
 
 	clone() {

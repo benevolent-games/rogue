@@ -27,7 +27,13 @@ export class Hypergrid {
 	add(point: Vec2) {
 		const zoneCorner = this.#calculateZoneCorner(point)
 		const hash = this.#hash(zoneCorner)
-		const zone = this.#zones.guarantee(hash, () => new Hyperzone(zoneCorner, this.zoneExtent))
+		const zone = this.#zones.guarantee(
+			hash,
+			() => new Hyperzone(
+				zoneCorner.clone().add(this.zoneExtent.clone().half()),
+				this.zoneExtent,
+			),
+		)
 		zone.points.push(point)
 		return zone
 	}

@@ -6,10 +6,10 @@ import {Circle} from "../shapes/circle.js"
 export const Collisions2 = {
 	pointVsBox(point: Vec2, box: Box2) {
 		return (
-			point.x >= box.corner.x &&
-			point.x <= box.corner2.x &&
-			point.y >= box.corner.y &&
-			point.y <= box.corner2.y
+			point.x >= box.min.x &&
+			point.x <= box.max.x &&
+			point.y >= box.min.y &&
+			point.y <= box.max.y
 		)
 	},
 
@@ -22,17 +22,17 @@ export const Collisions2 = {
 
 	boxVsBox(boxA: Box2, boxB: Box2) {
 		return !(
-			boxA.corner2.x <= boxB.corner.x ||
-			boxA.corner.x >= boxB.corner2.x ||
-			boxA.corner2.y <= boxB.corner.y ||
-			boxA.corner.y >= boxB.corner2.y
+			boxA.max.x <= boxB.min.x ||
+			boxA.min.x >= boxB.max.x ||
+			boxA.max.y <= boxB.min.y ||
+			boxA.min.y >= boxB.max.y
 		)
 	},
 
 	boxVsCircle(box: Box2, circle: Circle) {
 		const clamped = new Vec2(
-			Scalar.clamp(circle.center.x, box.corner.x, box.corner2.x),
-			Scalar.clamp(circle.center.y, box.corner.y, box.corner2.y),
+			Scalar.clamp(circle.center.x, box.min.x, box.max.x),
+			Scalar.clamp(circle.center.y, box.min.y, box.max.y),
 		)
 		const difference = circle.center.clone().subtract(clamped)
 		const distanceSquared = (difference.x ** 2) + (difference.y ** 2)
