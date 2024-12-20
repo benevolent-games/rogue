@@ -7,7 +7,7 @@ export class Clock {
 	}
 
 	log(label: string) {
-		console.log(`🕒 ${label} - ${this.elapsed} ms`)
+		console.log(`🕒 ${label} - ${this.elapsed.toFixed(2)} ms`)
 	}
 }
 

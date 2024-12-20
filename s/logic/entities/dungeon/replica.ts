@@ -13,7 +13,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
 	const fadeRange = 4
-	const cullingRange = 30
+	const cullingRange = 20
 	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.state.swivel)
 	const dungeonLayout = new DungeonLayout(state.options)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)

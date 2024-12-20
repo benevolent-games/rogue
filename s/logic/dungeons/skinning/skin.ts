@@ -70,7 +70,11 @@ export class DungeonSkin {
 			const cargo = floor.style.floors.require(size)()
 			const radians = floor.rotation
 			const spatial = this.placer.placeProp({location: floor.location, radians})
-			const spawn = () => cargo.instance(spatial)
+			const spawn = () => {
+				const instance = cargo.instance(spatial)
+				instance.freezeWorldMatrix()
+				return instance
+			}
 			const subject = new CullingSubject(floor.location, spawn)
 			this.cullableGrid.add(subject)
 		}
@@ -88,7 +92,11 @@ export class DungeonSkin {
 			const style = this.#getStyle(wall.tile)
 			const cargo = getCargo(style)
 			const spatial = this.placer.placeProp(wall)
-			const spawn = () => cargo.clone(spatial)
+			const spawn = () => {
+				const prop = cargo.clone(spatial)
+				prop.freezeWorldMatrix()
+				return prop
+			}
 			const subject = new WallSubject(wall.tile, wall.location, spawn)
 			this.cullableGrid.add(subject)
 			this.fadingGrid.add(subject)

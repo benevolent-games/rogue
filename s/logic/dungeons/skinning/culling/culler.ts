@@ -6,7 +6,7 @@ import {Circle} from "../../../physics/shapes/circle.js"
 import {Hyperzone} from "../../../physics/facilities/hypergrid.js"
 
 export class Culler {
-	workLimit = 3
+	workLimit = 1
 	#enabled = new Set<Hyperzone>()
 	#queue = new Queue<() => void>()
 
