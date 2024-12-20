@@ -16,7 +16,7 @@ export const constants = {
 
 	game: {
 		antialiasing: false,
-		resolution: 0.375,
+		resolution: 0.25,
 		tickRate: 60,
 		snapshotRate: 1,
 		crusader: {
