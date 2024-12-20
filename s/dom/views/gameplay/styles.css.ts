@@ -15,7 +15,7 @@ export default css`
 }
 
 canvas {
-	image-rendering: pixelated;
+	image-rendering: crisp-edges;
 
 	display: block;
 	width: 100%;
