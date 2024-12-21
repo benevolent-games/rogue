@@ -51,7 +51,7 @@ export const Gameplay = shadowView(use => (o: {
 			<div class=overlay>
 				${Gigamenu(panels)}
 				<div class=buttonbar>
-					<button class="naked" title="reset camera" @click="${() => o.realm.cameraman.resetRotations()}">
+					<button class="naked" title="reset camera" @click="${() => o.realm.cameraman.reset()}">
 						${componentsSvg}
 					</button>
 					<button class="naked" title="fullscreen" @click="${() => toggleFullscreen(use.element)}">

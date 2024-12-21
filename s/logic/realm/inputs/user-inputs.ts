@@ -22,8 +22,8 @@ export class UserInputs {
 			onAnyDrag: () => {},
 			onAnyClick: () => {},
 			onIntendedDrag: event => {
-				cameraman.state.swivel -= event.movementX * sensitivityRadians
-				cameraman.state.tilt -= event.movementY * sensitivityRadians
+				cameraman.desired.swivel -= event.movementX * sensitivityRadians
+				cameraman.desired.tilt -= event.movementY * sensitivityRadians
 			},
 			onIntendedClick: () => {},
 		})

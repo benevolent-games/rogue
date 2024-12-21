@@ -112,7 +112,7 @@ export class WallDetector {
 			)
 			.multiplyBy(Math.SQRT2)
 			.addBy(Number.EPSILON)
-			.rotate(cameraman.state.swivel)
+			.rotate(cameraman.desired.swivel)
 			.position()
 
 		const rugBox = new Box3(

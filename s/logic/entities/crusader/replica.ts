@@ -2,7 +2,6 @@
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {replica} from "../../../archimedes/exports.js"
-import {Cameraman} from "../../realm/utils/cameraman.js"
 import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
@@ -44,7 +43,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			buddy.position.set(...position.array())
 
 			if (inControl) {
-				realm.cameraman.state.pivot = buddyCoordinates
+				realm.cameraman.desired.pivot = buddyCoordinates
 				realm.playerPosition = position
 				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
 			}

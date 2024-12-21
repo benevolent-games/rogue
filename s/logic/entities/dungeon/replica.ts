@@ -20,7 +20,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
 
-	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.state.swivel)
+	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.desired.swivel)
 
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {
@@ -39,15 +39,15 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			const {culler, wallFader} = dungeonRenderer.skin
 
 			const c1 = new Clock()
-			culler.cull(realm.cameraman.state.pivot, cullingRange)
+			culler.cull(realm.cameraman.desired.pivot, cullingRange)
 			if (c1.elapsed > 3)
 				c1.log("culling was slow")
 
 			const c2 = new Clock()
 			wallFader.animate(
-				realm.cameraman.state.pivot.clone().add(camfadeOffset),
+				realm.cameraman.desired.pivot.clone().add(camfadeOffset),
 				fadeRange,
-				wall => wallDetector.detect(wall, realm.cameraman.state.pivot.position(), realm.cameraman),
+				wall => wallDetector.detect(wall, realm.cameraman.desired.pivot.position(), realm.cameraman),
 			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")

@@ -28,7 +28,7 @@ export function getPlayerInput(tact: GameTact, cameraman: Cameraman): CrusaderIn
 		sprint,
 		movementIntent: intent
 			.normalize()
-			.rotate(cameraman.state.swivel)
+			.rotate(cameraman.smoothed.swivel)
 			.array(),
 	}
 }

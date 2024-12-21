@@ -12,11 +12,14 @@ type CameramanState = {
 	pivot: Coordinates
 	swivel: number
 	tilt: number
+	distance: number
 }
 
+const pivotHeight = 1.6
 const alphaReset = Degrees.toRadians(-90)
 const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(40))
 const distanceBounds = new Vec2(10, 20)
+const swivelSnappingIncrements = Degrees.toRadians(45)
 
 export class Cameraman {
 	static blankState(): CameramanState {
@@ -24,79 +27,81 @@ export class Cameraman {
 			pivot: new Coordinates(0, 0),
 			swivel: Degrees.toRadians(45),
 			tilt: Degrees.toRadians(20),
+			distance: (distanceBounds.x + distanceBounds.y) / 2,
 		}
 	}
 
 	camera: ArcRotateCamera
-	state = Cameraman.blankState()
-	#smooth = Cameraman.blankState()
+
+	/** user inputted desired camera state */
+	desired = Cameraman.blankState()
+
+	/** state with rules enforced */
+	enforced = Cameraman.blankState()
+
+	/** smoothed final results actually displayed */
+	smoothed = Cameraman.blankState()
 
 	lerp = 10 / 100
 
 	constructor(scene: Scene, public lighting: Lighting) {
 		this.camera = new ArcRotateCamera(
 			"camera",
-			alphaReset - this.#smooth.swivel,
-			this.#smooth.tilt,
-			this.#calculateDistance(),
+			alphaReset - this.smoothed.swivel,
+			this.smoothed.tilt,
+			this.smoothed.distance,
 			Vector3.Zero(),
 			scene,
 		)
-	}
-
-	resetRotations() {
-		const blank = Cameraman.blankState()
-		this.state.swivel = blank.swivel
-		this.state.tilt = blank.tilt
-	}
-
-	pivotInstantly(pivot: Coordinates) {
-		this.state.pivot.set(pivot)
-		this.#smooth.pivot.set(pivot)
-		this.#updateCamera()
 	}
 
 	get position() {
 		return Vec3.from(this.camera.position)
 	}
 
+	reset() {
+		this.desired = Cameraman.blankState()
+	}
+
+	pivotInstantly(pivot: Coordinates) {
+		this.desired.pivot.set(pivot)
+		this.enforced.pivot.set(pivot)
+		this.smoothed.pivot.set(pivot)
+		this.#updateCamera()
+	}
+
 	tick() {
-		this.#enforceConstraints()
-		this.#updateSmoothedState()
+		this.#enforceRules()
+		this.#updateSmoothed()
 		this.#updateCamera()
 		this.#updateSpotlight()
 	}
 
-	#calculateDistance() {
-		return Scalar.remap(
-			this.#smooth.tilt,
-			tiltBounds.x,
-			tiltBounds.y,
-			distanceBounds.y,
-			distanceBounds.x,
-		)
+	#enforceRules() {
+		this.desired.tilt = Scalar.clamp(this.desired.tilt, ...tiltBounds.array())
+		this.desired.distance = Scalar.clamp(this.desired.distance, ...distanceBounds.array())
+		Object.assign(this.enforced, this.desired)
+		this.enforced.swivel = Math.round(this.enforced.swivel / swivelSnappingIncrements) * swivelSnappingIncrements
 	}
 
-	#enforceConstraints() {
-		this.state.tilt = Scalar.clamp(this.state.tilt, tiltBounds.x, tiltBounds.y)
-	}
-
-	#updateSmoothedState() {
+	#updateSmoothed() {
 		const {lerp} = this
-		this.#smooth.pivot.lerp(this.state.pivot, lerp)
-		this.#smooth.swivel = Scalar.lerp(this.#smooth.swivel, this.state.swivel, lerp)
-		this.#smooth.tilt = Scalar.lerp(this.#smooth.tilt, this.state.tilt, lerp)
+		this.smoothed.pivot.lerp(this.enforced.pivot, lerp)
+		this.smoothed.swivel = Scalar.lerp(this.smoothed.swivel, this.enforced.swivel, lerp)
+		this.smoothed.tilt = Scalar.lerp(this.smoothed.tilt, this.enforced.tilt, lerp)
+		this.smoothed.distance = Scalar.lerp(this.smoothed.distance, this.enforced.distance, lerp)
 	}
 
 	#updateCamera() {
-		this.camera.target.set(...this.#smooth.pivot.position().array())
-		this.camera.alpha = alphaReset - this.#smooth.swivel
-		this.camera.beta = this.#smooth.tilt
-		this.camera.radius = this.#calculateDistance()
+		const target = this.smoothed.pivot.position().add_(0,  pivotHeight, 0)
+		this.camera.target.set(...target.array())
+		this.camera.alpha = alphaReset - this.smoothed.swivel
+		this.camera.beta = this.smoothed.tilt
+		this.camera.radius = this.smoothed.distance
 	}
 
 	#updateSpotlight() {
-		const targetPosition = this.#smooth.pivot.position()
+		const targetPosition = this.smoothed.pivot.position()
 		const cameraPosition = Vec3.from(this.camera.position.asArray())
 		const cameraLookingVector = targetPosition.clone().subtract(cameraPosition)
 		const cameraNormal = cameraLookingVector.clone().normalize()
