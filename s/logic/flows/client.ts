@@ -113,6 +113,7 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 		glbs.dispose()
 		world.dispose()
 		multiplayer.dispose()
+		realm.dispose()
 	}
 
 	return {world, realm, replicator, liaison, dispose}

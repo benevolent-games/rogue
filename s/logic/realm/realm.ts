@@ -40,10 +40,7 @@ export class Realm {
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
 		this.userInputs = new UserInputs(this.cameraman)
-
-		this.#trashbin.disposer(
-			this.userInputs.dragQueen.attach(world.canvas)
-		)
+		this.#trashbin.disposer(this.userInputs.attach(world.canvas))
 	}
 
 	static async load() {
@@ -64,6 +61,10 @@ export class Realm {
 
 	tick() {
 		this.cameraman.tick()
+	}
+
+	dispose() {
+		this.#trashbin.dispose()
 	}
 }
 

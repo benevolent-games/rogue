@@ -8,39 +8,39 @@ import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
 import {Lighting} from "./lighting.js"
 import {Coordinates} from "./coordinates.js"
 
-type CameramanState = {
-	pivot: Coordinates
-	swivel: number
-	tilt: number
-	distance: number
-}
-
 const pivotHeight = 1.6
 const alphaReset = Degrees.toRadians(-90)
-const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(40))
-const distanceBounds = new Vec2(10, 20)
+const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(60))
+const distanceBounds = new Vec2(5, 25)
 const swivelSnappingIncrements = Degrees.toRadians(45)
 
-export class Cameraman {
-	static blankState(): CameramanState {
-		return {
-			pivot: new Coordinates(0, 0),
-			swivel: Degrees.toRadians(45),
-			tilt: Degrees.toRadians(20),
-			distance: (distanceBounds.x + distanceBounds.y) / 2,
-		}
-	}
+export class CameramanState {
+	pivot = new Coordinates(0, 0)
+	swivel = Degrees.toRadians(45)
+	tilt = Degrees.toRadians(20)
+	distance = (distanceBounds.x + distanceBounds.y) / 2
 
+	clone() {
+		const state = new CameramanState()
+		state.pivot = this.pivot.clone()
+		state.swivel = this.swivel
+		state.tilt = this.tilt
+		state.distance = this.distance
+		return state
+	}
+}
+
+export class Cameraman {
 	camera: ArcRotateCamera
 
 	/** user inputted desired camera state */
-	desired = Cameraman.blankState()
+	desired = new CameramanState()
 
 	/** state with rules enforced */
-	enforced = Cameraman.blankState()
+	enforced = new CameramanState()
 
 	/** smoothed final results actually displayed */
-	smoothed = Cameraman.blankState()
+	smoothed = new CameramanState()
 
 	lerp = 10 / 100
 
@@ -60,7 +60,9 @@ export class Cameraman {
 	}
 
 	reset() {
-		this.desired = Cameraman.blankState()
+		const {pivot} = this.desired
+		this.desired = new CameramanState()
+		this.desired.pivot = pivot
 	}
 
 	pivotInstantly(pivot: Coordinates) {
@@ -71,16 +73,20 @@ export class Cameraman {
 	}
 
 	tick() {
-		this.#enforceRules()
+		this.#applyDesireConstraints()
+		this.#updateEnforced()
 		this.#updateSmoothed()
 		this.#updateCamera()
 		this.#updateSpotlight()
 	}
 
-	#enforceRules() {
+	#applyDesireConstraints() {
 		this.desired.tilt = Scalar.clamp(this.desired.tilt, ...tiltBounds.array())
 		this.desired.distance = Scalar.clamp(this.desired.distance, ...distanceBounds.array())
-		Object.assign(this.enforced, this.desired)
+	}
+
+	#updateEnforced() {
+		this.enforced = this.desired.clone()
 		this.enforced.swivel = Math.round(this.enforced.swivel / swivelSnappingIncrements) * swivelSnappingIncrements
 	}
 

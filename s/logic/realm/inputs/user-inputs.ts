@@ -1,7 +1,10 @@
 
+import {ev} from "@benev/slate"
 import {Arcseconds} from "@benev/toolbox"
 import {Cameraman} from "../utils/cameraman.js"
 import {DragQueen} from "./pointer/drag-queen.js"
+
+const wheelSensitivity = 1 / 100
 
 export class UserInputs {
 	sensitivityApd = 720
@@ -27,6 +30,23 @@ export class UserInputs {
 			},
 			onIntendedClick: () => {},
 		})
+	}
+
+	#wheelCamera(element: HTMLElement) {
+		return ev(element, {
+			wheel: (event: WheelEvent) => {
+				this.cameraman.desired.distance += event.deltaY * wheelSensitivity
+			},
+		})
+	}
+
+	attach(element: HTMLElement) {
+		const unattach1 = this.dragQueen.attach(element)
+		const unattach2 = this.#wheelCamera(element)
+		return () => {
+			unattach1()
+			unattach2()
+		}
 	}
 }
 
