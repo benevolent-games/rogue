@@ -60,9 +60,17 @@ export class Cameraman {
 	}
 
 	reset() {
+		this.#unwindSwivelInstantly()
 		const {pivot} = this.desired
 		this.desired = new CameramanState()
 		this.desired.pivot = pivot
+	}
+
+	#unwindSwivelInstantly() {
+		const swivel = this.smoothed.swivel % Degrees.toRadians(360)
+		this.desired.swivel = swivel
+		this.enforced.swivel = swivel
+		this.smoothed.swivel = swivel
 	}
 
 	pivotInstantly(pivot: Coordinates) {
