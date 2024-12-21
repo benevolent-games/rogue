@@ -1,11 +1,10 @@
 
-import {Vec3} from "@benev/toolbox"
+import {Vec2, Vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 
 import {Realm} from "../../../realm/realm.js"
 import {WallSubject} from "./wall-subject.js"
-import {Vecset2} from "../../layouting/vecset2.js"
 import {Box3} from "../../../physics/shapes/box3.js"
 import {Cameraman} from "../../../realm/utils/cameraman.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
@@ -13,12 +12,9 @@ import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 export class WallDetector {
 	debug = true
-
-	wallExtent = Vec3.new(1, 10, 1)
 	rugExtent = Vec3.new(3, 1, 3)
-
 	rugGraphic?: Mesh
-	seen = new Vecset2()
+	seen = new Set<WallSubject>()
 
 	constructor(public realm: Realm) {
 		if (this.debug) {
@@ -50,18 +46,22 @@ export class WallDetector {
 	}
 
 	detect(wall: WallSubject, playerPosition: Vec3, cameraman: Cameraman) {
+		const tileExtent = new Vec3(1, 10, 1)
 
-		// TODO wtf cursed! why are all the wall subjects misaligned!?!?
-		const tile = wall.tile.clone().add_(1, 0)
+		const wallBoxes = wall.segment.tiles.map(tile => {
+			const tileCenter = Coordinates.from(tile)
+				.add_(0.5, 0.5)
+				.position()
+			return new Box3(tileCenter, tileExtent)
+		})
 
-		const wallTilePosition = Coordinates.from(tile).position()
-		const wallBox = Box3.fromCorner(wallTilePosition, this.wallExtent.clone())
-
-		if (this.debug && this.seen.size < 500 && !this.seen.has(tile)) {
-			const mesh = this.#makeWallGraphic()
-			mesh.position.set(...wallBox.center.array())
-			mesh.scaling.set(...wallBox.extent.array())
-			this.seen.add(tile)
+		if (this.debug && this.seen.size < 500 && !this.seen.has(wall)) {
+			this.seen.add(wall)
+			for (const wallBox of wallBoxes) {
+				const mesh = this.#makeWallGraphic()
+				mesh.position.set(...wallBox.center.array())
+				mesh.scaling.set(...wallBox.extent.array())
+			}
 		}
 
 		const camdir = new Coordinates(0, 1)
@@ -78,7 +78,12 @@ export class WallDetector {
 		this.rugGraphic?.position.set(...rugBox.center.array())
 		this.rugGraphic?.scaling.set(...rugBox.extent.array())
 
-		return Collisions3.boxVsBox(rugBox, wallBox)
+		const collision = wallBoxes.some(wallBox => Collisions3.boxVsBox(rugBox, wallBox))
+
+		if (wallBoxes.length > 2, collision)
+			console.log("collision!")
+
+		return collision
 	}
 }
 

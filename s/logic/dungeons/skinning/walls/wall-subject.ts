@@ -1,5 +1,7 @@
 
-import {Meshoid, Prop, Scalar, Vec2} from "@benev/toolbox"
+import {Meshoid, Prop, Scalar} from "@benev/toolbox"
+
+import {WallSegment} from "./types.js"
 import {CullingSubject} from "../../skinning/culling/culling-subject.js"
 import {getTopMeshes} from "../../../../tools/babylon/babylon-helpers.js"
 
@@ -12,8 +14,8 @@ export class WallSubject extends CullingSubject {
 		return this.currentOpacity === this.targetOpacity
 	}
 
-	constructor(public tile: Vec2, location: Vec2, spawner: () => Prop) {
-		super(location, spawner)
+	constructor(public segment: WallSegment, spawner: () => Prop) {
+		super(segment.location, spawner)
 	}
 
 	spawn() {

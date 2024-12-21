@@ -1,4 +1,5 @@
 import {Map2} from "@benev/slate"
+import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {Cargo} from "./cargo.js"
@@ -7,11 +8,16 @@ import {ManifestQuery} from "./types.js"
 
 /** Collection of cargo (3d props) */
 export class Warehouse extends Set<Cargo> {
+	constructor(public scene: Scene, cargos: Cargo[] = []) {
+		super(cargos)
+	}
+
 	static from(container: AssetContainer) {
 		return new this(
+			container.scene,
 			[...container.meshes, ...container.transformNodes]
 				.filter(prop => !prop.name.includes("_primitive"))
-				.map(prop => new Cargo(Manifest.scan(prop), prop))
+				.map(prop => new Cargo(container.scene, Manifest.scan(prop), prop))
 		)
 	}
 
@@ -22,6 +28,7 @@ export class Warehouse extends Set<Cargo> {
 	/** get all cargo that matches the manifest query */
 	#query(search: ManifestQuery, required: boolean = false) {
 		const result = new Warehouse(
+			this.scene,
 			[...this].filter(cargo =>
 				Object.entries(search).every(([key, value]) => (
 					(value === true && cargo.manifest.has(key)) ||
@@ -49,7 +56,7 @@ export class Warehouse extends Set<Cargo> {
 		for (const cargo of this) {
 			if (cargo.manifest.has(key)) {
 				const value = cargo.manifest.get(key)!
-				const warehouse = map.guarantee(value, () => new Warehouse())
+				const warehouse = map.guarantee(value, () => new Warehouse(this.scene))
 				warehouse.add(cargo)
 			}
 		}

@@ -97,7 +97,7 @@ export class DungeonSkin {
 				prop.freezeWorldMatrix()
 				return prop
 			}
-			const subject = new WallSubject(wall.tile, wall.location, spawn)
+			const subject = new WallSubject(wall, spawn)
 			this.cullableGrid.add(subject)
 			this.fadingGrid.add(subject)
 		}

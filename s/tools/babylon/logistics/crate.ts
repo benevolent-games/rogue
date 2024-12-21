@@ -2,11 +2,13 @@
 import {Prop} from "@benev/toolbox"
 
 import {Spatial} from "./types.js"
+import {Scene} from "@babylonjs/core/scene.js"
 import {applySpatial} from "./apply-spatial.js"
+import {superclone} from "../babylon-helpers.js"
 
 /** A 3d prop that we can instance */
 export class Crate {
-	constructor(public prop: Prop) {}
+	constructor(public scene: Scene, public prop: Prop) {}
 
 	instance(spatial: Partial<Spatial> = {}): Prop {
 		const instance = this.prop.instantiateHierarchy(
@@ -21,7 +23,7 @@ export class Crate {
 	}
 
 	clone(spatial: Partial<Spatial> = {}): Prop {
-		const clone = this.prop.clone("crate-clone", null)!
+		const clone = superclone(this.prop, null, this.scene)
 		applySpatial(clone, spatial)
 		return clone
 	}

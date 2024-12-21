@@ -20,7 +20,7 @@ export class Indicators {
 			clone.material = material
 			clone.visibility = alpha
 			scene.removeMesh(clone)
-			return new Crate(clone)
+			return new Crate(scene, clone)
 		}
 
 		this.sector = mk(materials.deepPurple, 0.1)

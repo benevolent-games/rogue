@@ -58,6 +58,7 @@ export function mergeWalls(
 						size: 1,
 						radians: wall.radians,
 						location: wall.location,
+						tiles: [tile],
 					}))
 					.filter(v => !!v)
 
@@ -80,6 +81,7 @@ export function mergeWalls(
 						tile: first.tile,
 						radians: first.radians,
 						location: averageLocation,
+						tiles: strip.map(s => s.tile),
 					})
 				}
 			}

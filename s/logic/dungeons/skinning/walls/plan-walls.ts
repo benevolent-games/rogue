@@ -59,6 +59,7 @@ export function planWalls(
 			(draft: {offset: Vec2, radians: number}): WallSegment => ({
 				size: 1,
 				tile: wallTile,
+				tiles: [wallTile],
 				radians: draft.radians + radians,
 				location: wallTile.clone().add(draft.offset.rotate(radians)),
 			})

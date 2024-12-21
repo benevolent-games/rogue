@@ -3,9 +3,12 @@ import {Vec3} from "@benev/toolbox"
 
 export class Box3 {
 	constructor(
-		public center: Vec3,
-		public extent: Vec3,
-	) {}
+			public center: Vec3,
+			public extent: Vec3,
+		) {
+		if (extent.x < 0 || extent.y < 0 || extent.z < 0)
+			throw new Error(`invalid negative extent, ${extent.toString()}`)
+	}
 
 	static fromCorner(min: Vec3, extent: Vec3) {
 		return new this(
