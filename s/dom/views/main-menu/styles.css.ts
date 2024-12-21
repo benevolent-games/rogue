@@ -81,7 +81,9 @@ export default css`
 				border-radius: 0.4em;
 
 				xxx-font-family: "Jacquard 12", serif;
+				xxx-font-family: "Jacquarda Bastarda", serif;
 				font-family: "Metamorphous", serif;
+
 				background: linear-gradient(to bottom, #44ff44, #008800);
 			}
 		}
