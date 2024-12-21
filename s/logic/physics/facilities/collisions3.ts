@@ -6,9 +6,12 @@ import {Line3} from "../shapes/line3.js"
 import {Sausage3} from "../shapes/sausage.js"
 
 export const Collisions3 = {
-	lineVsBox(line: Line3, box: Box3) {
-		const tMin = box.min.clone().subtract(line.start).divide(line.vector)
-		const tMax = box.max.clone().subtract(line.start).divide(line.vector)
+	lineVsBox({start, vector}: Line3, {min, max}: Box3) {
+		if (vector.x === 0 && (start.x < min.x || start.x > max.x)) return false
+		if (vector.y === 0 && (start.y < min.y || start.y > max.y)) return false
+		if (vector.z === 0 && (start.z < min.z || start.z > max.z)) return false
+		const tMin = min.subtract(start).divide(vector)
+		const tMax = max.subtract(start).divide(vector)
 		const t1 = Vec3.min(tMin, tMax)
 		const t2 = Vec3.max(tMin, tMax)
 		const tNear = Math.max(t1.x, t1.y, t1.z, 0)
@@ -17,8 +20,8 @@ export const Collisions3 = {
 	},
 
 	sausageVsBox(sausage: Sausage3, box: Box3) {
-		const fattenedBox = box.clone().grow(sausage.radius)
-		return Collisions3.lineVsBox(sausage.line, fattenedBox)
+		const fatBox = box.clone().grow(sausage.radius * 2)
+		return Collisions3.lineVsBox(sausage.line, fatBox)
 	},
 
 	boxVsBox(boxA: Box3, boxB: Box3) {

@@ -56,6 +56,10 @@ export class Cameraman {
 		this.#updateCamera()
 	}
 
+	get position() {
+		return Vec3.from(this.camera.position)
+	}
+
 	tick() {
 		this.#enforceConstraints()
 		this.#updateSmoothedState()

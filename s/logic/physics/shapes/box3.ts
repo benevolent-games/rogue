@@ -28,12 +28,11 @@ export class Box3 {
 	}
 
 	clone() {
-		return new Box3(this.min.clone(), this.extent.clone())
+		return new Box3(this.center.clone(), this.extent.clone())
 	}
 
 	grow(increase: number) {
-		this.min.subtract(Vec3.all(increase))
-		this.extent.add(Vec3.all(increase * 2))
+		this.extent.addBy(increase)
 		return this
 	}
 }

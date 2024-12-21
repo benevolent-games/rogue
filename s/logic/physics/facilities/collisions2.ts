@@ -1,5 +1,6 @@
 
 import {Scalar, Vec2} from "@benev/toolbox"
+
 import {Box2} from "../shapes/box2.js"
 import {Circle} from "../shapes/circle.js"
 

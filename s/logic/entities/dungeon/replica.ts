@@ -12,13 +12,15 @@ import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
-	const fadeRange = 4
+	const fadeRange = 10
 	const cullingRange = 20
-	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.state.swivel)
+	const wallDetector = new WallDetector(realm)
 	const dungeonLayout = new DungeonLayout(state.options)
 	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
 
 	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
+
+	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.state.swivel)
 
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {
@@ -31,13 +33,10 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		}
 	})
 
-	const wallDetector = new WallDetector(realm)
-
 	return {
 		gatherInputs: () => undefined,
 		replicate: (_) => {
 			const {culler, wallFader} = dungeonRenderer.skin
-			const playerPosition = realm.playerPosition.clone()
 
 			const c1 = new Clock()
 			culler.cull(realm.cameraman.state.pivot, cullingRange)
@@ -48,7 +47,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			wallFader.animate(
 				realm.cameraman.state.pivot.clone().add(camfadeOffset),
 				fadeRange,
-				wall => wallDetector.detect(wall, playerPosition, realm.cameraman),
+				wall => wallDetector.detect(wall, realm.cameraman.state.pivot.position(), realm.cameraman),
 			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")
