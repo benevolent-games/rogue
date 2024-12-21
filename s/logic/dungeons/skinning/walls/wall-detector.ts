@@ -1,5 +1,5 @@
 
-import {Vec2, Vec3} from "@benev/toolbox"
+import {Vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 
@@ -11,7 +11,7 @@ import {Coordinates} from "../../../realm/utils/coordinates.js"
 import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 export class WallDetector {
-	debug = true
+	debug = false
 	rugExtent = Vec3.new(3, 1, 3)
 	rugGraphic?: Mesh
 	seen = new Set<WallSubject>()
@@ -65,14 +65,19 @@ export class WallDetector {
 		}
 
 		const camdir = new Coordinates(0, 1)
-			.multiply_(this.rugExtent.x / 2, this.rugExtent.z / 2)
+			.multiply_(
+				this.rugExtent.x / 2,
+				this.rugExtent.z / 2,
+			)
+			.multiplyBy(Math.SQRT2)
+			.addBy(Number.EPSILON)
 			.rotate(cameraman.state.swivel)
 			.position()
 
 		const rugBox = new Box3(
 			playerPosition.clone()
 				.subtract(camdir),
-			this.rugExtent.clone(),
+			this.rugExtent,
 		)
 
 		this.rugGraphic?.position.set(...rugBox.center.array())
