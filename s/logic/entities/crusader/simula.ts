@@ -4,12 +4,12 @@ import {RogueEntities} from "../entities.js"
 import {PhysBody} from "../../physics/phys.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
-import {simula} from "../../../archimedes/exports.js"
 import {Circle} from "../../physics/shapes/circle.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
+import {simula} from "../../../archimedes/framework/simulation/types.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
-	({station, state, fromAuthor}) => {
+	({station, state, getState, fromAuthor}) => {
 
 	let data: RogueEntities["crusader"]["input"] = {
 		sprint: false,
@@ -21,14 +21,17 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		constants.game.crusader.radius,
 	)
 
-	const physBody = station.phys.addBody(
-		new PhysBody(circle, 80)
+	const physBody = new PhysBody(
+		circle,
+		80,
+		body => getState().coordinates = body.shape.center.array(),
 	)
+
+	const disposePhysBody = station.phys.addBody(physBody)
 
 	return {
 		simulate: (_tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
-
 			const speed = state.speed
 			const speedSprint = state.speedSprint
 
@@ -38,13 +41,12 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				.clampMagnitude(1)
 				.multiplyBy(sprint ? speedSprint : speed)
 
-			circle.center.set_(...state.coordinates)
+			physBody.shape.center.set_(...state.coordinates)
 			physBody.energy.add(energyDelta.multiplyBy(20))
-			station.phys.simulateBody(physBody)
-
-			state.coordinates = circle.center.array()
 		},
-		dispose: () => {},
+		dispose: () => {
+			disposePhysBody()
+		},
 	}
 })
 

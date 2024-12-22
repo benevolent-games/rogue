@@ -3,38 +3,34 @@ import {loop, Scalar} from "@benev/toolbox"
 
 import {Realm} from "../realm/realm.js"
 import {constants} from "../../constants.js"
-import {Station} from "../station/station.js"
-import {simulas} from "../entities/simulas.js"
+import {Simtron} from "../station/simtron.js"
 import {replicas} from "../entities/replicas.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
 import {InputShell} from "../../archimedes/framework/parts/types.js"
 import {Chronicle} from "../../archimedes/framework/parts/chronicle.js"
-import {GameState} from "../../archimedes/framework/parts/game-state.js"
-import {Simulator} from "../../archimedes/framework/simulation/simulator.js"
 import {Replicator} from "../../archimedes/framework/replication/replicator.js"
 import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
 
-export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new Smartloop(constants.game.tickRate)) {
-	const {author} = multiplayer
+export async function clientFlow(
+		multiplayer: MultiplayerClient,
+		smartloop = new Smartloop(constants.game.tickRate),
+	) {
 
+	const {author} = multiplayer
 	const csp = true
 	const realm = await Realm.load()
+	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
 	const {world, glbs} = realm
 
-	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
+	const baseSimtron = new Simtron()
+	const futureSimtron = new Simtron()
 
-	function makeSimulator() {
-		const station = new Station()
-		const gameState = new GameState<RogueEntities>()
-		return new Simulator<RogueEntities, Station>(station, gameState, simulas)
-	}
+	const activeGameState = csp
+		? futureSimtron.gameState
+		: baseSimtron.gameState
 
-	const baseSimulator = makeSimulator()
-	const futureSimulator = makeSimulator()
-
-	const activeGameState = csp ? futureSimulator.gameState : baseSimulator.gameState
 	const replicator = new Replicator<RogueEntities, Realm>(author, realm, activeGameState, replicas)
 	const liaison = new Liaison(multiplayer.gameFiber)
 	const inputHistory = new Chronicle<InputShell<any>[]>(50)
@@ -59,7 +55,7 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 		if (authoritative.snapshot) {
 			slipTick = 0
 			baseTick = authoritative.snapshot.tick
-			baseSimulator.gameState.restore(authoritative.snapshot.data)
+			baseSimtron.gameState.restore(authoritative.snapshot.data)
 		}
 
 		// inputs from host
@@ -67,8 +63,8 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 			slipTick = 0
 			for (const {tick, inputs} of authoritative.inputPayloads) {
 				for (let missingTick = baseTick + 1; missingTick < tick; missingTick++)
-					baseSimulator.simulate(missingTick, [])
-				baseSimulator.simulate(tick, inputs)
+					baseSimtron.simulate(missingTick, [])
+				baseSimtron.simulate(tick, inputs)
 				baseTick = tick
 			}
 		}
@@ -91,11 +87,11 @@ export async function clientFlow(multiplayer: MultiplayerClient, smartloop = new
 
 		// forward prediction
 		if (csp) {
-			futureSimulator.gameState.restore(baseSimulator.gameState.snapshot())
+			futureSimtron.gameState.restore(baseSimtron.gameState.snapshot())
 			for (const ahead of loop(ticksAhead)) {
 				const t = baseTick + ahead
 				const localHistoricalInputs = inputHistory.load(t) ?? []
-				futureSimulator.simulate(t, localHistoricalInputs)
+				futureSimtron.simulate(t, localHistoricalInputs)
 			}
 		}
 	})

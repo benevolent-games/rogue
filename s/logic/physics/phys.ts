@@ -9,10 +9,14 @@ export type PhysShape = Box2 | Circle
 
 export class PhysBody {
 	energy = Vec2.zero()
+	updated: (body: PhysBody) => void
 	constructor(
-		public shape: PhysShape,
-		public mass: number,
-	) {}
+			public shape: PhysShape,
+			public mass: number,
+			updated: (body: PhysBody) => void
+		) {
+		this.updated = updated
+	}
 }
 
 export class PhysObstacle {
@@ -39,7 +43,10 @@ export class Phys {
 	addBody(body: PhysBody) {
 		this.bodies.add(body)
 		this.bodyGrid.add(body)
-		return body
+		return () => {
+			this.bodies.delete(body)
+			this.bodyGrid.remove(body)
+		}
 	}
 
 	addObstacle(obstacle: PhysObstacle) {
@@ -48,7 +55,15 @@ export class Phys {
 		return obstacle
 	}
 
-	simulateBody(body: PhysBody) {
+	simulate() {
+		for (const body of this.bodies)
+			this.#simulateBody(body)
+
+		for (const body of this.bodies)
+			body.updated(body)
+	}
+
+	#simulateBody(body: PhysBody) {
 		body.energy.lerp(Vec2.zero(), this.damping)
 
 		const velocity = body.energy.clone().divideBy(body.mass)
