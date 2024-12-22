@@ -11,14 +11,14 @@ export type PhysShape = Box2 | Circle
 export class PhysBody {
 	velocity = Vec2.zero()
 	force = Vec2.zero()
-	updated: (body: PhysBody) => void
+	updated: () => void
 
 	constructor(
-		public shape: PhysShape,
-		public mass: number,
-		updated: (body: PhysBody) => void
-	) {
-		this.updated = updated
+			public shape: PhysShape,
+			public mass: number,
+			updated: (body: PhysBody) => void
+		) {
+		this.updated = () => updated(this)
 	}
 }
 
@@ -73,7 +73,7 @@ export class Phys {
 			this.#applyForces(body)
 			this.#integrate(body)
 			this.#resolveCollisions(body)
-			body.updated(body)
+			body.updated()
 		}
 	}
 
