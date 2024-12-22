@@ -4,6 +4,7 @@ import {Vec2} from "@benev/toolbox"
 import {Box2} from "../shapes/box2.js"
 import {Circle} from "../shapes/circle.js"
 import {Collisions2} from "./collisions2.js"
+import { PhysShape } from "../phys.js"
 
 export class Exozone<X> extends Box2 {
 	items = new Set<X>()
@@ -74,11 +75,17 @@ export class Exogrid<X> {
 		return this.#zones.values()
 	}
 
-	getZonesTouchingCircle(circle: Circle) {
+	getZonesTouchingShape(shape: Box2 | Circle) {
 		const zones: Exozone<X>[] = []
+
+		const check = (shape instanceof Circle)
+			? (zone: Exozone<X>) => Collisions2.boxVsCircle(zone, shape)
+			: (zone: Exozone<X>) => Collisions2.boxVsBox(zone, shape)
+
 		for (const zone of this.zones())
-			if (Collisions2.boxVsCircle(zone, circle))
+			if (check(zone))
 				zones.push(zone)
+
 		return zones
 	}
 }

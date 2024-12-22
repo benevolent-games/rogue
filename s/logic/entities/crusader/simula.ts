@@ -42,7 +42,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				.multiplyBy(sprint ? speedSprint : speed)
 
 			physBody.shape.center.set_(...state.coordinates)
-			physBody.energy.add(energyDelta.multiplyBy(20))
+			physBody.force.add(energyDelta.multiplyBy(1500))
 		},
 		dispose: () => {
 			disposePhysBody()
