@@ -14,7 +14,7 @@ import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
 const rugSize = 3
 const wallHeight = 7
-const sausageRadius = 0.4
+const sausageRadius = 0.3
 
 export class WallDetector {
 	debug = false
@@ -124,8 +124,11 @@ export class WallDetector {
 		this.rugGraphic?.position.set(...rugBox.center.array())
 		this.rugGraphic?.scaling.set(...rugBox.extent.array())
 
-		const rugCollision = wallBoxes.some(wallBox => Collisions3.boxVsBox(rugBox, wallBox))
 		const sausageCollision = wallBoxes.some(wallBox => Collisions3.sausageVsBox(sausage, wallBox))
+		const rugCollision = (cameraman.isCurrentlyTopDown())
+			? false
+			: wallBoxes.some(wallBox => Collisions3.boxVsBox(rugBox, wallBox))
+
 		return rugCollision || sausageCollision
 	}
 }

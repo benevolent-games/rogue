@@ -10,7 +10,7 @@ import {Coordinates} from "./coordinates.js"
 
 const pivotHeight = 1.6
 const alphaReset = Degrees.toRadians(-90)
-const tiltBounds = new Vec2(Degrees.toRadians(1), Degrees.toRadians(60))
+const tiltBounds = new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60))
 const distanceBounds = new Vec2(5, 25)
 const swivelSnappingIncrements = Degrees.toRadians(45)
 
@@ -57,6 +57,10 @@ export class Cameraman {
 
 	get position() {
 		return Vec3.from(this.camera.position)
+	}
+
+	isCurrentlyTopDown() {
+		return (this.smoothed.tilt <= Degrees.toRadians(10))
 	}
 
 	reset() {

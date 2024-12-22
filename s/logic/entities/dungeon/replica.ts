@@ -47,7 +47,11 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			wallFader.animate(
 				realm.cameraman.desired.pivot.clone().add(camfadeOffset),
 				fadeRange,
-				wall => wallDetector.detect(wall, realm.cameraman.desired.pivot.position(), realm.cameraman),
+				wall => wallDetector.detect(
+					wall,
+					realm.cameraman.desired.pivot.position(),
+					realm.cameraman,
+				),
 			)
 			if (c2.elapsed > 3)
 				c2.log("wallFader was slow")
