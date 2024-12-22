@@ -65,7 +65,8 @@ export class HashMap<Key, Value> {
 	}
 
 	guarantee(key: Key, fn: () => Value) {
-		return this.#map.guarantee(this.hash(key), () => [key, fn()])
+		const [,value] = this.#map.guarantee(this.hash(key), () => [key, fn()])
+		return value
 	}
 
 	/** @deprecated use .array() instead */

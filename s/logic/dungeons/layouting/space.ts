@@ -5,7 +5,10 @@ import {Grid} from "./grid.js"
 import {DungeonOptions} from "./types.js"
 
 export type GlobalSectorVec2 = Vec2
+
 export type LocalCellVec2 = Vec2
+export type GlobalCellVec2 = Vec2
+
 export type LocalTileVec2 = Vec2
 export type GlobalTileVec2 = Vec2
 

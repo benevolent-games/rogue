@@ -11,6 +11,7 @@ import {DungeonLayout} from "../layout.js"
 import {WallSegment} from "./walls/types.js"
 import {WallFader} from "./walls/wall-fader.js"
 import {planWalls} from "./walls/plan-walls.js"
+import {Vecmap2} from "../layouting/vecmap2.js"
 import {DungeonPlacer} from "./utils/placer.js"
 import {planFloor} from "./floors/plan-floor.js"
 import {WallSubject} from "./walls/wall-subject.js"
@@ -24,7 +25,7 @@ export class DungeonSkin {
 	placer: DungeonPlacer
 
 	assets: DungeonAssets
-	styleKeyByCell = new Map2<LocalCellVec2, string>()
+	styleKeyByCell = new Vecmap2<LocalCellVec2, string>()
 
 	cullableGrid = new SubjectGrid()
 	fadingGrid = new SubjectGrid<WallSubject>()
@@ -45,8 +46,9 @@ export class DungeonSkin {
 
 		const styles = [...this.assets.styles.keys()]
 
-		for (const cell of this.layout.cells)
-			this.styleKeyByCell.set(cell, this.randy.choose(styles))
+		for (const cells of this.layout.tree.values())
+			for (const cell of cells.keys())
+				this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
 		this.#createFlooring()
 		this.#createWalls()

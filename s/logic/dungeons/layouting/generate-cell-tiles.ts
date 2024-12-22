@@ -40,7 +40,7 @@ export function *generateCellTiles(
 			cell,
 			goalposts: goalposts.map(toGlobalTileSpace),
 			spawnpoints: spawnpoints.map(toGlobalTileSpace),
-			floorTiles: walkables.list().map(toGlobalTileSpace),
+			floorTiles: walkables.array().map(toGlobalTileSpace),
 		}
 	}
 }

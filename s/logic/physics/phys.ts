@@ -8,15 +8,15 @@ import {Intersection, Intersections2} from "./facilities/intersections2.js"
 
 export type PhysShape = Box2 | Circle
 
-export class PhysBody {
+export class PhysBody<S extends PhysShape = any> {
 	velocity = Vec2.zero()
 	force = Vec2.zero()
 	updated: () => void
 
 	constructor(
-			public shape: PhysShape,
+			public shape: S,
 			public mass: number,
-			updated: (body: PhysBody) => void
+			updated: (body: PhysBody<S>) => void
 		) {
 		this.updated = () => updated(this)
 	}
