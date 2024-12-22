@@ -4,6 +4,7 @@ import {Map2} from "@benev/slate"
 import {Vec2} from "@benev/toolbox"
 import {Box2} from "../physics/shapes/box2.js"
 import {Vecset2} from "./layouting/vecset2.js"
+import {Vecmap2} from "./layouting/vecmap2.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {inferWallTiles} from "./layouting/infer-wall-tiles.js"
 import {Collisions2} from "../physics/facilities/collisions2.js"
@@ -11,7 +12,6 @@ import {generateBroadplan} from "./layouting/generate-broadplan.js"
 import {generateCellTiles} from "./layouting/generate-cell-tiles.js"
 import {eliminateKissingCorners} from "./layouting/eliminate-kissing-corners.js"
 import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2, LocalCellVec2} from "./layouting/space.js"
-import { Vecmap2 } from "./layouting/vecmap2.js"
 
 export class DungeonLayout {
 	space: DungeonSpace

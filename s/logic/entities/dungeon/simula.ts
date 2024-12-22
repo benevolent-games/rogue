@@ -31,17 +31,23 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	// 	height: 0.9,
 	// })
 
-	// for (const cells of dungeonLayout.tree.values()) {
-	// 	for (const tiles of cells.values()) {
-	// 		for (const spawn of randy.take(5, tiles.array())) {
-	// 			simulator.create("block", {
-	// 				coordinates: spawn.clone().add_(0.5, 0.5).array(),
-	// 				dimensions: [0.9, 0.9],
-	// 				height: 0.9,
-	// 			})
-	// 		}
-	// 	}
-	// }
+	let count = 0
+
+	for (const cells of dungeonLayout.tree.values()) {
+		for (const tiles of cells.values()) {
+			for (const spawn of randy.take(5, tiles.array())) {
+				count += 1
+				console.log(spawn)
+				simulator.create("block", {
+					coordinates: spawn.clone().add_(0.5, 0.5).array(),
+					dimensions: [0.9, 0.9],
+					height: 0.9,
+				})
+			}
+		}
+	}
+
+	console.log("LOL", count)
 
 	return {
 		inputData: undefined,
