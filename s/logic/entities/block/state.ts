@@ -1,17 +1,15 @@
 
-import {Vec2, Vec2Array} from "@benev/toolbox"
+import {Vec2Array, Vec3, Vec3Array} from "@benev/toolbox"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
 export type BlockState = {
 	coordinates: Vec2Array
-	dimensions: Vec2Array
-	height: number
+	dimensions: Vec3Array
 }
 
 export function readBlock(state: BlockState) {
 	return {
-		height: state.height,
-		dimensions: Vec2.from(state.dimensions),
+		dimensions: Vec3.from(state.dimensions),
 		coordinates: Coordinates.from(state.coordinates),
 	}
 }
