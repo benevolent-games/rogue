@@ -5,12 +5,13 @@ import {Pathfinder} from "./pathfinder.js"
 import {chooseAlgo} from "./choose-algo.js"
 import {drunkWalkToHorizon} from "./drunk-walk-to-horizon.js"
 import {HolesReport, punchHolesThroughSubgrids} from "./punch-holes.js"
-import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2} from "./space.js"
+import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2, LocalCellVec2} from "./space.js"
 
-type SectorPlan = [GlobalSectorVec2, HolesReport[]]
+type CellPlan = {localCell: LocalCellVec2, globalCell: GlobalCellVec2, cellReport: HolesReport}
+type SectorPlan = [GlobalSectorVec2, CellPlan[]]
 
 export function generateSectors(space: DungeonSpace) {
-	const {randy, cellGrid, options} = space
+	const {randy, cellGrid, tileGrid, options} = space
 
 	const sectors = punchHolesThroughSubgrids({
 		randy,
@@ -19,21 +20,31 @@ export function generateSectors(space: DungeonSpace) {
 		vectors: drunkWalkToHorizon({randy, ...options.sectorWalk}),
 	})
 
-	return sectors.map(sector => {
-		const cells = generateCells(space, sector)
-		return [sector.vector, cells] as SectorPlan
-	})
-}
-
-function generateCells(space: DungeonSpace, sector: HolesReport) {
-	const {randy, cellGrid, tileGrid} = space
 	const pathfinder = new Pathfinder(randy, cellGrid)
-	return punchHolesThroughSubgrids({
+	const temp1 = new Vecmap2<GlobalCellVec2, {sector: GlobalSectorVec2, localCell: LocalCellVec2}>()
+
+	for (const sector of sectors) {
+		const cells = pathfinder.drunkardWithPerseverance(sector.startSubvector, sector.endSubvector)
+		for (const localCell of cells) {
+			const globalCell = space.toGlobalCellSpace(sector.vector, localCell)
+			temp1.set(globalCell, {sector: sector.vector, localCell})
+		}
+	}
+
+	const temp2 = new Vecmap2<GlobalSectorVec2, CellPlan[]>()
+	const cellReports = punchHolesThroughSubgrids({
 		randy,
 		subgrid: tileGrid,
 		excludeCorners: true,
-		vectors: pathfinder.drunkardWithPerseverance(sector.startSubvector, sector.endSubvector),
+		vectors: [...temp1.keys()],
 	})
+	for (const cellReport of cellReports) {
+		const globalCell = cellReport.vector
+		const {sector, localCell} = temp1.require(globalCell)
+		temp2.guarantee(sector, () => []).push({localCell, globalCell, cellReport})
+	}
+
+	return temp2.array() as SectorPlan[]
 }
 
 export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
@@ -44,13 +55,14 @@ export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 	const cellCount = countCells(sectors)
 
 	const flattened = sectors
-		.flatMap(([sector, cells]) => cells.map(cell => ({
+		.flatMap(([sector, cells]) => cells.map(({localCell, globalCell, cellReport}) => ({
 			sector,
-			cell,
-			globalCell: space.toGlobalCellSpace(sector, cell.vector),
+			globalCell,
+			localCell,
+			cellReport,
 		})))
 
-	flattened.forEach(({sector, cell, globalCell}, index) => {
+	flattened.forEach(({sector, cellReport, localCell, globalCell}, index) => {
 		const previous = index === 0 ? undefined : flattened.at(index - 1)
 		const next = flattened.at(index + 1)
 
@@ -63,10 +75,10 @@ export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 		const results = algo({
 			randy,
 			tileGrid,
-			cell: cell.vector,
-			start: cell.startSubvector,
-			end: cell.endSubvector,
 			sector,
+			cell: globalCell,
+			start: cellReport.startSubvector,
+			end: cellReport.endSubvector,
 			nextCellDirection: next
 				? next.globalCell.clone().subtract(globalCell)
 				: null,
@@ -75,11 +87,12 @@ export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 				: null,
 		})
 
-		floors.add(sector, cell.vector, results.walkables.array())
+		floors.add(sector, localCell, results.walkables.array())
+
 		goalposts
 			.guarantee(globalCell, () => [])
 			.push(...results.goalposts.map(
-				goalpost => space.toGlobalTileSpace(sector, cell.vector, goalpost)
+				goalpost => space.toGlobalTileSpace(sector, localCell, goalpost)
 			))
 	})
 

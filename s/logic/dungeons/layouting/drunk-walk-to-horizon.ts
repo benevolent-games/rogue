@@ -8,11 +8,11 @@ import {cardinals} from "../../../tools/directions.js"
 export function drunkWalkToHorizon(options: {randy: Randy} & DrunkWalkOptions) {
 	const {randy} = options
 
-	const steps = new Vecset2()
-	const bannedDirection = Vec2.array(options.horizonDirection).multiplyBy(-1)
 	let current = new Vec2(0, 0)
+	const steps = new Vecset2([current])
+	const bannedDirection = Vec2.array(options.horizonDirection).multiplyBy(-1)
 
-	for (const _ of loop(options.stepCount)) {
+	for (const _ of loop(options.stepCount - 1)) {
 		const neighbors = cardinals
 			.filter(c => !c.equals(bannedDirection))
 			.map(c => current.clone().add(c))
@@ -21,6 +21,6 @@ export function drunkWalkToHorizon(options: {randy: Randy} & DrunkWalkOptions) {
 		steps.add(current)
 	}
 
-	return steps.list()
+	return steps.array()
 }
 

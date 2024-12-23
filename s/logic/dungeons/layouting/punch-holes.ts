@@ -23,19 +23,22 @@ export function punchHolesThroughSubgrids(o: {
 	return vectors.map((vector, index) => {
 		const nextVector = vectors.at(index + 1) ?? null
 		const forwardDirection = nextVector && nextVector.clone().subtract(vector)
-		const subVectors = subgrid.list()
+		const subvectors = subgrid.list()
 
 		const endSubvector = forwardDirection
 			? randy.choose(getBorder(subgrid, forwardDirection, excludeCorners))
-			: randy.choose(subVectors)
+			: randy.choose(subvectors)
 
 		const startSubvector = previous
 			? pickAdjacentBravoSubvector(
 				subgrid,
-				{vector, subvector: previous.endSubvector},
-				{vector, subvectors: subVectors},
+				{vector: previous.vector, subvector: previous.endSubvector},
+				{vector, subvectors},
 			)
-			: randy.choose(subVectors)
+			: randy.choose(subvectors)
+
+		if (endSubvector.equals_(23, 0))
+			debugger
 
 		const subpath: HolesReport = {
 			vector,
