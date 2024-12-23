@@ -21,7 +21,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const dungeonLayout = new DungeonLayout(dungeonOptions)
 	const randy = new Randy(dungeonOptions.seed)
 
-	const getSpawnpoint = () => randy.choose(dungeonLayout.spawnpoints.array())
+	const getSpawnpoint = () => randy.choose(dungeonLayout.getSpawnTiles())
 		.clone()
 		.add_(0.5, 0.5)
 

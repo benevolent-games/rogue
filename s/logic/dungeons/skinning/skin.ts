@@ -1,5 +1,4 @@
 
-import {Map2} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
@@ -18,7 +17,7 @@ import {WallSubject} from "./walls/wall-subject.js"
 import {SubjectGrid} from "./culling/subject-grid.js"
 import {CullingSubject} from "./culling/culling-subject.js"
 import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
-import {GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
+import {GlobalCellVec2, GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 
 export class DungeonSkin {
 	randy: Randy
@@ -45,26 +44,28 @@ export class DungeonSkin {
 		this.placer = new DungeonPlacer(mainScale)
 
 		const styles = [...this.assets.styles.keys()]
-
-		for (const cells of this.layout.tree.values())
-			for (const cell of cells.keys())
-				this.styleKeyByCell.set(cell, this.randy.choose(styles))
+		for (const cell of this.layout.floors.cells())
+			this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
 		this.#createFlooring()
 		this.#createWalls()
 	}
 
-	#getStyle = (tile: GlobalTileVec2) => {
-		const {cell} = this.layout.lookupTile(tile)
+	#getStyleForCell(cell: GlobalCellVec2) {
 		const key = this.styleKeyByCell.require(cell)
 		return this.assets.styles.require(key)
 	}
 
 	#createFlooring() {
+		const getFloorStyle = (tile: GlobalTileVec2) => {
+			const {cell} = this.layout.floors.lookup.require(tile)
+			return this.#getStyleForCell(cell)
+		}
+
 		const floorPlan = planFloor(
 			this.randy,
-			this.layout.floorTiles,
-			this.#getStyle,
+			this.layout.floors.set,
+			getFloorStyle,
 		)
 
 		for (const floor of floorPlan.values()) {
@@ -83,15 +84,20 @@ export class DungeonSkin {
 	}
 
 	#createWalls() {
+		const getWallStyle = (tile: GlobalTileVec2) => {
+			const {cell} = this.layout.walls.lookup.require(tile)
+			return this.#getStyleForCell(cell)
+		}
+
 		const plan = planWalls(
 			this.randy,
-			this.layout.wallTiles,
-			this.layout.floorTiles,
-			this.#getStyle,
+			this.layout.walls.set,
+			this.layout.floors.set,
+			getWallStyle,
 		)
 
 		const make = (wall: WallSegment, getCargo: (style: DungeonStyle) => Cargo) => {
-			const style = this.#getStyle(wall.tile)
+			const style = getWallStyle(wall.tile)
 			const cargo = getCargo(style)
 			const spatial = this.placer.placeProp(wall)
 			const spawn = () => {

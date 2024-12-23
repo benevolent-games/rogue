@@ -6,7 +6,6 @@ import {cardinals} from "../../../tools/directions.js"
 export type HolesReport = {
 	vector: Vec2
 	forwardDirection: Vec2 | null
-	// backwardDirection: Vec2 | null
 	startSubvector: Vec2
 	endSubvector: Vec2
 }
@@ -22,12 +21,8 @@ export function punchHolesThroughSubgrids(o: {
 	let previous: HolesReport | null = null
 
 	return vectors.map((vector, index) => {
-		// const previousVector = index === 0 ? null : vectors.at(index - 1)!
 		const nextVector = vectors.at(index + 1) ?? null
-
 		const forwardDirection = nextVector && nextVector.clone().subtract(vector)
-		// const backwardDirection = previousVector && previousVector.clone().subtract(vector)
-
 		const subVectors = subgrid.list()
 
 		const endSubvector = forwardDirection
@@ -47,7 +42,6 @@ export function punchHolesThroughSubgrids(o: {
 			startSubvector,
 			endSubvector,
 			forwardDirection,
-			// backwardDirection,
 		}
 
 		previous = subpath

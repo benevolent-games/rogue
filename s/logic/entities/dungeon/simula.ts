@@ -12,42 +12,29 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 
 	station.phys = new Phys()
 	const dungeonLayout = new DungeonLayout(state.options)
-
 	const tileExtent = new Vec2(1, 1)
+	const randy = new Randy(state.options.seed)
 
-	for (const tile of dungeonLayout.wallTiles.values())
+	for (const wall of dungeonLayout.walls.tiles())
 		station.phys.addObstacle(
 			new PhysObstacle(
-				Box2.fromCorner(tile, tileExtent)
+				Box2.fromCorner(wall, tileExtent)
 			)
 		)
 
-	const randy = new Randy(state.options.seed)
-
-	// const spawn = dungeonLayout.spawnpoints.yoink(randy)
-	// simulator.create("block", {
-	// 	coordinates: spawn.clone().add_(0.5, 0.5).array(),
-	// 	dimensions: [0.9, 0.9],
-	// 	height: 0.9,
-	// })
-
 	let count = 0
 
-	for (const cells of dungeonLayout.tree.values()) {
-		for (const tiles of cells.values()) {
-			for (const spawn of randy.take(5, tiles.array())) {
-				count += 1
-				console.log(spawn)
-				simulator.create("block", {
-					coordinates: spawn.clone().add_(0.5, 0.5).array(),
-					dimensions: [0.9, 0.9],
-					height: 0.9,
-				})
-			}
+	for (const {sector, cell, tiles} of dungeonLayout.floors) {
+		for (const spawn of randy.take(5, tiles.array())) {
+			const spawnpoint = dungeonLayout.space.toGlobalTileSpace(sector, cell, spawn)
+			count += 1
+			simulator.create("block", {
+				coordinates: spawnpoint.clone().add_(0.5, 0.5).array(),
+				dimensions: [0.9, 0.9],
+				height: 0.9,
+			})
 		}
 	}
-
-	console.log("LOL", count)
 
 	return {
 		inputData: undefined,

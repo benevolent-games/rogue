@@ -5,16 +5,11 @@ import {Pathfinder} from "./pathfinder.js"
 import {chooseAlgo} from "./choose-algo.js"
 import {drunkWalkToHorizon} from "./drunk-walk-to-horizon.js"
 import {HolesReport, punchHolesThroughSubgrids} from "./punch-holes.js"
-import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2, LocalCellVec2, LocalTileVec2} from "./space.js"
-
-export function generateFloorplan(space: DungeonSpace) {
-	const sectors = generateSectors(space)
-	return generateTiles(space, sectors)
-}
+import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2} from "./space.js"
 
 type SectorPlan = [GlobalSectorVec2, HolesReport[]]
 
-function generateSectors(space: DungeonSpace) {
+export function generateSectors(space: DungeonSpace) {
 	const {randy, cellGrid, options} = space
 
 	const sectors = punchHolesThroughSubgrids({
@@ -41,10 +36,10 @@ function generateCells(space: DungeonSpace, sector: HolesReport) {
 	})
 }
 
-function generateTiles(space: DungeonSpace, sectors: SectorPlan[]) {
+export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 	const {randy, tileGrid} = space
 
-	const tiles = new TileStore(space)
+	const floors = new TileStore(space)
 	const goalposts = new Vecmap2<GlobalCellVec2, GlobalTileVec2[]>()
 	const cellCount = countCells(sectors)
 
@@ -80,7 +75,7 @@ function generateTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 				: null,
 		})
 
-		tiles.add(sector, cell.vector, results.walkables.array())
+		floors.add(sector, cell.vector, results.walkables.array())
 		goalposts
 			.guarantee(globalCell, () => [])
 			.push(...results.goalposts.map(
@@ -88,7 +83,10 @@ function generateTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 			))
 	})
 
-	return {tiles, goalposts}
+	return {
+		floors,
+		goalposts,
+	}
 }
 
 function countCells(sectors: SectorPlan[]) {
