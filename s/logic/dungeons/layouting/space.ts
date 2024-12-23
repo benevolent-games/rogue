@@ -43,5 +43,23 @@ export class DungeonSpace {
 		const cellOffset = this.toGlobalCellSpace(sector, cell)
 		return tile.clone().subtract(cellOffset)
 	}
+
+	localize(globalTile: Vec2) {
+		const globalCell = globalTile.clone()
+			.divide(this.tileGrid.extent)
+			.floor()
+
+		const sector = globalCell.clone()
+			.divide(this.cellGrid.extent)
+			.floor()
+
+		const cell = globalCell.clone()
+			.subtract(sector.clone().multiply(this.cellGrid.extent))
+
+		const tile = globalTile.clone()
+			.subtract(globalCell.clone().multiply(this.tileGrid.extent))
+
+		return {sector, cell, tile}
+	}
 }
 

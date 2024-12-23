@@ -27,22 +27,27 @@ export class TileStore {
 	}
 
 	insertGlobalTiles(newTiles: GlobalTileVec2[]) {
-		for (const [sector, cells] of this.sectors.entries()) {
-			for (const [cell, tiles] of cells.entries()) {
-				const globalCell = this.space.toGlobalCellSpace(sector, cell)
-				const cellCorner = this.space.toGlobalTileSpace(sector, cell)
-				const cellBox = Box2.fromCorner(cellCorner, this.space.cellSize)
-
-				for (const newGlobalTile of newTiles) {
-					if (Collisions2.pointVsBox(newGlobalTile, cellBox)) {
-						const localTile = this.space.toLocalTileSpace(sector, cell, newGlobalTile)
-						tiles.add(localTile)
-						this.set.add(newGlobalTile)
-						this.lookup.set(newGlobalTile, {sector, cell: globalCell})
-					}
-				}
-			}
+		for (const globalTile of newTiles) {
+			const {sector, cell, tile} = this.space.localize(globalTile)
+			this.add(sector, cell, [tile])
 		}
+		// for (const [sector, cells] of this.sectors.entries()) {
+		// 	for (const [cell, tiles] of cells.entries()) {
+		// 		const globalCell = this.space.toGlobalCellSpace(sector, cell)
+		// 		const cellCorner = this.space.toGlobalTileSpace(sector, cell)
+		// 		const cellBox = Box2.fromCorner(cellCorner, this.space.cellSize)
+		//
+		// 		for (const newGlobalTile of newTiles) {
+		// 			if (Collisions2.pointVsBox(newGlobalTile, cellBox)) {
+		// 				const localTile = this.space.toLocalTileSpace(sector, cell, newGlobalTile)
+		// 				tiles.add(localTile)
+		// 				this.set.add(newGlobalTile)
+		// 				this.lookup.set(newGlobalTile, {sector, cell: globalCell})
+		// 				console.log("ADDED", newGlobalTile)
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	*cells() {

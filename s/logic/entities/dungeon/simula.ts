@@ -22,19 +22,23 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 			)
 		)
 
-	let count = 0
-
-	for (const {sector, cell, tiles} of dungeonLayout.floors) {
-		for (const spawn of randy.take(5, tiles.array())) {
-			const spawnpoint = dungeonLayout.space.toGlobalTileSpace(sector, cell, spawn)
-			count += 1
-			simulator.create("block", {
-				coordinates: spawnpoint.clone().add_(0.5, 0.5).array(),
-				dimensions: [0.9, 0.9],
-				height: 0.9,
-			})
-		}
-	}
+	// let count = 0
+	//
+	// out: for (const {sector, cell, tiles} of dungeonLayout.floors) {
+	// 	for (const spawn of randy.take(2, tiles.array())) {
+	// 		if (count > 10)
+	// 			break out
+	// 		count += 1
+	// 		const spawnpoint = dungeonLayout.space.toGlobalTileSpace(sector, cell, spawn)
+	// 		simulator.create("block", {
+	// 			coordinates: spawnpoint.clone().add_(0.5, 0.5).array(),
+	// 			dimensions: [0.9, 0.9],
+	// 			height: 0.9,
+	// 		})
+	// 	}
+	// }
+	//
+	// console.log("spawned blocks", count)
 
 	return {
 		inputData: undefined,
