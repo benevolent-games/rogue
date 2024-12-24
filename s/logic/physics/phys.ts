@@ -110,31 +110,39 @@ export class Phys {
 	}
 
 	#resolveCollisions(body: PhysBody) {
-		for (let i = 0; i < 10; i++) { // iterative resolution
-			let resolved = true
-
-			// check collisions with obstacles
-			for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
-				const intersection = Phys.intersect(body.shape, obstacle.shape)
-				if (intersection) {
-					this.#resolveIntersection(body, intersection)
-					resolved = false
-				}
-			}
-
-			// check collisions with other bodies
-			for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
-				if (body === otherBody) continue
-				const intersection = Phys.intersect(body.shape, otherBody.shape)
-				if (intersection) {
-					this.#resolveIntersection(body, intersection, otherBody)
-					resolved = false
-				}
-			}
-
-			if (resolved) break
+		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+			const intersection = Phys.intersect(body.shape, obstacle.shape)
+			if (intersection)
+				this.#resolveIntersection(body, intersection)
 		}
 	}
+
+	// #resolveCollisions(body: PhysBody) {
+	// 	for (let i = 0; i < 10; i++) { // iterative resolution
+	// 		let resolved = true
+	//
+	// 		// check collisions with obstacles
+	// 		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+	// 			const intersection = Phys.intersect(body.shape, obstacle.shape)
+	// 			if (intersection) {
+	// 				this.#resolveIntersection(body, intersection)
+	// 				resolved = false
+	// 			}
+	// 		}
+	//
+	// 		// check collisions with other bodies
+	// 		for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
+	// 			if (body === otherBody) continue
+	// 			const intersection = Phys.intersect(body.shape, otherBody.shape)
+	// 			if (intersection) {
+	// 				this.#resolveIntersection(body, intersection, otherBody)
+	// 				resolved = false
+	// 			}
+	// 		}
+	//
+	// 		if (resolved) break
+	// 	}
+	// }
 
 	#resolveIntersection(body: PhysBody, intersection: Intersection, otherBody?: PhysBody) {
 		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
