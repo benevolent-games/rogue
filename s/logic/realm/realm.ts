@@ -7,6 +7,7 @@ import {Constants} from "@babylonjs/core/Engines/constants.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {Glbs} from "./glbs.js"
+import {Stuff} from "./utils/stuff.js"
 import {Lighting} from "./utils/lighting.js"
 import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
@@ -21,6 +22,7 @@ export class Realm {
 	buddies: CapsuleBuddies
 	cameraman: Cameraman
 	indicators: Indicators
+	stuff: Stuff
 	userInputs: UserInputs
 
 	tact = makeTact(window)
@@ -38,6 +40,7 @@ export class Realm {
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.indicators = new Indicators(world.scene, this.materials)
+		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
 		this.userInputs = new UserInputs(this.cameraman)
 		this.#trashbin.disposer(this.userInputs.attach(world.canvas))

@@ -77,18 +77,18 @@ export class Fattener {
 		}
 	}
 
-	growBorderPortals(
-			range: [number, number],
-			[start, backwardDirection]: [Vec2, Vec2 | null],
-			[end, forwardDirection]: [Vec2, Vec2 | null],
-		) {
-
-		if (backwardDirection)
-			this.#growPortal(start, backwardDirection, range)
-
-		if (forwardDirection)
-			this.#growPortal(end, forwardDirection, range)
-	}
+	// growBorderPortals(
+	// 		range: [number, number],
+	// 		[start, backwardDirection]: [Vec2, Vec2 | null],
+	// 		[end, forwardDirection]: [Vec2, Vec2 | null],
+	// 	) {
+	//
+	// 	if (backwardDirection)
+	// 		this.#growPortal(start, backwardDirection, range)
+	//
+	// 	if (forwardDirection)
+	// 		this.#growPortal(end, forwardDirection, range)
+	// }
 
 	spawnRectangle(root: Vec2, sizeRange: [number, number], centered: boolean = false) {
 		const {walkables, params: {randy, tileGrid}} = this

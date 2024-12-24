@@ -41,8 +41,12 @@ export const Collisions2 = {
 		return distanceSquared <= radiusSquared
 	},
 
-	circleVsCircle(circleA: Circle, b: Circle) {
-		// TODO
+	circleVsCircle(circleA: Circle, circleB: Circle) {
+		const dx = circleB.center.x - circleA.center.x
+		const dy = circleB.center.y - circleA.center.y
+		const distanceSquared = (dx ** 2) + (dy ** 2)
+		const radiusSum = circleA.radius + circleB.radius
+		return distanceSquared <= (radiusSum ** 2)
 	},
 }
 

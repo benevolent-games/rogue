@@ -24,6 +24,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 					station,
 					id,
 					state,
+					getState: () => gameState.entities.require(id)[1],
 					fromAuthor: (author, inputs) => inputsFromAuthor(author, inputs),
 				} as SimulaPack<any, any, xStation>)
 				return [kind, fn]

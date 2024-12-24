@@ -34,22 +34,25 @@ function investigateCorner(floorTiles: Vecset2, tile: Vec2, pattern: Vec2[]) {
 	return {isKissing, a, b, c}
 }
 
-export function eliminateKissingCorners(floorTiles: Vecset2) {
-	for (const _ of loop(100)) {
-		let fixes = 0
+export function fixKissingCorners(floorTiles: Vec2[]) {
+	const set = new Vecset2(floorTiles)
+	const added = new Vecset2()
 
-		for (const tile of floorTiles.list()) {
+	for (const _ of loop(100)) {
+		for (const tile of set.values()) {
 			for (const pattern of fourCornerPatterns) {
-				const corner = investigateCorner(floorTiles, tile, pattern)
+				const corner = investigateCorner(set, tile, pattern)
 				if (corner.isKissing) {
-					floorTiles.add(corner.a)
-					fixes += 1
+					set.add(corner.a)
+					added.add(corner.a)
 				}
 			}
 		}
 
-		if (fixes === 0)
+		if (added.size === 0)
 			break
 	}
+
+	return added
 }
 
