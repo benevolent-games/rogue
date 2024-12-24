@@ -2,39 +2,44 @@
 import {Vec2} from "@benev/toolbox"
 import {Box2} from "./shapes/box2.js"
 import {Circle} from "./shapes/circle.js"
-import {Exogrid} from "./facilities/exogrid.js"
+import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
 
 export type PhysShape = Box2 | Circle
 
-export class PhysBody<S extends PhysShape = any> {
-	velocity = Vec2.zero()
+export type BodyOptions = {
+	shape: PhysShape
+	mass: number
+	updated: (body: PhysBody) => void
+}
+
+export class PhysBody {
 	force = Vec2.zero()
-	updated: () => void
+	velocity = Vec2.zero()
 
 	constructor(
-			public shape: S,
-			public mass: number,
-			updated: (body: PhysBody<S>) => void
-		) {
-		this.updated = () => updated(this)
-	}
+		public shape: PhysShape,
+		public mass: number,
+		public updated: () => void,
+		public dispose: () => void,
+	) {}
 }
 
 export class PhysObstacle {
-	constructor(public shape: PhysShape) {}
+	constructor(
+		public shape: PhysShape,
+		public dispose: () => void,
+	) {}
 }
 
 export class Phys {
-	static makeGrid = <X>(locator: (item: X) => Vec2) =>
-		new Exogrid<X>(new Vec2(16, 16), locator)
-
 	static collide(a: PhysShape, b: PhysShape) {
 		if (a instanceof Box2 && b instanceof Box2) return Collisions2.boxVsBox(a, b)
 		if (a instanceof Box2 && b instanceof Circle) return Collisions2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Collisions2.boxVsCircle(b, a)
 		if (a instanceof Circle && b instanceof Circle) return Collisions2.circleVsCircle(a, b)
+		return false
 	}
 
 	static intersect(a: PhysShape, b: PhysShape) {
@@ -42,6 +47,7 @@ export class Phys {
 		if (a instanceof Box2 && b instanceof Circle) return Intersections2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Intersections2.boxVsCircle(b, a)
 		if (a instanceof Circle && b instanceof Circle) return Intersections2.circleVsCircle(a, b)
+		return null
 	}
 
 	damping = 20 / 100
@@ -50,21 +56,35 @@ export class Phys {
 	bodies = new Set<PhysBody>()
 	obstacles = new Set<PhysObstacle>()
 
-	bodyGrid = Phys.makeGrid<PhysBody>(d => d.shape.center)
-	obstacleGrid = Phys.makeGrid<PhysObstacle>(o => o.shape.center)
+	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
+	obstacleGrid = new ZenGrid<PhysObstacle>(new Vec2(8, 8))
 
-	addBody(body: PhysBody) {
+	makeBody(options: BodyOptions) {
+		const box = options.shape.boundingBox()
+		const body = new PhysBody(
+			options.shape,
+			options.mass,
+			() => {
+				zen.update()
+				options.updated(body)
+			},
+			() => {
+				zen.delete()
+				this.bodies.delete(body)
+			},
+		)
+		const zen = this.bodyGrid.create(box, body)
 		this.bodies.add(body)
-		this.bodyGrid.add(body)
-		return () => {
-			this.bodies.delete(body)
-			this.bodyGrid.remove(body)
-		}
+		return body
 	}
 
-	addObstacle(obstacle: PhysObstacle) {
+	makeObstacle(shape: PhysShape) {
+		const obstacle = new PhysObstacle(shape, () => {
+			zen.delete()
+			this.obstacles.delete(obstacle)
+		})
+		const zen = this.obstacleGrid.create(shape.boundingBox(), obstacle)
 		this.obstacles.add(obstacle)
-		this.obstacleGrid.add(obstacle)
 		return obstacle
 	}
 
@@ -93,26 +113,22 @@ export class Phys {
 		for (let i = 0; i < 10; i++) { // iterative resolution
 			let resolved = true
 
-			// check obstacle collisions
-			for (const zone of this.obstacleGrid.getZonesTouchingShape(body.shape)) {
-				for (const obstacle of zone.items) {
-					const intersection = Phys.intersect(body.shape, obstacle.shape)
-					if (intersection) {
-						this.#resolveIntersection(body, intersection)
-						resolved = false
-					}
+			// check collisions with obstacles
+			for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+				const intersection = Phys.intersect(body.shape, obstacle.shape)
+				if (intersection) {
+					this.#resolveIntersection(body, intersection)
+					resolved = false
 				}
 			}
 
-			// check body-body collisions
-			for (const zone of this.bodyGrid.getZonesTouchingShape(body.shape)) {
-				for (const otherBody of zone.items) {
-					if (body === otherBody) continue
-					const intersection = Phys.intersect(body.shape, otherBody.shape)
-					if (intersection) {
-						this.#resolveIntersection(body, intersection, otherBody)
-						resolved = false
-					}
+			// check collisions with other bodies
+			for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
+				if (body === otherBody) continue
+				const intersection = Phys.intersect(body.shape, otherBody.shape)
+				if (intersection) {
+					this.#resolveIntersection(body, intersection, otherBody)
+					resolved = false
 				}
 			}
 

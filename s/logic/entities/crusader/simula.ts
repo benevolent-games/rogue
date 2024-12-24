@@ -1,7 +1,6 @@
 
 import {Vec2} from "@benev/toolbox"
 import {RogueEntities} from "../entities.js"
-import {PhysBody} from "../../physics/phys.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
 import {Circle} from "../../physics/shapes/circle.js"
@@ -21,13 +20,13 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		constants.game.crusader.radius,
 	)
 
-	const physBody = new PhysBody(
-		circle,
-		80,
-		body => getState().coordinates = body.shape.center.array(),
-	)
-
-	const disposePhysBody = station.phys.addBody(physBody)
+	const physics = station.phys.makeBody({
+		mass: 80,
+		shape: circle,
+		updated: body => {
+			getState().coordinates = body.shape.center.array()
+		},
+	})
 
 	return {
 		simulate: (_tick, state, inputs) => {
@@ -41,11 +40,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				.clampMagnitude(1)
 				.multiplyBy(sprint ? speedSprint : speed)
 
-			physBody.shape.center.set_(...state.coordinates)
-			physBody.force.add(energyDelta.multiplyBy(1500))
+			physics.shape.center.set_(...state.coordinates)
+			physics.force.add(energyDelta.multiplyBy(1500))
 		},
 		dispose: () => {
-			disposePhysBody()
+			physics.dispose()
 		},
 	}
 })

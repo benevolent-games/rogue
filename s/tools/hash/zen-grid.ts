@@ -4,12 +4,13 @@ import {Vec2} from "@benev/toolbox"
 import {Box2} from "../../logic/physics/shapes/box2.js"
 import {Collisions2} from "../../logic/physics/facilities/collisions2.js"
 
-export class Zen {
-	zones = new Set<ZenZone>()
+export class Zen<X> {
+	zones = new Set<ZenZone<X>>()
 
 	constructor(
-		public grid: ZenGrid,
+		public grid: ZenGrid<X>,
 		public box: Box2,
+		public item: X,
 	) {}
 
 	update() {
@@ -21,28 +22,28 @@ export class Zen {
 	}
 }
 
-export class ZenZone extends Box2 {
-	zens = new Set<Zen>()
+export class ZenZone<X> extends Box2 {
+	zens = new Set<Zen<X>>()
 
 	constructor(public hash: string, center: Vec2, extent: Vec2) {
 		super(center, extent)
 	}
 }
 
-export class ZenGrid {
-	#zones = new Map2<string, ZenZone>()
+export class ZenGrid<X> {
+	#zones = new Map2<string, ZenZone<X>>()
 
 	constructor(
 		private zoneExtent: Vec2,
 	) {}
 
-	create(box: Box2) {
-		const zen = new Zen(this, box)
+	create(box: Box2, item: X) {
+		const zen = new Zen<X>(this, box, item)
 		this.update(zen)
 		return zen
 	}
 
-	update(zen: Zen) {
+	update(zen: Zen<X>) {
 		const wantedZones = this.#selectZones(zen.box)
 
 		// delete stale zones
@@ -62,8 +63,8 @@ export class ZenGrid {
 		}
 	}
 
-	delete(zen: Zen) {
-		const emptyZones: ZenZone[] = []
+	delete(zen: Zen<X>) {
+		const emptyZones: ZenZone<X>[] = []
 
 		for (const zone of zen.zones) {
 			zone.zens.delete(zen)
@@ -77,12 +78,12 @@ export class ZenGrid {
 
 	select(box: Box2) {
 		const zones = this.#selectZones(box)
-		const selected = new Set<Zen>()
+		const selected = new Set<X>()
 
 		for (const zone of zones)
 			for (const zen of zone.zens)
 				if (Collisions2.boxVsBox(box, zen.box))
-					selected.add(zen)
+					selected.add(zen.item)
 
 		return selected
 	}
@@ -108,7 +109,7 @@ export class ZenGrid {
 	}
 
 	#selectZones(box: Box2) {
-		const zones = new Set<ZenZone>()
+		const zones = new Set<ZenZone<X>>()
 		const minZoneCorner = this.#calculateZoneCorner(box.min)
 		const maxZoneCorner = this.#calculateZoneCorner(box.max)
 

@@ -1,11 +1,11 @@
 
 import {Randy, Vec2} from "@benev/toolbox"
+import {Phys} from "../../physics/phys.js"
 import {RogueEntities} from "../entities.js"
 import {Station} from "../../station/station.js"
 import {Box2} from "../../physics/shapes/box2.js"
 import {simula} from "../../../archimedes/exports.js"
 import {DungeonLayout} from "../../dungeons/layout.js"
-import {Phys, PhysObstacle} from "../../physics/phys.js"
 
 export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	({station, state, simulator}) => {
@@ -16,9 +16,7 @@ export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	const randy = new Randy(state.options.seed)
 
 	for (const wall of dungeonLayout.walls.tiles())
-		station.phys.addObstacle(
-			new PhysObstacle(Box2.fromCorner(wall, tileExtent))
-		)
+		station.phys.makeObstacle(Box2.fromCorner(wall, tileExtent))
 
 	let count = 0
 
