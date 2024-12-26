@@ -1,9 +1,9 @@
 
 import {interval} from "@benev/slate"
 
+import {Fiber} from "./fiber.js"
 import {GameMessage} from "./messages.js"
 import {Pingponger} from "./pingponger.js"
-import {Fiber} from "../../../tools/fiber.js"
 import {disposers} from "../../../tools/disposers.js"
 import {Inbox, Outbox, Parcel} from "./inbox-outbox.js"
 import {fakeLag, LagFn, LagProfile} from "../../../tools/fake-lag.js"

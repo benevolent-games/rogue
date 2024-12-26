@@ -2,15 +2,15 @@
 import {repeat} from "@benev/slate"
 import Sparrow, {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
+import {Fiber} from "./fiber.js"
 import {Liaison} from "./liaison.js"
-import {Fiber} from "../../../tools/fiber.js"
 import {Identity} from "../multiplayer/types.js"
 import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../multiplayer/meta/host.js"
-import {InputPayload, InputShell, SnapshotPayload} from "../../framework/parts/types.js"
 import {renrakuChannel} from "../multiplayer/utils/renraku-channel.js"
+import {InputPayload, SnapshotPayload} from "../../framework/parts/types.js"
 import {MultiplayerFibers, multiplayerFibers} from "../multiplayer/utils/multiplayer-fibers.js"
 
 export type Seat = {
