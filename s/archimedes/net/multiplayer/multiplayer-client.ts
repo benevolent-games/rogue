@@ -1,5 +1,5 @@
 
-import Sparrow, {StdCable} from "sparrow-rtc"
+import Sparrow from "sparrow-rtc"
 import {pubsub, Signal, signal} from "@benev/slate"
 
 import {Identity} from "./types.js"
@@ -46,7 +46,7 @@ export class MultiplayerClient extends Multiplayer {
 		const onDisconnected = pubsub()
 		onDisconnected(disconnected)
 
-		const sparrow = await Sparrow.join<StdCable>({
+		const sparrow = await Sparrow.join({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			invite,
 			disconnected: () => {
