@@ -1,6 +1,6 @@
 
 import {JsonRpc} from "renraku"
-import {Fiber} from "../../../../tools/fiber.js"
+import {Fiber} from "../../relay/fiber.js"
 import {Parcel} from "../../relay/inbox-outbox.js"
 import {GameMessage} from "../../relay/messages.js"
 
