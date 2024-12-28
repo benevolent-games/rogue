@@ -89,6 +89,8 @@ export class Phys {
 	}
 
 	simulate() {
+		this.#resolveOverlaps()
+
 		for (const body of this.bodies) {
 			this.#applyForces(body)
 			this.#integrate(body)
@@ -117,33 +119,6 @@ export class Phys {
 		}
 	}
 
-	// #resolveCollisions(body: PhysBody) {
-	// 	for (let i = 0; i < 10; i++) { // iterative resolution
-	// 		let resolved = true
-	//
-	// 		// check collisions with obstacles
-	// 		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
-	// 			const intersection = Phys.intersect(body.shape, obstacle.shape)
-	// 			if (intersection) {
-	// 				this.#resolveIntersection(body, intersection)
-	// 				resolved = false
-	// 			}
-	// 		}
-	//
-	// 		// check collisions with other bodies
-	// 		for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
-	// 			if (body === otherBody) continue
-	// 			const intersection = Phys.intersect(body.shape, otherBody.shape)
-	// 			if (intersection) {
-	// 				this.#resolveIntersection(body, intersection, otherBody)
-	// 				resolved = false
-	// 			}
-	// 		}
-	//
-	// 		if (resolved) break
-	// 	}
-	// }
-
 	#resolveIntersection(body: PhysBody, intersection: Intersection, otherBody?: PhysBody) {
 		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
 		body.shape.offset(mtv)
@@ -162,6 +137,46 @@ export class Phys {
 			body.velocity.subtract(impulse)
 			otherBody.velocity.add(impulse)
 		}
+	}
+
+	#resolveOverlaps() {
+		// resolve body vs obstacle overlaps
+		for (const body of this.bodies) {
+			for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+				const intersection = Phys.intersect(body.shape, obstacle.shape)
+				if (intersection) {
+					this.#resolveObstacleOverlap(body, intersection)
+				}
+			}
+		}
+
+		// resolve body vs body overlaps
+		for (const body of this.bodies) {
+			for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
+				if (body === otherBody) continue
+				const intersection = Phys.intersect(body.shape, otherBody.shape)
+				if (intersection) {
+					this.#resolveBodyOverlap(body, intersection, otherBody)
+				}
+			}
+		}
+	}
+
+	#resolveObstacleOverlap(body: PhysBody, intersection: Intersection) {
+		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
+		body.shape.offset(mtv) // push body out of the obstacle
+	}
+
+	#resolveBodyOverlap(body: PhysBody, intersection: Intersection, otherBody: PhysBody) {
+		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
+
+		// split resolution proportionally by mass
+		const totalMass = body.mass + otherBody.mass
+		const bodyPush = mtv.clone().multiplyBy(otherBody.mass / totalMass)
+		const otherPush = mtv.clone().multiplyBy(-body.mass / totalMass)
+
+		body.shape.offset(bodyPush)
+		otherBody.shape.offset(otherPush)
 	}
 }
 
