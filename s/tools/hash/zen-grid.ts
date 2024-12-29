@@ -33,9 +33,7 @@ export class ZenZone<X> extends Box2 {
 export class ZenGrid<X> {
 	#zones = new Map2<string, ZenZone<X>>()
 
-	constructor(
-		private zoneExtent: Vec2,
-	) {}
+	constructor(private zoneExtent: Vec2) {}
 
 	create(box: Box2, item: X) {
 		const zen = new Zen<X>(this, box, item)
@@ -76,16 +74,38 @@ export class ZenGrid<X> {
 			this.#zones.delete(emptyZone.hash)
 	}
 
-	select(box: Box2) {
+	check(box: Box2) {
 		const zones = this.#selectZones(box)
-		const selected = new Set<X>()
 
 		for (const zone of zones)
 			for (const zen of zone.zens)
 				if (Collisions2.boxVsBox(box, zen.box))
-					selected.add(zen.item)
+					return true
+
+		return false
+	}
+
+	/** return all zens that touch the given box */
+	query(box: Box2) {
+		const zones = this.#selectZones(box)
+		const selected: Zen<X>[] = []
+
+		for (const zone of zones)
+			for (const zen of zone.zens)
+				if (Collisions2.boxVsBox(box, zen.box) && !selected.includes(zen))
+					selected.push(zen)
 
 		return selected
+	}
+
+	/** return all zen items that touch the given box */
+	queryItems(box: Box2) {
+		return this.query(box).map(zen => zen.item)
+	}
+
+	/** return all zen boxes that touch the given box */
+	queryBoxes(box: Box2) {
+		return this.query(box).map(zen => zen.box)
 	}
 
 	#hash(v: Vec2) {

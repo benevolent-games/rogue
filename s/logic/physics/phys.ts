@@ -112,7 +112,7 @@ export class Phys {
 	}
 
 	#resolveCollisions(body: PhysBody) {
-		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+		for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
 			const intersection = Phys.intersect(body.shape, obstacle.shape)
 			if (intersection)
 				this.#resolveIntersection(body, intersection)
@@ -142,7 +142,7 @@ export class Phys {
 	#resolveOverlaps() {
 		// resolve body vs obstacle overlaps
 		for (const body of this.bodies) {
-			for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
+			for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
 				const intersection = Phys.intersect(body.shape, obstacle.shape)
 				if (intersection) {
 					this.#resolveObstacleOverlap(body, intersection)
@@ -152,7 +152,7 @@ export class Phys {
 
 		// resolve body vs body overlaps
 		for (const body of this.bodies) {
-			for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
+			for (const otherBody of this.bodyGrid.queryItems(body.shape.boundingBox())) {
 				if (body === otherBody) continue
 				const intersection = Phys.intersect(body.shape, otherBody.shape)
 				if (intersection) {

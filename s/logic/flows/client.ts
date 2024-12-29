@@ -18,14 +18,14 @@ export async function clientFlow(
 		smartloop = new Smartloop(constants.game.tickRate),
 	) {
 
+	const baseSimtron = new Simtron()
+	const futureSimtron = new Simtron()
+
 	const {author} = multiplayer
 	const csp = true
 	const realm = await Realm.load()
 	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
 	const {world, glbs} = realm
-
-	const baseSimtron = new Simtron()
-	const futureSimtron = new Simtron()
 
 	const activeGameState = csp
 		? futureSimtron.gameState
