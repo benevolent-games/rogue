@@ -9,28 +9,68 @@ import {Intersection, Intersections2} from "./facilities/intersections2.js"
 export type PhysShape = Box2 | Circle
 
 export type BodyOptions = {
-	shape: PhysShape
-	mass: number
+	parts: PhysPart[]
 	updated: (body: PhysBody) => void
 }
 
-export class PhysBody {
-	force = Vec2.zero()
-	velocity = Vec2.zero()
-
+export class PhysPart {
 	constructor(
 		public shape: PhysShape,
-		public mass: number,
-		public updated: () => void,
-		public dispose: () => void,
+		public mass: number | null,
 	) {}
 }
 
-export class PhysObstacle {
+export class PhysBody {
+	velocity = Vec2.zero()
+	parts = new Set<PhysPart>()
+
 	constructor(
-		public shape: PhysShape,
+		public updated: () => void,
 		public dispose: () => void,
 	) {}
+
+	get mass() {
+		let mass: number | null = 0
+		for (const part of this.parts) {
+			if (part.mass === null) {
+				mass = null
+				break
+			}
+			else {
+				mass += part.mass
+			}
+		}
+		return mass
+	}
+
+	get box() {
+		const boxes = [...this.parts].map(p => p.shape.boundingBox())
+		const min = Vec2.min(...boxes.map(b => b.min))
+		const max = Vec2.max(...boxes.map(b => b.max))
+		const extent = max.clone().subtract(min)
+		return Box2.fromCorner(min, extent)
+	}
+
+	add(part: PhysPart) {
+		this.parts.add(part)
+	}
+
+	remove(part: PhysPart) {
+		this.parts.delete(part)
+	}
+
+	impulse(vector: Vec2) {
+		if (this.mass === null)
+			return
+		this.velocity.add(
+			vector.clone().divideBy(this.mass)
+		)
+	}
+
+	offset(vector: Vec2) {
+		for (const part of this.parts)
+			part.shape.center.add(vector)
+	}
 }
 
 export class Phys {
@@ -54,16 +94,10 @@ export class Phys {
 	timeStep = 1 / 60
 
 	bodies = new Set<PhysBody>()
-	obstacles = new Set<PhysObstacle>()
-
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
-	obstacleGrid = new ZenGrid<PhysObstacle>(new Vec2(8, 8))
 
 	makeBody(options: BodyOptions) {
-		const box = options.shape.boundingBox()
 		const body = new PhysBody(
-			options.shape,
-			options.mass,
 			() => {
 				zen.update()
 				options.updated(body)
@@ -73,110 +107,94 @@ export class Phys {
 				this.bodies.delete(body)
 			},
 		)
-		const zen = this.bodyGrid.create(box, body)
+		for (const part of options.parts)
+			body.add(part)
+		const zen = this.bodyGrid.create(body.box, body)
 		this.bodies.add(body)
 		return body
-	}
-
-	makeObstacle(shape: PhysShape) {
-		const obstacle = new PhysObstacle(shape, () => {
-			zen.delete()
-			this.obstacles.delete(obstacle)
-		})
-		const zen = this.obstacleGrid.create(shape.boundingBox(), obstacle)
-		this.obstacles.add(obstacle)
-		return obstacle
 	}
 
 	simulate() {
 		this.#resolveOverlaps()
 
 		for (const body of this.bodies) {
-			this.#applyForces(body)
+			this.#applyDamping(body)
 			this.#integrate(body)
 			this.#resolveCollisions(body)
 			body.updated()
 		}
 	}
 
-	#applyForces(body: PhysBody) {
-		const acceleration = body.force.clone().divideBy(body.mass)
-		body.velocity.add(acceleration)
-		body.force.set_(0, 0) // reset forces after applying
+	#applyDamping(body: PhysBody) {
 		body.velocity.lerp(Vec2.zero(), this.damping)
 	}
 
 	#integrate(body: PhysBody) {
 		const displacement = body.velocity.clone().multiplyBy(this.timeStep)
-		body.shape.offset(displacement)
+		body.offset(displacement)
 	}
 
 	#resolveCollisions(body: PhysBody) {
-		for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
-			const intersection = Phys.intersect(body.shape, obstacle.shape)
-			if (intersection)
-				this.#resolveIntersection(body, intersection)
-		}
+		// for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
+		// 	const intersection = Phys.intersect(body.shape, obstacle.shape)
+		// 	if (intersection)
+		// 		this.#resolveIntersection(body, intersection)
+		// }
 	}
 
 	#resolveIntersection(body: PhysBody, intersection: Intersection, otherBody?: PhysBody) {
-		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
-		body.shape.offset(mtv)
-
-		// adjust velocity along the collision normal
-		const velocityAlongNormal = body.velocity.dot(intersection.normalA)
-		if (velocityAlongNormal < 0) {
-			body.velocity.subtract(
-				intersection.normalA.clone().multiplyBy(velocityAlongNormal)
-			)
-		}
-
-		// if dynamic collision, apply forces to the other body
-		if (otherBody) {
-			const impulse = mtv.clone().divideBy(2)
-			body.velocity.subtract(impulse)
-			otherBody.velocity.add(impulse)
-		}
+		// const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
+		// body.shape.offset(mtv)
+		//
+		// // adjust velocity along the collision normal
+		// const velocityAlongNormal = body.velocity.dot(intersection.normalA)
+		// if (velocityAlongNormal < 0) {
+		// 	body.velocity.subtract(
+		// 		intersection.normalA.clone().multiplyBy(velocityAlongNormal)
+		// 	)
+		// }
+		//
+		// // if dynamic collision, apply forces to the other body
+		// if (otherBody) {
+		// 	const impulse = mtv.clone().divideBy(2)
+		// 	body.velocity.subtract(impulse)
+		// 	otherBody.velocity.add(impulse)
+		// }
 	}
 
 	#resolveOverlaps() {
-		// resolve body vs obstacle overlaps
-		for (const body of this.bodies) {
-			for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
-				const intersection = Phys.intersect(body.shape, obstacle.shape)
-				if (intersection) {
-					this.#resolveObstacleOverlap(body, intersection)
-				}
-			}
-		}
-
-		// resolve body vs body overlaps
-		for (const body of this.bodies) {
-			for (const otherBody of this.bodyGrid.queryItems(body.shape.boundingBox())) {
-				if (body === otherBody) continue
-				const intersection = Phys.intersect(body.shape, otherBody.shape)
-				if (intersection) {
-					this.#resolveBodyOverlap(body, intersection, otherBody)
-				}
-			}
-		}
-	}
-
-	#resolveObstacleOverlap(body: PhysBody, intersection: Intersection) {
-		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
-		body.shape.offset(mtv) // push body out of the obstacle
+		// // resolve body vs obstacle overlaps
+		// for (const body of this.bodies) {
+		// 	for (const obstacle of this.obstacleGrid.queryItems(body.shape.boundingBox())) {
+		// 		const intersection = Phys.intersect(body.shape, obstacle.shape)
+		// 		if (intersection) {
+		// 			this.#resolveObstacleOverlap(body, intersection)
+		// 		}
+		// 	}
+		// }
+		//
+		// // resolve body vs body overlaps
+		// for (const body of this.bodies) {
+		// 	for (const otherBody of this.bodyGrid.queryItems(body.shape.boundingBox())) {
+		// 		if (body === otherBody) continue
+		// 		const intersection = Phys.intersect(body.shape, otherBody.shape)
+		// 		if (intersection) {
+		// 			this.#resolveBodyOverlap(body, intersection, otherBody)
+		// 		}
+		// 	}
+		// }
 	}
 
 	#resolveBodyOverlap(body: PhysBody, intersection: Intersection, otherBody: PhysBody) {
-		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
-
-		// split resolution proportionally by mass
-		const totalMass = body.mass + otherBody.mass
-		const bodyPush = mtv.clone().multiplyBy(otherBody.mass / totalMass)
-		const otherPush = mtv.clone().multiplyBy(-body.mass / totalMass)
-
-		body.shape.offset(bodyPush)
-		otherBody.shape.offset(otherPush)
+		// const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
+		//
+		// // split resolution proportionally by mass
+		// const totalMass = body.mass + otherBody.mass
+		// const bodyPush = mtv.clone().multiplyBy(otherBody.mass / totalMass)
+		// const otherPush = mtv.clone().multiplyBy(-body.mass / totalMass)
+		//
+		// body.shape.offset(bodyPush)
+		// otherBody.shape.offset(otherPush)
 	}
 }
 
