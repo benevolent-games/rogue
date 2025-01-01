@@ -20,11 +20,10 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		constants.game.crusader.radius,
 	)
 
-	const physics = station.phys.makeBody({
-		mass: 80,
-		shape: circle,
+	const body = station.dungeon.phys.makeBody({
+		parts: [{shape: circle, mass: 80}],
 		updated: body => {
-			getState().coordinates = body.shape.center.array()
+			getState().coordinates = body.box.center.array()
 		},
 	})
 
@@ -40,11 +39,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				.clampMagnitude(1)
 				.multiplyBy(sprint ? speedSprint : speed)
 
-			physics.shape.center.set_(...state.coordinates)
-			physics.force.add(energyDelta.multiplyBy(1500))
+			body.box.center.set_(...state.coordinates)
+			body.impulse(energyDelta.multiplyBy(1500))
 		},
 		dispose: () => {
-			physics.dispose()
+			body.dispose()
 		},
 	}
 })

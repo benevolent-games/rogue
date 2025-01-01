@@ -17,7 +17,9 @@ export class Simtron {
 
 	simulate(tick: number, inputs: InputShell<any>[]) {
 		this.simulator.simulate(tick, inputs)
-		this.station.phys.simulate()
+		if (this.station.dungeon) {
+			this.station.dungeon.phys.simulate()
+		}
 	}
 }
 
