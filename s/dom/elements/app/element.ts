@@ -65,6 +65,24 @@ export const GameApp = shadowComponent(use => {
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
+			lagtest: makeNav(async() => {
+				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
+				const lag = lagProfiles.bad
+				const flow = await playerHostFlow({lag, identity})
+				const {client, multiplayerClient, dispose} = flow
+				return {
+					template: () => Gameplay([{
+						multiplayerClient,
+						realm: client.realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+					dispose: () => {
+						Invites.deleteInviteFromWindowHash()
+						dispose()
+					},
+				}
+			}),
+
 			offline: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const lag = lagProfiles.none
@@ -136,6 +154,9 @@ export const GameApp = shadowComponent(use => {
 			goExhibit.client(invite)
 
 		if (location.hash.includes("offline"))
+			goExhibit.offline()
+
+		if (location.hash.includes("lagtest"))
 			goExhibit.offline()
 
 		else if (location.hash.includes("play"))

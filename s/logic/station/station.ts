@@ -13,5 +13,9 @@ export class Station {
 			throw new Error("dungeon is not set")
 		return this.#dungeon
 	}
+
+	get possibleDungeon() {
+		return this.#dungeon
+	}
 }
 

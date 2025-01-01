@@ -6,6 +6,7 @@ import {projectOnto} from "./utils/project-onto.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
+import { Profiler } from "../../tools/profiler.js"
 
 export type Mass = number | null
 export type PhysShape = Box2 | Circle
@@ -145,14 +146,37 @@ export class Phys {
 		return this.bodyGrid.queryItems(box)
 	}
 
+	count = 0
+	profiler = new Profiler("phys simulate")
+
 	simulate() {
+		this.count++
+
+		const a = this.profiler.measure("a")
 		this.#resolveOverlaps()
+		a()
 
 		for (const body of this.bodies) {
+
+			const b = this.profiler.measure("b")
 			this.#applyDamping(body)
+			b()
+
+			const c = this.profiler.measure("c")
 			this.#integrate(body)
+			c()
+
+			const d = this.profiler.measure("d")
 			this.#resolveCollisions(body)
+			d()
+
+			const e = this.profiler.measure("e")
 			body.updated()
+			e()
+		}
+
+		if (this.count % 10 === 0) {
+			this.profiler.report()
 		}
 	}
 

@@ -17,8 +17,12 @@ export class Simtron {
 
 	simulate(tick: number, inputs: InputShell<any>[]) {
 		this.simulator.simulate(tick, inputs)
-		if (this.station.dungeon) {
-			this.station.dungeon.phys.simulate()
+		const dungeon = this.station.possibleDungeon
+
+		if (dungeon) {
+			const start = Date.now()
+			dungeon.phys.simulate()
+			console.log("physics sim", Date.now() - start)
 		}
 	}
 }

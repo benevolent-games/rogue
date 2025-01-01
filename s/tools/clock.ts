@@ -11,3 +11,14 @@ export class Clock {
 	}
 }
 
+export class Stopwatch {
+	start = performance.now()
+
+	log(label: string) {
+		const now = performance.now()
+		const time = now - this.start
+		this.start = now
+		console.log(`🕒 ${label} - ${time.toFixed(2)} ms`)
+	}
+}
+
