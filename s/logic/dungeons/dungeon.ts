@@ -1,35 +1,42 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Randy, Vec2} from "@benev/toolbox"
 import {Phys} from "../physics/phys.js"
 import {DungeonLayout} from "./layout.js"
 import {Box2} from "../physics/shapes/box2.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 
-const tileSize = new Vec2(1, 1)
-
 export class Dungeon {
 	phys = new Phys()
+	tileSize = new Vec2(1, 1)
 	floorGrid = new ZenGrid<void>(Vec2.new(16, 16))
 
-	constructor(public options: DungeonOptions) {
-		const layout = new DungeonLayout(options)
+	layout: DungeonLayout
 
-		for (const wall of layout.walls.tiles())
+	constructor(public options: DungeonOptions) {
+		this.layout = new DungeonLayout(options)
+
+		for (const wall of this.layout.walls.tiles())
 			this.phys.makeBody({
-				shape: Box2.fromCorner(wall, tileSize),
-				mass: null,
+				parts: [{
+					shape: Box2.fromCorner(wall, this.tileSize),
+					mass: null,
+				}],
 				updated: () => {},
 			})
 
-		for (const floor of layout.floors.tiles())
-			this.floorGrid.create(Box2.fromCorner(floor, tileSize))
+		for (const floor of this.layout.floors.tiles())
+			this.floorGrid.create(Box2.fromCorner(floor, this.tileSize))
 	}
 
-	findNearestOpenFloorTile(box: Box2, size = 10) {
-		const selector = new Box2(box.center, Vec2.all(size))
+	makeRandy() {
+		return new Randy(this.options.seed)
+	}
+
+	findNearestOpenFloorTile(point: Vec2, proximity = 10) {
+		const selector = new Box2(point, Vec2.all(proximity))
 		const floorTiles = this.floorGrid.queryBoxes(selector)
-			.map(floor => ({floor, distance: floor.center.distanceSquared(box.center)}))
+			.map(floor => ({floor, distance: floor.center.distanceSquared(point)}))
 			.toSorted((a, b) => a.distance - b.distance)
 			.map(a => a.floor)
 

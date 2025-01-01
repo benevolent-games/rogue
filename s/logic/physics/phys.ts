@@ -7,8 +7,8 @@ import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
 
-export type PhysShape = Box2 | Circle
 export type Mass = number | null
+export type PhysShape = Box2 | Circle
 
 export type PartOptions = {
 	shape: PhysShape
@@ -16,30 +16,50 @@ export type PartOptions = {
 }
 
 export type BodyOptions = {
-	shape: PhysShape
-	mass: Mass
+	parts: PartOptions[]
 	updated: (body: PhysBody) => void
 }
 
 export class PhysPart {
+	static make = (options: PartOptions) =>
+		new this(options.shape, options.mass)
+
 	constructor(
 		public shape: PhysShape,
 		public mass: Mass,
 	) {}
+
+	clone() {
+		return new PhysPart(this.shape.clone(), this.mass)
+	}
 }
 
 export class PhysBody {
 	velocity = Vec2.zero()
-	parts = new Set<PhysPart>()
+	parts: [PhysPart, Vec2][]
+
+	mass: Mass
+	box: Box2
 
 	constructor(
-		public updated: () => void,
-		public dispose: () => void,
-	) {}
+			parts: PhysPart[],
+			public updated: () => void,
+			public dispose: () => void,
+		) {
 
-	get mass() {
+		this.box = this.#computeBox(parts)
+		this.mass = this.#computeMass(parts)
+
+		this.parts = parts.map(part => [
+			part,
+			part.shape.center.clone().subtract(this.box.center),
+		])
+	}
+
+	/** compute the mass of all parts combined */
+	#computeMass(parts: PhysPart[]) {
 		let mass: Mass = 0
-		for (const part of this.parts) {
+		for (const part of parts) {
 			if (part.mass === null) {
 				mass = null
 				break
@@ -51,27 +71,21 @@ export class PhysBody {
 		return mass
 	}
 
-	get box() {
-		const boxes = [...this.parts].map(p => p.shape.boundingBox())
+	/** compute the bounding box that subsumes all parts */
+	#computeBox(parts: PhysPart[]) {
+		const boxes = parts.map(p => p.shape.boundingBox())
 		const min = Vec2.min(...boxes.map(b => b.min))
 		const max = Vec2.max(...boxes.map(b => b.max))
 		const extent = max.clone().subtract(min)
 		return Box2.fromCorner(min, extent)
 	}
 
-	createPart(options: PartOptions) {
-		const part = new PhysPart(options.shape, options.mass)
-		return this.add(part)
-	}
-
-	add(part: PhysPart) {
-		this.parts.add(part)
-		return this
-	}
-
-	remove(part: PhysPart) {
-		this.parts.delete(part)
-		return this
+	get absoluteParts() {
+		return this.parts.map(([relativePart, offset]) => {
+			const absolutePart = relativePart.clone()
+			absolutePart.shape.center.add(offset)
+			return absolutePart
+		})
 	}
 
 	impulse(vector: Vec2) {
@@ -83,7 +97,7 @@ export class PhysBody {
 	}
 
 	offset(vector: Vec2) {
-		for (const part of this.parts)
+		for (const [part] of this.parts)
 			part.shape.center.add(vector)
 	}
 }
@@ -112,17 +126,16 @@ export class Phys {
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
 
 	makeBody(options: BodyOptions) {
-		const body = new PhysBody(
-			() => {
-				zen.update()
-				options.updated(body)
-			},
-			() => {
-				zen.delete()
-				this.bodies.delete(body)
-			},
-		)
-		for (const part of options.parts) body.add(part)
+		const parts = options.parts.map(PhysPart.make)
+		const updated = () => {
+			zen.update()
+			options.updated(body)
+		}
+		const dispose = () => {
+			zen.delete()
+			this.bodies.delete(body)
+		}
+		const body = new PhysBody(parts, updated, dispose)
 		const zen = this.bodyGrid.create(body.box, body)
 		this.bodies.add(body)
 		return body
@@ -176,10 +189,11 @@ export class Phys {
 
 	#intersectBodies(bodyA: PhysBody, bodyB: PhysBody) {
 		const intersections: Intersection[] = []
-		for (const partA of bodyA.parts) {
-			for (const partB of bodyB.parts) {
+		for (const partA of bodyA.absoluteParts) {
+			for (const partB of bodyB.absoluteParts) {
 				const intersection = Phys.intersect(partA.shape, partB.shape)
-				if (intersection) intersections.push(intersection)
+				if (intersection)
+					intersections.push(intersection)
 			}
 		}
 		return intersections
