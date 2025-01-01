@@ -16,11 +16,14 @@ export class Dungeon {
 		const layout = new DungeonLayout(options)
 
 		for (const wall of layout.walls.tiles())
-			this.phys.makeObstacle(Box2.fromCorner(wall, tileSize))
+			this.phys.makeBody({
+				shape: Box2.fromCorner(wall, tileSize),
+				mass: null,
+				updated: () => {},
+			})
 
-		for (const floor of layout.floors.tiles()) {
+		for (const floor of layout.floors.tiles())
 			this.floorGrid.create(Box2.fromCorner(floor, tileSize))
-		}
 	}
 
 	findNearestOpenFloorTile(box: Box2, size = 10) {
@@ -31,11 +34,8 @@ export class Dungeon {
 			.map(a => a.floor)
 
 		for (const floor of floorTiles) {
-			const occupied = (
-				this.phys.obstacleGrid.check(floor) &&
-				this.phys.bodyGrid.check(floor)
-			)
-			if (!occupied)
+			const isVacant = this.phys.queryBodies(floor).length === 0
+			if (isVacant)
 				return floor
 		}
 
