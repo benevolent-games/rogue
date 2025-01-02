@@ -18,9 +18,6 @@ export const entrance = cellAlgo(options => {
 	fattener.spawnRectangle(middleTile, [5, 10], true)
 	fattener.makeBorderRooms({sizeRange: [2, 3]})
 
-	const spawnpoints = options.tileGrid.nearby(middleTile, 5, "manhattan")
-		.filter(tile => walkables.has(tile))
-
-	return {walkables, goalposts, spawnpoints}
+	return {walkables, goalposts}
 })
 

@@ -22,6 +22,6 @@ export const tatters = cellAlgo(options => {
 
 	goalposts.forEach(g => fattener.spawnRectangle(g, [3, 6]))
 
-	return {walkables, goalposts, spawnpoints: []}
+	return {walkables, goalposts}
 })
 

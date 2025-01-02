@@ -23,6 +23,6 @@ export const mechanoid = cellAlgo(options => {
 
 	fattener.makeGoalpostBulbs(goalposts)
 
-	return {walkables, goalposts, spawnpoints: []}
+	return {walkables, goalposts}
 })
 

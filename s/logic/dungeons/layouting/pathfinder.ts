@@ -46,7 +46,7 @@ export class Pathfinder {
 			path.add(current)
 		}
 
-		return path.list()
+		return path.array()
 	}
 
 	aStar(start: Vec2, end: Vec2, distanceAlgo?: DistanceAlgo): null | Vec2[] {

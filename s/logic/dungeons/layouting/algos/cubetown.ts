@@ -21,10 +21,10 @@ export const cubetown = cellAlgo(options => {
 		fattener.spawnRectangle(roomRoot, [4, 6])
 
 	for (const _ of loop(randy.integerRange(1, p(1)))) {
-		const roomRoot = randy.choose(walkables.list())
+		const roomRoot = randy.choose(walkables.array())
 		fattener.spawnRectangle(roomRoot, [5, 11])
 	}
 
-	return {walkables, goalposts, spawnpoints: []}
+	return {walkables, goalposts}
 })
 
