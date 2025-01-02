@@ -1,6 +1,5 @@
 
 import {repeat} from "@benev/slate"
-import {Randy} from "@benev/toolbox"
 
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
@@ -19,9 +18,8 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const dungeonOptions = stdDungeonOptions()
 	const dungeonLayout = new DungeonLayout(dungeonOptions)
-	const randy = new Randy(dungeonOptions.seed)
 
-	const getSpawnpoint = () => randy.choose(dungeonLayout.getSpawnTiles())
+	const getSpawnpoint = () => dungeonLayout.goalposts.at(0)!
 		.clone()
 		.add_(0.5, 0.5)
 

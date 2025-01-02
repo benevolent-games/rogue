@@ -37,9 +37,6 @@ export function punchHolesThroughSubgrids(o: {
 			)
 			: randy.choose(subvectors)
 
-		if (endSubvector.equals_(23, 0))
-			debugger
-
 		const subpath: HolesReport = {
 			vector,
 			startSubvector,

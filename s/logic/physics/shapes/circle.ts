@@ -14,11 +14,8 @@ export class Circle {
 	}
 
 	boundingBox() {
-		const radius = this.radius
-		const doubleRadius = this.radius * 2
-		const corner = this.center.clone().subtract_(radius, radius)
-		const extent = corner.clone().add_(doubleRadius, doubleRadius)
-		return Box2.fromCorner(corner, extent)
+		const extent = Vec2.all(this.radius * 2)
+		return new Box2(this.center, extent)
 	}
 
 	clone() {
