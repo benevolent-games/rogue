@@ -2,17 +2,22 @@
 import {Map2} from "@benev/slate"
 
 export class Profiler {
-	constructor(public label: string) {}
-
 	topics = new Map2<string, {elapsed: number}>()
+	memory = performance.now()
 
-	measure(topic: string) {
-		const start = performance.now()
-		return () => {
-			const elapsed = performance.now() - start
-			const timing = this.topics.guarantee(topic, () => ({elapsed: 0}))
-			timing.elapsed += elapsed
-		}
+	constructor(public label: string) {
+		this.start()
+	}
+
+	start() {
+		this.memory = performance.now()
+	}
+
+	capture(topic: string) {
+		const elapsed = performance.now() - this.memory
+		const timing = this.topics.guarantee(topic, () => ({elapsed: 0}))
+		timing.elapsed += elapsed
+		this.start()
 	}
 
 	report() {
@@ -21,10 +26,6 @@ export class Profiler {
 		for (const [topic, timing] of this.topics)
 			lines.push(` • ${timing.elapsed.toFixed(2)} ms ${topic}`)
 		console.log(lines.join("\n"))
-	}
-
-	reset() {
-		this.topics.clear()
 	}
 }
 
