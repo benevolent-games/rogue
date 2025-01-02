@@ -1,109 +1,14 @@
 
 import {Vec2} from "@benev/toolbox"
 import {Box2} from "./shapes/box2.js"
+import {PhysBody} from "./parts/body.js"
 import {Circle} from "./shapes/circle.js"
-import {projectOnto} from "./utils/project-onto.js"
+import {PhysPart} from "./parts/part.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
-import {DebugTrigger} from "../../tools/debug-trigger.js"
+import {BodyOptions, PhysShape} from "./parts/types.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
-
-const debugTrigger = new DebugTrigger()
-
-export type Mass = number | null
-export type PhysShape = Box2 | Circle
-
-export type PartOptions = {
-	shape: PhysShape
-	mass: Mass
-}
-
-export type BodyOptions = {
-	parts: PartOptions[]
-	updated: (body: PhysBody) => void
-}
-
-export class PhysPart {
-	static make = (options: PartOptions) =>
-		new this(options.shape, options.mass)
-
-	constructor(
-		public shape: PhysShape,
-		public mass: Mass,
-	) {}
-
-	clone() {
-		return new PhysPart(this.shape.clone(), this.mass)
-	}
-}
-
-export class PhysBody {
-	velocity = Vec2.zero()
-	parts: [PhysPart, Vec2][]
-
-	mass: Mass
-	box: Box2
-
-	constructor(
-			parts: PhysPart[],
-			public updated: () => void,
-			public dispose: () => void,
-		) {
-
-		this.box = this.#computeBox(parts)
-		this.mass = this.#computeMass(parts)
-
-		this.parts = parts.map(part => [
-			part,
-			part.shape.center.clone().subtract(this.box.center),
-		])
-	}
-
-	/** compute the mass of all parts combined */
-	#computeMass(parts: PhysPart[]) {
-		let mass: Mass = 0
-		for (const part of parts) {
-			if (part.mass === null) {
-				mass = null
-				break
-			}
-			else {
-				mass += part.mass
-			}
-		}
-		return mass
-	}
-
-	/** compute the bounding box that subsumes all parts */
-	#computeBox(parts: PhysPart[]) {
-		const boxes = parts.map(p => p.shape.boundingBox())
-		const min = Vec2.min(...boxes.map(b => b.min))
-		const max = Vec2.max(...boxes.map(b => b.max))
-		const extent = max.clone().subtract(min)
-		return Box2.fromCorner(min, extent)
-	}
-
-	get absoluteParts() {
-		return this.parts.map(([relativePart, offset]) => {
-			const absolutePart = relativePart.clone()
-			absolutePart.shape.center.add(offset)
-			return absolutePart
-		})
-	}
-
-	impulse(vector: Vec2) {
-		if (this.mass === null)
-			return
-		this.velocity.add(
-			vector.clone().divideBy(this.mass)
-		)
-	}
-
-	offset(vector: Vec2) {
-		this.box.center.add(vector)
-		this.updated()
-	}
-}
+import {collisionResponseFactors} from "./utils/collision-response-factors.js"
 
 export class Phys {
 	static collide(a: PhysShape, b: PhysShape) {
@@ -165,8 +70,8 @@ export class Phys {
 	}
 
 	simulate() {
-		this.#resolveOverlaps()
 		for (const body of this.dynamicBodies) {
+			// this.#resolveOverlaps(body)
 			this.#applyDamping(body)
 			this.#integrate(body)
 			this.#resolveCollisions(body)
@@ -185,33 +90,28 @@ export class Phys {
 
 	#resolveCollisions(body: PhysBody) {
 		for (const otherBody of this.bodyGrid.queryItems(body.box)) {
-			if (debugTrigger.activated)
-				debugger
 			if (body === otherBody) continue
 			const intersections = this.#intersectBodies(body, otherBody)
 			if (intersections.length > 0) {
-				console.log("intersections", intersections.length)
 				this.#resolveBodyCollisions(body, otherBody, intersections)
 			}
 		}
 	}
 
-	#resolveOverlaps() {
-		for (const body of this.dynamicBodies) {
-			for (const otherBody of this.bodyGrid.queryItems(body.box)) {
-				if (body === otherBody) continue
-				const intersections = this.#intersectBodies(body, otherBody)
-				if (intersections.length > 0) {
-					this.#resolveBodyOverlaps(body, otherBody, intersections)
-				}
-			}
-		}
-	}
+	// #resolveOverlaps(body: PhysBody) {
+	// 	for (const otherBody of this.bodyGrid.queryItems(body.box)) {
+	// 		if (body === otherBody) continue
+	// 		const intersections = this.#intersectBodies(body, otherBody)
+	// 		if (intersections.length > 0) {
+	// 			this.#resolveBodyOverlaps(body, otherBody, intersections)
+	// 		}
+	// 	}
+	// }
 
 	#intersectBodies(bodyA: PhysBody, bodyB: PhysBody) {
 		const intersections: Intersection[] = []
-		for (const partA of bodyA.absoluteParts) {
-			for (const partB of bodyB.absoluteParts) {
+		for (const partA of bodyA.parts) {
+			for (const partB of bodyB.parts) {
 				const intersection = Phys.intersect(partA.shape, partB.shape)
 				if (intersection)
 					intersections.push(intersection)
@@ -235,45 +135,120 @@ export class Phys {
 		}
 	}
 
-	#resolveBodyOverlaps(bodyA: PhysBody, bodyB: PhysBody, intersections: Intersection[]) {
-		for (const intersection of intersections) {
-			const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
-			this.#applyOverlapResponse(bodyA, bodyB, mtv)
-		}
-	}
-
 	#applyCollisionResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
-		const totalMass = (bodyA.mass || Infinity) + (bodyB.mass || Infinity)
-		const massA = bodyA.mass || Infinity
-		const massB = bodyB.mass || Infinity
+		const [factorA, factorB] = collisionResponseFactors(bodyA.mass, bodyB.mass)
 
-		const correctionA = mtv.clone().multiplyBy(massB / totalMass)
-		const correctionB = mtv.clone().multiplyBy(-massA / totalMass)
+		const correctionA = mtv.clone().multiplyBy(factorA)
+		const correctionB = mtv.clone().multiplyBy(-factorB)
 
-		bodyA.offset(correctionA)
-		bodyB.offset(correctionB)
+		console.log(factorA)
 
-		// sliding mechanics
-		const relativeVelocity = bodyB.velocity.clone().subtract(bodyA.velocity)
-		const velocityAlongMTV = projectOnto(relativeVelocity, mtv)
+		// bodyA.offset(correctionA)
+		// bodyB.offset(correctionB)
 
-		if (velocityAlongMTV.magnitude() > 0) {
-			const impulse = velocityAlongMTV.clone().divideBy(totalMass)
-			bodyA.velocity.add(impulse.clone().multiplyBy(-1))
-			bodyB.velocity.add(impulse)
-		}
+		// const totalMass = (bodyA.mass ?? Infinity) + (bodyB.mass ?? Infinity)
+		// const massA = bodyA.mass ?? Infinity
+		// const massB = bodyB.mass ?? Infinity
+		//
+		// const correctionA = mtv.clone().multiplyBy(massB / totalMass)
+		// const correctionB = mtv.clone().multiplyBy(-massA / totalMass)
+		//
+		// console.log({correctionA, correctionB})
+		// debugger
+		//
+		// bodyA.offset(correctionA)
+		// bodyB.offset(correctionB)
+		//
+		// // sliding mechanics
+		// const relativeVelocity = bodyB.velocity.clone().subtract(bodyA.velocity)
+		// const velocityAlongMTV = projectOnto(relativeVelocity, mtv)
+		//
+		// if (velocityAlongMTV.magnitude() > 0) {
+		// 	const impulse = velocityAlongMTV.clone().divideBy(totalMass)
+		// 	bodyA.velocity.add(impulse.clone().multiplyBy(-1))
+		// 	bodyB.velocity.add(impulse)
+		// }
 	}
 
-	#applyOverlapResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
-		const totalMass = (bodyA.mass || Infinity) + (bodyB.mass || Infinity)
-		const massA = bodyA.mass || Infinity
-		const massB = bodyB.mass || Infinity
+	// #applyCollisionResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
+	// 	const massA = bodyA.mass ?? Infinity // Fixed bodies get "infinite" mass
+	// 	const massB = bodyB.mass ?? Infinity
+	// 	const totalMass = massA + massB
+	//
+	// 	// Handle corrections based on mass
+	// 	const correctionA = massA === Infinity
+	// 		? Vec2.zero() // Fixed body doesn't move
+	// 		: mtv.clone().multiplyBy(massB / totalMass)
+	//
+	// 	const correctionB = massB === Infinity
+	// 		? Vec2.zero() // Fixed body doesn't move
+	// 		: mtv.clone().multiplyBy(-massA / totalMass)
+	//
+	// 	debugger
+	//
+	// 	// Apply positional corrections
+	// 	bodyA.offset(correctionA)
+	// 	bodyB.offset(correctionB)
+	//
+	// 	// Handle sliding mechanics
+	// 	const relativeVelocity = bodyB.velocity.clone().subtract(bodyA.velocity)
+	// 	const velocityAlongMTV = projectOnto(relativeVelocity, mtv)
+	//
+	// 	if (velocityAlongMTV.magnitude() > 0) {
+	// 		// Only apply impulse to dynamic bodies
+	// 		const impulse = velocityAlongMTV.clone().divideBy(totalMass)
+	//
+	// 		if (massA !== Infinity) {
+	// 			bodyA.velocity.add(impulse.clone().multiplyBy(-1))
+	// 		}
+	// 		if (massB !== Infinity) {
+	// 			bodyB.velocity.add(impulse)
+	// 		}
+	// 	}
+	// }
 
-		const correctionA = mtv.clone().multiplyBy(massB / totalMass)
-		const correctionB = mtv.clone().multiplyBy(-massA / totalMass)
+	// #resolveBodyOverlaps(bodyA: PhysBody, bodyB: PhysBody, intersections: Intersection[]) {
+	// 	for (const intersection of intersections) {
+	// 		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
+	// 		this.#applyOverlapResponse(bodyA, bodyB, mtv)
+	// 	}
+	// }
 
-		bodyA.offset(correctionA)
-		bodyB.offset(correctionB)
-	}
+	// #applyCollisionResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
+	// 	const totalMass = (bodyA.mass ?? Infinity) + (bodyB.mass ?? Infinity)
+	// 	const massA = bodyA.mass ?? Infinity
+	// 	const massB = bodyB.mass ?? Infinity
+	//
+	// 	const correctionA = mtv.clone().multiplyBy(massB / totalMass)
+	// 	const correctionB = mtv.clone().multiplyBy(-massA / totalMass)
+	//
+	// 	console.log({correctionA, correctionB})
+	// 	debugger
+	//
+	// 	bodyA.offset(correctionA)
+	// 	bodyB.offset(correctionB)
+	//
+	// 	// sliding mechanics
+	// 	const relativeVelocity = bodyB.velocity.clone().subtract(bodyA.velocity)
+	// 	const velocityAlongMTV = projectOnto(relativeVelocity, mtv)
+	//
+	// 	if (velocityAlongMTV.magnitude() > 0) {
+	// 		const impulse = velocityAlongMTV.clone().divideBy(totalMass)
+	// 		bodyA.velocity.add(impulse.clone().multiplyBy(-1))
+	// 		bodyB.velocity.add(impulse)
+	// 	}
+	// }
+
+	// #applyOverlapResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
+	// 	const totalMass = (bodyA.mass ?? Infinity) + (bodyB.mass ?? Infinity)
+	// 	const massA = bodyA.mass ?? Infinity
+	// 	const massB = bodyB.mass ?? Infinity
+	//
+	// 	const correctionA = mtv.clone().multiplyBy(massB / totalMass)
+	// 	const correctionB = mtv.clone().multiplyBy(-massA / totalMass)
+	//
+	// 	bodyA.offset(correctionA)
+	// 	bodyB.offset(correctionB)
+	// }
 }
 

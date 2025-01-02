@@ -4,10 +4,8 @@ export class DebugTrigger {
 
 	constructor() {
 		window.addEventListener("keydown", (event: KeyboardEvent) => {
-			if (event.code === "Space") {
+			if (event.code === "Space")
 				this.activated = true
-				console.log("ACTIVATED!!")
-			}
 		})
 	}
 }

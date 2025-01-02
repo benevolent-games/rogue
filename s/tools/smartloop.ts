@@ -4,7 +4,7 @@ import {Scalar} from "@benev/toolbox"
 
 export class Smartloop {
 	tick = 0
-	maxCatchUp = 5
+	maxCatchUp = 3
 	on = pubsub<[number]>()
 
 	#active = false
