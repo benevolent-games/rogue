@@ -19,8 +19,8 @@ export class Dungeon {
 		for (const wall of this.layout.walls.tiles())
 			this.phys.makeBody({
 				parts: [{
+					mass: Infinity,
 					shape: Box2.fromCorner(wall, this.tileSize),
-					mass: null,
 				}],
 				updated: () => {},
 			})
