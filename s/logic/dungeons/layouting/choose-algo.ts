@@ -24,10 +24,10 @@ export function chooseAlgo({randy, isFirstCell, isLastCell}: {
 
 	if (isFirstCell)
 		return entrance
-	
+
 	else if (isLastCell)
 		return yendor
-	
+
 	else
 		return randy.choose(Object.values(algos))
 }

@@ -3,7 +3,6 @@ import {Randy, Vec2} from "@benev/toolbox"
 import {Phys} from "../physics/phys.js"
 import {DungeonLayout} from "./layout.js"
 import {Box2} from "../physics/shapes/box2.js"
-import {Stopwatch} from "../../tools/clock.js"
 import {DungeonOptions} from "./layouting/types.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 
@@ -15,10 +14,7 @@ export class Dungeon {
 	layout: DungeonLayout
 
 	constructor(public options: DungeonOptions) {
-		const timing = new Stopwatch()
 		this.layout = new DungeonLayout(options)
-
-		timing.log("layout")
 
 		for (const wall of this.layout.walls.tiles())
 			this.phys.makeBody({
@@ -29,12 +25,8 @@ export class Dungeon {
 				updated: () => {},
 			})
 
-		timing.log("wall phys")
-
 		for (const floor of this.layout.floors.tiles())
 			this.floorGrid.create(Box2.fromCorner(floor, this.tileSize))
-
-		timing.log("floor grid")
 	}
 
 	makeRandy() {

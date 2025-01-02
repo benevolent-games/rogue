@@ -7,11 +7,13 @@ import {goalposting} from "./utils/goalposting.js"
 export const chaotic = cellAlgo(options => {
 	const {tileGrid, randy} = options
 	const p = tileGrid.percentageFn()
+
 	const {walkables, goalposts} = goalposting({
 		...options,
 		goalcountRange: [1, p(1)],
 		distanceAlgo: "euclidean",
 	})
+
 	const fattener = new Fattener(walkables, options)
 
 	fattener.makeBorderRooms({sizeRange: [3, 5]})
@@ -19,10 +21,10 @@ export const chaotic = cellAlgo(options => {
 	fattener.shadow()
 
 	for (const _ of loop(randy.integerRange(2, p(1)))) {
-		const roomRoot = randy.choose(walkables.list())
+		const roomRoot = randy.choose(walkables.array())
 		fattener.spawnRectangle(roomRoot, [5, 11])
 	}
 
-	return {walkables, goalposts, spawnpoints: []}
+	return {walkables, goalposts}
 })
 

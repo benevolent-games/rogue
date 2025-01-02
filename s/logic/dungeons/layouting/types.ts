@@ -38,7 +38,6 @@ export type AlgoParams = {
 export type AlgoResults = {
 	walkables: Vecset2
 	goalposts: Vec2[]
-	spawnpoints: Vec2[]
 }
 
 export type AlgoFn = (params: AlgoParams) => AlgoResults
