@@ -5,7 +5,10 @@ import {Circle} from "./shapes/circle.js"
 import {projectOnto} from "./utils/project-onto.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
+import {DebugTrigger} from "../../tools/debug-trigger.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
+
+const debugTrigger = new DebugTrigger()
 
 export type Mass = number | null
 export type PhysShape = Box2 | Circle
@@ -97,8 +100,8 @@ export class PhysBody {
 	}
 
 	offset(vector: Vec2) {
-		for (const [part] of this.parts)
-			part.shape.center.add(vector)
+		this.box.center.add(vector)
+		this.updated()
 	}
 }
 
@@ -123,10 +126,23 @@ export class Phys {
 	timeStep = 1 / 60
 
 	bodies = new Set<PhysBody>()
-	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
-
 	fixedBodies = new Set<PhysBody>()
 	dynamicBodies = new Set<PhysBody>()
+	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
+
+	#addBody(body: PhysBody) {
+		this.bodies.add(body)
+		if (body.mass === null)
+			this.fixedBodies.add(body)
+		else
+			this.dynamicBodies.add(body)
+	}
+
+	#deleteBody(body: PhysBody) {
+		this.bodies.delete(body)
+		this.dynamicBodies.delete(body)
+		this.fixedBodies.delete(body)
+	}
 
 	makeBody(options: BodyOptions) {
 		const parts = options.parts.map(PhysPart.make)
@@ -136,20 +152,11 @@ export class Phys {
 		}
 		const dispose = () => {
 			zen.delete()
-			this.bodies.delete(body)
-			this.dynamicBodies.delete(body)
-			this.fixedBodies.delete(body)
+			this.#deleteBody(body)
 		}
-
 		const body = new PhysBody(parts, updated, dispose)
 		const zen = this.bodyGrid.create(body.box, body)
-		this.bodies.add(body)
-
-		if (body.mass === null)
-			this.fixedBodies.add(body)
-		else
-			this.dynamicBodies.add(body)
-
+		this.#addBody(body)
 		return body
 	}
 
@@ -173,14 +180,17 @@ export class Phys {
 
 	#integrate(body: PhysBody) {
 		const displacement = body.velocity.clone().multiplyBy(this.timeStep)
-		body.offset(displacement)
+		body.box.center.add(displacement)
 	}
 
 	#resolveCollisions(body: PhysBody) {
 		for (const otherBody of this.bodyGrid.queryItems(body.box)) {
+			if (debugTrigger.activated)
+				debugger
 			if (body === otherBody) continue
 			const intersections = this.#intersectBodies(body, otherBody)
 			if (intersections.length > 0) {
+				console.log("intersections", intersections.length)
 				this.#resolveBodyCollisions(body, otherBody, intersections)
 			}
 		}
