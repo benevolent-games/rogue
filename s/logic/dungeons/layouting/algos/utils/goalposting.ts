@@ -28,11 +28,13 @@ export function goalposting(options: {
 	const walkables = new Vecset2()
 	const pathfinder = new Pathfinder(randy, tileGrid)
 	const innerTiles = tileGrid.excludeBorders()
-	const goalposts = range(randy.integerRange(...goalcountRange))
+	const innerGoalposts = range(randy.integerRange(...goalcountRange))
 		.map(() => randy.yoink(innerTiles))
 
+	const goalposts = [start, ...innerGoalposts, end]
+
 	const tilePath = pathfinder.aStarChain(
-		[start, ...goalposts, end],
+		[start, ...innerGoalposts, end],
 		distanceAlgo,
 	)
 

@@ -6,7 +6,6 @@ import {projectOnto} from "./utils/project-onto.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
-import { Profiler } from "../../tools/profiler.js"
 
 export type Mass = number | null
 export type PhysShape = Box2 | Circle
@@ -126,6 +125,9 @@ export class Phys {
 	bodies = new Set<PhysBody>()
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
 
+	fixedBodies = new Set<PhysBody>()
+	dynamicBodies = new Set<PhysBody>()
+
 	makeBody(options: BodyOptions) {
 		const parts = options.parts.map(PhysPart.make)
 		const updated = () => {
@@ -135,10 +137,19 @@ export class Phys {
 		const dispose = () => {
 			zen.delete()
 			this.bodies.delete(body)
+			this.dynamicBodies.delete(body)
+			this.fixedBodies.delete(body)
 		}
+
 		const body = new PhysBody(parts, updated, dispose)
 		const zen = this.bodyGrid.create(body.box, body)
 		this.bodies.add(body)
+
+		if (body.mass === null)
+			this.fixedBodies.add(body)
+		else
+			this.dynamicBodies.add(body)
+
 		return body
 	}
 
@@ -146,37 +157,13 @@ export class Phys {
 		return this.bodyGrid.queryItems(box)
 	}
 
-	count = 0
-	profiler = new Profiler("phys simulate")
-
 	simulate() {
-		this.count++
-
-		const a = this.profiler.measure("a")
 		this.#resolveOverlaps()
-		a()
-
-		for (const body of this.bodies) {
-
-			const b = this.profiler.measure("b")
+		for (const body of this.dynamicBodies) {
 			this.#applyDamping(body)
-			b()
-
-			const c = this.profiler.measure("c")
 			this.#integrate(body)
-			c()
-
-			const d = this.profiler.measure("d")
 			this.#resolveCollisions(body)
-			d()
-
-			const e = this.profiler.measure("e")
 			body.updated()
-			e()
-		}
-
-		if (this.count % 10 === 0) {
-			this.profiler.report()
 		}
 	}
 
@@ -200,7 +187,7 @@ export class Phys {
 	}
 
 	#resolveOverlaps() {
-		for (const body of this.bodies) {
+		for (const body of this.dynamicBodies) {
 			for (const otherBody of this.bodyGrid.queryItems(body.box)) {
 				if (body === otherBody) continue
 				const intersections = this.#intersectBodies(body, otherBody)

@@ -10,9 +10,8 @@ export class Profiler {
 		const start = performance.now()
 		return () => {
 			const elapsed = performance.now() - start
-			this.topics
-				.guarantee(topic, () => ({elapsed: 0}))
-				.elapsed += elapsed
+			const timing = this.topics.guarantee(topic, () => ({elapsed: 0}))
+			timing.elapsed += elapsed
 		}
 	}
 
@@ -20,8 +19,12 @@ export class Profiler {
 		const lines: string[] = []
 		lines.push(`⌚ ${this.label}`)
 		for (const [topic, timing] of this.topics)
-			lines.push(` • ${timing.elapsed.toFixed(2)}ms ${topic}`)
+			lines.push(` • ${timing.elapsed.toFixed(2)} ms ${topic}`)
 		console.log(lines.join("\n"))
+	}
+
+	reset() {
+		this.topics.clear()
 	}
 }
 

@@ -1,11 +1,12 @@
 
+import {Vec2} from "@benev/toolbox"
 import {Vecmap2} from "./vecmap2.js"
 import {TileStore} from "./tile-store.js"
 import {Pathfinder} from "./pathfinder.js"
 import {chooseAlgo} from "./choose-algo.js"
 import {drunkWalkToHorizon} from "./drunk-walk-to-horizon.js"
 import {HolesReport, punchHolesThroughSubgrids} from "./punch-holes.js"
-import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, GlobalTileVec2, LocalCellVec2} from "./space.js"
+import {DungeonSpace, GlobalCellVec2, GlobalSectorVec2, LocalCellVec2} from "./space.js"
 
 type CellPlan = {localCell: LocalCellVec2, globalCell: GlobalCellVec2, cellReport: HolesReport}
 type SectorPlan = [GlobalSectorVec2, CellPlan[]]
@@ -51,8 +52,8 @@ export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 	const {randy, tileGrid} = space
 
 	const floors = new TileStore(space)
-	const goalposts = new Vecmap2<GlobalCellVec2, GlobalTileVec2[]>()
 	const cellCount = countCells(sectors)
+	const goalposts: Vec2[] = []
 
 	const flattened = sectors
 		.flatMap(([sector, cells]) => cells.map(({localCell, globalCell, cellReport}) => ({
@@ -88,18 +89,10 @@ export function generateFloorTiles(space: DungeonSpace, sectors: SectorPlan[]) {
 		})
 
 		floors.add(sector, localCell, results.walkables.array())
-
-		goalposts
-			.guarantee(globalCell, () => [])
-			.push(...results.goalposts.map(
-				goalpost => space.toGlobalTileSpace(sector, localCell, goalpost)
-			))
+		goalposts.push(...results.goalposts.map(tile => space.toGlobalTileSpace(sector, localCell, tile)))
 	})
 
-	return {
-		floors,
-		goalposts,
-	}
+	return {floors, goalposts}
 }
 
 function countCells(sectors: SectorPlan[]) {
