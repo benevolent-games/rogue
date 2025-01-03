@@ -29,6 +29,7 @@ export default css`
 
 h1 {
 	color: #f00;
+	user-select: auto;
 }
 
 button {
