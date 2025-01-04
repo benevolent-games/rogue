@@ -3,7 +3,6 @@ import {Randy, Vec2} from "@benev/toolbox"
 import {Phys} from "../physics/phys.js"
 import {DungeonLayout} from "./layout.js"
 import {Box2} from "../physics/shapes/box2.js"
-import {DungeonOptions} from "./layouting/types.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 
 export class Dungeon {
@@ -11,11 +10,7 @@ export class Dungeon {
 	tileSize = new Vec2(1, 1)
 	floorGrid = new ZenGrid<void>(Vec2.new(16, 16))
 
-	layout: DungeonLayout
-
-	constructor(public options: DungeonOptions) {
-		this.layout = new DungeonLayout(options)
-
+	constructor(public layout: DungeonLayout) {
 		for (const wall of this.layout.walls.tiles())
 			this.phys.makeBody({
 				parts: [{
@@ -27,6 +22,10 @@ export class Dungeon {
 
 		for (const floor of this.layout.floors.tiles())
 			this.floorGrid.create(Box2.fromCorner(floor, this.tileSize))
+	}
+
+	get options() {
+		return this.layout.options
 	}
 
 	makeRandy() {

@@ -4,7 +4,6 @@ import {Vec2} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Clock} from "../../../tools/clock.js"
-import {DungeonLayout} from "../../dungeons/layout.js"
 import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
@@ -15,10 +14,11 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	const fadeRange = 10
 	const cullingRange = 20
 	const wallDetector = new WallDetector(realm)
-	const dungeonLayout = new DungeonLayout(state.options)
-	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
 
-	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
+	const layout = realm.dungeonStore.make(state.options)
+	const dungeonRenderer = new DungeonRenderer(realm, layout)
+
+	console.log("🏰 dungeon seed", layout.options.seed)
 
 	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.desired.swivel)
 

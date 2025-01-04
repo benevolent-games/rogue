@@ -1,39 +1,51 @@
 
+import {Vec2} from "@benev/toolbox"
 import {repeat} from "@benev/slate"
 
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
+import {Box2} from "../physics/shapes/box2.js"
 import {Watchman} from "../../tools/watchman.js"
+import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
-import {DungeonLayout} from "../dungeons/layout.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
-	const simtron = new Simtron()
+	const dungeonStore = new DungeonStore()
+	const simtron = new Simtron(dungeonStore)
 	const watchman = new Watchman(constants.game.tickRate)
+	const dungeonLayout = dungeonStore.make(stdDungeonOptions())
 
-	const dungeonOptions = stdDungeonOptions()
-	const dungeonLayout = new DungeonLayout(dungeonOptions)
+	const getSpawnpoint = () => {
+		const center = dungeonLayout.goalposts.at(0)!
+			.clone()
+			.add_(0.5, 0.5)
+		const proposal = new Box2(center, new Vec2(0.9, 0.9))
+		const {dungeon} = simtron.station
+		return dungeon.findAvailableSpace(proposal)
+	}
 
-	const getSpawnpoint = () => dungeonLayout.goalposts.at(0)!
-		.clone()
-		.add_(0.5, 0.5)
-
-	simtron.simulator.create("dungeon", {options: dungeonOptions})
+	simtron.simulator.create("dungeon", {options: dungeonLayout.options})
 
 	const cathedral = new Cathedral({
 		lag,
 		onBundle: ({author}) => {
+			const spawnpoint = getSpawnpoint()
+			if (!spawnpoint) {
+				console.error("no available space to spawn player")
+				return () => {}
+			}
 			const playerId = simtron.simulator.create("crusader", {
 				author,
 				speed: watchman.perSecond(constants.game.crusader.speed),
 				speedSprint: watchman.perSecond(constants.game.crusader.speedSprint),
-				coordinates: Coordinates.import(getSpawnpoint()).array(),
+				coordinates: Coordinates.import(spawnpoint).array(),
 			})
+			console.log("SPAWN PLAYER", spawnpoint)
 			return () => simtron.simulator.delete(playerId)
 		},
 	})
@@ -61,8 +73,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		stopSnapshots()
 		stopTicks()
 		cathedral.dispose()
+		dungeonStore.clear()
 	}
 
-	return {cathedral, simulatron: simtron, smartloop, startMultiplayer, dispose}
+	return {cathedral, dungeonStore, simtron, smartloop, startMultiplayer, dispose}
 }
 
