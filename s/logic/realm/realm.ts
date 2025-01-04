@@ -1,4 +1,5 @@
 
+import "./utils/fix-babylon-draco-urls.js"
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Vec3} from "@benev/toolbox"
