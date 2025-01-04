@@ -1,24 +1,28 @@
 
-export abstract class Jug {
-	abstract activate(): void
-	abstract deactivate(): void
+export type Jug<S> = {
+	activate(settings: S): void
+	deactivate(): void
 }
 
-export class Juggler<J extends Jug> {
+export type JugSettings<J extends Jug<any>> = (
+	J extends Jug<infer S> ? S : never
+)
+
+export class Juggler<J extends Jug<any>> {
 	#free: J[] = []
 	#active = new Set<J>()
 
 	constructor(
-		private produce: () => J,
 		private max: number = 1_000,
+		private produce: () => J,
 	) {}
 
-	acquire() {
+	acquire(settings: JugSettings<J>) {
 		const jug = this.#free.pop() ?? this.produce()
-		jug.activate()
+		jug.activate(settings)
 		this.#active.add(jug)
 		this.check()
-		return () => this.release(jug)
+		return jug
 	}
 
 	release(jug: J) {
