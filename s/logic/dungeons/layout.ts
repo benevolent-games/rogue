@@ -1,5 +1,6 @@
 
 import {Vec2} from "@benev/toolbox"
+
 import {Profiler} from "../../tools/profiler.js"
 import {DungeonSpace} from "./layouting/space.js"
 import {TileStore} from "./layouting/tile-store.js"

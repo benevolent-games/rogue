@@ -1,9 +1,11 @@
 
 import {Map2} from "@benev/slate"
+
 import {DungeonLayout} from "./layout.js"
 import {quickHash} from "../../tools/quick-hash.js"
 import {DungeonOptions} from "./layouting/types.js"
 
+/** Stores generated dungeon layouts to help us avoid repeating the same dungeon redundantly in different contexts */
 export class DungeonStore {
 	#dungeons = new Map2<number, DungeonLayout>
 
