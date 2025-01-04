@@ -33,17 +33,18 @@ export class Dungeon {
 		return new Randy(this.options.seed)
 	}
 
-	findNearestOpenFloorTile(point: Vec2, proximity = 10) {
-		const selector = new Box2(point, Vec2.all(proximity))
-		const floorTiles = this.floorGrid.queryBoxes(selector)
-			.map(floor => ({floor, distance: floor.center.distanceSquared(point)}))
+	findAvailableSpace(item: Box2, requiredProximity = 10) {
+		const localArea = new Box2(item.center, Vec2.all(requiredProximity))
+		const nearbyFloorTiles = this.floorGrid.queryBoxes(localArea)
+			.map(floor => ({floor, distance: floor.center.distanceSquared(item.center)}))
 			.toSorted((a, b) => a.distance - b.distance)
 			.map(a => a.floor)
 
-		for (const floor of floorTiles) {
-			const isVacant = this.phys.queryBodies(floor).length === 0
-			if (isVacant)
-				return floor
+		for (const floor of nearbyFloorTiles) {
+			const proposedItem = new Box2(floor.center, item.extent)
+			const proposedSpaceIsAvailable = this.phys.queryBodies(proposedItem).length === 0
+			if (proposedSpaceIsAvailable)
+				return proposedItem.center.clone()
 		}
 
 		return null
