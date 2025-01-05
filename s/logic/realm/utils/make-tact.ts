@@ -17,10 +17,18 @@ export const makeTact = ((target: EventTarget) => {
 		},
 	})))
 
+
 	tact.modes.enable("basic")
-	tact.devices.add(new Tact.devices.Keyboard(window))
-	tact.devices.add(new Tact.devices.PointerMovements(window, "mouse"))
-	tact.devices.add(new Tact.devices.MouseButtons(window))
+
+	const keyboard = new Tact.devices.Keyboard(window)
+
+	// prevent all preventable default browser hotkeys
+	keyboard.onInput(input => input.event?.preventDefault())
+
+	tact.devices
+		.add(keyboard)
+		.add(new Tact.devices.PointerMovements(window, "mouse"))
+		.add(new Tact.devices.MouseButtons(window))
 
 	return tact
 })
