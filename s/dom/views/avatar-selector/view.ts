@@ -6,7 +6,7 @@ import {AvatarView} from "../avatar/view.js"
 import {context} from "../../../dom/context.js"
 import themeCss from "../../../dom/theme.css.js"
 import {Avatar} from "../../../features/accounts/avatars.js"
-import {Account, AccountRecord, isAvatarAllowed} from "../../../features/accounts/sketch.js"
+import {Account, AccountRecord, AccountTiers, isAvatarAllowed} from "../../../features/accounts/sketch.js"
 
 export const AvatarSelectorView = shadowView(use => (options: {
 		account: Account
@@ -28,7 +28,7 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	const avatars = [...Avatar.library.values()]
 		.filter(avatar => {
-			if (!account.tags.includes("admin"))
+			if (!AccountTiers.isAdmin(account.tags))
 				return avatar.kind !== "rare"
 			return true
 		})
