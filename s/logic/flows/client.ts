@@ -114,6 +114,11 @@ export async function clientFlow(
 		realm.dispose()
 	}
 
+	await Promise.all([
+		baseSimtron.station.ready,
+		realm.ready.promise,
+	])
+
 	return {world, realm, replicator, liaison, dispose}
 }
 

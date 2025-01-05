@@ -23,6 +23,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	const layout = realm.dungeonStore.make(state.options)
 	const dungeonRenderer = new DungeonRenderer(realm, layout)
+	realm.ready.resolve()
 
 	console.log("🏰 dungeon seed", layout.options.seed)
 

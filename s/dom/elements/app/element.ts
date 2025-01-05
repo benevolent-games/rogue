@@ -66,7 +66,7 @@ export const GameApp = shadowComponent(use => {
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
-			lagtest: makeNav(async() => {
+			lag: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const lag = lagProfiles.bad
 				const flow = await playerHostFlow({lag, identity})
@@ -138,6 +138,7 @@ export const GameApp = shadowComponent(use => {
 				const {clientFlow} = await import("../../../logic/flows/client.js")
 				const dungeonStore = new DungeonStore()
 				const {realm, dispose} = await clientFlow(multiplayerClient, dungeonStore)
+
 				return {
 					template: () => Gameplay([{
 						realm,
@@ -158,8 +159,8 @@ export const GameApp = shadowComponent(use => {
 		if (location.hash.includes("offline"))
 			goExhibit.offline()
 
-		if (location.hash.includes("lagtest"))
-			goExhibit.offline()
+		if (location.hash.includes("lag"))
+			goExhibit.lag()
 
 		else if (location.hash.includes("play"))
 			goExhibit.host()

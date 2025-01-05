@@ -3,7 +3,7 @@ import "./utils/fix-babylon-draco-urls.js"
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Vec3} from "@benev/toolbox"
-import {pubsub, Trashbin} from "@benev/slate"
+import {deferPromise, pubsub, Trashbin} from "@benev/slate"
 import {Constants} from "@babylonjs/core/Engines/constants.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
@@ -30,6 +30,8 @@ export class Realm {
 	tact = makeTact(window)
 	playerPosition = Vec3.zero()
 	onFilesDropped = pubsub<[File[]]>()
+
+	ready = deferPromise<void>()
 
 	#trashbin = new Trashbin()
 
