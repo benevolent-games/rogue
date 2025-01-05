@@ -27,8 +27,6 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	console.log("🏰 dungeon seed", layout.options.seed)
 
-	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.desired.swivel)
-
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {
 			if (file.name.endsWith(".glb")) {
@@ -42,44 +40,13 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	return {
 		gatherInputs: () => undefined,
-		replicate: (tick) => {
+		replicate: (_tick) => {
 			localArea.center.set(realm.cameraman.desired.pivot)
 
 			const c1 = new Clock()
-
-			dungeonRenderer.skin.flooring.renderArea(localArea)
-			dungeonRenderer.skin.walling.renderArea(localArea)
-
-			if (c1.elapsed > 2) {
-				c1.log("dungeon culling")
-				// console.log(dungeonRenderer.skin.lifeguard.report().join("\n"))
-			}
-
-
-
-			// c1.log("culling was slow")
-
-			// //////////////////////////
-			//
-			// const {culler, wallFader} = dungeonRenderer.skin
-			//
-			// const c1 = new Clock()
-			// culler.cull(realm.cameraman.desired.pivot, cullingRange)
-			// if (c1.elapsed > 3)
-			// 	c1.log("culling was slow")
-			//
-			// const c2 = new Clock()
-			// wallFader.animate(
-			// 	realm.cameraman.desired.pivot.clone().add(camfadeOffset),
-			// 	fadeRange,
-			// 	wall => wallDetector.detect(
-			// 		wall,
-			// 		realm.cameraman.desired.pivot.position(),
-			// 		realm.cameraman,
-			// 	),
-			// )
-			// if (c2.elapsed > 3)
-			// 	c2.log("wallFader was slow")
+			dungeonRenderer.render(localArea)
+			if (c1.elapsed > 3)
+				c1.log("dungeon culling was slow")
 		},
 		dispose: () => {
 			wallDetector.dispose()

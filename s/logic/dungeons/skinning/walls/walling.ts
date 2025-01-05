@@ -89,7 +89,7 @@ export class Walling {
 	}
 
 	#fading() {
-		for (const {spec, prop} of this.#alive.values()) {
+		for (const {spec, meshes} of this.#alive.values()) {
 
 			// determine target opacity
 			spec.targetOpacity = this.#detector.detect(spec)
@@ -108,7 +108,7 @@ export class Walling {
 				if (diff < 0.05)
 					spec.currentOpacity = spec.targetOpacity
 				if (spec.currentOpacity !== previous) {
-					for (const mesh of getTopMeshes(prop))
+					for (const mesh of meshes)
 						mesh.visibility = spec.currentOpacity
 				}
 			}
