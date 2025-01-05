@@ -8,7 +8,6 @@ import {DungeonPlacer} from "../utils/placer.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {GlobalTileVec2} from "../../layouting/space.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
-import {Crate} from "../../../../tools/babylon/logistics/crate.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Spatial} from "../../../../tools/babylon/logistics/types.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
@@ -17,7 +16,7 @@ import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js
 class WallSpec {
 	targetOpacity = 1
 	currentOpacity = 1
-	constructor(public crate: Crate, public spatial: Spatial) {}
+	constructor(public cargo: Cargo, public spatial: Spatial) {}
 }
 
 class WallAlive {
@@ -44,10 +43,7 @@ export class Walling {
 			const cargo = getCargo(style)
 			const spatial = this.#placer.placeProp(wall)
 			const wallSpec = new WallSpec(cargo, spatial)
-
-			// TODO actually form a real box around the wall?
 			const box = new Box2(wall.location, Vec2.all(1))
-
 			this.#hashgrid.create(box, wallSpec)
 		}
 
@@ -73,7 +69,7 @@ export class Walling {
 	#spawning(walls: Set<WallSpec>) {
 		for (const wall of walls) {
 			if (!this.#alive.has(wall)) {
-				const [prop, release] = this.lifeguard.spawn(wall.crate, false)
+				const [prop, release] = this.lifeguard.spawn(wall.cargo, false)
 				applySpatial(prop, wall.spatial)
 				this.#alive.set(wall, new WallAlive(
 					wall,

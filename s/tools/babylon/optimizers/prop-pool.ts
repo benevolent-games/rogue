@@ -16,8 +16,13 @@ export class PropPool {
 	}
 
 	preload(count: number) {
-		for (const _ of loop(count))
-			this.release(this.acquire())
+		for (const _ of loop(count)) {
+			const prop = this.instance
+				? this.crate.instance()
+				: this.crate.clone()
+			prop.setEnabled(false)
+			this.#free.push(prop)
+		}
 	}
 
 	acquire() {
@@ -25,7 +30,8 @@ export class PropPool {
 			this.instance
 				? this.crate.instance()
 				: this.crate.clone()
-		) as Prop
+		)
+
 		this.#alive.add(prop)
 		prop.setEnabled(true)
 		return prop

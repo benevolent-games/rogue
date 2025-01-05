@@ -2,25 +2,38 @@
 import {Map2} from "@benev/slate"
 import {Prop} from "@benev/toolbox"
 import {PropPool} from "./prop-pool.js"
-import {Crate} from "../logistics/crate.js"
+import {Cargo} from "../logistics/cargo.js"
 
 export type PooledProp = [Prop, () => void]
 
 export class Lifeguard {
-	#instances = new Map2<Crate, PropPool>()
-	#clones = new Map2<Crate, PropPool>()
+	#instances = new Map2<Cargo, PropPool>()
+	#clones = new Map2<Cargo, PropPool>()
 
-	#getPool(crate: Crate, instance: boolean) {
-		return instance
-			? this.#instances.guarantee(crate, () => new PropPool(crate, true))
-			: this.#clones.guarantee(crate, () => new PropPool(crate, false))
+	pool(cargo: Cargo, instance: boolean) {
+		const pools = instance
+			? this.#instances
+			: this.#clones
+		return pools.guarantee(cargo, () => new PropPool(cargo, instance))
 	}
 
-	spawn(crate: Crate, instance: boolean = true) {
-		const pool = this.#getPool(crate, instance)
+	spawn(cargo: Cargo, instance: boolean = true) {
+		const pool = this.pool(cargo, instance)
 		const prop = pool.acquire()
 		const release = () => pool.release(prop)
 		return [prop, release] as PooledProp
+	}
+
+	report() {
+		const lines: string[] = []
+
+		for (const [cargo, pool] of this.#instances)
+			lines.push(` • ${pool.size} instances ${cargo.manifest.toString()}`)
+
+		for (const [cargo, pool] of this.#clones)
+			lines.push(` • ${pool.size} clones ${cargo.manifest.toString()}`)
+
+		return lines
 	}
 }
 

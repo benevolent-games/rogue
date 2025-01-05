@@ -6,13 +6,13 @@ import {FloorSegment} from "../floors/types.js"
 import {DungeonPlacer} from "../utils/placer.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
-import {Crate} from "../../../../tools/babylon/logistics/crate.js"
+import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Spatial} from "../../../../tools/babylon/logistics/types.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
 
 class FloorSpec {
-	constructor(public crate: Crate, public spatial: Spatial) {}
+	constructor(public cargo: Cargo, public spatial: Spatial) {}
 }
 
 export class Flooring {
@@ -41,7 +41,7 @@ export class Flooring {
 	#spawning(floors: Set<FloorSpec>) {
 		for (const floor of floors) {
 			if (!this.#releasers.has(floor)) {
-				const [prop, release] = this.lifeguard.spawn(floor.crate)
+				const [prop, release] = this.lifeguard.spawn(floor.cargo)
 				applySpatial(prop, floor.spatial)
 				this.#releasers.set(floor, release)
 			}

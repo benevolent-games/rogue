@@ -13,6 +13,9 @@ import {planFloor} from "./floors/plan-floor.js"
 import {Lifeguard} from "../../../tools/babylon/optimizers/lifeguard.js"
 import {GlobalCellVec2, GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 
+const preload = 50
+const preloadMore = 100
+
 export class DungeonSkin {
 	lifeguard = new Lifeguard()
 	styleKeyByCell = new Vecmap2<LocalCellVec2, string>()
@@ -58,6 +61,11 @@ export class DungeonSkin {
 			getFloorStyle,
 		)
 
+		const useInstances = true
+
+		for (const cargo of this.assets.warehouse.search({label: "floor"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
+
 		return new Flooring(this.lifeguard, floorPlan)
 	}
 
@@ -73,6 +81,22 @@ export class DungeonSkin {
 			this.layout.floors.set,
 			getWallStyle,
 		)
+
+		const useInstances = false
+
+		for (const cargo of this.assets.warehouse.search({label: "wall"})) {
+			this.lifeguard.pool(cargo, useInstances).preload(
+				(cargo.manifest.get("size") === "0.5")
+					? preloadMore
+					: preload
+			)
+		}
+
+		for (const cargo of this.assets.warehouse.search({label: "convex"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
+
+		for (const cargo of this.assets.warehouse.search({label: "concave"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
 		return new Walling(this.lifeguard, plan, getWallStyle)
 	}
