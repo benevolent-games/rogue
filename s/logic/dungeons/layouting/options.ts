@@ -1,12 +1,10 @@
 
-import {Randy} from "@benev/toolbox"
 import {DungeonOptions} from "./types.js"
+import {Seeds} from "../../../tools/seeds.js"
 
 export function stdDungeonOptions(): DungeonOptions {
 	return {
-		// // TODO
-		seed: 1363828581,
-		// seed: Randy.randomSeed(),
+		seed: Seeds.daily(),
 		gridExtents: {
 			cells: [3, 3],
 			tiles: [24, 24],
