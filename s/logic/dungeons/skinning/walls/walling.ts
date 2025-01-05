@@ -1,48 +1,46 @@
 
 import {Map2} from "@benev/slate"
-import {Prop, Vec2} from "@benev/toolbox"
+import {Scalar, Vec2} from "@benev/toolbox"
+
 import {WallSegment} from "./types.js"
+import {WallSpec} from "./wall-spec.js"
 import {WallPlan} from "./plan-walls.js"
 import {DungeonStyle} from "../style.js"
+import {WallAlive} from "./wall-alive.js"
+import {Realm} from "../../../realm/realm.js"
+import {WallDetector} from "./wall-detector.js"
 import {DungeonPlacer} from "../utils/placer.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {GlobalTileVec2} from "../../layouting/space.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
-import {Spatial} from "../../../../tools/babylon/logistics/types.js"
+import {getTopMeshes} from "../../../../tools/babylon/babylon-helpers.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
-
-class WallSpec {
-	targetOpacity = 1
-	currentOpacity = 1
-	constructor(public cargo: Cargo, public spatial: Spatial) {}
-}
-
-class WallAlive {
-	constructor(
-		public spec: WallSpec,
-		public prop: Prop,
-		public release: () => void,
-	) {}
-}
 
 export class Walling {
 	#placer = new DungeonPlacer(1)
 	#hashgrid = new ZenGrid<WallSpec>(new Vec2(16, 16))
 	#alive = new Map2<WallSpec, WallAlive>()
 
+	#detector: WallDetector
+
+	fadeSpeed = 3 / 100
+
 	constructor(
+			realm: Realm,
 			public lifeguard: Lifeguard,
 			plan: WallPlan,
 			getWallStyle: (tile: GlobalTileVec2) => DungeonStyle,
 		) {
 
+		this.#detector = new WallDetector(realm)
+
 		const make = (wall: WallSegment, getCargo: (style: DungeonStyle) => Cargo) => {
 			const style = getWallStyle(wall.tile)
 			const cargo = getCargo(style)
 			const spatial = this.#placer.placeProp(wall)
-			const wallSpec = new WallSpec(cargo, spatial)
+			const wallSpec = new WallSpec(cargo, spatial, wall)
 			const box = new Box2(wall.location, Vec2.all(1))
 			this.#hashgrid.create(box, wallSpec)
 		}
@@ -64,6 +62,7 @@ export class Walling {
 		const walls = new Set(this.#hashgrid.queryItems(area))
 		this.#spawning(walls)
 		this.#despawning(walls)
+		this.#fading()
 	}
 
 	#spawning(walls: Set<WallSpec>) {
@@ -85,6 +84,33 @@ export class Walling {
 			if (!walls.has(wall.spec)) {
 				wall.release()
 				this.#alive.delete(wall.spec)
+			}
+		}
+	}
+
+	#fading() {
+		for (const {spec, prop} of this.#alive.values()) {
+
+			// determine target opacity
+			spec.targetOpacity = this.#detector.detect(spec)
+				? 0
+				: 1
+
+			// animate fading
+			const previous = spec.currentOpacity
+			if (spec.currentOpacity !== spec.targetOpacity) {
+				spec.currentOpacity = Scalar.lerp(
+					spec.currentOpacity,
+					spec.targetOpacity,
+					this.fadeSpeed,
+				)
+				const diff = Math.abs(spec.targetOpacity - spec.currentOpacity)
+				if (diff < 0.05)
+					spec.currentOpacity = spec.targetOpacity
+				if (spec.currentOpacity !== previous) {
+					for (const mesh of getTopMeshes(prop))
+						mesh.visibility = spec.currentOpacity
+				}
 			}
 		}
 	}

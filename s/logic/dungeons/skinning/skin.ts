@@ -98,7 +98,7 @@ export class DungeonSkin {
 		for (const cargo of this.assets.warehouse.search({label: "concave"}))
 			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
-		return new Walling(this.lifeguard, plan, getWallStyle)
+		return new Walling(this.realm, this.lifeguard, plan, getWallStyle)
 	}
 
 	dispose() {}
