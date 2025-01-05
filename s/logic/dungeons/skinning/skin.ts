@@ -8,6 +8,7 @@ import {Realm} from "../../realm/realm.js"
 import {Culler} from "./culling/culler.js"
 import {DungeonLayout} from "../layout.js"
 import {WallSegment} from "./walls/types.js"
+import {Flooring} from "./floors/flooring.js"
 import {WallFader} from "./walls/wall-fader.js"
 import {planWalls} from "./walls/plan-walls.js"
 import {Vecmap2} from "../layouting/vecmap2.js"
@@ -15,7 +16,6 @@ import {DungeonPlacer} from "./utils/placer.js"
 import {planFloor} from "./floors/plan-floor.js"
 import {WallSubject} from "./walls/wall-subject.js"
 import {SubjectGrid} from "./culling/subject-grid.js"
-import {CullingSubject} from "./culling/culling-subject.js"
 import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
 import {GlobalCellVec2, GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 
@@ -31,6 +31,8 @@ export class DungeonSkin {
 
 	culler = new Culler(this.cullableGrid)
 	wallFader = new WallFader(this.fadingGrid)
+
+	flooring = new Flooring()
 
 	constructor(
 			public layout: DungeonLayout,
@@ -69,17 +71,7 @@ export class DungeonSkin {
 		)
 
 		for (const floor of floorPlan.values()) {
-			const size = `${floor.size.x}x${floor.size.y}`
-			const cargo = floor.style.floors.require(size)()
-			const radians = floor.rotation
-			const spatial = this.placer.placeProp({location: floor.location, radians})
-			const spawn = () => {
-				const instance = cargo.instance(spatial)
-				instance.freezeWorldMatrix()
-				return instance
-			}
-			const subject = new CullingSubject(floor.location, spawn)
-			this.cullableGrid.add(subject)
+			this.flooring.establish(floor)
 		}
 	}
 

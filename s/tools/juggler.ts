@@ -17,6 +17,10 @@ export class Juggler<J extends Jug<any>> {
 		private produce: () => J,
 	) {}
 
+	get size() {
+		return this.#free.length + this.#active.size
+	}
+
 	acquire(settings: JugSettings<J>) {
 		const jug = this.#free.pop() ?? this.produce()
 		jug.activate(settings)
@@ -32,9 +36,9 @@ export class Juggler<J extends Jug<any>> {
 	}
 
 	check() {
-		const size = this.#free.length + this.#active.size
-		if (size > this.max)
-			console.warn(`juggler max ${this.max} exceeded, has ${size} jugs`)
+		const {size, max} = this
+		if (size > max)
+			console.warn(`juggler max ${max} exceeded, has ${size} jugs`)
 	}
 }
 

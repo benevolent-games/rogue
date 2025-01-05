@@ -20,7 +20,9 @@ class FloorJug implements Jug<Spatial> {
 	}
 
 	activate(spatial: Spatial) {
+		this.instance.unfreezeWorldMatrix()
 		applySpatial(this.instance, spatial)
+		this.instance.freezeWorldMatrix()
 		this.instance.setEnabled(true)
 	}
 
@@ -37,7 +39,15 @@ export class Flooring {
 	#placer = new DungeonPlacer(1)
 	#hashgrid = new ZenGrid<FloorSpec>(new Vec2(16, 16))
 	#jugglers = new Map2<Cargo, Juggler<FloorJug>>()
-	#deactivators = new Map2<Cargo, () => void>()
+	#releasers = new Map2<FloorSpec, () => void>()
+
+	get report() {
+		const lines: string[] = [`flooring juggler report`]
+		for (const [cargo, juggler] of this.#jugglers) {
+			lines.push(` - ${juggler.size} ${cargo.manifest.get("size")}`)
+		}
+		return lines.join("\n")
+	}
 
 	establish(floor: FloorSegment) {
 		const box = new Box2(floor.location, floor.size)
@@ -55,25 +65,26 @@ export class Flooring {
 
 	renderArea(area: Box2) {
 		const floorsInArea = new Set(this.#hashgrid.queryItems(area))
-		this.#activate(floorsInArea)
-		this.#pruneInactive(floorsInArea)
+		this.#spawning(floorsInArea)
+		this.#despawning(floorsInArea)
 	}
 
-	#activate(floorsInArea: Set<FloorSpec>) {
+	#spawning(floorsInArea: Set<FloorSpec>) {
 		for (const floor of floorsInArea) {
-			const juggler = this.#jugglers.require(floor.cargo)
-			const jug = juggler.acquire(floor.spatial)
-			this.#deactivators.set(floor.cargo, () => juggler.release(jug))
+			if (!this.#releasers.has(floor)) {
+				const juggler = this.#jugglers.require(floor.cargo)
+				const jug = juggler.acquire(floor.spatial)
+				this.#releasers.set(floor, () => juggler.release(jug))
+			}
 		}
 	}
 
-	#pruneInactive(floorsInArea: Set<FloorSpec>) {
-		const actives = new Map2<Cargo, FloorSpec>(
-			[...floorsInArea].map(floor => [floor.cargo, floor])
-		)
-		for (const [cargo, deactivate] of this.#deactivators) {
-			if (!actives.has(cargo))
-				deactivate()
+	#despawning(floorsInArea: Set<FloorSpec>) {
+		for (const [floor, release] of this.#releasers) {
+			if (!floorsInArea.has(floor)) {
+				release()
+				this.#releasers.delete(floor)
+			}
 		}
 	}
 }
