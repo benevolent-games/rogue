@@ -101,6 +101,8 @@ export class DungeonSkin {
 		return new Walling(this.realm, this.lifeguard, plan, getWallStyle)
 	}
 
-	dispose() {}
+	dispose() {
+		this.lifeguard.dispose()
+	}
 }
 

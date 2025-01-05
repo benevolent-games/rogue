@@ -35,5 +35,13 @@ export class Lifeguard {
 
 		return lines
 	}
+
+	dispose() {
+		for (const pool of this.#instances.values())
+			pool.dispose()
+
+		for (const pool of this.#clones.values())
+			pool.dispose()
+	}
 }
 

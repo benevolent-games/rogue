@@ -42,5 +42,13 @@ export class PropPool {
 		this.#alive.delete(prop)
 		this.#free.push(prop)
 	}
+
+	dispose() {
+		for (const prop of this.#alive)
+			prop.dispose()
+
+		for (const prop of this.#free)
+			prop.dispose()
+	}
 }
 

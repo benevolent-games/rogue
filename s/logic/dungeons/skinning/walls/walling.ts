@@ -14,7 +14,6 @@ import {Box2} from "../../../physics/shapes/box2.js"
 import {GlobalTileVec2} from "../../layouting/space.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
-import {getTopMeshes} from "../../../../tools/babylon/babylon-helpers.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
 
