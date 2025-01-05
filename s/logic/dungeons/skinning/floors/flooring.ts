@@ -18,10 +18,9 @@ class FloorSpec {
 export class Flooring {
 	#placer = new DungeonPlacer(1)
 	#hashgrid = new ZenGrid<FloorSpec>(new Vec2(16, 16))
-	#lifeguard = new Lifeguard()
 	#releasers = new Map2<FloorSpec, () => void>()
 
-	constructor(floors: FloorSegment[]) {
+	constructor(public lifeguard: Lifeguard, floors: FloorSegment[]) {
 		for (const segment of floors) {
 			const box = new Box2(segment.location, segment.size)
 			const size = `${segment.size.x}x${segment.size.y}`
@@ -34,24 +33,24 @@ export class Flooring {
 	}
 
 	renderArea(area: Box2) {
-		const floorsInArea = new Set(this.#hashgrid.queryItems(area))
-		this.#spawning(floorsInArea)
-		this.#despawning(floorsInArea)
+		const floors = new Set(this.#hashgrid.queryItems(area))
+		this.#spawning(floors)
+		this.#despawning(floors)
 	}
 
-	#spawning(floorsInArea: Set<FloorSpec>) {
-		for (const floor of floorsInArea) {
+	#spawning(floors: Set<FloorSpec>) {
+		for (const floor of floors) {
 			if (!this.#releasers.has(floor)) {
-				const [prop, release] = this.#lifeguard.spawn(floor.crate)
+				const [prop, release] = this.lifeguard.spawn(floor.crate)
 				applySpatial(prop, floor.spatial)
 				this.#releasers.set(floor, release)
 			}
 		}
 	}
 
-	#despawning(floorsInArea: Set<FloorSpec>) {
+	#despawning(floors: Set<FloorSpec>) {
 		for (const [floor, release] of this.#releasers) {
-			if (!floorsInArea.has(floor)) {
+			if (!floors.has(floor)) {
 				release()
 				this.#releasers.delete(floor)
 			}

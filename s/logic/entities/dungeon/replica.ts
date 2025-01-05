@@ -13,7 +13,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
 	const fadeRange = 10
-	const cullingRange = 20
+	const cullingRange = 10
 	const wallDetector = new WallDetector(realm)
 
 	const localArea = new Box2(
@@ -43,7 +43,12 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 		gatherInputs: () => undefined,
 		replicate: (_tick) => {
 			localArea.center.set(realm.cameraman.desired.pivot)
+
+			const c1 = new Clock()
 			dungeonRenderer.skin.flooring.renderArea(localArea)
+			dungeonRenderer.skin.walling.renderArea(localArea)
+			if (c1.elapsed > 3)
+				c1.log("culling was slow")
 
 			// c1.log("culling was slow")
 
