@@ -1,66 +1,36 @@
 
 import {Map2} from "@benev/slate"
-import {Prop, Vec2} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
 
 import {FloorSegment} from "../floors/types.js"
 import {DungeonPlacer} from "../utils/placer.js"
 import {Box2} from "../../../physics/shapes/box2.js"
-import {Jug, Juggler} from "../../../../tools/juggler.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
-import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
+import {Crate} from "../../../../tools/babylon/logistics/crate.js"
 import {Spatial} from "../../../../tools/babylon/logistics/types.js"
+import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
 
-class FloorJug implements Jug<Spatial> {
-	instance: Prop
-
-	constructor(public cargo: Cargo) {
-		this.instance = cargo.instance()
-		this.instance.setEnabled(false)
-	}
-
-	activate(spatial: Spatial) {
-		this.instance.unfreezeWorldMatrix()
-		applySpatial(this.instance, spatial)
-		this.instance.freezeWorldMatrix()
-		this.instance.setEnabled(true)
-	}
-
-	deactivate() {
-		this.instance.setEnabled(false)
-	}
-}
-
 class FloorSpec {
-	constructor(public cargo: Cargo, public spatial: Spatial) {}
+	constructor(public crate: Crate, public spatial: Spatial) {}
 }
 
 export class Flooring {
 	#placer = new DungeonPlacer(1)
 	#hashgrid = new ZenGrid<FloorSpec>(new Vec2(16, 16))
-	#jugglers = new Map2<Cargo, Juggler<FloorJug>>()
+	#lifeguard = new Lifeguard()
 	#releasers = new Map2<FloorSpec, () => void>()
 
-	get report() {
-		const lines: string[] = [`flooring juggler report`]
-		for (const [cargo, juggler] of this.#jugglers) {
-			lines.push(` - ${juggler.size} ${cargo.manifest.get("size")}`)
+	constructor(floors: FloorSegment[]) {
+		for (const segment of floors) {
+			const box = new Box2(segment.location, segment.size)
+			const size = `${segment.size.x}x${segment.size.y}`
+			const radians = segment.rotation
+			const crate = segment.style.floors.require(size)()
+			const spatial = this.#placer.placeProp({location: segment.location, radians})
+			const floorSpec = new FloorSpec(crate, spatial)
+			this.#hashgrid.create(box, floorSpec)
 		}
-		return lines.join("\n")
-	}
-
-	establish(floor: FloorSegment) {
-		const box = new Box2(floor.location, floor.size)
-		const size = `${floor.size.x}x${floor.size.y}`
-		const radians = floor.rotation
-		const cargo = floor.style.floors.require(size)()
-		const spatial = this.#placer.placeProp({location: floor.location, radians})
-		const spec = new FloorSpec(cargo, spatial)
-		this.#hashgrid.create(box, spec)
-		this.#jugglers.guarantee(
-			cargo,
-			() => new Juggler(1_000, () => new FloorJug(cargo))
-		)
 	}
 
 	renderArea(area: Box2) {
@@ -72,9 +42,9 @@ export class Flooring {
 	#spawning(floorsInArea: Set<FloorSpec>) {
 		for (const floor of floorsInArea) {
 			if (!this.#releasers.has(floor)) {
-				const juggler = this.#jugglers.require(floor.cargo)
-				const jug = juggler.acquire(floor.spatial)
-				this.#releasers.set(floor, () => juggler.release(jug))
+				const [prop, release] = this.#lifeguard.spawn(floor.crate)
+				applySpatial(prop, floor.spatial)
+				this.#releasers.set(floor, release)
 			}
 		}
 	}

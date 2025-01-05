@@ -32,7 +32,7 @@ export class DungeonSkin {
 	culler = new Culler(this.cullableGrid)
 	wallFader = new WallFader(this.fadingGrid)
 
-	flooring = new Flooring()
+	flooring: Flooring
 
 	constructor(
 			public layout: DungeonLayout,
@@ -49,7 +49,7 @@ export class DungeonSkin {
 		for (const cell of this.layout.floors.cells())
 			this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
-		this.#createFlooring()
+		this.flooring = this.#createFlooring()
 		this.#createWalls()
 	}
 
@@ -70,9 +70,7 @@ export class DungeonSkin {
 			getFloorStyle,
 		)
 
-		for (const floor of floorPlan.values()) {
-			this.flooring.establish(floor)
-		}
+		return new Flooring(floorPlan)
 	}
 
 	#createWalls() {

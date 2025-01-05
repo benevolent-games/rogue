@@ -16,10 +16,6 @@ export class Lifeguard {
 			: this.#clones.guarantee(crate, () => new PropPool(crate, false))
 	}
 
-	preload(crate: Crate, instance: boolean, count: number) {
-		this.#getPool(crate, instance).preload(count)
-	}
-
 	spawn(crate: Crate, instance: boolean = true) {
 		const pool = this.#getPool(crate, instance)
 		const prop = pool.acquire()

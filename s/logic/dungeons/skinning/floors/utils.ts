@@ -2,7 +2,7 @@
 import {FloorSegment} from "./types.js"
 import {Vec2, Vec2Array} from "@benev/toolbox"
 
-export const size1 = new Vec2(1, 1)
+export const tileExtent = new Vec2(1, 1)
 
 export const hashFloor = ({style, size, tile, rotation}: FloorSegment) => [
 	style.name,
