@@ -27,6 +27,10 @@ export const StatsView = shadowView(use => ({stats}: Realm) => {
 					<strong>prediction</strong>
 					<span>${stats.timing.prediction.time.toFixed(2)} ms</span>
 				</li>
+				<li>
+					<strong>physics</strong>
+					<span>${stats.timing.physics.time.toFixed(2)} ms</span>
+				</li>
 			</ul>
 		</section>
 	`

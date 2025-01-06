@@ -6,6 +6,7 @@ import {Watchman} from "../../tools/watchman.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
+import {TimingReport} from "../realm/parts/game-stats.js"
 import {InputShell} from "../../archimedes/framework/parts/types.js"
 import {GameState} from "../../archimedes/framework/parts/game-state.js"
 import {Simulator} from "../../archimedes/framework/simulation/simulator.js"
@@ -26,11 +27,13 @@ export class Simtron {
 		)
 	}
 
-	simulate(tick: number, inputs: InputShell<any>[]) {
+	simulate(tick: number, inputs: InputShell<any>[], physicsTiming = new TimingReport()) {
 		this.simulator.simulate(tick, inputs)
 		const dungeon = this.station.possibleDungeon
 		if (dungeon) {
+			const clockPhysics = physicsTiming.measure()
 			dungeon.phys.simulate()
+			clockPhysics()
 		}
 	}
 

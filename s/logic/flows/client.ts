@@ -54,6 +54,8 @@ export async function clientFlow(
 	const stopTicking = smartloop.on(() => {
 		const {timing} = realm.stats
 		const clockTick = timing.tick.reset().measure()
+		const physicsTiming = timing.physics
+		physicsTiming.reset()
 
 		const authoritative = liaison.take()
 
@@ -71,8 +73,8 @@ export async function clientFlow(
 			slipTick = 0
 			for (const {tick, inputs} of authoritative.inputPayloads) {
 				for (let missingTick = baseTick + 1; missingTick < tick; missingTick++)
-					baseSimtron.simulate(missingTick, [])
-				baseSimtron.simulate(tick, inputs)
+					baseSimtron.simulate(missingTick, [], physicsTiming)
+				baseSimtron.simulate(tick, inputs, physicsTiming)
 				baseTick = tick
 			}
 		}
@@ -102,7 +104,7 @@ export async function clientFlow(
 			for (const ahead of loop(ticksAhead)) {
 				const t = baseTick + ahead
 				const localHistoricalInputs = inputHistory.load(t) ?? []
-				futureSimtron.simulate(t, localHistoricalInputs)
+				futureSimtron.simulate(t, localHistoricalInputs, physicsTiming)
 			}
 		}
 
