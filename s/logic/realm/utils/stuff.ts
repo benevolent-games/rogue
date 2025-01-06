@@ -40,5 +40,9 @@ export class BlockGraphic {
 		this.dimensions = dimensions
 		this.instance.scaling.set(...dimensions.array())
 	}
+
+	dispose() {
+		this.instance.dispose()
+	}
 }
 

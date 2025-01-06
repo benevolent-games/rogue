@@ -12,7 +12,6 @@ import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
-	const fadeRange = 10
 	const cullingRange = 20
 	const wallDetector = new WallDetector(realm)
 

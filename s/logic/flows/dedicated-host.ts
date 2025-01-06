@@ -9,6 +9,7 @@ import {Watchman} from "../../tools/watchman.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
+import {dungeonStartup} from "../dungeons/startup.js"
 import {Coordinates} from "../realm/utils/coordinates.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
@@ -20,6 +21,8 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const watchman = new Watchman(constants.game.tickRate)
 	const dungeonLayout = dungeonStore.make(stdDungeonOptions())
 
+	dungeonStartup(simtron, dungeonLayout)
+
 	const getSpawnpoint = () => {
 		const center = dungeonLayout.goalposts.at(0)!
 			.clone()
@@ -28,8 +31,6 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		const {dungeon} = simtron.station
 		return dungeon.findAvailableSpace(proposal)
 	}
-
-	simtron.simulator.create("dungeon", {options: dungeonLayout.options})
 
 	const cathedral = new Cathedral({
 		lag,
