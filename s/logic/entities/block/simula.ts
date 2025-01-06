@@ -19,7 +19,7 @@ export const blockSimula = simula<RogueEntities, Station>()<"block">(
 			mass: density * (dimensions.x * dimensions.y * dimensions.z),
 			shape: new Box2(
 				coordinates,
-				Vec2.from(dimensions)
+				new Vec2(dimensions.x, dimensions.z),
 			),
 		}],
 		updated: body => {
