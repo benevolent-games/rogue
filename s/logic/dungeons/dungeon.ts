@@ -49,5 +49,13 @@ export class Dungeon {
 
 		return null
 	}
+
+	getSpawnpoint() {
+		const center = this.layout.goalposts.at(0)!
+			.clone()
+			.add_(0.5, 0.5)
+		const proposal = new Box2(center, new Vec2(0.99, 0.99))
+		return this.findAvailableSpace(proposal)
+	}
 }
 

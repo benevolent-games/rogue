@@ -6,7 +6,7 @@ import {Box2} from "../../physics/shapes/box2.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
-const density = 1
+const density = 100
 
 export const blockSimula = simula<RogueEntities, Station>()<"block">(
 	({station, state, getState}) => {

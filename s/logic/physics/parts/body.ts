@@ -67,5 +67,9 @@ export class PhysBody {
 		this.box.center.add(vector)
 		this.updated()
 	}
+
+	get inverseMass() {
+		return this.mass === Infinity ? 0 : 1 / this.mass
+	}
 }
 

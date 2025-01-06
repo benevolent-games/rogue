@@ -54,23 +54,46 @@ export const Intersections2 = {
 		return new Intersection(contactPoint, depth, normalA, normalB)
 	},
 
+	// circleVsCircle(circleA: Circle, circleB: Circle) {
+	// 	const dx = circleB.center.x - circleA.center.x
+	// 	const dy = circleB.center.y - circleA.center.y
+	// 	const distance = Math.sqrt(dx ** 2 + dy ** 2)
+	// 	if (distance >= circleA.radius + circleB.radius) return null
+	//
+	// 	const depth = circleA.radius + circleB.radius - distance
+	//
+	// 	const contactPoint = new Vec2(
+	// 		(circleA.center.x + circleB.center.x) / 2,
+	// 		(circleA.center.y + circleB.center.y) / 2
+	// 	)
+	//
+	// 	const normalA = new Vec2(dx / distance, dy / distance)
+	// 	const normalB = normalA.clone().multiplyBy(-1)
+	//
+	// 	return new Intersection(contactPoint, depth, normalA, normalB)
+	// },
+
 	circleVsCircle(circleA: Circle, circleB: Circle) {
 		const dx = circleB.center.x - circleA.center.x
 		const dy = circleB.center.y - circleA.center.y
 		const distance = Math.sqrt(dx ** 2 + dy ** 2)
+
 		if (distance >= circleA.radius + circleB.radius) return null
 
-		const depth = circleA.radius + circleB.radius - distance
+		const depth = Math.max(0, circleA.radius + circleB.radius - distance)
+
+		const normalA = distance === 0
+			? new Vec2(1, 0) // fallback for perfectly overlapping circles
+			: new Vec2(dx / distance, dy / distance)
+
+		const normalB = normalA.clone().multiplyBy(-1)
 
 		const contactPoint = new Vec2(
 			(circleA.center.x + circleB.center.x) / 2,
 			(circleA.center.y + circleB.center.y) / 2
 		)
 
-		const normalA = new Vec2(dx / distance, dy / distance)
-		const normalB = normalA.clone().multiplyBy(-1)
-
 		return new Intersection(contactPoint, depth, normalA, normalB)
-	},
+	}
 }
 

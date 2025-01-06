@@ -11,11 +11,14 @@ import {Intersection, Intersections2} from "./facilities/intersections2.js"
 import {collisionResponseFactors} from "./utils/collision-response-factors.js"
 
 export class Phys {
+
+	// TODO why are a/b flipped in some of the collide/intersect functions?
+
 	static collide(a: PhysShape, b: PhysShape) {
 		if (a instanceof Box2 && b instanceof Box2) return Collisions2.boxVsBox(a, b)
 		if (a instanceof Box2 && b instanceof Circle) return Collisions2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Collisions2.boxVsCircle(b, a)
-		if (a instanceof Circle && b instanceof Circle) return Collisions2.circleVsCircle(a, b)
+		if (a instanceof Circle && b instanceof Circle) return Collisions2.circleVsCircle(b, a)
 		return false
 	}
 
@@ -23,7 +26,7 @@ export class Phys {
 		if (a instanceof Box2 && b instanceof Box2) return Intersections2.boxVsBox(a, b)
 		if (a instanceof Box2 && b instanceof Circle) return Intersections2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Intersections2.boxVsCircle(b, a)
-		if (a instanceof Circle && b instanceof Circle) return Intersections2.circleVsCircle(a, b)
+		if (a instanceof Circle && b instanceof Circle) return Intersections2.circleVsCircle(b, a)
 		return null
 	}
 
@@ -110,13 +113,14 @@ export class Phys {
 	}
 
 	#resolveBodyCollisions(bodyA: PhysBody, bodyB: PhysBody, intersections: Intersection[]) {
-		const totalMTV = Vec2.zero()
+		let [biggestIntersection, ...otherIntersections] = intersections
 
-		for (const intersection of intersections)
-			totalMTV.add(intersection.normalA.clone().multiplyBy(intersection.depth))
+		for (const intersection of otherIntersections)
+			if (intersection.depth > biggestIntersection.depth)
+				biggestIntersection = intersection
 
-		if (totalMTV.magnitude() > 0)
-			this.#applyCollisionResponse(bodyA, bodyB, totalMTV)
+		const mtv = biggestIntersection.normalA.clone().multiplyBy(biggestIntersection.depth)
+		this.#applyCollisionResponse(bodyA, bodyB, mtv)
 	}
 
 	#applyCollisionResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {

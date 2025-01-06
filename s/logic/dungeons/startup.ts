@@ -37,5 +37,10 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 			}
 		}
 	}
+
+	// // TODO
+	// simtron.spawnCrusader(99999)
+
+	return dungeon
 }
 
