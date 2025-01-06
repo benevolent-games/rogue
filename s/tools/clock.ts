@@ -9,6 +9,10 @@ export class Clock {
 	log(label: string) {
 		console.log(`🕒 ${label} - ${this.elapsed.toFixed(2)} ms`)
 	}
+
+	reset() {
+		this.start = performance.now()
+	}
 }
 
 export class Stopwatch {

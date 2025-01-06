@@ -18,8 +18,17 @@ import {World} from "../../tools/babylon/world.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
+import {GameStats, TimingReport} from "./parts/game-stats.js"
 
 export class Realm {
+	stats = new GameStats({
+		framerate: new TimingReport(),
+		tick: new TimingReport(),
+		base: new TimingReport(),
+		prediction: new TimingReport(),
+		physics: new TimingReport(),
+	})
+
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
 	cameraman: Cameraman
@@ -69,6 +78,11 @@ export class Realm {
 
 	tick() {
 		this.cameraman.tick()
+		this.#updateStats()
+	}
+
+	#updateStats() {
+		this.stats.timing.framerate.time = this.world.engine.getFps()
 	}
 
 	dispose() {

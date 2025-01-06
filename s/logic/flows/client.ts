@@ -2,6 +2,7 @@
 import {loop, Scalar} from "@benev/toolbox"
 
 import {Realm} from "../realm/realm.js"
+import {Clock} from "../../tools/clock.js"
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
 import {replicas} from "../entities/replicas.js"
@@ -51,7 +52,12 @@ export async function clientFlow(
 	}
 
 	const stopTicking = smartloop.on(() => {
+		const {timing} = realm.stats
+		const clockTick = timing.tick.reset().measure()
+
 		const authoritative = liaison.take()
+
+		const clockBase = timing.base.reset().measure()
 
 		// snapshots from host
 		if (authoritative.snapshot) {
@@ -87,6 +93,9 @@ export async function clientFlow(
 			liaison.sendInputs({tick: futureTick, inputs: localInputs})
 		}
 
+		clockBase()
+		const clockPrediction = timing.prediction.reset().measure()
+
 		// forward prediction
 		if (csp) {
 			futureSimtron.gameState.restore(baseSimtron.gameState.snapshot())
@@ -96,6 +105,9 @@ export async function clientFlow(
 				futureSimtron.simulate(t, localHistoricalInputs)
 			}
 		}
+
+		clockPrediction()
+		clockTick()
 	})
 
 	// init 3d rendering

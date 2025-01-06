@@ -12,6 +12,7 @@ import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
 
+import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"
 
@@ -47,10 +48,12 @@ export const Gameplay = shadowView(use => (o: {
 		? [
 			AccountPanel(),
 			LobbyPanel(o.multiplayerClient),
+			StatsPanel(o.realm),
 			QuitPanel(o.exitToMainMenu),
 		].filter(x => !!x)
 		: [
 			AccountPanel(),
+			StatsPanel(o.realm),
 			QuitPanel(o.exitToMainMenu),
 		]
 
