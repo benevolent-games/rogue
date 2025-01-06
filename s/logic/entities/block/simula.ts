@@ -28,7 +28,9 @@ export const blockSimula = simula<RogueEntities, Station>()<"block">(
 	})
 
 	return {
-		simulate: () => {},
+		simulate: (_tick, state) => {
+			body.box.center.set_(...state.coordinates)
+		},
 		dispose: () => {
 			body.dispose()
 		},
