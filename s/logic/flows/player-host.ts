@@ -29,7 +29,11 @@ export async function playerHostFlow(o: {
 		disconnected: () => {},
 	})
 
-	const client = await clientFlow(multiplayerClient, host.smartloop)
+	const client = await clientFlow(
+		multiplayerClient,
+		host.dungeonStore,
+		host.smartloop,
+	)
 
 	function dispose() {
 		multiplayerClient.dispose()

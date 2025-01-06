@@ -4,7 +4,7 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {FloorSegment} from "./types.js"
 import {DungeonStyle} from "../style.js"
-import {hashFloor, size1} from "./utils.js"
+import {hashFloor, tileExtent} from "./utils.js"
 import {mergeFlooring} from "./merge-flooring.js"
 import {Vecset2} from "../../layouting/vecset2.js"
 import {HashSet} from "../../../../tools/hash/set.js"
@@ -31,7 +31,7 @@ export function planFloor(
 				tile,
 				style,
 				rotation: 0,
-				size: size1,
+				size: tileExtent,
 				location: tile.clone(),
 			}))),
 		)

@@ -6,6 +6,7 @@ import {DungeonLayout} from "./layout.js"
 import {Clock} from "../../tools/clock.js"
 import {DungeonSkin} from "./skinning/skin.js"
 import {prepareDungeonContainer} from "./skinning/prepare-dungeon-container.js"
+import { Box2 } from "../physics/shapes/box2.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
@@ -37,9 +38,13 @@ export class DungeonRenderer {
 			realm,
 			mainScale,
 		)
-		clock.log("dungeon-skinning")
-		// console.log("dungeon skinner stats", skin.stats)
+		clock.log("dungeon skinning")
 		return skin
+	}
+
+	render(area: Box2) {
+		this.skin.flooring.renderArea(area)
+		this.skin.walling.renderArea(area)
 	}
 
 	dispose() {

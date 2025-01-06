@@ -2,35 +2,28 @@
 import {Randy} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
-import {DungeonStyle} from "./style.js"
 import {DungeonAssets} from "./assets.js"
 import {Realm} from "../../realm/realm.js"
-import {Culler} from "./culling/culler.js"
 import {DungeonLayout} from "../layout.js"
-import {WallSegment} from "./walls/types.js"
-import {WallFader} from "./walls/wall-fader.js"
+import {Walling} from "./walls/walling.js"
+import {Flooring} from "./floors/flooring.js"
 import {planWalls} from "./walls/plan-walls.js"
 import {Vecmap2} from "../layouting/vecmap2.js"
-import {DungeonPlacer} from "./utils/placer.js"
 import {planFloor} from "./floors/plan-floor.js"
-import {WallSubject} from "./walls/wall-subject.js"
-import {SubjectGrid} from "./culling/subject-grid.js"
-import {CullingSubject} from "./culling/culling-subject.js"
-import {Cargo} from "../../../tools/babylon/logistics/cargo.js"
+import {Lifeguard} from "../../../tools/babylon/optimizers/lifeguard.js"
 import {GlobalCellVec2, GlobalTileVec2, LocalCellVec2} from "../layouting/space.js"
 
-export class DungeonSkin {
-	randy: Randy
-	placer: DungeonPlacer
+const preload = 50
+const preloadMore = 100
 
-	assets: DungeonAssets
+export class DungeonSkin {
+	lifeguard = new Lifeguard()
 	styleKeyByCell = new Vecmap2<LocalCellVec2, string>()
 
-	cullableGrid = new SubjectGrid()
-	fadingGrid = new SubjectGrid<WallSubject>()
-
-	culler = new Culler(this.cullableGrid)
-	wallFader = new WallFader(this.fadingGrid)
+	randy: Randy
+	assets: DungeonAssets
+	flooring: Flooring
+	walling: Walling
 
 	constructor(
 			public layout: DungeonLayout,
@@ -41,14 +34,14 @@ export class DungeonSkin {
 
 		this.randy = new Randy(layout.options.seed)
 		this.assets = new DungeonAssets(container, this.randy)
-		this.placer = new DungeonPlacer(mainScale)
 
 		const styles = [...this.assets.styles.keys()]
+
 		for (const cell of this.layout.floors.cells())
 			this.styleKeyByCell.set(cell, this.randy.choose(styles))
 
-		this.#createFlooring()
-		this.#createWalls()
+		this.flooring = this.#createFlooring()
+		this.walling = this.#createWalls()
 	}
 
 	#getStyleForCell(cell: GlobalCellVec2) {
@@ -68,19 +61,12 @@ export class DungeonSkin {
 			getFloorStyle,
 		)
 
-		for (const floor of floorPlan.values()) {
-			const size = `${floor.size.x}x${floor.size.y}`
-			const cargo = floor.style.floors.require(size)()
-			const radians = floor.rotation
-			const spatial = this.placer.placeProp({location: floor.location, radians})
-			const spawn = () => {
-				const instance = cargo.instance(spatial)
-				instance.freezeWorldMatrix()
-				return instance
-			}
-			const subject = new CullingSubject(floor.location, spawn)
-			this.cullableGrid.add(subject)
-		}
+		const useInstances = true
+
+		for (const cargo of this.assets.warehouse.search({label: "floor"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
+
+		return new Flooring(this.lifeguard, floorPlan)
 	}
 
 	#createWalls() {
@@ -96,36 +82,27 @@ export class DungeonSkin {
 			getWallStyle,
 		)
 
-		const make = (wall: WallSegment, getCargo: (style: DungeonStyle) => Cargo) => {
-			const style = getWallStyle(wall.tile)
-			const cargo = getCargo(style)
-			const spatial = this.placer.placeProp(wall)
-			const spawn = () => {
-				const prop = cargo.clone(spatial)
-				prop.freezeWorldMatrix()
-				return prop
-			}
-			const subject = new WallSubject(wall, spawn)
-			this.cullableGrid.add(subject)
-			this.fadingGrid.add(subject)
+		const useInstances = false
+
+		for (const cargo of this.assets.warehouse.search({label: "wall"})) {
+			this.lifeguard.pool(cargo, useInstances).preload(
+				(cargo.manifest.get("size") === "0.5")
+					? preloadMore
+					: preload
+			)
 		}
 
-		for (const wall of plan.wallSegments)
-			make(wall, style => style.walls.require(wall.size)())
+		for (const cargo of this.assets.warehouse.search({label: "convex"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
-		for (const concave of plan.concaves)
-			make(concave, style => style.concave())
+		for (const cargo of this.assets.warehouse.search({label: "concave"}))
+			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
-		for (const convex of plan.convexes)
-			make(convex, style => style.convex())
-
-		for (const stump of plan.stumps)
-			make(stump, style => style.stump())
+		return new Walling(this.realm, this.lifeguard, plan, getWallStyle)
 	}
 
 	dispose() {
-		this.cullableGrid.dispose()
-		this.fadingGrid.dispose()
+		this.lifeguard.dispose()
 	}
 }
 

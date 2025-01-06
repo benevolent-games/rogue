@@ -1,8 +1,9 @@
 
+import "./utils/fix-babylon-draco-urls.js"
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Vec3} from "@benev/toolbox"
-import {pubsub, Trashbin} from "@benev/slate"
+import {deferPromise, pubsub, Trashbin} from "@benev/slate"
 import {Constants} from "@babylonjs/core/Engines/constants.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
@@ -12,6 +13,7 @@ import {Lighting} from "./utils/lighting.js"
 import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
 import {Indicators} from "./utils/indicators.js"
+import {DungeonStore} from "../dungeons/store.js"
 import {World} from "../../tools/babylon/world.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
@@ -29,12 +31,15 @@ export class Realm {
 	playerPosition = Vec3.zero()
 	onFilesDropped = pubsub<[File[]]>()
 
+	ready = deferPromise<void>()
+
 	#trashbin = new Trashbin()
 
 	constructor(
 			public world: World,
 			public lighting: Lighting,
 			public glbs: Glbs,
+			public dungeonStore: DungeonStore,
 		) {
 
 		this.buddies = new CapsuleBuddies(world.scene)
@@ -46,11 +51,11 @@ export class Realm {
 		this.#trashbin.disposer(this.userInputs.attach(world.canvas))
 	}
 
-	static async load() {
+	static async load(dungeonStore: DungeonStore) {
 		const world = await World.load()
 		const lighting = new Lighting(world.scene)
 		const glbs = await Glbs.load(world)
-		return new this(world, lighting, glbs)
+		return new this(world, lighting, glbs, dungeonStore)
 	}
 
 	async loadPostProcessShader(name: string, url: string) {

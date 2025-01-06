@@ -5,7 +5,7 @@ import {Future, Keypair, Proof, Token, TokenPayload} from "@authduo/authduo/x/se
 
 import {Avatar} from "./avatars.js"
 
-export type AccountTag = "admin" | "premium"
+export type AccountTag = "founder" | "blessed" | "knighted" | "premium"
 
 export type Account = {
 	thumbprint: string
@@ -30,6 +30,23 @@ const tempKeypair = await Keypair.fromData({
 
 const tempPubkeyJson = await tempKeypair.toPubkey().toData()
 
+export const AccountTiers = {
+	isAdmin(tags: AccountTag[]) {
+		return (
+			tags.includes("founder") ||
+			tags.includes("blessed")
+		)
+	},
+	isPremium(tags: AccountTag[]) {
+		return (
+			tags.includes("founder") ||
+			tags.includes("blessed") ||
+			tags.includes("knighted") ||
+			tags.includes("premium")
+		)
+	},
+}
+
 export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord | undefined) {
 	if (!accountRecord)
 		return (avatar.kind === "rando")
@@ -37,16 +54,13 @@ export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord | u
 	if (avatar.kind === "rando" || avatar.kind === "free")
 		return true
 
-	const hasAdmin = accountRecord.tags.includes("admin")
-	const hasPremium = accountRecord.tags.includes("premium")
-
 	if (avatar.kind === "premium") {
-		if (hasAdmin || hasPremium)
+		if (AccountTiers.isPremium(accountRecord.tags))
 			return true
 	}
 
 	if (avatar.kind === "rare") {
-		if (hasAdmin)
+		if (AccountTiers.isAdmin(accountRecord.tags))
 			return true
 	}
 
@@ -58,29 +72,43 @@ export class AccountantDatabase {
 
 		// chase
 		["670da5deea9ca8b5d472c6a1744c44b7238650103aeb2fbb8c99ed0605211753", {
-			tags: ["admin"],
+			tags: ["founder"],
 			avatars: [],
 		}],
 
 		// lonnie
 		["43c25328c76e94c563ef5143122c7df89f7702485bf569e9051d52f79e56ab3e", {
-			tags: ["admin"],
+			tags: ["founder"],
 			avatars: [],
 		}],
 
 		// loshunter
 		["f42af8f96865f5b830c8cb2017e8ffb0ac3fbc90c87aeda5cd356bf8d70e9219", {
-			tags: ["premium"],
+			tags: ["blessed"],
 			avatars: [],
 		}],
 
+		// geoff
+		["a4572e10881834aa55d72a5cce832d6a570498058d3e1592361e7ee80b5ce5eb", {
+			tags: ["blessed"],
+			avatars: [],
+		}],
+
+		// revolux
+		["94636022cac00d5b6f3c505b9cee21edca6bd7bc2061b124c3ac6c9a9cb0464a", {
+			tags: ["knighted"],
+			avatars: [],
+		}],
+
+		// mope
 		["47713bfb62e73de626f8071243601d775bda48d1a67d352d59265403538f8e29", {
-			tags: ["premium"],
+			tags: ["blessed"],
 			avatars: [],
 		}],
 
+		// tegis asvuso
 		["99ce9dc3c26f57ad01be6b6305f84be7607947d73274e80d42f6378298ccf659", {
-			tags: [],
+			tags: ["knighted"],
 			avatars: ["JFQMRRrsA9x"],
 		}],
 	])

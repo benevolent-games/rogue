@@ -39,17 +39,20 @@ export function fixKissingCorners(floorTiles: Vec2[]) {
 	const added = new Vecset2()
 
 	for (const _ of loop(100)) {
+		let fixes = 0
+
 		for (const tile of set.values()) {
 			for (const pattern of fourCornerPatterns) {
 				const corner = investigateCorner(set, tile, pattern)
 				if (corner.isKissing) {
 					set.add(corner.a)
 					added.add(corner.a)
+					fixes += 1
 				}
 			}
 		}
 
-		if (added.size === 0)
+		if (fixes === 0)
 			break
 	}
 

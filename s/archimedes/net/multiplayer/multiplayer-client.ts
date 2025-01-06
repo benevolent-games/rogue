@@ -1,10 +1,10 @@
 
-import Sparrow, {StdCable} from "sparrow-rtc"
+import Sparrow from "sparrow-rtc"
 import {pubsub, Signal, signal} from "@benev/slate"
 
 import {Identity} from "./types.js"
+import {Fiber} from "../relay/fiber.js"
 import {MetaHost} from "./meta/host.js"
-import {Fiber} from "../../../tools/fiber.js"
 import {Parcel} from "../relay/inbox-outbox.js"
 import {GameMessage} from "../relay/messages.js"
 import {Multiplayer} from "./utils/multiplayer.js"
@@ -46,7 +46,7 @@ export class MultiplayerClient extends Multiplayer {
 		const onDisconnected = pubsub()
 		onDisconnected(disconnected)
 
-		const sparrow = await Sparrow.join<StdCable>({
+		const sparrow = await Sparrow.join({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			invite,
 			disconnected: () => {

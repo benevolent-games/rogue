@@ -9,6 +9,7 @@ import {Invites} from "../../utils/invites.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
+import {DungeonStore} from "../../../logic/dungeons/store.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
@@ -65,6 +66,24 @@ export const GameApp = shadowComponent(use => {
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
 
+			lag: makeNav(async() => {
+				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
+				const lag = lagProfiles.bad
+				const flow = await playerHostFlow({lag, identity})
+				const {client, multiplayerClient, dispose} = flow
+				return {
+					template: () => Gameplay([{
+						multiplayerClient,
+						realm: client.realm,
+						exitToMainMenu: () => goExhibit.mainMenu(),
+					}]),
+					dispose: () => {
+						Invites.deleteInviteFromWindowHash()
+						dispose()
+					},
+				}
+			}),
+
 			offline: makeNav(async() => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const lag = lagProfiles.none
@@ -117,7 +136,9 @@ export const GameApp = shadowComponent(use => {
 					() => { goExhibit.mainMenu() },
 				)
 				const {clientFlow} = await import("../../../logic/flows/client.js")
-				const {realm, dispose} = await clientFlow(multiplayerClient)
+				const dungeonStore = new DungeonStore()
+				const {realm, dispose} = await clientFlow(multiplayerClient, dungeonStore)
+
 				return {
 					template: () => Gameplay([{
 						realm,
@@ -137,6 +158,9 @@ export const GameApp = shadowComponent(use => {
 
 		if (location.hash.includes("offline"))
 			goExhibit.offline()
+
+		if (location.hash.includes("lag"))
+			goExhibit.lag()
 
 		else if (location.hash.includes("play"))
 			goExhibit.host()

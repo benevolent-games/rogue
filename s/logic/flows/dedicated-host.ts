@@ -1,42 +1,27 @@
 
 import {repeat} from "@benev/slate"
-import {Randy} from "@benev/toolbox"
 
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
-import {Watchman} from "../../tools/watchman.js"
+import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {LagProfile} from "../../tools/fake-lag.js"
-import {DungeonLayout} from "../dungeons/layout.js"
-import {Coordinates} from "../realm/utils/coordinates.js"
+import {dungeonStartup} from "../dungeons/startup.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
-	const simtron = new Simtron()
-	const watchman = new Watchman(constants.game.tickRate)
+	const dungeonStore = new DungeonStore()
+	const simtron = new Simtron(dungeonStore)
+	const dungeonLayout = dungeonStore.make(stdDungeonOptions())
 
-	const dungeonOptions = stdDungeonOptions()
-	const dungeonLayout = new DungeonLayout(dungeonOptions)
-	const randy = new Randy(dungeonOptions.seed)
-
-	const getSpawnpoint = () => randy.choose(dungeonLayout.getSpawnTiles())
-		.clone()
-		.add_(0.5, 0.5)
-
-	simtron.simulator.create("dungeon", {options: dungeonOptions})
+	dungeonStartup(simtron, dungeonLayout)
 
 	const cathedral = new Cathedral({
 		lag,
 		onBundle: ({author}) => {
-			const playerId = simtron.simulator.create("crusader", {
-				author,
-				speed: watchman.perSecond(constants.game.crusader.speed),
-				speedSprint: watchman.perSecond(constants.game.crusader.speedSprint),
-				coordinates: Coordinates.import(getSpawnpoint()).array(),
-			})
-			return () => simtron.simulator.delete(playerId)
+			return simtron.spawnCrusader(author)
 		},
 	})
 
@@ -63,8 +48,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		stopSnapshots()
 		stopTicks()
 		cathedral.dispose()
+		dungeonStore.clear()
 	}
 
-	return {cathedral, simulatron: simtron, smartloop, startMultiplayer, dispose}
+	return {cathedral, dungeonStore, simtron, smartloop, startMultiplayer, dispose}
 }
 

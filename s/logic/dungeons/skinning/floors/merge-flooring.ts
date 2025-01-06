@@ -3,7 +3,7 @@ import {Degrees, Randy, Vec2} from "@benev/toolbox"
 
 import {FloorSegment} from "./types.js"
 import {DungeonStyle} from "../style.js"
-import {decodeSizeString, size1} from "./utils.js"
+import {decodeSizeString, tileExtent} from "./utils.js"
 import {range2d} from "../../../../tools/range.js"
 import {HashSet} from "../../../../tools/hash/set.js"
 import {randyShuffle} from "../../../../tools/temp/randy-shuffle.js"
@@ -21,10 +21,10 @@ export function mergeFlooring(randy: Randy, style: DungeonStyle, floorPlan: Hash
 		.sort((a, b) => (b.x * b.y) - (a.x * a.y))
 
 	for (const size of sizes) {
-		if (size.equals(size1)) continue
+		if (size.equals(tileExtent)) continue
 
 		for (const floor of floorPlan.values()) {
-			if (!floor.size.equals(size1)) continue
+			if (!floor.size.equals(tileExtent)) continue
 
 			for (const rotation of randyShuffle(randy, [...rotations])) {
 				const rotatedSize = size.clone()
@@ -37,7 +37,7 @@ export function mergeFlooring(randy: Randy, style: DungeonStyle, floorPlan: Hash
 				const boxTiles = range2d(rotatedSize)
 					.map(vector => ({
 						tile: floor.tile.clone().add(vector),
-						size: size1,
+						size: tileExtent,
 						style: floor.style,
 						rotation: floor.rotation,
 						location: floor.location.clone().add(vector),

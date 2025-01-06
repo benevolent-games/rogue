@@ -4,23 +4,27 @@ import {Vec2} from "@benev/toolbox"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Clock} from "../../../tools/clock.js"
-import {DungeonLayout} from "../../dungeons/layout.js"
-import {DungeonRenderer} from "../../dungeons/dungeon-renderer.js"
+import {Box2} from "../../physics/shapes/box2.js"
+import {DungeonRenderer} from "../../dungeons/renderer.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, state}) => {
 
-	const fadeRange = 10
 	const cullingRange = 20
 	const wallDetector = new WallDetector(realm)
-	const dungeonLayout = new DungeonLayout(state.options)
-	const dungeonRenderer = new DungeonRenderer(realm, dungeonLayout)
 
-	console.log("🏰 dungeon seed", dungeonLayout.options.seed)
+	const localArea = new Box2(
+		realm.cameraman.desired.pivot,
+		Vec2.all(cullingRange),
+	)
 
-	const camfadeOffset = Vec2.new(0, 0).rotate(realm.cameraman.desired.swivel)
+	const layout = realm.dungeonStore.make(state.options)
+	const dungeonRenderer = new DungeonRenderer(realm, layout)
+	realm.ready.resolve()
+
+	console.log("🏰 dungeon seed", layout.options.seed)
 
 	const stopDrops = realm.onFilesDropped(files => {
 		for (const file of files) {
@@ -35,26 +39,13 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	return {
 		gatherInputs: () => undefined,
-		replicate: (_) => {
-			const {culler, wallFader} = dungeonRenderer.skin
+		replicate: (_tick) => {
+			localArea.center.set(realm.cameraman.desired.pivot)
 
 			const c1 = new Clock()
-			culler.cull(realm.cameraman.desired.pivot, cullingRange)
+			dungeonRenderer.render(localArea)
 			if (c1.elapsed > 3)
-				c1.log("culling was slow")
-
-			const c2 = new Clock()
-			wallFader.animate(
-				realm.cameraman.desired.pivot.clone().add(camfadeOffset),
-				fadeRange,
-				wall => wallDetector.detect(
-					wall,
-					realm.cameraman.desired.pivot.position(),
-					realm.cameraman,
-				),
-			)
-			if (c2.elapsed > 3)
-				c2.log("wallFader was slow")
+				c1.log("dungeon culling was slow")
 		},
 		dispose: () => {
 			wallDetector.dispose()

@@ -19,6 +19,7 @@ export class Manifest extends Map2<string, string> {
 	static scan(prop: Prop) {
 		const extras = (prop.metadata?.gltf?.extras ?? {}) as Record<string, any>
 		return new this(prop.name, Object.entries(extras)
+			.filter(([,value]) => typeof value === "string")
 			.map(([key, value]) => [key, String(value)]))
 	}
 

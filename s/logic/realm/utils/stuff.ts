@@ -11,6 +11,7 @@ export class Stuff {
 		this.#blockMesh = MeshBuilder.CreateBox("block", {size: 1}, scene)
 		this.#blockMesh.material = materials.pearl
 		this.#blockMesh.scaling.set(1, 1, 1)
+		scene.removeMesh(this.#blockMesh)
 	}
 
 	makeBlockGraphic() {
@@ -38,6 +39,10 @@ export class BlockGraphic {
 	setDimensions(dimensions: Vec3) {
 		this.dimensions = dimensions
 		this.instance.scaling.set(...dimensions.array())
+	}
+
+	dispose() {
+		this.instance.dispose()
 	}
 }
 

@@ -1,44 +1,24 @@
 
 import {Vec2} from "@benev/toolbox"
 import {Box2} from "./shapes/box2.js"
+import {PhysBody} from "./parts/body.js"
 import {Circle} from "./shapes/circle.js"
+import {PhysPart} from "./parts/part.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
+import {BodyOptions, PhysShape} from "./parts/types.js"
 import {Intersection, Intersections2} from "./facilities/intersections2.js"
-
-export type PhysShape = Box2 | Circle
-
-export type BodyOptions = {
-	shape: PhysShape
-	mass: number
-	updated: (body: PhysBody) => void
-}
-
-export class PhysBody {
-	force = Vec2.zero()
-	velocity = Vec2.zero()
-
-	constructor(
-		public shape: PhysShape,
-		public mass: number,
-		public updated: () => void,
-		public dispose: () => void,
-	) {}
-}
-
-export class PhysObstacle {
-	constructor(
-		public shape: PhysShape,
-		public dispose: () => void,
-	) {}
-}
+import {collisionResponseFactors} from "./utils/collision-response-factors.js"
 
 export class Phys {
+
+	// TODO why are a/b flipped in some of the collide/intersect functions?
+
 	static collide(a: PhysShape, b: PhysShape) {
 		if (a instanceof Box2 && b instanceof Box2) return Collisions2.boxVsBox(a, b)
 		if (a instanceof Box2 && b instanceof Circle) return Collisions2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Collisions2.boxVsCircle(b, a)
-		if (a instanceof Circle && b instanceof Circle) return Collisions2.circleVsCircle(a, b)
+		if (a instanceof Circle && b instanceof Circle) return Collisions2.circleVsCircle(b, a)
 		return false
 	}
 
@@ -46,7 +26,7 @@ export class Phys {
 		if (a instanceof Box2 && b instanceof Box2) return Intersections2.boxVsBox(a, b)
 		if (a instanceof Box2 && b instanceof Circle) return Intersections2.boxVsCircle(a, b)
 		if (a instanceof Circle && b instanceof Box2) return Intersections2.boxVsCircle(b, a)
-		if (a instanceof Circle && b instanceof Circle) return Intersections2.circleVsCircle(a, b)
+		if (a instanceof Circle && b instanceof Circle) return Intersections2.circleVsCircle(b, a)
 		return null
 	}
 
@@ -54,114 +34,103 @@ export class Phys {
 	timeStep = 1 / 60
 
 	bodies = new Set<PhysBody>()
-	obstacles = new Set<PhysObstacle>()
-
+	fixedBodies = new Set<PhysBody>()
+	dynamicBodies = new Set<PhysBody>()
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
-	obstacleGrid = new ZenGrid<PhysObstacle>(new Vec2(8, 8))
+
+	#addBody(body: PhysBody) {
+		this.bodies.add(body)
+		if (body.mass === Infinity)
+			this.fixedBodies.add(body)
+		else
+			this.dynamicBodies.add(body)
+	}
+
+	#deleteBody(body: PhysBody) {
+		this.bodies.delete(body)
+		this.dynamicBodies.delete(body)
+		this.fixedBodies.delete(body)
+	}
 
 	makeBody(options: BodyOptions) {
-		const box = options.shape.boundingBox()
-		const body = new PhysBody(
-			options.shape,
-			options.mass,
-			() => {
-				zen.update()
-				options.updated(body)
-			},
-			() => {
-				zen.delete()
-				this.bodies.delete(body)
-			},
-		)
-		const zen = this.bodyGrid.create(box, body)
-		this.bodies.add(body)
+		const parts = options.parts.map(PhysPart.make)
+		const updated = () => {
+			zen.update()
+			options.updated(body)
+		}
+		const dispose = () => {
+			zen.delete()
+			this.#deleteBody(body)
+		}
+		const body = new PhysBody(parts, updated, dispose)
+		const zen = this.bodyGrid.create(body.box, body)
+		this.#addBody(body)
 		return body
 	}
 
-	makeObstacle(shape: PhysShape) {
-		const obstacle = new PhysObstacle(shape, () => {
-			zen.delete()
-			this.obstacles.delete(obstacle)
-		})
-		const zen = this.obstacleGrid.create(shape.boundingBox(), obstacle)
-		this.obstacles.add(obstacle)
-		return obstacle
+	queryBodies(box: Box2) {
+		return this.bodyGrid.queryItems(box)
 	}
 
 	simulate() {
-		for (const body of this.bodies) {
-			this.#applyForces(body)
+		for (const body of this.dynamicBodies) {
+			this.#applyDamping(body)
 			this.#integrate(body)
 			this.#resolveCollisions(body)
 			body.updated()
 		}
 	}
 
-	#applyForces(body: PhysBody) {
-		const acceleration = body.force.clone().divideBy(body.mass)
-		body.velocity.add(acceleration)
-		body.force.set_(0, 0) // reset forces after applying
+	#applyDamping(body: PhysBody) {
 		body.velocity.lerp(Vec2.zero(), this.damping)
 	}
 
 	#integrate(body: PhysBody) {
 		const displacement = body.velocity.clone().multiplyBy(this.timeStep)
-		body.shape.offset(displacement)
+		body.box.center.add(displacement)
 	}
 
 	#resolveCollisions(body: PhysBody) {
-		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
-			const intersection = Phys.intersect(body.shape, obstacle.shape)
-			if (intersection)
-				this.#resolveIntersection(body, intersection)
+		for (const otherBody of this.bodyGrid.queryItems(body.box)) {
+			if (body === otherBody) continue
+			const intersections = this.#intersectBodies(body, otherBody)
+			if (intersections.length > 0) {
+				this.#resolveBodyCollisions(body, otherBody, intersections)
+			}
 		}
 	}
 
-	// #resolveCollisions(body: PhysBody) {
-	// 	for (let i = 0; i < 10; i++) { // iterative resolution
-	// 		let resolved = true
-	//
-	// 		// check collisions with obstacles
-	// 		for (const obstacle of this.obstacleGrid.select(body.shape.boundingBox())) {
-	// 			const intersection = Phys.intersect(body.shape, obstacle.shape)
-	// 			if (intersection) {
-	// 				this.#resolveIntersection(body, intersection)
-	// 				resolved = false
-	// 			}
-	// 		}
-	//
-	// 		// check collisions with other bodies
-	// 		for (const otherBody of this.bodyGrid.select(body.shape.boundingBox())) {
-	// 			if (body === otherBody) continue
-	// 			const intersection = Phys.intersect(body.shape, otherBody.shape)
-	// 			if (intersection) {
-	// 				this.#resolveIntersection(body, intersection, otherBody)
-	// 				resolved = false
-	// 			}
-	// 		}
-	//
-	// 		if (resolved) break
-	// 	}
-	// }
-
-	#resolveIntersection(body: PhysBody, intersection: Intersection, otherBody?: PhysBody) {
-		const mtv = intersection.normalA.clone().multiplyBy(intersection.depth)
-		body.shape.offset(mtv)
-
-		// adjust velocity along the collision normal
-		const velocityAlongNormal = body.velocity.dot(intersection.normalA)
-		if (velocityAlongNormal < 0) {
-			body.velocity.subtract(
-				intersection.normalA.clone().multiplyBy(velocityAlongNormal)
-			)
+	#intersectBodies(bodyA: PhysBody, bodyB: PhysBody) {
+		const intersections: Intersection[] = []
+		for (const partA of bodyA.parts) {
+			for (const partB of bodyB.parts) {
+				const intersection = Phys.intersect(partA.shape, partB.shape)
+				if (intersection)
+					intersections.push(intersection)
+			}
 		}
+		return intersections
+	}
 
-		// if dynamic collision, apply forces to the other body
-		if (otherBody) {
-			const impulse = mtv.clone().divideBy(2)
-			body.velocity.subtract(impulse)
-			otherBody.velocity.add(impulse)
-		}
+	#resolveBodyCollisions(bodyA: PhysBody, bodyB: PhysBody, intersections: Intersection[]) {
+		let [biggestIntersection, ...otherIntersections] = intersections
+
+		for (const intersection of otherIntersections)
+			if (intersection.depth > biggestIntersection.depth)
+				biggestIntersection = intersection
+
+		const mtv = biggestIntersection.normalA.clone().multiplyBy(biggestIntersection.depth)
+		this.#applyCollisionResponse(bodyA, bodyB, mtv)
+	}
+
+	#applyCollisionResponse(bodyA: PhysBody, bodyB: PhysBody, mtv: Vec2) {
+		const [factorA, factorB] = collisionResponseFactors(bodyA.mass, bodyB.mass)
+
+		const correctionA = mtv.clone().multiplyBy(factorA)
+		const correctionB = mtv.clone().multiplyBy(-factorB)
+
+		bodyA.offset(correctionA)
+		bodyB.offset(correctionB)
 	}
 }
 

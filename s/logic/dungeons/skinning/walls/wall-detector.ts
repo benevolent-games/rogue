@@ -3,12 +3,11 @@ import {Vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 
+import {WallSpec} from "./wall-spec.js"
 import {Realm} from "../../../realm/realm.js"
-import {WallSubject} from "./wall-subject.js"
 import {Box3} from "../../../physics/shapes/box3.js"
 import {Line3} from "../../../physics/shapes/line3.js"
 import {Sausage3} from "../../../physics/shapes/sausage.js"
-import {Cameraman} from "../../../realm/utils/cameraman.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 import {Collisions3} from "../../../physics/facilities/collisions3.js"
 
@@ -19,7 +18,7 @@ const sausageRadius = 0.3
 export class WallDetector {
 	debug = false
 	rugExtent = Vec3.new(rugSize, 1, rugSize)
-	seen = new Set<WallSubject>()
+	seen = new Set<WallSpec>()
 
 	rugGraphic?: Mesh
 	sausageCap?: Mesh
@@ -73,7 +72,10 @@ export class WallDetector {
 		this.rugGraphic?.dispose()
 	}
 
-	detect(wall: WallSubject, playerPosition: Vec3, cameraman: Cameraman) {
+	detect(wall: WallSpec) {
+		const playerPosition = this.realm.cameraman.desired.pivot.position()
+		const cameraman = this.realm.cameraman
+
 		const tileExtent = new Vec3(1, wallHeight * 2, 1)
 
 		const wallBoxes = wall.segment.tiles.map(tile => {

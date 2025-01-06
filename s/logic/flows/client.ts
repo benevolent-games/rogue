@@ -5,6 +5,7 @@ import {Realm} from "../realm/realm.js"
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
 import {replicas} from "../entities/replicas.js"
+import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
@@ -15,17 +16,18 @@ import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-cl
 
 export async function clientFlow(
 		multiplayer: MultiplayerClient,
+		dungeonStore: DungeonStore,
 		smartloop = new Smartloop(constants.game.tickRate),
 	) {
 
+	const baseSimtron = new Simtron(dungeonStore)
+	const futureSimtron = new Simtron(dungeonStore)
+
 	const {author} = multiplayer
 	const csp = true
-	const realm = await Realm.load()
+	const realm = await Realm.load(dungeonStore)
 	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
 	const {world, glbs} = realm
-
-	const baseSimtron = new Simtron()
-	const futureSimtron = new Simtron()
 
 	const activeGameState = csp
 		? futureSimtron.gameState
@@ -111,6 +113,11 @@ export async function clientFlow(
 		multiplayer.dispose()
 		realm.dispose()
 	}
+
+	await Promise.all([
+		baseSimtron.station.ready,
+		realm.ready.promise,
+	])
 
 	return {world, realm, replicator, liaison, dispose}
 }

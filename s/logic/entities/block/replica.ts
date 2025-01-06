@@ -22,6 +22,7 @@ export const blockReplica = replica<RogueEntities, Realm>()<"block">(
 		},
 
 		dispose: () => {
+			block.dispose()
 		},
 	}
 })

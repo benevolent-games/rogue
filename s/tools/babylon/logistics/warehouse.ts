@@ -1,3 +1,4 @@
+
 import {Map2} from "@benev/slate"
 import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
@@ -17,7 +18,7 @@ export class Warehouse extends Set<Cargo> {
 			container.scene,
 			[...container.meshes, ...container.transformNodes]
 				.filter(prop => !prop.name.includes("_primitive"))
-				.map(prop => new Cargo(container.scene, Manifest.scan(prop), prop))
+				.map(prop => new Cargo(container.scene, prop, Manifest.scan(prop)))
 		)
 	}
 

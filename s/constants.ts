@@ -6,7 +6,7 @@ export const constants = {
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
 		shaders: {
-			retro: "/assets/shaders/retro.json",
+			retro: "/assets/shaders/retro-02.json",
 		},
 	},
 

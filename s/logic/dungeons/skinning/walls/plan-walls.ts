@@ -36,12 +36,19 @@ const fourPatterns = range(4).map(i =>
 	)
 )
 
+export type WallPlan = {
+	wallSegments: WallSegment[]
+	concaves: WallSegment[]
+	convexes: WallSegment[]
+	stumps: WallSegment[]
+}
+
 export function planWalls(
 		randy: Randy,
 		wallTiles: Vecset2,
 		floorTiles: Vecset2,
 		getStyle: (tile: Vec2) => DungeonStyle
-	) {
+	): WallPlan {
 
 	const wallSegments: WallSegment[] = []
 	const concaves: WallSegment[] = []

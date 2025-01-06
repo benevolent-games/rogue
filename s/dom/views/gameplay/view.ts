@@ -22,7 +22,22 @@ export const Gameplay = shadowView(use => (o: {
 	}) => {
 
 	use.styles(themeCss, stylesCss)
-	use.mount(() => ev(document, {contextmenu: (e: Event) => e.preventDefault()}))
+
+	// prevent ctrl-w insta-killing the tab
+	use.mount(() => ev(window, {
+		beforeunload: (event: BeforeUnloadEvent) => {
+			const message = "Are you sure you want to yeet this tab? You'll wreck any session you're currently playing!"
+			event.preventDefault()
+			return message
+		},
+	}))
+
+	// prevent right-click context menu
+	use.mount(() => ev(document, {
+		contextmenu: (event: Event) => {
+			event.preventDefault()
+		},
+	}))
 
 	const dropper = use.once(() => dungeonDropper(
 		files => o.realm.onFilesDropped.publish(files))
