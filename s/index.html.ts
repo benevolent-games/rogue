@@ -4,7 +4,8 @@ import {renderSocialCard} from "./dom/static/social-card.js"
 import {template, html, easypage, headScripts, git_commit_hash, read_file} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
-const favicon = "/assets/images/items/ivLoKJGtTXd.webp"
+const favicon = "/assets/graphics/favicon-ivLoKJGtTXd.png"
+const socialImage = "/assets/images/items/ivLoKJGtTXd.webp"
 
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
@@ -16,6 +17,8 @@ export default template(async basic => {
 		css: "index.css",
 		title: "Rogue Crusade",
 		head: html`
+			<!-- © 2025 Chase Moskal. All rights reserved. -->
+
 			<link rel="icon" href="${favicon}"/>
 			<link rel="stylesheet" href="${path.version.root("index.css")}"/>
 			<meta data-commit-hash="${hash}"/>
@@ -29,7 +32,7 @@ export default template(async basic => {
 				siteName: domain,
 				title: "⚔️ Rogue Crusade",
 				description: "The Ultimate Roguelike",
-				image: `https://${domain}${favicon}`,
+				image: `https://${domain}${socialImage}`,
 				url: `https://${domain}/`,
 				type: "website",
 			})}

@@ -13,6 +13,10 @@ export default css`
 
 	gap: 1em;
 	padding: 1em;
+
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
 }
 
 .overlay {
@@ -30,11 +34,32 @@ export default css`
 	}
 }
 
+.lead {
+	margin-top: 3em;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3em;
+
+	& a {
+		display: flex;
+		align-items: center;
+		gap: 0.1em;
+		&:is(:hover, :focus) {
+			filter: drop-shadow(0 0 0.5em #fff8);
+		}
+	}
+
+	& img { width: 2em; }
+	> span { opacity: 0.5; }
+}
+
 .plate {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	margin-top: 5em;
+	margin-top: 0.1em;
 
 	box-shadow: .2em .3em 1em #0008;
 	border-radius: 0.6em;
@@ -87,6 +112,19 @@ export default css`
 				background: linear-gradient(to bottom, #44ff44, #008800);
 			}
 		}
+	}
+}
+
+.info {
+	max-width: 32em;
+	margin-top: 2em;
+	padding: 2em 0;
+	padding-bottom: 4em;
+
+	border-top: 1px solid #fff2;
+
+	> * + * {
+		margin-top: 1em;
 	}
 }
 

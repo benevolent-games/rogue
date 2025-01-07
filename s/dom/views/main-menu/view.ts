@@ -31,6 +31,14 @@ export const MainMenu = shadowView(use => ({nav}: {
 			${Gigamenu([AccountPanel()])}
 		</div>
 
+		<header class=lead>
+			<a href="https://benevolent.games/">
+				<img class=benev src="${constants.urls.benevLogo}" alt="" draggable="false"/>
+				<span>Benevolent Games</span>
+			</a>
+			<span>presents...</span>
+		</header>
+
 		<section class=plate ?x-ready="${ready.value}">
 			${img.element}
 
@@ -43,6 +51,13 @@ export const MainMenu = shadowView(use => ({nav}: {
 				</nav>
 			</div>
 		</section>
+
+		<footer class=info>
+			<h2>The Ultimate Roguelike</h2>
+			<p>3d. Permadeath. Solo and co-op. Procedurally generated dungeons. Mosters, loot, potions.</p>
+			<p>See the project on <a href="https://github.com/benevolent-games/rogue-crusade">GitHub.</a></p>
+			<p>Join our <a href="https://discord.gg/BnZx2utdev">Discord.</a></p>
+		</footer>
 	`
 })
 
