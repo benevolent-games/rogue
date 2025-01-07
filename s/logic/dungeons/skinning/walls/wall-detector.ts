@@ -73,8 +73,8 @@ export class WallDetector {
 	}
 
 	detect(wall: WallSpec) {
-		const playerPosition = this.realm.cameraman.desired.pivot.position()
-		const cameraman = this.realm.cameraman
+		const {cameraman} = this.realm
+		const playerPosition = cameraman.smoothed.pivot.position()
 
 		const tileExtent = new Vec3(1, wallHeight * 2, 1)
 
@@ -114,7 +114,7 @@ export class WallDetector {
 			)
 			.multiplyBy(Math.SQRT2)
 			.addBy(Number.EPSILON)
-			.rotate(cameraman.desired.swivel)
+			.rotate(cameraman.smoothed.swivel)
 			.position()
 
 		const rugBox = new Box3(
