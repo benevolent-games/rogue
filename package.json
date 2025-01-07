@@ -1,8 +1,8 @@
 {
-	"name": "@benev/rogue",
+	"name": "@benev/rogue-crusade",
 	"private": true,
 	"version": "0.8.10",
-	"description": "",
+	"description": "The Ultimate Roguelike",
 	"license": "UNLICENSED",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"type": "module",
@@ -40,7 +40,6 @@
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-2",
 		"@benev/toolbox": "^0.8.0-6",
-		"es-module-shims": "^1.10.1",
 		"renraku": "^0.4.3",
 		"sparrow-rtc": "^0.2.3",
 		"zx": "^8.3.0"
@@ -57,14 +56,15 @@
 	},
 	"keywords": [
 		"game",
+		"roguelike",
 		"babylon"
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/benevolent-games/rogue.git"
+		"url": "git+https://github.com/benevolent-games/rogue-crusade.git"
 	},
 	"bugs": {
-		"url": "https://github.com/benevolent-games/rogue/issues"
+		"url": "https://github.com/benevolent-games/rogue-crusade/issues"
 	},
-	"homepage": "https://github.com/benevolent-games/rogue#readme"
+	"homepage": "https://github.com/benevolent-games/rogue-crusade#readme"
 }
