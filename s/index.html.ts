@@ -3,7 +3,7 @@ import "@benev/slate/x/node.js"
 import {renderSocialCard} from "./dom/static/social-card.js"
 import {template, html, easypage, headScripts, git_commit_hash, read_file} from "@benev/turtle"
 
-const domain = "rogue.benev.gg"
+const domain = "rogue.benevolent.games"
 const favicon = "/assets/images/items/ivLoKJGtTXd.webp"
 
 export default template(async basic => {
@@ -14,7 +14,7 @@ export default template(async basic => {
 		path,
 		dark: true,
 		css: "index.css",
-		title: "ROGUE CRUSADE",
+		title: "Rogue Crusade",
 		head: html`
 			<link rel="icon" href="${favicon}"/>
 			<link rel="stylesheet" href="${path.version.root("index.css")}"/>
@@ -27,7 +27,7 @@ export default template(async basic => {
 			${renderSocialCard({
 				themeColor: "#ff2200",
 				siteName: domain,
-				title: "⚔️ ROGUE CRUSADE",
+				title: "⚔️ Rogue Crusade",
 				description: "The Ultimate Roguelike",
 				image: `https://${domain}${favicon}`,
 				url: `https://${domain}/`,

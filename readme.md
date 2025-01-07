@@ -1,12 +1,14 @@
 
-# ⚔️ ROGUE CRUSADE
+![](https://i.imgur.com/hL98UsM.png)
 
-👉 **https://rogue.benev.gg/** 👈  
-&nbsp; &nbsp; &nbsp; &nbsp; *play now*
+# ⚔️ Rogue Crusade
 
-We're building the ultimate 1990s roguelike for 2025.
+We're building the ultimate roguelike.
 
-- Permadeath. 3d. Co-op. Instantly play in your web browser.
-- Procedurally generated dungeons. Mosters, loot, potions.
-- Join our discord at https://discord.gg/BnZx2utdev
+👉 **https://rogue.benevolent.games/** 👈  
+&nbsp; &nbsp; &nbsp; &nbsp; *Play now!*
+
+3d. Permadeath. Solo and co-op. Procedurally generated dungeons. Mosters, loot, potions.
+
+Join our discord at https://discord.gg/BnZx2utdev
 
