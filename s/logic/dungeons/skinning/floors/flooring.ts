@@ -42,7 +42,9 @@ export class Flooring {
 		for (const floor of floors) {
 			if (!this.#releasers.has(floor)) {
 				const [prop, release] = this.lifeguard.spawn(floor.cargo)
+				prop.unfreezeWorldMatrix()
 				applySpatial(prop, floor.spatial)
+				prop.freezeWorldMatrix()
 				this.#releasers.set(floor, release)
 			}
 		}

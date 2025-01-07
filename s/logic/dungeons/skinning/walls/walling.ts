@@ -68,7 +68,9 @@ export class Walling {
 		for (const wall of walls) {
 			if (!this.#alive.has(wall)) {
 				const [prop, release] = this.lifeguard.spawn(wall.cargo, false)
+				prop.unfreezeWorldMatrix()
 				applySpatial(prop, wall.spatial)
+				prop.freezeWorldMatrix()
 				this.#alive.set(wall, new WallAlive(
 					wall,
 					prop,
