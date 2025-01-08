@@ -20,9 +20,9 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 				break out
 
 			const dimensions = new Vec3(
-				randy.range(.5, 1.5),
-				randy.range(.5, 1.5),
-				randy.range(.5, 1.5),
+				randy.range(0.5, 1.5),
+				randy.range(0.5, 1.5),
+				randy.range(0.5, 1.5),
 			)
 
 			const proposedSpawnpoint = layout.space

@@ -38,7 +38,6 @@ export class Simtron {
 	}
 
 	spawnCrusader(author: number) {
-		const {watchman} = this
 		const dungeon = this.station.dungeon
 		const spawnpoint = dungeon.getSpawnpoint()
 
@@ -49,8 +48,8 @@ export class Simtron {
 
 		const playerId = this.simulator.create("crusader", {
 			author,
-			speed: watchman.perSecond(constants.game.crusader.speed),
-			speedSprint: watchman.perSecond(constants.game.crusader.speedSprint),
+			speed: constants.game.crusader.speed,
+			speedSprint: constants.game.crusader.speedSprint,
 			coordinates: Coordinates.import(spawnpoint).array(),
 		})
 

@@ -1,5 +1,6 @@
 
-import {loop, Vec2} from "@benev/toolbox"
+import {loop, Scalar, Vec2} from "@benev/toolbox"
+
 import {Box2} from "./shapes/box2.js"
 import {PhysBody} from "./parts/body.js"
 import {PhysPart} from "./parts/part.js"
@@ -31,8 +32,7 @@ export class Phys {
 		return null
 	}
 
-	damping = (20 / 100) / constants.game.physicsIterations
-	timeStep = (1 / constants.game.tickRate) / constants.game.physicsIterations
+	timeStep = 1 / constants.game.tickRate / constants.game.physics.iterations
 
 	bodies = new Set<PhysBody>()
 	fixedBodies = new Set<PhysBody>()
@@ -74,18 +74,19 @@ export class Phys {
 	}
 
 	simulate() {
-		for (const _ of loop(constants.game.physicsIterations)) {
+		for (const _ of loop(constants.game.physics.iterations)) {
 			for (const body of this.dynamicBodies) {
-				this.#applyDamping(body)
 				this.#integrate(body)
 				this.#resolveCollisions(body)
 				body.updated()
+				this.#applyDamping(body)
 			}
 		}
 	}
 
 	#applyDamping(body: PhysBody) {
-		body.velocity.lerp(Vec2.zero(), this.damping)
+		const factor = Scalar.clamp(body.damping * this.timeStep, 0, 1)
+		body.velocity.multiplyBy(1 - factor)
 	}
 
 	#integrate(body: PhysBody) {
