@@ -43,7 +43,6 @@ export const MainMenu = shadowView(use => ({nav}: {
 			${img.element}
 
 			<div class=content>
-				<h1>Rogue Crusade</h1>
 				<nav>
 					<button class=play @click="${nav.play}">
 						Play
@@ -52,12 +51,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 			</div>
 		</section>
 
-		<footer class=info>
-			<h2>The Ultimate Roguelike</h2>
-			<p>3d. Permadeath. Solo and co-op. Procedurally generated dungeons. Mosters, loot, potions.</p>
-			<p>See the project on <a href="https://github.com/benevolent-games/rogue-crusade">GitHub.</a></p>
-			<p>Join our <a href="https://discord.gg/BnZx2utdev">Discord.</a></p>
-		</footer>
+		<slot></slot>
 	`
 })
 

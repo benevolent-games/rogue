@@ -31,7 +31,7 @@ export const GameApp = shadowComponent(use => {
 				nav: {
 					play: () => goExhibit.host(),
 				},
-			}]),
+			}], {content: html`<slot></slot>`}),
 		})
 
 		const loadingScreen = Orchestrator.makeLoadingScreen({

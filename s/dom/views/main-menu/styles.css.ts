@@ -115,17 +115,17 @@ export default css`
 	}
 }
 
-.info {
+slot {
+	display: block;
 	max-width: 32em;
 	margin-top: 2em;
 	padding: 2em 0;
 	padding-bottom: 4em;
 
+	text-align: left;
 	border-top: 1px solid #fff2;
 
-	> * + * {
-		margin-top: 1em;
-	}
+	user-select: text;
 }
 
 `
