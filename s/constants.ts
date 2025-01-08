@@ -18,6 +18,7 @@ export const constants = {
 		antialiasing: false,
 		resolution: 0.25,
 		tickRate: 60,
+		physicsIterations: 4,
 		snapshotRate: 1,
 		crusader: {
 			radius: 0.4,

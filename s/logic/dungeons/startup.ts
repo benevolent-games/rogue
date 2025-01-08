@@ -20,11 +20,16 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 				break out
 
 			const dimensions = new Vec3(
-				randy.range(0.2, 1.5),
-				randy.range(0.2, 1.5),
-				randy.range(0.2, 1.5),
+				randy.range(.5, 1.5),
+				randy.range(.5, 1.5),
+				randy.range(.5, 1.5),
 			)
-			const proposedSpawnpoint = layout.space.toGlobalTileSpace(sector, cell, spawn).clone().add_(0.5, 0.5)
+
+			const proposedSpawnpoint = layout.space
+				.toGlobalTileSpace(sector, cell, spawn)
+				.clone()
+				.add_(0.5, 0.5)
+
 			const box = new Box2(proposedSpawnpoint, new Vec2(dimensions.x, dimensions.z))
 			const availableCenter = dungeon.findAvailableSpace(box)
 

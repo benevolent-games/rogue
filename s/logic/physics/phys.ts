@@ -1,9 +1,10 @@
 
-import {Vec2} from "@benev/toolbox"
+import {loop, Vec2} from "@benev/toolbox"
 import {Box2} from "./shapes/box2.js"
 import {PhysBody} from "./parts/body.js"
-import {Circle} from "./shapes/circle.js"
 import {PhysPart} from "./parts/part.js"
+import {Circle} from "./shapes/circle.js"
+import {constants} from "../../constants.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {BodyOptions, PhysShape} from "./parts/types.js"
@@ -30,8 +31,8 @@ export class Phys {
 		return null
 	}
 
-	damping = 20 / 100
-	timeStep = 1 / 60
+	damping = (20 / 100) / constants.game.physicsIterations
+	timeStep = (1 / constants.game.tickRate) / constants.game.physicsIterations
 
 	bodies = new Set<PhysBody>()
 	fixedBodies = new Set<PhysBody>()
@@ -73,11 +74,13 @@ export class Phys {
 	}
 
 	simulate() {
-		for (const body of this.dynamicBodies) {
-			this.#applyDamping(body)
-			this.#integrate(body)
-			this.#resolveCollisions(body)
-			body.updated()
+		for (const _ of loop(constants.game.physicsIterations)) {
+			for (const body of this.dynamicBodies) {
+				this.#applyDamping(body)
+				this.#integrate(body)
+				this.#resolveCollisions(body)
+				body.updated()
+			}
 		}
 	}
 
