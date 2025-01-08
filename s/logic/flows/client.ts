@@ -27,7 +27,7 @@ export async function clientFlow(
 	const csp = true
 	const realm = await Realm.load(dungeonStore)
 	await realm.loadPostProcessShader("retro", constants.urls.shaders.retro)
-	const {world, glbs} = realm
+	const {world, glbs, stats} = realm
 
 	const activeGameState = csp
 		? futureSimtron.gameState
@@ -51,14 +51,13 @@ export async function clientFlow(
 	}
 
 	const stopTicking = smartloop.on(() => {
-		const {timing} = realm.stats
-		const clockTick = timing.tick.reset().measure()
-		const physicsTiming = timing.physics
+		const clockTick = stats.tick.reset().measure()
+		const physicsTiming = stats.physics
 		physicsTiming.reset()
 
 		const authoritative = liaison.take()
 
-		const clockBase = timing.base.reset().measure()
+		const clockBase = stats.base.reset().measure()
 
 		// snapshots from host
 		if (authoritative.snapshot) {
@@ -86,6 +85,7 @@ export async function clientFlow(
 		const ticksAhead = getLatencyInTicks() + slipTick
 		const futureTick = baseTick + ticksAhead
 		renderTick = csp ? futureTick : baseTick
+		stats.ticksAhead.number = ticksAhead
 
 		// gather, record, and send local inputs
 		const localInputs = replicator.gatherInputs(futureTick)
@@ -95,7 +95,7 @@ export async function clientFlow(
 		}
 
 		clockBase()
-		const clockPrediction = timing.prediction.reset().measure()
+		const clockPrediction = stats.prediction.reset().measure()
 
 		// forward prediction
 		if (csp) {

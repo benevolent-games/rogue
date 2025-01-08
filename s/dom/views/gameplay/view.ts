@@ -48,12 +48,12 @@ export const Gameplay = shadowView(use => (o: {
 		? [
 			AccountPanel(),
 			LobbyPanel(o.multiplayerClient),
-			StatsPanel(o.realm),
+			StatsPanel(o.realm.stats),
 			QuitPanel(o.exitToMainMenu),
 		].filter(x => !!x)
 		: [
 			AccountPanel(),
-			StatsPanel(o.realm),
+			StatsPanel(o.realm.stats),
 			QuitPanel(o.exitToMainMenu),
 		]
 

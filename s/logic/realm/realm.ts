@@ -12,22 +12,16 @@ import {Stuff} from "./utils/stuff.js"
 import {Lighting} from "./utils/lighting.js"
 import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
+import {GameStats} from "./parts/game-stats.js"
 import {Indicators} from "./utils/indicators.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {World} from "../../tools/babylon/world.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
-import {GameStats, TimingReport} from "./parts/game-stats.js"
 
 export class Realm {
-	stats = new GameStats({
-		framerate: new TimingReport(),
-		tick: new TimingReport(),
-		base: new TimingReport(),
-		prediction: new TimingReport(),
-		physics: new TimingReport(),
-	})
+	stats = new GameStats()
 
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
@@ -82,7 +76,7 @@ export class Realm {
 	}
 
 	#updateStats() {
-		this.stats.timing.framerate.time = this.world.engine.getFps()
+		this.stats.framerate.time = this.world.engine.getFps()
 	}
 
 	dispose() {
