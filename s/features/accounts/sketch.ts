@@ -94,6 +94,12 @@ export class AccountantDatabase {
 			avatars: [],
 		}],
 
+		// thrills
+		["25429b3b6f4685ac5bf5e752684479e9fe79eb3688433bc8d3398012d8d33568", {
+			tags: ["blessed"],
+			avatars: [],
+		}],
+
 		// revolux
 		["94636022cac00d5b6f3c505b9cee21edca6bd7bc2061b124c3ac6c9a9cb0464a", {
 			tags: ["knighted"],
