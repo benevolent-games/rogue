@@ -15,6 +15,7 @@ export default css`
 }
 
 canvas {
+	pointer-events: all;
 	image-rendering: pixelated;
 
 	display: block;

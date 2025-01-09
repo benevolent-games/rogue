@@ -11,5 +11,6 @@ export type CrusaderState = {
 export type CrusaderInputData = {
 	sprint: boolean
 	movementIntent: Vec2Array
+	rotation: number
 }
 

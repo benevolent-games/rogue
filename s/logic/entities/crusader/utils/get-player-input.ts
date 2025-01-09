@@ -26,6 +26,7 @@ export function getPlayerInput(tact: GameTact, cameraman: Cameraman): CrusaderIn
 
 	return {
 		sprint,
+		rotation: 0,
 		movementIntent: intent
 			.normalize()
 			.rotate(cameraman.smoothed.swivel)

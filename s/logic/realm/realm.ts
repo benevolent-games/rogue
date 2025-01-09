@@ -19,6 +19,7 @@ import {World} from "../../tools/babylon/world.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
+import { Cursor } from "./parts/cursor.js"
 
 export class Realm {
 	stats = new GameStats()
@@ -29,6 +30,7 @@ export class Realm {
 	indicators: Indicators
 	stuff: Stuff
 	userInputs: UserInputs
+	cursor: Cursor
 
 	tact = makeTact(window)
 	playerPosition = Vec3.zero()
@@ -51,7 +53,9 @@ export class Realm {
 		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
 		this.userInputs = new UserInputs(this.cameraman)
+		this.cursor = new Cursor(this.cameraman)
 		this.#trashbin.disposer(this.userInputs.attach(world.canvas))
+		this.#trashbin.disposer(this.cursor.attach(world.canvas))
 	}
 
 	static async load(dungeonStore: DungeonStore) {
