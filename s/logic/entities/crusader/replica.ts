@@ -18,11 +18,9 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			.add_(0, 1, 0)
 	}
 
-	const buddy = (
-		inControl
-			? buddies.create(materials.cyan)
-			: buddies.create(materials.yellow)
-	)
+	const buddy = inControl
+		? buddies.create(materials.cyan)
+		: buddies.create(materials.yellow)
 
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
@@ -49,7 +47,6 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			buddyCoordinates.lerp_(...state.coordinates, 30 / 100)
 			const position = buddyPosition(buddyCoordinates)
 			buddy.position.set(...position.array())
-			console.log("buddy position", position.toString())
 
 			if (controller) {
 				realm.cameraman.desired.pivot = buddyCoordinates
@@ -57,12 +54,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
 
 				const {cursorGraphic} = controller
-				// cursorGraphic.position.set(...position.clone().add_(1, 0, 0).array())
 				cursorGraphic.position.set(...realm.cursor.worldPosition.array())
-				// const {x, y} = realm.cursor.worldPosition
-				// cursorGraphic.position.set(x, 0, y)
-
-				console.log("cursor position", realm.cursor.worldPosition.toString())
 			}
 		},
 

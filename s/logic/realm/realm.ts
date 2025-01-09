@@ -76,6 +76,7 @@ export class Realm {
 
 	tick() {
 		this.cameraman.tick()
+		this.cursor.tick()
 		this.#updateStats()
 	}
 

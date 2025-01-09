@@ -1,10 +1,10 @@
 
 import {ev} from "@benev/slate"
 import {Vec2, Vec3} from "@benev/toolbox"
+import {Matrix, Vector3} from "@babylonjs/core/Maths/math.vector.js"
 
 import {Cameraman} from "../utils/cameraman.js"
-import {Matrix, Vector3, Vector4} from "@babylonjs/core/Maths/math.vector.js"
-import { Line3 } from "../../physics/shapes/line3.js"
+import {Line3} from "../../physics/shapes/line3.js"
 
 export class Cursor {
 	normalized = new Vec2(0, 0)
@@ -12,16 +12,11 @@ export class Cursor {
 
 	constructor(public cameraman: Cameraman) {}
 
-	#pointermove = (canvas: HTMLCanvasElement) => (event: PointerEvent) => {
-		const rect = canvas.getBoundingClientRect()
-		const {clientX, clientY} = event
-		
-		const pixelsX = (clientX - rect.left) / rect.width
-		const pixelsY = (clientY - rect.top) / rect.height
+	attach(canvas: HTMLCanvasElement) {
+		return ev(canvas, {pointermove: this.#pointermove(canvas)})
+	}
 
-		this.normalized.x = (2 * pixelsX) - 1
-		this.normalized.y = 1 - (2 * pixelsY)
-
+	tick() {
 		const nearClip = new Vector3(this.normalized.x, this.normalized.y, -1)
 		const farClip = new Vector3(this.normalized.x, this.normalized.y, 1)
 		const viewProjMatrix = this.cameraman.camera.getTransformationMatrix()
@@ -44,8 +39,15 @@ export class Cursor {
 		this.worldPosition.set_(x, y, z)
 	}
 
-	attach(canvas: HTMLCanvasElement) {
-		return ev(canvas, {pointermove: this.#pointermove(canvas)})
+	#pointermove = (canvas: HTMLCanvasElement) => (event: PointerEvent) => {
+		const rect = canvas.getBoundingClientRect()
+		const {clientX, clientY} = event
+		
+		const pixelsX = (clientX - rect.left) / rect.width
+		const pixelsY = (clientY - rect.top) / rect.height
+
+		this.normalized.x = (2 * pixelsX) - 1
+		this.normalized.y = 1 - (2 * pixelsY)
 	}
 }
 
