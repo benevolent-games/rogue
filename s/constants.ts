@@ -24,9 +24,10 @@ export const constants = {
 			defaultDamping: 5,
 		},
 		crusader: {
+			smoothing: 30 / 100,
 			radius: 0.4,
-			speed: 2.5,
-			speedSprint: 5,
+			speed: 1.5,
+			speedSprint: 2.5,
 		},
 	},
 }

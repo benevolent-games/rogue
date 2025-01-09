@@ -1,9 +1,11 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Degrees, Vec2} from "@benev/toolbox"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
 import {Circle} from "../../physics/shapes/circle.js"
+import {Vec2Fns} from "../../../tools/temp/vec2-fns.js"
+import {Circular} from "../../../tools/temp/circular.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
@@ -44,7 +46,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 			body.box.center.set_(...state.coordinates)
 			body.velocity.set(energyDelta)
 
-			state.rotation = data.rotation
+			state.rotation = Circular.normalize(
+				(sprint && !movementIntent.equals_(0, 0))
+					? Vec2Fns.asRotation(movementIntent) + Degrees.toRadians(180)
+					: data.rotation
+			)
 		},
 		dispose: () => {
 			body.dispose()

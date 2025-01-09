@@ -1,10 +1,13 @@
 
 import {Trashbin} from "@benev/slate"
+import {Scalar} from "@benev/toolbox"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
+import {constants} from "../../../constants.js"
 import {replica} from "../../../archimedes/exports.js"
+import {Circular} from "../../../tools/temp/circular.js"
 import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 
@@ -26,6 +29,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
+	const smoothedRotation = new Scalar(state.rotation)
 
 	const trashbin = new Trashbin()
 
@@ -42,10 +46,13 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		replicate: (_tick, state) => {
-			buddyCoordinates.lerp_(...state.coordinates, 30 / 100)
+			const {smoothing} = constants.game.crusader
+			buddyCoordinates.lerp_(...state.coordinates, smoothing)
 			const position = buddyPosition(buddyCoordinates)
+			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, smoothing)
+
 			buddy.position.set(...position.array())
-			buddy.rotationQuaternion = Quaternion.RotationYawPitchRoll(state.rotation, 0, 0)
+			buddy.rotationQuaternion = Quaternion.RotationYawPitchRoll(smoothedRotation.x, 0, 0)
 
 			if (inControl) {
 				realm.cameraman.desired.pivot = buddyCoordinates

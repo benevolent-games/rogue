@@ -18,7 +18,7 @@ export class CameramanState {
 	pivot = new Coordinates(0, 0)
 	swivel = Degrees.toRadians(45)
 	tilt = Degrees.toRadians(20)
-	distance = (distanceBounds.x + distanceBounds.y) / 2
+	distance = (distanceBounds.x + distanceBounds.y) * (1 / 4)
 
 	clone() {
 		const state = new CameramanState()
