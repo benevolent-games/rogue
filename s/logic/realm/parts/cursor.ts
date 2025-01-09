@@ -5,10 +5,12 @@ import {Matrix, Vector3} from "@babylonjs/core/Maths/math.vector.js"
 
 import {Cameraman} from "../utils/cameraman.js"
 import {Line3} from "../../physics/shapes/line3.js"
+import {Coordinates} from "../utils/coordinates.js"
 
 export class Cursor {
 	normalized = new Vec2(0, 0)
-	worldPosition = new Vec3(0, 0, 0)
+	position = new Vec3(0, 0, 0)
+	coordinates = new Coordinates(0, 0)
 
 	constructor(public cameraman: Cameraman) {}
 
@@ -28,7 +30,7 @@ export class Cursor {
 		const direction = ray.vector.normalize()
 
 		if (direction.y === 0) {
-			console.warn("Ray is parallel to the y-plane; no intersection.")
+			console.warn("ray is parallel to the y-plane; no intersection")
 			return null
 		}
 
@@ -36,13 +38,14 @@ export class Cursor {
 		const t = (y - rayStart.y) / direction.y
 		const x = rayStart.x + t * direction.x
 		const z = rayStart.z + t * direction.z
-		this.worldPosition.set_(x, y, z)
+		this.position.set_(x, y, z)
+		this.coordinates.setPosition(this.position)
 	}
 
 	#pointermove = (canvas: HTMLCanvasElement) => (event: PointerEvent) => {
 		const rect = canvas.getBoundingClientRect()
 		const {clientX, clientY} = event
-		
+
 		const pixelsX = (clientX - rect.left) / rect.width
 		const pixelsY = (clientY - rect.top) / rect.height
 

@@ -1,15 +1,17 @@
 
+import {Trashbin} from "@benev/slate"
+import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
+
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {replica} from "../../../archimedes/exports.js"
 import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
-import { Trashbin } from "@benev/slate"
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
-	const {lighting, buddies, materials} = realm
+	const {lighting, buddies, materials, tact, cameraman, cursor} = realm
 	const inControl = state.author === replicator.author
 
 	function buddyPosition(coordinates: Coordinates) {
@@ -27,34 +29,33 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 	const trashbin = new Trashbin()
 
-	const controller = inControl
-		? (() => {
-			realm.cameraman.pivotInstantly(buddyCoordinates.clone())
-			const cursorGraphic = realm.indicators.cursor.instance()
-			return {cursorGraphic}
-		})()
-		: null
+	if (inControl) {
+		realm.cameraman.pivotInstantly(buddyCoordinates.clone())
+	}
 
 	return {
 		gatherInputs: () => {
 			if (inControl) {
-				const input = getPlayerInput(realm.tact, realm.cameraman)
+				const input = getPlayerInput(tact, cameraman, cursor, buddyCoordinates)
 				return [input]
 			}
 		},
 
-		replicate: (_, state) => {
+		replicate: (_tick, state) => {
 			buddyCoordinates.lerp_(...state.coordinates, 30 / 100)
 			const position = buddyPosition(buddyCoordinates)
 			buddy.position.set(...position.array())
+			buddy.rotationQuaternion = Quaternion.RotationYawPitchRoll(state.rotation, 0, 0)
 
-			if (controller) {
+			if (inControl) {
 				realm.cameraman.desired.pivot = buddyCoordinates
 				realm.playerPosition = position
-				lighting.torch.position.set(...buddyCoordinates.position().add_(0, 3, 0).array())
-
-				const {cursorGraphic} = controller
-				cursorGraphic.position.set(...realm.cursor.worldPosition.array())
+				lighting.torch.position.set(
+					...buddyCoordinates
+						.position()
+						.add_(0, 3, 0)
+						.array()
+				)
 			}
 		},
 

@@ -8,11 +8,21 @@ export class Coordinates extends Vec2 {
 			: this.import(v)
 	}
 
+	static fromPosition(position: Vec3) {
+		return new this(0, 0).setPosition(position)
+	}
+
 	position() {
 		const x = this.x * -1
 		const y = 0
 		const z = this.y
 		return Vec3.new(x, y, z)
+	}
+
+	setPosition(position: Vec3) {
+		this.x = position.x / -1
+		this.y = position.z
+		return this
 	}
 
 	toString() {

@@ -99,11 +99,14 @@ export async function clientFlow(
 
 		// forward prediction
 		if (csp) {
+			const lastInput = authoritative.inputPayloads.at(-1)?.inputs ?? []
+
 			futureSimtron.gameState.restore(baseSimtron.gameState.snapshot())
 			for (const ahead of loop(ticksAhead)) {
 				const t = baseTick + ahead
 				const localHistoricalInputs = inputHistory.load(t) ?? []
-				futureSimtron.simulate(t, localHistoricalInputs, physicsTiming)
+				const inputs = [...lastInput, ...localHistoricalInputs]
+				futureSimtron.simulate(t, inputs, physicsTiming)
 			}
 		}
 

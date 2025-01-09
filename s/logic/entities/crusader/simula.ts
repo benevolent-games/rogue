@@ -31,6 +31,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	return {
 		simulate: (_tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
+
 			const speed = state.speed
 			const speedSprint = state.speedSprint
 
@@ -42,6 +43,8 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 			body.box.center.set_(...state.coordinates)
 			body.velocity.set(energyDelta)
+
+			state.rotation = data.rotation
 		},
 		dispose: () => {
 			body.dispose()

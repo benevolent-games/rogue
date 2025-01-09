@@ -6,6 +6,7 @@ export type CrusaderState = {
 	speed: number
 	speedSprint: number
 	coordinates: Vec2Array
+	rotation: number
 }
 
 export type CrusaderInputData = {
