@@ -13,7 +13,7 @@ import {Simulator} from "../../archimedes/framework/simulation/simulator.js"
 
 export class Simtron {
 	gameState = new GameState()
-	watchman = new Watchman(constants.game.tickRate)
+	watchman = new Watchman(constants.sim.tickRate)
 
 	station: Station
 	simulator: Simulator<RogueEntities, Station>
@@ -49,8 +49,8 @@ export class Simtron {
 		const playerId = this.simulator.create("crusader", {
 			author,
 			rotation: 0,
-			speed: constants.game.crusader.speed,
-			speedSprint: constants.game.crusader.speedSprint,
+			speed: constants.crusader.speed,
+			speedSprint: constants.crusader.speedSprint,
 			coordinates: Coordinates.import(spawnpoint).array(),
 		})
 

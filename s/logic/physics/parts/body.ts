@@ -8,7 +8,7 @@ import {constants} from "../../../constants.js"
 type PartOffsetFromBoxCenter = Vec2
 
 export class PhysBody {
-	damping = constants.game.physics.defaultDamping
+	damping = constants.physics.defaultDamping
 	velocity = Vec2.zero()
 	box: Box2
 	mass: number

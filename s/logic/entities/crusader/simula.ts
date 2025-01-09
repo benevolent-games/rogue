@@ -20,7 +20,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 	const circle = new Circle(
 		Vec2.from(state.coordinates),
-		constants.game.crusader.radius,
+		constants.crusader.radius,
 	)
 
 	const body = station.dungeon.phys.makeBody({

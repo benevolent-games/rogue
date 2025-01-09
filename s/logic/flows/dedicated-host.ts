@@ -25,9 +25,9 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 		},
 	})
 
-	const smartloop = new Smartloop(constants.game.tickRate)
+	const smartloop = new Smartloop(constants.sim.tickRate)
 
-	const stopSnapshots = repeat.hz(constants.game.snapshotRate, async() => {
+	const stopSnapshots = repeat.hz(constants.sim.snapshotRate, async() => {
 		const data = simtron.simulator.gameState.snapshot()
 		cathedral.broadcastSnapshot({tick: smartloop.tick, data})
 	})

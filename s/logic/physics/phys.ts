@@ -32,7 +32,7 @@ export class Phys {
 		return null
 	}
 
-	timeStep = 1 / constants.game.tickRate / constants.game.physics.iterations
+	timeStep = 1 / constants.sim.tickRate / constants.physics.iterations
 
 	bodies = new Set<PhysBody>()
 	fixedBodies = new Set<PhysBody>()
@@ -74,7 +74,7 @@ export class Phys {
 	}
 
 	simulate() {
-		for (const _ of loop(constants.game.physics.iterations)) {
+		for (const _ of loop(constants.physics.iterations)) {
 			for (const body of this.dynamicBodies) {
 				this.#integrate(body)
 				this.#resolveCollisions(body)

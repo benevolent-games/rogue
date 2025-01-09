@@ -18,7 +18,7 @@ export class CapsuleBuddies {
 		const height = 1.8
 		this.baseBuddy = MeshBuilder.CreateCapsule("capsuleBuddy", {
 			height,
-			radius: constants.game.crusader.radius,
+			radius: constants.crusader.radius,
 		}, scene)
 		this.baseBuddy.position.y += height / 2
 		this.scene.removeMesh(this.baseBuddy)
@@ -40,7 +40,7 @@ export class CapsuleBuddies {
 
 		const nose = this.baseNose.clone("noseinstance")
 		nose.material = material
-		nose.position.z -= constants.game.crusader.radius - (this.#noseSize / 4)
+		nose.position.z -= constants.crusader.radius - (this.#noseSize / 4)
 		nose.setParent(buddy)
 		nose.rotationQuaternion = Quaternion.RotationYawPitchRoll(Degrees.toRadians(45), 0, 0)
 

@@ -6,10 +6,12 @@ import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
-import {replica} from "../../../archimedes/exports.js"
 import {Circular} from "../../../tools/temp/circular.js"
 import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
+import {replica} from "../../../archimedes/framework/replication/types.js"
+
+const {smoothing} = constants.crusader
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
@@ -46,7 +48,6 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		replicate: (_tick, state) => {
-			const {smoothing} = constants.game.crusader
 			buddyCoordinates.lerp_(...state.coordinates, smoothing)
 			const position = buddyPosition(buddyCoordinates)
 			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, smoothing)

@@ -17,7 +17,7 @@ import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-cl
 export async function clientFlow(
 		multiplayer: MultiplayerClient,
 		dungeonStore: DungeonStore,
-		smartloop = new Smartloop(constants.game.tickRate),
+		smartloop = new Smartloop(constants.sim.tickRate),
 	) {
 
 	const baseSimtron = new Simtron(dungeonStore)
@@ -44,7 +44,7 @@ export async function clientFlow(
 	function getLatencyInTicks() {
 		const discrepancy = liaison.pingponger.averageRtt
 		return Scalar.clamp(
-			Math.round(discrepancy / (1000 / constants.game.tickRate)),
+			Math.round(discrepancy / (1000 / constants.sim.tickRate)),
 			1, // always predicting 1 tick ahead, minimum
 			20, // maximum ticks to predict
 		)

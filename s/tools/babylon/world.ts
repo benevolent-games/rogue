@@ -13,7 +13,7 @@ export class World {
 			canvas,
 			webgl: {
 				alpha: false,
-				antialias: constants.game.antialiasing,
+				antialias: constants.fx.antialiasing,
 				desynchronized: true,
 				preserveDrawingBuffer: false,
 				powerPreference: "high-performance",
@@ -30,7 +30,7 @@ export class World {
 		const gameloop = Iron.gameloop(engine, [scene])
 		const rendering = Iron.rendering(scene)
 
-		scaler.resolution = constants.game.resolution
+		scaler.resolution = constants.fx.resolution
 
 		function dispose() {
 			gameloop.stop()

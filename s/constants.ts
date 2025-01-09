@@ -14,21 +14,26 @@ export const constants = {
 		animTime: 250,
 	},
 
-	game: {
+	fx: {
 		antialiasing: false,
 		resolution: 0.25,
+	},
+
+	sim: {
 		tickRate: 60,
 		snapshotRate: 1,
-		physics: {
-			iterations: 2,
-			defaultDamping: 5,
-		},
-		crusader: {
-			smoothing: 30 / 100,
-			radius: 0.4,
-			speed: 1.5,
-			speedSprint: 2.5,
-		},
+	},
+
+	physics: {
+		iterations: 2,
+		defaultDamping: 5,
+	},
+
+	crusader: {
+		smoothing: 30 / 100,
+		radius: 0.4,
+		speed: 1.5,
+		speedSprint: 2.5,
 	},
 }
 
