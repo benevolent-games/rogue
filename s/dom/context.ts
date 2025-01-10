@@ -1,6 +1,6 @@
 
 import {Randy} from "@benev/toolbox"
-import {Auth, Login, Pubkey} from "@authduo/authduo"
+import {Auth, Login, Pubkey} from "@authlocal/authlocal"
 import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {JsonStorage} from "../tools/json-storage.js"

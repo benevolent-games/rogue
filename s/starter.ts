@@ -1,7 +1,7 @@
 
 import {loggers} from "renraku"
-import {components} from "@authduo/authduo"
 import {register_to_dom} from "@benev/slate"
+import {components} from "@authlocal/authlocal"
 
 import {context} from "./dom/context.js"
 import {GameApp} from "./dom/elements/app/element.js"

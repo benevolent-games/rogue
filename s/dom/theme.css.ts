@@ -65,7 +65,7 @@ button:not(.std, .naked) {
 		background: #e00;
 	}
 
-	&.authduo {
+	&.authlocal {
 		background: #80f;
 	}
 }

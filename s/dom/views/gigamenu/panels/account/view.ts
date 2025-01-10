@@ -34,7 +34,7 @@ export const AccountView = shadowView(use => () => {
 			` : loading.binary(context.sessionOp, () => html`
 				<p>You're currently logged out</p>
 
-				<button class=authduo @click="${login}">
+				<button class=authlocal @click="${login}">
 					Login
 				</button>
 			`)}
