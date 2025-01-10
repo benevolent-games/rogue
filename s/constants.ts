@@ -32,8 +32,8 @@ export const constants = {
 	crusader: {
 		smoothing: 30 / 100,
 		radius: 0.4,
-		speed: 1.5,
-		speedSprint: 2.5,
+		speed: 2,
+		speedSprint: 3.5,
 	},
 }
 
