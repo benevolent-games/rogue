@@ -35,6 +35,10 @@ export const StatsView = shadowView(use => (stats: GameStats) => {
 					<strong>physics</strong>
 					<span>${stats.physics.average.toFixed(2)} ms</span>
 				</li>
+				<li>
+					<strong>physicsAwakes</strong>
+					<span>${stats.physicsAwake.average.toFixed(0)}</span>
+				</li>
 			</ul>
 		</section>
 	`

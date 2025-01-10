@@ -9,6 +9,7 @@ export class GameStats {
 	base = new TimingReport()
 	prediction = new TimingReport()
 	physics = new TimingReport()
+	physicsAwake = new ScalarReport()
 }
 
 export type TimingReports = Record<string, TimingReport | ScalarReport>
