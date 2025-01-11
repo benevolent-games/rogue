@@ -10,12 +10,15 @@ type PartOffsetFromBoxCenter = Vec2
 export class PhysBody {
 	damping = constants.physics.defaultDamping
 	velocity = Vec2.zero()
+
 	box: Box2
 	mass: number
+
 	#internalParts: [PhysPart, PartOffsetFromBoxCenter][]
 
 	constructor(
 			parts: PhysPart[],
+			public awaken: () => void,
 			public updated: () => void,
 			public dispose: () => void,
 		) {
@@ -63,6 +66,7 @@ export class PhysBody {
 		this.velocity.add(
 			vector.clone().divideBy(this.mass)
 		)
+		this.awaken()
 	}
 
 	offset(vector: Vec2) {

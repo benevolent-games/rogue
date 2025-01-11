@@ -12,6 +12,8 @@ import {simula} from "../../../archimedes/framework/simulation/types.js"
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	({station, state, getState, fromAuthor}) => {
 
+	const {phys} = station.dungeon
+
 	let data: RogueEntities["crusader"]["input"] = {
 		sprint: false,
 		movementIntent: Vec2.zero().array(),
@@ -23,7 +25,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		constants.crusader.radius,
 	)
 
-	const body = station.dungeon.phys.makeBody({
+	const body = phys.makeBody({
 		parts: [{shape: circle, mass: 80}],
 		updated: body => {
 			getState().coordinates = body.box.center.array()
@@ -45,6 +47,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 			body.box.center.set_(...state.coordinates)
 			body.velocity.set(energyDelta)
+			phys.wakeup(body)
 
 			state.rotation = Circular.normalize(
 				(sprint && !movementIntent.equals_(0, 0))

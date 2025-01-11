@@ -37,7 +37,7 @@ export const StatsView = shadowView(use => (stats: GameStats) => {
 				</li>
 				<li>
 					<strong>physicsAwakes</strong>
-					<span>${stats.physicsAwake.average.toFixed(0)}</span>
+					<span>${stats.physicsAwake.number.toFixed(0)}</span>
 				</li>
 			</ul>
 		</section>

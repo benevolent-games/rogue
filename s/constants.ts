@@ -27,6 +27,7 @@ export const constants = {
 	physics: {
 		iterations: 2,
 		defaultDamping: 5,
+		timeTillSleep: 1000,
 	},
 
 	crusader: {

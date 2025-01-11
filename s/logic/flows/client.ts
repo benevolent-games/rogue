@@ -112,6 +112,11 @@ export async function clientFlow(
 
 		clockPrediction()
 		clockTick()
+
+		// get the physics awake count stat
+		const phys = futureSimtron.station.possibleDungeon?.phys
+		if (phys)
+			stats.physicsAwake.number = phys.awakeCount
 	})
 
 	// init 3d rendering

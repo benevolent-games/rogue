@@ -1,4 +1,5 @@
 
+import {Map2} from "@benev/slate"
 import {loop, Scalar, Vec2} from "@benev/toolbox"
 
 import {Box2} from "./shapes/box2.js"
@@ -6,6 +7,7 @@ import {PhysBody} from "./parts/body.js"
 import {PhysPart} from "./parts/part.js"
 import {Circle} from "./shapes/circle.js"
 import {constants} from "../../constants.js"
+import {Awakened} from "./parts/awakened.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 import {Collisions2} from "./facilities/collisions2.js"
 import {BodyOptions, PhysShape} from "./parts/types.js"
@@ -39,12 +41,15 @@ export class Phys {
 	dynamicBodies = new Set<PhysBody>()
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
 
+	awakes = new Map2<PhysBody, Awakened>()
+
 	#addBody(body: PhysBody) {
 		this.bodies.add(body)
 		if (body.mass === Infinity)
 			this.fixedBodies.add(body)
-		else
+		else {
 			this.dynamicBodies.add(body)
+		}
 	}
 
 	#deleteBody(body: PhysBody) {
@@ -63,10 +68,23 @@ export class Phys {
 			zen.delete()
 			this.#deleteBody(body)
 		}
-		const body = new PhysBody(parts, updated, dispose)
+		const awaken = () => {
+			this.wakeup(body)
+		}
+		const body = new PhysBody(parts, awaken, updated, dispose)
 		const zen = this.bodyGrid.create(body.box, body)
 		this.#addBody(body)
 		return body
+	}
+
+	wakeup(body: PhysBody) {
+		return this.awakes
+			.guarantee(body, () => new Awakened())
+			.poke()
+	}
+
+	get awakeCount() {
+		return this.awakes.size
 	}
 
 	queryBodies(box: Box2) {
@@ -75,11 +93,12 @@ export class Phys {
 
 	simulate() {
 		for (const _ of loop(constants.physics.iterations)) {
-			for (const body of this.dynamicBodies) {
+			for (const [body, awakened] of this.awakes) {
 				this.#integrate(body)
 				this.#resolveCollisions(body)
 				body.updated()
 				this.#applyDamping(body)
+				this.#considerSleep(body, awakened)
 			}
 		}
 	}
@@ -100,6 +119,8 @@ export class Phys {
 			const intersections = this.#intersectBodies(body, otherBody)
 			if (intersections.length > 0) {
 				this.#resolveBodyCollisions(body, otherBody, intersections)
+				if (this.dynamicBodies.has(otherBody))
+					this.wakeup(otherBody)
 			}
 		}
 	}
@@ -135,6 +156,11 @@ export class Phys {
 
 		bodyA.offset(correctionA)
 		bodyB.offset(correctionB)
+	}
+
+	#considerSleep(body: PhysBody, awakened: Awakened) {
+		if (awakened.isSleepy)
+			this.awakes.delete(body)
 	}
 }
 
