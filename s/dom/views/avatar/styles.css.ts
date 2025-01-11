@@ -11,7 +11,7 @@ export default css`
 div[part="box"] {
 	font-size: var(--size);
 	width: 1em;
-	height: 1em;
+	aspect-ratio: 1 / 1;
 
 	z-index: 0;
 	position: relative;

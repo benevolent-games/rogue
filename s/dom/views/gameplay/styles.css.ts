@@ -37,6 +37,7 @@ canvas {
 	--btnsize: 2em;
 
 	[view="gigamenu"] {
+		z-index: 1;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -73,6 +74,20 @@ canvas {
 			}
 		}
 	}
+
+	.coolarea {
+		pointer-events: all;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		padding: 6%;
+
+		> [view="nub-stick"] {
+			opacity: 0.2;
+			width: unset;
+			height: 4em;
+		}
+	}
 }
 
 .drop-indicator {
@@ -85,7 +100,6 @@ canvas {
 	align-items: center;
 	align-content: center;
 
-	
 	font-size: 1.5em;
 	color: white;
 	font-weight: bold;

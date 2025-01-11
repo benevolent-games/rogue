@@ -39,7 +39,7 @@
 		"@babylonjs/loaders": "^7.43.0",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-2",
-		"@benev/toolbox": "^0.8.0-7",
+		"@benev/toolbox": "^0.8.0-8",
 		"renraku": "^0.4.3",
 		"sparrow-rtc": "^0.2.3",
 		"zx": "^8.3.0"

@@ -1,7 +1,6 @@
 
 import "@benev/slate/x/node.js"
-import {renderSocialCard} from "./dom/static/social-card.js"
-import {template, html, easypage, headScripts, git_commit_hash, read_file} from "@benev/turtle"
+import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
 const favicon = "/assets/graphics/favicon-ivLoKJGtTXd.png"
@@ -34,7 +33,6 @@ export default template(async basic => {
 				description: "The Ultimate Roguelike",
 				image: `https://${domain}${socialImage}`,
 				url: `https://${domain}/`,
-				type: "website",
 			})}
 
 			${headScripts({
