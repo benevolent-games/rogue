@@ -13,12 +13,16 @@ export const blockReplica = replica<RogueEntities, Realm>()<"block">(
 	block.setDimensions(dimensions)
 	block.setCoordinates(coordinates)
 
+	const smoothCoordinates = coordinates.clone()
+
 	return {
 		gatherInputs: () => undefined,
 
 		replicate: (_, state) => {
 			const {coordinates} = readBlock(state)
-			block.setCoordinates(coordinates)
+			block.setCoordinates(
+				smoothCoordinates.lerp(coordinates, 20 / 100)
+			)
 		},
 
 		dispose: () => {
