@@ -1,5 +1,6 @@
 
 import "@benev/slate/x/node.js"
+import {constants} from "./constants.js"
 import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
@@ -46,9 +47,14 @@ export default template(async basic => {
 				<h1><em>Rogue Crusade</em> will be the ultimate roguelike.</h1>
 				<p>3d. Permadeath. Solo and co-op. Procgen dungeons. Monsters, loot, potions.</p>
 				<p>We’re deep in development because, uh, we built a time machine. Opened a portal to an alternate 1999, stole the best roguelike ever made in the multiverse, and now we’re busy porting it to the modern web.</p>
-				<p>Join our <a href="https://discord.gg/BnZx2utdev">Discord</a> to chat with us and follow the development, now's the best time to influence the game design with your terrible ideas.</p>
-				<p>See the project on <a href="https://github.com/benevolent-games/rogue-crusade">GitHub.</a></p>
+				<p>Join our <a href="https://discord.gg/BnZx2utdev">Discord</a> to chat with us and follow the development, now's the best time to influence the game design with your terrible ideas. Also, see the project on <a href="https://github.com/benevolent-games/rogue-crusade">GitHub.</a></p>
 				<p>Let us know if you have any better ideas for how to use the time machine.</p>
+				<footer>
+					<a class=benev href="https://benevolent.games/">
+						<img src="${constants.urls.benevLogo}" alt="" draggable="false"/>
+						<span>Benevolent Games</span>
+					</a>
+				</footer>
 			</game-app>
 		`,
 	})

@@ -83,7 +83,31 @@ game-app {
 	}
 
 	h1 {
-		font-size: 1.3em;
+		font-size: 1.5em;
+		> em {
+			color: white;
+			font-style: normal;
+			text-shadow: 0 0 0.5em #fff8;
+		}
+	}
+
+	footer {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		margin-top: 2em;
+
+		.benev {
+			display: flex;
+			align-items: center;
+			gap: 0.5em;
+
+			&:is(:hover, :focus) {
+				filter: drop-shadow(0 0 0.5em #fff8);
+			}
+
+			> img { height: 2em; }
+		}
 	}
 }
 

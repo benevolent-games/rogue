@@ -27,31 +27,23 @@ export const MainMenu = shadowView(use => ({nav}: {
 	})
 
 	return html`
-		<div class=overlay>
-			${Gigamenu([AccountPanel()])}
-		</div>
-
-		<header class=lead>
-			<a href="https://benevolent.games/">
-				<img class=benev src="${constants.urls.benevLogo}" alt="" draggable="false"/>
-				<span>Benevolent Games</span>
-			</a>
-			<span>presents...</span>
-		</header>
-
-		<section class=plate ?x-ready="${ready.value}">
-			${img.element}
-
-			<div class=content>
-				<nav>
-					<button class=play @click="${nav.play}">
-						Play
-					</button>
-				</nav>
+		<section class=plate>
+			<div class=overlay>
+				${Gigamenu([AccountPanel()])}
 			</div>
-		</section>
 
-		<slot></slot>
+			<figure>
+				<img alt="" draggable=false src="/assets/images/rogue-banner-6.webp"/>
+			</figure>
+
+			<nav>
+				<button class=play @click="${nav.play}">
+					Play
+				</button>
+			</nav>
+
+			<slot></slot>
+		</section>
 	`
 })
 
