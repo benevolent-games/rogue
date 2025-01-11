@@ -7,8 +7,8 @@ export default css`
 	height: 3em;
 	position: relative;
 	--button-size: 3em;
-	--bgcolor1: #222a;
-	--bgcolor2: #4442;
+	--bgcolor1: #080808fa;
+	--bgcolor2: #3332;
 }
 
 .plate {
@@ -19,8 +19,8 @@ export default css`
 	overflow: hidden;
 
 	background: var(--bgcolor1);
-	backdrop-filter: blur(0.5em);
-	box-shadow: .2em .3em .8em #0004;
+	box-shadow: .2em .3em 1em #0008;
+	XXX-backdrop-filter: blur(0.5em);
 
 	nav {
 		display: flex;
@@ -86,10 +86,14 @@ export default css`
 
 	nav > [x-menu-button] {
 		pointer-events: all;
+		transition: 150ms linear all;
 	}
 
 	&[x-menu-open] {
 		pointer-events: all;
+		& [x-menu-button] {
+			transform: scale(130%);
+		}
 	}
 
 	&:not([x-menu-open]) {
@@ -99,6 +103,12 @@ export default css`
 
 		nav > [x-tab] { opacity: 0; }
 		section { opacity: 0;  }
+
+		& [x-menu-button] {
+			opacity: 0.2;
+			& svg * { filter: none !important; }
+		}
+	}
 }
 
 `

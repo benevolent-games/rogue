@@ -4,7 +4,7 @@ import {ev, html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Gigapanel} from "./utils/gigapanel.js"
-import menuSvg from "../../icons/tabler/menu.svg.js"
+import benevolent2Svg from "../../icons/benev/benevolent2.svg.js"
 
 export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 	use.name("gigamenu")
@@ -47,7 +47,7 @@ export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
 		<div class=plate ?x-menu-open="${menuOpen}" x-panel="${activePanel?.label ?? ""}">
 			<nav>
 				<button x-menu-button @click="${clickMenuButton()}" class="naked">
-					${menuSvg}
+					${benevolent2Svg}
 				</button>
 
 				${panels.map((panel, index) => html`
