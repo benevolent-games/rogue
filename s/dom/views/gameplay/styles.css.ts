@@ -85,7 +85,7 @@ canvas {
 		> [view="nub-stick"] {
 			opacity: 0.2;
 			width: unset;
-			height: 4em;
+			height: 8em;
 		}
 	}
 }
