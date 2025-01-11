@@ -79,9 +79,13 @@ export const Gameplay = shadowView(use => (o: {
 					</button>
 				</div>
 
-				<div class=coolarea>
-					${NubStick([o.realm.userInputs.stick])}
-				</div>
+				${o.realm.userInputs.predilection.value === "touch"
+					? html`
+						<div class=coolarea>
+							${NubStick([o.realm.userInputs.stick])}
+						</div>
+					`
+					: null}
 			</div>
 
 			${(dropper.indicator || null) && html`

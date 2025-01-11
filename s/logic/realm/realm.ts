@@ -96,6 +96,7 @@ export class Realm {
 
 	dispose() {
 		this.#trashbin.dispose()
+		this.userInputs.dispose()
 	}
 }
 

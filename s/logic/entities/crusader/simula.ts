@@ -61,7 +61,6 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					? Vec2Fns.asRotation(movementIntent) + Degrees.toRadians(180)
 					: data.rotation
 			)
-
 		},
 		dispose: () => {
 			body.dispose()

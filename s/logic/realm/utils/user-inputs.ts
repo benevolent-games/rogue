@@ -1,5 +1,6 @@
 
 import {Tact} from "@benev/toolbox"
+import {ev, signal, Trashbin} from "@benev/slate"
 import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 
 export type GameBindings = ReturnType<typeof makeBindings>
@@ -19,13 +20,19 @@ const makeBindings = () => Tact.bindings(({buttons, b}) => ({
 	},
 }))
 
+export type InputPredilection = "touch" | "keyboard"
+
 export class UserInputs {
+	predilection = signal<InputPredilection>("keyboard")
+
 	stick = new Stick("movestick")
 	keyboard = new Tact.devices.Keyboard(window)
 	mouseButtons = new Tact.devices.MouseButtons(window)
 	pointerMovements = new Tact.devices.PointerMovements(window, "mouse")
 
 	tact: Tact<GameBindings>
+
+	#trash = new Trashbin()
 
 	constructor(target: EventTarget) {
 		this.tact = new Tact(target, makeBindings())
@@ -40,6 +47,23 @@ export class UserInputs {
 			.add(this.keyboard)
 			.add(this.pointerMovements)
 			.add(this.mouseButtons)
+
+		this.#trash.disposer(
+			ev(target, {
+				pointerdown: ({pointerType}: PointerEvent) => {
+					if (pointerType === "touch") {
+						this.predilection.value = "touch"
+					}
+					else if (pointerType === "mouse") {
+						this.predilection.value = "keyboard"
+					}
+				},
+			})
+		)
+	}
+
+	dispose() {
+		this.tact.dispose()
 	}
 }
 
