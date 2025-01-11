@@ -45,18 +45,19 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 			const speed = state.speed
 			const speedSprint = state.speedSprint
 
-			const sprint = data.sprint
 			const movementIntent = Coordinates.from(data.movementIntent)
-			const energyDelta = movementIntent
+			const newVelocity = movementIntent
 				.clampMagnitude(1)
-				.multiplyBy(sprint ? speedSprint : speed)
+				.multiplyBy(speedSprint)
+
+			const sprintingDetected = newVelocity.magnitude() > speed
 
 			body.box.center.set_(...state.coordinates)
-			body.velocity.set(energyDelta)
+			body.velocity.set(newVelocity)
 			phys.wakeup(body)
 
 			state.rotation = Circular.normalize(
-				(sprint && !movementIntent.equals_(0, 0))
+				(sprintingDetected && !movementIntent.equals_(0, 0))
 					? Vec2Fns.asRotation(movementIntent) + Degrees.toRadians(180)
 					: data.rotation
 			)

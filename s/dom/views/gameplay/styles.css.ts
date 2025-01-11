@@ -73,6 +73,21 @@ canvas {
 			}
 		}
 	}
+
+	.coolarea {
+		pointer-events: all;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 30%;
+		padding: 3%;
+
+		> [view="nub-stick"] {
+			opacity: 0.2;
+			width: unset;
+			height: 100%;
+		}
+	}
 }
 
 .drop-indicator {

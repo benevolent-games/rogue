@@ -1,5 +1,6 @@
 
 import {ev, html, shadowView} from "@benev/slate"
+import {NubStick} from "@benev/toolbox/x/tact/nubs/stick/view.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -18,7 +19,7 @@ import componentsSvg from "../../icons/tabler/components.svg.js"
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
-		multiplayerClient: MultiplayerClient,
+		multiplayerClient: MultiplayerClient
 		exitToMainMenu: () => void
 	}) => {
 
@@ -68,6 +69,7 @@ export const Gameplay = shadowView(use => (o: {
 
 			<div class=overlay>
 				${Gigamenu(panels)}
+
 				<div class=buttonbar>
 					<button class="naked" title="reset camera" @click="${() => o.realm.cameraman.reset()}">
 						${componentsSvg}
@@ -75,6 +77,10 @@ export const Gameplay = shadowView(use => (o: {
 					<button class="naked" title="fullscreen" @click="${() => toggleFullscreen(use.element)}">
 						${maximizeSvg}
 					</button>
+				</div>
+
+				<div class=coolarea>
+					${NubStick([o.realm.userInputs.stick])}
 				</div>
 			</div>
 

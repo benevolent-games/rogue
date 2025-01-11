@@ -16,7 +16,7 @@ const {smoothing} = constants.crusader
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
-	const {lighting, buddies, materials, tact, cameraman, cursor} = realm
+	const {lighting, buddies, materials, userInputs, cameraman, cursor} = realm
 	const inControl = state.author === replicator.author
 
 	function buddyPosition(coordinates: Coordinates) {
@@ -42,7 +42,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	return {
 		gatherInputs: () => {
 			if (inControl) {
-				const input = getPlayerInput(tact, cameraman, cursor, buddyCoordinates)
+				const input = getPlayerInput(state, userInputs, cameraman, cursor, buddyCoordinates)
 				return [input]
 			}
 		},

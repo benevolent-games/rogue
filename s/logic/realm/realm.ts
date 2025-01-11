@@ -11,21 +11,21 @@ import {Glbs} from "./glbs.js"
 import {Stuff} from "./utils/stuff.js"
 import {Cursor} from "./parts/cursor.js"
 import {Lighting} from "./utils/lighting.js"
-import {makeTact} from "./utils/make-tact.js"
 import {Cameraman} from "./utils/cameraman.js"
 import {GameStats} from "./parts/game-stats.js"
 import {Indicators} from "./utils/indicators.js"
 import {DungeonStore} from "../dungeons/store.js"
+import {UserInputs} from "./utils/user-inputs.js"
 import {World} from "../../tools/babylon/world.js"
-import {UserInputs} from "./inputs/user-inputs.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
+import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 
 const debug = false
 
 export class Realm {
 	stats = new GameStats()
-	tact = makeTact(window)
+	userInputs = new UserInputs(window)
 	playerPosition = Vec3.zero()
 	onFilesDropped = pubsub<[File[]]>()
 	ready = deferPromise<void>()
@@ -35,7 +35,7 @@ export class Realm {
 	cameraman: Cameraman
 	indicators: Indicators
 	stuff: Stuff
-	userInputs: UserInputs
+	inputControls: InputControls
 	cursor: Cursor
 
 	#cursorGraphic: Prop | null
@@ -53,14 +53,14 @@ export class Realm {
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
-		this.userInputs = new UserInputs(this.cameraman)
+		this.inputControls = new InputControls(this.cameraman)
 		this.cursor = new Cursor(this.cameraman)
 
 		this.#cursorGraphic = debug
 			? this.indicators.cursor.instance()
 			: null
 
-		this.#trashbin.disposer(this.userInputs.attach(world.canvas))
+		this.#trashbin.disposer(this.inputControls.attach(world.canvas))
 		this.#trashbin.disposer(this.cursor.attach(world.canvas))
 	}
 

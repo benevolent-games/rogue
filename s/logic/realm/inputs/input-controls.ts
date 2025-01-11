@@ -6,7 +6,7 @@ import {DragQueen} from "./pointer/drag-queen.js"
 
 const wheelSensitivity = 1 / 100
 
-export class UserInputs {
+export class InputControls {
 	sensitivityApd = 720
 	dragQueen: DragQueen
 
