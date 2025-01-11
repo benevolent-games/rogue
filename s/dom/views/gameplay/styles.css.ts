@@ -37,6 +37,7 @@ canvas {
 	--btnsize: 2em;
 
 	[view="gigamenu"] {
+		z-index: 1;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -79,13 +80,12 @@ canvas {
 		position: absolute;
 		bottom: 0;
 		width: 100%;
-		height: 30%;
-		padding: 3%;
+		padding: 6%;
 
 		> [view="nub-stick"] {
 			opacity: 0.2;
 			width: unset;
-			height: 100%;
+			height: 4em;
 		}
 	}
 }

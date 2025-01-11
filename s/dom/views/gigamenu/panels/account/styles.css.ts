@@ -17,8 +17,9 @@ auth-login {
 }
 
 [view="account-card"] {
-	padding: 0 4em;
+	max-width: 24em;
 	font-size: 1em;
+	margin: 0 auto;
 	--avatar-size: 8em;
 }
 

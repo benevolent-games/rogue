@@ -24,6 +24,7 @@ export default css`
 
 	nav {
 		display: flex;
+		flex-wrap: wrap;
 
 		> button {
 			cursor: pointer;
@@ -70,10 +71,10 @@ export default css`
 	}
 
 	section {
-		padding: 2em;
+		padding: 1em;
 		background: var(--bgcolor2);
 		max-height: 32em;
-		max-height: calc(80vh - 4em);
+		max-height: calc(95vh - 4em);
 		overflow: auto;
 	}
 
