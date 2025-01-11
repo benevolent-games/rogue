@@ -1,4 +1,6 @@
 
+import {Vec2} from "@benev/toolbox"
+
 export const constants = {
 	urls: {
 		cover: "/assets/images/rogue-crusade-poster.webp",
@@ -22,6 +24,7 @@ export const constants = {
 	sim: {
 		tickRate: 60,
 		snapshotRate: 1,
+		localSnapshotArea: new Vec2(25, 25),
 	},
 
 	physics: {
@@ -34,7 +37,7 @@ export const constants = {
 		smoothing: 30 / 100,
 		radius: 0.4,
 		speed: 2,
-		speedSprint: 3.5,
+		speedSprint: 4,
 	},
 }
 

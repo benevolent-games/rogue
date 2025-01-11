@@ -40,7 +40,6 @@ export class Phys {
 	fixedBodies = new Set<PhysBody>()
 	dynamicBodies = new Set<PhysBody>()
 	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
-
 	awakes = new Map2<PhysBody, Awakened>()
 
 	#addBody(body: PhysBody) {
@@ -56,6 +55,7 @@ export class Phys {
 		this.bodies.delete(body)
 		this.dynamicBodies.delete(body)
 		this.fixedBodies.delete(body)
+		this.awakes.delete(body)
 	}
 
 	makeBody(options: BodyOptions) {

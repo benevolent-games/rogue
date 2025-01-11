@@ -10,7 +10,7 @@ import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../multiplayer/meta/client.js"
 import {MetaHost, metaHostApi} from "../multiplayer/meta/host.js"
 import {renrakuChannel} from "../multiplayer/utils/renraku-channel.js"
-import {InputPayload, SnapshotPayload} from "../../framework/parts/types.js"
+import {InputPayload, Snapshot, SnapshotPayload} from "../../framework/parts/types.js"
 import {MultiplayerFibers, multiplayerFibers} from "../multiplayer/utils/multiplayer-fibers.js"
 
 export type Seat = {
@@ -141,6 +141,11 @@ export class Cathedral {
 			bundle.liaison.sendInputs(inputPayload)
 	}
 
+	distributeTailoredSnapshots(tick: number, fn: (bundle: Bundle) => Snapshot) {
+		for (const bundle of this.getBundles())
+			bundle.liaison.sendSnapshot({tick, data: fn(bundle)})
+	}
+
 	dispose() {
 		for (const seat of [...this.seats])
 			this.deleteSeat(seat)
@@ -178,7 +183,7 @@ export class Cathedral {
 
 		const bundle: Bundle = {
 			connection,
-			author: author,
+			author,
 			liaison,
 			metaClient,
 			connectionStats,

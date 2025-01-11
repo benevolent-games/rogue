@@ -10,7 +10,7 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
-	({station, state, getState, fromAuthor}) => {
+	({id, station, state, getState, fromAuthor}) => {
 
 	const {phys} = station.dungeon
 
@@ -25,10 +25,16 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		constants.crusader.radius,
 	)
 
+	const entityZen = station.entityHashgrid.create(circle.boundingBox(), id)
+
 	const body = phys.makeBody({
 		parts: [{shape: circle, mass: 80}],
 		updated: body => {
-			getState().coordinates = body.box.center.array()
+			const coordinates = Coordinates.from(body.box.center)
+			getState().coordinates = coordinates.array()
+			entityZen.box.center.set(coordinates)
+			entityZen.update()
+			station.updateAuthorCoordinates(state.author, coordinates)
 		},
 	})
 
@@ -54,9 +60,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					? Vec2Fns.asRotation(movementIntent) + Degrees.toRadians(180)
 					: data.rotation
 			)
+
 		},
 		dispose: () => {
 			body.dispose()
+			entityZen.delete()
 		},
 	}
 })

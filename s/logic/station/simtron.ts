@@ -2,6 +2,7 @@
 import {Station} from "./station.js"
 import {constants} from "../../constants.js"
 import {simulas} from "../entities/simulas.js"
+import {Box2} from "../physics/shapes/box2.js"
 import {Watchman} from "../../tools/watchman.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {RogueEntities} from "../entities/entities.js"
@@ -56,6 +57,20 @@ export class Simtron {
 
 		console.log("SPAWN PLAYER", spawnpoint)
 		return () => this.simulator.delete(playerId)
+	}
+
+	getTailoredSnapshot(author: number) {
+		const coordinates = this.station.getAuthorCoordinates(author)
+		// console.log(`author #${author} coordinates ${coordinates.toString()}`)
+		const entityIds = new Set([
+			...this.station.importantEntities,
+			...this.station.entityHashgrid.queryItems(
+				new Box2(coordinates, constants.sim.localSnapshotArea)
+			)
+		])
+		const snapshot = this.gameState.snapshot()
+		snapshot.entities = snapshot.entities.filter(([id]) => entityIds.has(id))
+		return snapshot
 	}
 }
 

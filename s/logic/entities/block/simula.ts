@@ -9,21 +9,23 @@ import {simula} from "../../../archimedes/framework/simulation/types.js"
 const density = 100
 
 export const blockSimula = simula<RogueEntities, Station>()<"block">(
-	({station, state, getState}) => {
+	({id, station, state, getState}) => {
 
 	const coordinates = Coordinates.from(state.coordinates)
 	const dimensions = Vec3.from(state.dimensions)
+	const boxExtent = new Vec2(dimensions.x, dimensions.z)
+	const box = new Box2(coordinates, boxExtent)
+
+	const entityZen = station.entityHashgrid.create(box, id)
 
 	const body = station.dungeon.phys.makeBody({
 		parts: [{
+			shape: box,
 			mass: density * (dimensions.x * dimensions.y * dimensions.z),
-			shape: new Box2(
-				coordinates,
-				new Vec2(dimensions.x, dimensions.z),
-			),
 		}],
 		updated: body => {
 			getState().coordinates = body.box.center.array()
+			entityZen.update()
 		},
 	})
 
@@ -33,6 +35,7 @@ export const blockSimula = simula<RogueEntities, Station>()<"block">(
 		},
 		dispose: () => {
 			body.dispose()
+			entityZen.delete()
 		},
 	}
 })

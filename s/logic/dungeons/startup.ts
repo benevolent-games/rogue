@@ -11,7 +11,7 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 	const dungeon = station.dungeon
 	const randy = dungeon.makeRandy()
 
-	const howManyBoxesToSpawn = 20
+	const howManyBoxesToSpawn = 2000
 	let count = 0
 	out: for (const {sector, cell, tiles} of layout.floors) {
 		for (const spawn of randy.take(10, tiles.array())) {
@@ -42,6 +42,8 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 			}
 		}
 	}
+
+	console.log("spawned blocks", count)
 
 	// // TODO
 	// simtron.spawnCrusader(99999)
