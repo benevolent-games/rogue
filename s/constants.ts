@@ -1,5 +1,5 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Degrees, Vec2} from "@benev/toolbox"
 
 export const constants = {
 	urls: {
@@ -38,6 +38,18 @@ export const constants = {
 		radius: 0.4,
 		speed: 2,
 		speedSprint: 4,
+	},
+
+	camera: {
+		pivotHeight: 1.6,
+		swivelSnappingIncrements: Degrees.toRadians(15),
+		distanceBounds: new Vec2(6, 25),
+		tiltBounds: new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60)),
+		initial: {
+			swivel: Degrees.toRadians(0),
+			tilt: Degrees.toRadians(10),
+			distanceFraction: 1 / 4,
+		},
 	},
 }
 

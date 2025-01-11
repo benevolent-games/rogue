@@ -1,5 +1,5 @@
 
-import {Degrees, Scalar, Vec2, Vec3} from "@benev/toolbox"
+import {Degrees, Scalar, Vec3} from "@benev/toolbox"
 
 import {Scene} from "@babylonjs/core/scene.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
@@ -7,18 +7,20 @@ import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
 
 import {Lighting} from "./lighting.js"
 import {Coordinates} from "./coordinates.js"
+import {constants} from "../../../constants.js"
+import {Circular} from "../../../tools/temp/circular.js"
 
-const pivotHeight = 1.6
 const alphaReset = Degrees.toRadians(-90)
-const tiltBounds = new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60))
-const distanceBounds = new Vec2(6, 25)
-const swivelSnappingIncrements = Degrees.toRadians(45)
 
 export class CameramanState {
 	pivot = new Coordinates(0, 0)
-	swivel = Degrees.toRadians(45)
-	tilt = Degrees.toRadians(20)
-	distance = (distanceBounds.x + distanceBounds.y) * (1 / 4)
+	tilt = constants.camera.initial.tilt
+	swivel = constants.camera.initial.swivel
+
+	distance = (
+		constants.camera.distanceBounds.x +
+		constants.camera.distanceBounds.y
+	) * constants.camera.initial.distanceFraction
 
 	clone() {
 		const state = new CameramanState()
@@ -71,7 +73,7 @@ export class Cameraman {
 	}
 
 	#unwindSwivelInstantly() {
-		const swivel = this.smoothed.swivel % Degrees.toRadians(360)
+		const swivel = Circular.normalize(this.smoothed.swivel)
 		this.desired.swivel = swivel
 		this.enforced.swivel = swivel
 		this.smoothed.swivel = swivel
@@ -93,25 +95,36 @@ export class Cameraman {
 	}
 
 	#applyDesireConstraints() {
-		this.desired.tilt = Scalar.clamp(this.desired.tilt, ...tiltBounds.array())
-		this.desired.distance = Scalar.clamp(this.desired.distance, ...distanceBounds.array())
+		this.desired.tilt = Scalar.clamp(
+			this.desired.tilt,
+			...constants.camera.tiltBounds.array(),
+		)
+		this.desired.distance = Scalar.clamp(
+			this.desired.distance,
+			...constants.camera.distanceBounds.array(),
+		)
 	}
 
 	#updateEnforced() {
 		this.enforced = this.desired.clone()
-		this.enforced.swivel = Math.round(this.enforced.swivel / swivelSnappingIncrements) * swivelSnappingIncrements
+		this.enforced.swivel = Circular.normalize(
+			Math.round(
+				this.enforced.swivel / constants.camera.swivelSnappingIncrements
+			) * constants.camera.swivelSnappingIncrements
+		)
 	}
 
 	#updateSmoothed() {
 		const {lerp} = this
 		this.smoothed.pivot.lerp(this.enforced.pivot, lerp)
-		this.smoothed.swivel = Scalar.lerp(this.smoothed.swivel, this.enforced.swivel, lerp)
+		this.smoothed.swivel = Circular.lerp(this.smoothed.swivel, this.enforced.swivel, lerp)
 		this.smoothed.tilt = Scalar.lerp(this.smoothed.tilt, this.enforced.tilt, lerp)
 		this.smoothed.distance = Scalar.lerp(this.smoothed.distance, this.enforced.distance, lerp)
 	}
 
 	#updateCamera() {
-		const target = this.smoothed.pivot.position().add_(0,  pivotHeight, 0)
+		const target = this.smoothed.pivot.position()
+			.add_(0,  constants.camera.pivotHeight, 0)
 		this.camera.target.set(...target.array())
 		this.camera.alpha = alphaReset - this.smoothed.swivel
 		this.camera.beta = this.smoothed.tilt
