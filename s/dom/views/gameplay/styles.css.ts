@@ -100,7 +100,6 @@ canvas {
 	align-items: center;
 	align-content: center;
 
-	
 	font-size: 1.5em;
 	color: white;
 	font-weight: bold;
