@@ -37,17 +37,18 @@ export default css`
 
 	> .benev {
 		display: block;
-		width: 16em;
+		width: 24em;
 		max-width: 100%;
+		max-height: 50vh;
 	}
 
 	> h2 {
 		font-size: 2em;
 		font-style: italic;
-		margin-bottom: 2em;
 	}
 
 	> div {
+		margin-top: 1em;
 		display: flex;
 		justify-content: center;
 		align-items: center;
