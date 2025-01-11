@@ -7,6 +7,7 @@ export default css`
 
 	width: 100%;
 	display: flex;
+	flex-wrap: wrap;
 	gap: 1em;
 }
 
