@@ -1,9 +1,10 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
-import {Iron, AnyEngine, CanvasScaler, Gameloop, Rendering, loadGlb} from "@benev/toolbox"
+import {Iron, AnyEngine, Gameloop, Rendering, loadGlb, Scalar} from "@benev/toolbox"
 
 import {constants} from "../../constants.js"
+import {CanvasRezzer} from "../temp/canvas-rezzer.js"
 
 export class World {
 	static load = async() => {
@@ -25,12 +26,21 @@ export class World {
 			// },
 		})
 
-		const scaler = Iron.canvasScaler(canvas)
+		const rezzer = new CanvasRezzer(canvas, rect => {
+			return Scalar.clamp(
+				Scalar.remap(
+					rect.height,
+					400, 1080,
+					0.75, 0.25,
+				),
+				0.25,
+				1,
+			)
+		})
+
 		const scene = Iron.scene({engine, background: [0, 0, 0, 1]})
 		const gameloop = Iron.gameloop(engine, [scene])
 		const rendering = Iron.rendering(scene)
-
-		scaler.resolution = constants.fx.resolution
 
 		function dispose() {
 			gameloop.stop()
@@ -40,7 +50,7 @@ export class World {
 
 		return new this(
 			canvas,
-			scaler,
+			rezzer,
 			engine,
 			scene,
 			gameloop,
@@ -51,7 +61,7 @@ export class World {
 
 	constructor(
 		public readonly canvas: HTMLCanvasElement,
-		public readonly scaler: CanvasScaler,
+		public readonly rezzer: CanvasRezzer,
 		public readonly engine: AnyEngine,
 		public readonly scene: Scene,
 		public readonly gameloop: Gameloop,

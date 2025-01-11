@@ -18,7 +18,6 @@ export const constants = {
 
 	fx: {
 		antialiasing: false,
-		resolution: 0.25,
 	},
 
 	sim: {
