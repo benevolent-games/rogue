@@ -76,13 +76,13 @@ canvas {
 	}
 
 	.coolarea {
-		pointer-events: all;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		padding: 6%;
 
 		> [view="nub-stick"] {
+			pointer-events: all;
 			opacity: 0.2;
 			width: unset;
 			height: 8em;
