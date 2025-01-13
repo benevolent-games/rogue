@@ -14,7 +14,6 @@ export default template(async basic => {
 	return easypage({
 		path,
 		dark: true,
-		css: "index.css",
 		title: "Rogue Crusade",
 		head: html`
 			<!-- © 2025 Chase Moskal. All rights reserved. -->
