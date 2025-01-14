@@ -24,64 +24,80 @@ export class Cause {
 	}
 }
 
-export class KeyboardDevice {
+export function modlabel(event: KeyboardEvent | PointerEvent) {
+	const modifiers: string[] = []
+	if (event.ctrlKey) modifiers.push("C")
+	if (event.altKey) modifiers.push("A")
+	if (event.shiftKey) modifiers.push("S")
+	if (event.metaKey) modifiers.push("M")
+	return modifiers.length > 0
+		? [...modifiers].join("-")
+		: "X"
+}
+
+export abstract class GripDevice {
+	abstract dispose: () => void
+	onInput = pubsub<[string, number]>()
+}
+
+export class KeyboardDevice extends GripDevice {
 	dispose: () => void
 
-	onInput = pubsub<[string, number]>()
-
-	#modlabel(event: KeyboardEvent) {
-		const modifiers: string[] = []
-		if (event.ctrlKey) modifiers.push("C")
-		if (event.altKey) modifiers.push("A")
-		if (event.shiftKey) modifiers.push("S")
-		if (event.metaKey) modifiers.push("M")
-		return modifiers.length > 0
-			? [...modifiers, event.code].join("-")
-			: `X-${event.code}`
-	}
-
 	constructor(target: EventTarget) {
-		const dispatch = (label: string, value: number) => this.onInput.publish(label, value)
+		super()
+
+		const dispatch = (label: string, value: number) =>
+			this.onInput.publish(label, value)
+
 		this.dispose = ev(target, {
 			keydown: (event: KeyboardEvent) => {
 				dispatch(event.code, 1)
-				dispatch(this.#modlabel(event), 1)
+				dispatch(`${modlabel(event)}-${event.code}`, 1)
 			},
 			keyup: (event: KeyboardEvent) => {
 				dispatch(event.code, 0)
-				dispatch(this.#modlabel(event), 0)
+				dispatch(`${modlabel(event)}-${event.code}`, 0)
 			},
 		})
 	}
 }
 
-// export class MouseButtonDevice {
-// 	dispose: () => void
-//
-// 	#modlabel(event: PointerEvent) {
-// 		const modifiers: string[] = []
-// 		if (event.ctrlKey) modifiers.push("C")
-// 		if (event.altKey) modifiers.push("A")
-// 		if (event.shiftKey) modifiers.push("S")
-// 		if (event.metaKey) modifiers.push("M")
-// 		return modifiers.length > 0
-// 			? [...modifiers, event.code].join("-")
-// 			: `X-${event.code}`
-// 	}
-//
-// 	constructor(target: EventTarget, dispatch: (label: string, value: number) => void) {
-// 		this.dispose = ev(target, {
-// 			keydown: (event: KeyboardEvent) => {
-// 				dispatch(event.code, 1)
-// 				dispatch(this.#modlabel(event), 1)
-// 			},
-// 			keyup: (event: KeyboardEvent) => {
-// 				dispatch(event.code, 0)
-// 				dispatch(this.#modlabel(event), 0)
-// 			},
-// 		})
-// 	}
-// }
+export class PointerButtonDevice extends GripDevice {
+	dispose: () => void
+
+	static buttonCode(event: PointerEvent) {
+		switch (event.button) {
+			case 0: return "MousePrimary"
+			case 1: return "MouseTertiary"
+			case 2: return "MouseSecondary"
+			default: return `Mouse${event.button + 1}`
+		}
+	}
+
+	static wheelCode(event: WheelEvent) {
+		return event.deltaY > 0
+			? "MouseWheelDown"
+			: "MouseWheelUp"
+	}
+
+	constructor(target: EventTarget) {
+		super()
+
+		const dispatch = (label: string, value: number) =>
+			this.onInput.publish(label, value)
+
+		this.dispose = ev(target, {
+			pointerdown: (event: PointerEvent) => {
+				dispatch(PointerButtonDevice.buttonCode(event), 1)
+				dispatch(modlabel(event), 1)
+			},
+			pointerup: (event: PointerEvent) => {
+				dispatch(PointerButtonDevice.buttonCode(event), 1)
+				dispatch(modlabel(event), 0)
+			},
+		})
+	}
+}
 
 ////////////////////
 
@@ -102,10 +118,15 @@ export class Grip {
 
 const bindings = {
 	normal: {
-		forward: [new Cause("KeyW")],
-		backward: [new Cause("KeyS")],
-		leftward: [new Cause("KeyA")],
-		rightward: [new Cause("KeyD")],
+		sprint: [["LeftShift"]],
+		moveUp: [["KeyW"], ["Up"], ["g.stick.left.up"]],
+		moveDown: [["KeyS"], ["Left"], ["g.stick.left.down"]],
+		moveLeft: [["KeyA"], ["Down"], ["g.stick.left.left"]],
+		moveRight: [["KeyD"], ["Right"], ["g.stick.left.right"]],
+		lookUp: [["KeyI"], ["g.stick.right.up"]],
+		lookDown: [["KeyK"], ["g.stick.right.down"]],
+		lookLeft: [["KeyJ"], ["g.stick.right.left"]],
+		lookRight: [["KeyL"], ["g.stick.right.right"]],
 	},
 }
 
