@@ -31,7 +31,7 @@ export class World {
 				Scalar.remap(
 					rect.height,
 					400, 1080,
-					0.75, 0.25,
+					0.5, 0.25,
 				),
 				0.25,
 				1,
