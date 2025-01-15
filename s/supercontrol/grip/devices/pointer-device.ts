@@ -6,8 +6,11 @@ import {splitAxis} from "../utils/split-axis.js"
 
 export class PointerDevice extends GripDevice {
 	dispose: () => void
+
 	clientX = 0
 	clientY = 0
+	movementX = 0
+	movementY = 0
 
 	static buttonCode(event: PointerEvent) {
 		switch (event.button) {
@@ -57,23 +60,8 @@ export class PointerDevice extends GripDevice {
 			pointermove: (event: PointerEvent) => {
 				this.clientX = event.clientX
 				this.clientY = event.clientY
-
-				const {movementX, movementY} = event
-				const [left, right] = splitAxis(movementX)
-				const [down, up] = splitAxis(movementY)
-
-				if (movementX) {
-					if (movementX >= 0)
-						dispatch(event, `PointerMoveRight`, Math.abs(right))
-					else
-						dispatch(event, `PointerMoveLeft`, Math.abs(left))
-				}
-				if (movementY) {
-					if (movementY >= 0)
-						dispatch(event, `PointerMoveUp`, Math.abs(up))
-					else
-						dispatch(event, `PointerMoveDown`, Math.abs(down))
-				}
+				this.movementX += event.movementX
+				this.movementY += event.movementY
 			},
 
 			wheel: (event: WheelEvent) => {
@@ -81,6 +69,32 @@ export class PointerDevice extends GripDevice {
 					this.onInput.publish(code, value)
 			},
 		})
+	}
+
+	poll() {
+		const dispatch = (code: string, value: number) => {
+			this.onInput.publish(code, value)
+		}
+
+		const {movementX, movementY} = this
+		const [left, right] = splitAxis(movementX)
+		const [down, up] = splitAxis(movementY)
+
+		if (movementX) {
+			if (movementX >= 0)
+				dispatch(`PointerMoveRight`, Math.abs(right))
+			else
+				dispatch(`PointerMoveLeft`, Math.abs(left))
+		}
+		if (movementY) {
+			if (movementY >= 0)
+				dispatch(`PointerMoveUp`, Math.abs(up))
+			else
+				dispatch(`PointerMoveDown`, Math.abs(down))
+		}
+
+		this.movementX = 0
+		this.movementY = 0
 	}
 }
 

@@ -34,15 +34,12 @@ export function getPlayerInput(
 			grip.state.normal.moveLeft.value,
 		]
 
-		const deadzone = 0.2
 		directions.forEach((value, index) => {
-			if (value > deadzone) {
-				keyIntent.add(
-					cardinals.at(index)!
-						.clone()
-						.multiplyBy(Scalar.remap(value, deadzone, 1, 0, 1))
-				)
-			}
+			keyIntent.add(
+				cardinals.at(index)!
+					.clone()
+					.multiplyBy(value)
+			)
 		})
 
 		keyIntent

@@ -37,12 +37,21 @@ export class Grip<B extends GripBindings> {
 	#makeFork(forkBind: ForkBind) {
 		const fork = new CauseFork()
 		this.#forks.add(fork)
-		for (const spoonBind of forkBind) {
-			const spoon = new CauseSpoon()
-			for (const code of spoonBind) {
-				const cause = this.obtainCause(code)
-				spoon.causes.add(cause)
-			}
+		for (const [code, options = {}] of forkBind) {
+			const spoon = new CauseSpoon(this.obtainCause(code))
+
+			if (options.sensitivity)
+				spoon.sensitivity = options.sensitivity
+
+			if (options.deadzone)
+				spoon.deadzone = options.deadzone
+
+			for (const code of options.with ?? [])
+				spoon.with.add(this.obtainCause(code))
+
+			for (const code of options.without ?? [])
+				spoon.without.add(this.obtainCause(code))
+
 			fork.spoons.add(spoon)
 		}
 		return fork

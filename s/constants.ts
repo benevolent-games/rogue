@@ -41,7 +41,7 @@ export const constants = {
 
 	camera: {
 		pivotHeight: 1.6,
-		swivelSnappingIncrements: Degrees.toRadians(15),
+		swivelSnappingIncrements: Degrees.toRadians(45),
 		distanceBounds: new Vec2(6, 25),
 		tiltBounds: new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60)),
 		initial: {

@@ -1,7 +1,14 @@
 
 import {CauseFork} from "./cause-fork.js"
 
-export type SpoonBind = string[]
+export type SpoonBind = [string, SpoonOptions?]
+export type SpoonOptions = {
+	with?: string[]
+	without?: string[]
+	sensitivity?: number
+	deadzone?: number
+}
+
 export type ForkBind = SpoonBind[]
 export type ForkBinds = Record<string, ForkBind>
 export type GripBindings = Record<string, ForkBinds>
