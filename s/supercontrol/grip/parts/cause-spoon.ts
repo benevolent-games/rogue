@@ -1,25 +1,26 @@
 
 import {Cause} from "./cause.js"
 
-/** group of causes with an AND relationship, they must activate together */
-export class CauseSpoon {
-	value = 0
-	previous = 0
+/**
+ * group of causes with an AND relationship.
+ *  - they must activate together
+ *  - the spoon adopts the value of the first cause
+ */
+export class CauseSpoon extends Cause {
 	causes = new Set<Cause>()
 
 	update() {
-		this.previous = this.value
-		this.value = 0
-		let value = 0
-		let count = 0
+		let pressed = 0
+		const [first] = [...this.causes]
 
 		for (const cause of this.causes) {
-			count += 1
-			value += cause.value
+			if (cause.pressed)
+				pressed += 1
 		}
 
-		if (count === this.causes.size)
-			this.value = value
+		this.value = (pressed === this.causes.size)
+			? first.value
+			: 0
 	}
 }
 

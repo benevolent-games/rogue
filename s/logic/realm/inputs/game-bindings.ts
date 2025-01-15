@@ -1,11 +1,11 @@
 
 import {Grip} from "../../../supercontrol/grip/grip.js"
 
-export type GameBindings2 = ReturnType<typeof gameBindings2>
+export type GameBindings = ReturnType<typeof gameBindings>
 
-export const gameBindings2 = () => Grip.bindings({
+export const gameBindings = () => Grip.bindings({
 	normal: {
-		sprint: [["LeftShift"], ["g.stick.left.click"], ["g.lb"], ["g.lt"]],
+		sprint: [["ShiftLeft"], ["g.stick.left.click"], ["g.bumper.left"], ["g.trigger.left"]],
 		moveUp: [["KeyW"], ["Up"], ["g.stick.left.up"]],
 		moveDown: [["KeyS"], ["Down"], ["g.stick.left.down"]],
 		moveLeft: [["KeyA"], ["Left"], ["g.stick.left.left"]],
