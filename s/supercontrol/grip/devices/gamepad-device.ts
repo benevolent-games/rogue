@@ -1,41 +1,13 @@
 
-import {ev, signal} from "@benev/slate"
-
 import {GripDevice} from "./device.js"
 import {Cause} from "../parts/cause.js"
 import {splitAxis} from "../utils/split-axis.js"
+import {GamepadTracker} from "../utils/gamepad-tracker.js"
 
 export class GamepadDevice extends GripDevice {
-	#gamepads = new Set<Gamepad>()
-
-	dispose: () => void
+	tracker = new GamepadTracker()
 	anyButton = new Cause()
-	gamepadsSignal = signal<Gamepad[]>([])
-
-	constructor() {
-		super()
-		this.#refreshGamepads()
-		this.dispose = this.#attachEventListeners(window)
-	}
-
-	#refreshGamepads() {
-		for (const gamepad of navigator.getGamepads()) {
-			if (gamepad)
-				this.#gamepads.add(gamepad)
-		}
-		this.gamepadsSignal.value = [...this.#gamepads]
-	}
-
-	#attachEventListeners(target: EventTarget) {
-		return ev(target, {
-			gamepadconnected: () => this.#refreshGamepads(),
-			gamepaddisconnected: () => this.#refreshGamepads(),
-		})
-	}
-
-	get gamepads() {
-		return [...this.#gamepads.values()]
-	}
+	dispose = () => this.tracker.dispose()
 
 	poll() {
 		const dispatch = (code: string, value: number) =>
@@ -43,7 +15,7 @@ export class GamepadDevice extends GripDevice {
 
 		let anyButtonValue = 0
 
-		for (const gamepad of this.gamepads) {
+		for (const gamepad of this.tracker.gamepads) {
 			gamepadButtonCodes.forEach((code, index) => {
 				const value = gamepad.buttons.at(index)?.value ?? 0
 				anyButtonValue += value
