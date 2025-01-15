@@ -85,7 +85,6 @@ export class SuperController extends Device {
 
 	poll() {
 		for (const gamepad of this.list()) {
-			const rstick = 
 		}
 	}
 

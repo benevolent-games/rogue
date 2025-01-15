@@ -61,11 +61,18 @@ export class Grip<B extends GripBindings> {
 		)
 	}
 
+	get devices() {
+		return [...this.#devices.keys()]
+	}
+
 	detachDevice(device: GripDevice) {
 		this.#devices.delete(device)
 	}
 
 	update() {
+		for (const device of this.devices)
+			device.poll()
+
 		for (const fork of this.#forks)
 			fork.update()
 	}
