@@ -1,5 +1,6 @@
 
 import {Scalar, Vec2} from "@benev/toolbox"
+
 import {Cursor} from "../../../realm/parts/cursor.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {getPlayerRotation} from "./get-player-rotation.js"
@@ -17,32 +18,12 @@ export function getPlayerInput(
 	): CrusaderInputData {
 
 	const {grip} = userInputs
-	const {buttons, vectors} = userInputs.tact.inputs.basic
 	const walkSpeedFraction = state.speed / state.speedSprint
-	const sprint = buttons.sprint.input.down || grip.state.normal.sprint.pressed
+	const sprint = grip.state.normal.sprint.pressed
 	const keyIntent = Vec2.zero()
 
 	// stick movement
-	const stickIntent = Vec2.from(vectors.move.input.vector)
-
-	// // keyboard movement
-	// {
-	// 	const directions = [
-	// 		buttons.moveNorth.input.down,
-	// 		buttons.moveEast.input.down,
-	// 		buttons.moveSouth.input.down,
-	// 		buttons.moveWest.input.down,
-	// 	]
-	//
-	// 	directions.forEach((pressed, index) => {
-	// 		if (pressed)
-	// 			keyIntent.add(cardinals.at(index)!)
-	// 	})
-	//
-	// 	keyIntent
-	// 		.normalize()
-	// 		.multiplyBy(sprint ? 1 : walkSpeedFraction)
-	// }
+	const stickIntent = Vec2.from(userInputs.stick.vector)
 
 	// grip keyboard inputs
 	{

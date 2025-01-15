@@ -56,7 +56,7 @@ export class Grip<B extends GripBindings> {
 		this.#devices.set(
 			device,
 			device.onInput(
-				(code, value) => this.#causes.get(code)?.set(value)
+				(code, value) => this.#causes.get(code)?.set(value),
 			),
 		)
 		return this
@@ -66,9 +66,16 @@ export class Grip<B extends GripBindings> {
 		return [...this.#devices.keys()]
 	}
 
-	detachDevice(device: GripDevice) {
+	unattachDevice(device: GripDevice) {
+		const dispose = this.#devices.get(device) ?? (() => {})
+		dispose()
 		this.#devices.delete(device)
 		return this
+	}
+
+	dispose() {
+		for (const device of this.devices)
+			this.unattachDevice(device)
 	}
 
 	update() {

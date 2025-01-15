@@ -1,29 +1,35 @@
 
 import {ev, signal} from "@benev/slate"
+
 import {GripDevice} from "./device.js"
+import {Cause} from "../parts/cause.js"
+import {splitAxis} from "../utils/split-axis.js"
 
 export class GamepadDevice extends GripDevice {
-	dispose: () => void
-	gamepadsSignal = signal<Gamepad[]>([])
 	#gamepads = new Set<Gamepad>()
+
+	dispose: () => void
+	anyButtonPressed = false
+	gamepadsSignal = signal<Gamepad[]>([])
 
 	constructor() {
 		super()
+		this.#refreshGamepads()
 		this.dispose = this.#attachEventListeners(window)
+	}
+
+	#refreshGamepads() {
+		for (const gamepad of navigator.getGamepads()) {
+			if (gamepad)
+				this.#gamepads.add(gamepad)
+		}
+		this.gamepadsSignal.value = [...this.#gamepads]
 	}
 
 	#attachEventListeners(target: EventTarget) {
 		return ev(target, {
-
-			gamepadconnected: ({gamepad}: GamepadEvent) => {
-				this.#gamepads.add(gamepad)
-				this.gamepadsSignal.value = this.gamepads
-			},
-
-			gamepaddisconnected: ({gamepad}: GamepadEvent) => {
-				this.#gamepads.delete(gamepad)
-				this.gamepadsSignal.value = this.gamepads
-			},
+			gamepadconnected: () => this.#refreshGamepads(),
+			gamepaddisconnected: () => this.#refreshGamepads(),
 		})
 	}
 
@@ -35,10 +41,15 @@ export class GamepadDevice extends GripDevice {
 		const dispatch = (code: string, value: number) =>
 			void this.onInput.publish(code, value)
 
+		this.anyButtonPressed = false
+
 		for (const gamepad of this.gamepads) {
-			gamepadButtons.forEach((code, index) =>
-				dispatch(code, gamepad.buttons.at(index)?.value ?? 0)
-			)
+			gamepadButtonCodes.forEach((code, index) => {
+				const value = gamepad.buttons.at(index)?.value ?? 0
+				if (Cause.isPressed(value))
+					this.anyButtonPressed = true
+				dispatch(code, value)
+			})
 
 			const [leftY, leftX, rightY, rightX] = gamepad.axes
 
@@ -59,13 +70,7 @@ export class GamepadDevice extends GripDevice {
 	}
 }
 
-function splitAxis(n: number) {
-	return (n >= 0)
-		? [0, n]
-		: [Math.abs(n), 0]
-}
-
-const gamepadButtons = [
+const gamepadButtonCodes = [
 	"g.a",
 	"g.b",
 	"g.x",

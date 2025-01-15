@@ -1,28 +1,24 @@
 
 import {ev} from "@benev/slate"
 import {GripDevice} from "./device.js"
-import {modprefix} from "../parts/modprefix.js"
+import {modprefix} from "../utils/modprefix.js"
 
 export class KeyboardDevice extends GripDevice {
 	dispose: () => void
 
-	constructor(target: EventTarget) {
+	constructor(target: EventTarget, fn = (_event: KeyboardEvent) => {}) {
 		super()
 
-		const dispatch = (code: string, value: number) =>
+		const dispatch = (event: KeyboardEvent, value: number) => {
+			const {code} = event
+			fn(event)
 			this.onInput.publish(code, value)
+			this.onInput.publish(`${modprefix(event)}-${code}`, value)
+		}
 
 		this.dispose = ev(target, {
-
-			keydown: (event: KeyboardEvent) => {
-				dispatch(event.code, 1)
-				dispatch(`${modprefix(event)}-${event.code}`, 1)
-			},
-
-			keyup: (event: KeyboardEvent) => {
-				dispatch(event.code, 0)
-				dispatch(`${modprefix(event)}-${event.code}`, 0)
-			},
+			keydown: (event: KeyboardEvent) => dispatch(event, 1),
+			keyup: (event: KeyboardEvent) => dispatch(event, 0),
 		})
 	}
 }
