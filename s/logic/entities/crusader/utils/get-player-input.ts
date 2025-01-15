@@ -1,5 +1,5 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Scalar, Vec2} from "@benev/toolbox"
 import {Cursor} from "../../../realm/parts/cursor.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {getPlayerRotation} from "./get-player-rotation.js"
@@ -16,31 +16,56 @@ export function getPlayerInput(
 		buddyCoordinates: Coordinates,
 	): CrusaderInputData {
 
+	const {grip} = userInputs
 	const {buttons, vectors} = userInputs.tact.inputs.basic
 	const walkSpeedFraction = state.speed / state.speedSprint
-	const sprint = buttons.sprint.input.down
+	const sprint = buttons.sprint.input.down || grip.state.normal.sprint.pressed
 	const keyIntent = Vec2.zero()
 
 	// stick movement
 	const stickIntent = Vec2.from(vectors.move.input.vector)
 
-	// keyboard movement
+	// // keyboard movement
+	// {
+	// 	const directions = [
+	// 		buttons.moveNorth.input.down,
+	// 		buttons.moveEast.input.down,
+	// 		buttons.moveSouth.input.down,
+	// 		buttons.moveWest.input.down,
+	// 	]
+	//
+	// 	directions.forEach((pressed, index) => {
+	// 		if (pressed)
+	// 			keyIntent.add(cardinals.at(index)!)
+	// 	})
+	//
+	// 	keyIntent
+	// 		.normalize()
+	// 		.multiplyBy(sprint ? 1 : walkSpeedFraction)
+	// }
+
+	// grip keyboard inputs
 	{
 		const directions = [
-			buttons.moveNorth.input.down,
-			buttons.moveEast.input.down,
-			buttons.moveSouth.input.down,
-			buttons.moveWest.input.down,
+			grip.state.normal.moveUp.value,
+			grip.state.normal.moveRight.value,
+			grip.state.normal.moveDown.value,
+			grip.state.normal.moveLeft.value,
 		]
 
-		directions.forEach((pressed, index) => {
-			if (pressed)
-				keyIntent.add(cardinals.at(index)!)
+		const deadzone = 0.2
+		directions.forEach((value, index) => {
+			if (value > deadzone) {
+				keyIntent.add(
+					cardinals.at(index)!
+						.clone()
+						.multiplyBy(Scalar.remap(value, deadzone, 1, 0, 1))
+				)
+			}
 		})
 
 		keyIntent
-			.normalize()
-			.multiplyBy(sprint ? 1 : walkSpeedFraction)
+			.clampMagnitude(sprint ? 1 : walkSpeedFraction)
 	}
 
 	const movementIntent = Vec2.zero()

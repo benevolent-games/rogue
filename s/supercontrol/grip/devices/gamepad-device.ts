@@ -7,9 +7,9 @@ export class GamepadDevice extends GripDevice {
 	gamepadsSignal = signal<Gamepad[]>([])
 	#gamepads = new Set<Gamepad>()
 
-	constructor(target: EventTarget) {
+	constructor() {
 		super()
-		this.dispose = this.#attachEventListeners(target)
+		this.dispose = this.#attachEventListeners(window)
 	}
 
 	#attachEventListeners(target: EventTarget) {
@@ -40,7 +40,7 @@ export class GamepadDevice extends GripDevice {
 				dispatch(code, gamepad.buttons.at(index)?.value ?? 0)
 			)
 
-			const [leftX, leftY, rightX, rightY] = gamepad.axes
+			const [leftY, leftX, rightY, rightX] = gamepad.axes
 
 			const [leftUp, leftDown] = splitAxis(leftX)
 			const [leftLeft, leftRight] = splitAxis(leftY)

@@ -59,6 +59,7 @@ export class Grip<B extends GripBindings> {
 				(code, value) => this.#causes.get(code)?.set(value)
 			),
 		)
+		return this
 	}
 
 	get devices() {
@@ -67,6 +68,7 @@ export class Grip<B extends GripBindings> {
 
 	detachDevice(device: GripDevice) {
 		this.#devices.delete(device)
+		return this
 	}
 
 	update() {

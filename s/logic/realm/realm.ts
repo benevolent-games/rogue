@@ -81,6 +81,7 @@ export class Realm {
 	}
 
 	tick() {
+		this.userInputs.grip.update()
 		this.cameraman.tick()
 		this.cursor.tick()
 

@@ -9,11 +9,8 @@ export class Cause {
 
 	constructor(public code: string) {}
 
-	get active() {
-		return (
-			this.value >= 0.5 ||
-			this.value <= 0.5
-		)
+	get pressed() {
+		return Math.abs(this.value) >= 0.5
 	}
 
 	set(value: number) {
