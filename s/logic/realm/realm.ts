@@ -15,7 +15,7 @@ import {Cameraman} from "./utils/cameraman.js"
 import {GameStats} from "./parts/game-stats.js"
 import {Indicators} from "./utils/indicators.js"
 import {DungeonStore} from "../dungeons/store.js"
-import {UserInputs} from "./utils/user-inputs.js"
+import {UserInputs} from "./inputs/user-inputs.js"
 import {World} from "../../tools/babylon/world.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
@@ -53,7 +53,7 @@ export class Realm {
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
-		this.inputControls = new InputControls(this.cameraman)
+		this.inputControls = new InputControls(this.cameraman, this.userInputs)
 		this.cursor = new Cursor(this.cameraman)
 
 		this.#cursorGraphic = debug
@@ -81,6 +81,8 @@ export class Realm {
 	}
 
 	tick() {
+		this.userInputs.grip.update()
+		this.inputControls.tick()
 		this.cameraman.tick()
 		this.cursor.tick()
 

@@ -1,11 +1,12 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Scalar, Vec2} from "@benev/toolbox"
+
 import {Cursor} from "../../../realm/parts/cursor.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {getPlayerRotation} from "./get-player-rotation.js"
 import {Cameraman} from "../../../realm/utils/cameraman.js"
 import {CrusaderInputData, CrusaderState} from "../types.js"
-import {UserInputs} from "../../../realm/utils/user-inputs.js"
+import {UserInputs} from "../../../realm/inputs/user-inputs.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
 export function getPlayerInput(
@@ -16,31 +17,33 @@ export function getPlayerInput(
 		buddyCoordinates: Coordinates,
 	): CrusaderInputData {
 
-	const {buttons, vectors} = userInputs.tact.inputs.basic
+	const {grip} = userInputs
 	const walkSpeedFraction = state.speed / state.speedSprint
-	const sprint = buttons.sprint.input.down
+	const sprint = grip.state.normal.sprint.pressed
 	const keyIntent = Vec2.zero()
 
 	// stick movement
-	const stickIntent = Vec2.from(vectors.move.input.vector)
+	const stickIntent = Vec2.from(userInputs.stick.vector)
 
-	// keyboard movement
+	// grip keyboard inputs
 	{
 		const directions = [
-			buttons.moveNorth.input.down,
-			buttons.moveEast.input.down,
-			buttons.moveSouth.input.down,
-			buttons.moveWest.input.down,
+			grip.state.normal.moveUp.value,
+			grip.state.normal.moveRight.value,
+			grip.state.normal.moveDown.value,
+			grip.state.normal.moveLeft.value,
 		]
 
-		directions.forEach((pressed, index) => {
-			if (pressed)
-				keyIntent.add(cardinals.at(index)!)
+		directions.forEach((value, index) => {
+			keyIntent.add(
+				cardinals.at(index)!
+					.clone()
+					.multiplyBy(value)
+			)
 		})
 
 		keyIntent
-			.normalize()
-			.multiplyBy(sprint ? 1 : walkSpeedFraction)
+			.clampMagnitude(sprint ? 1 : walkSpeedFraction)
 	}
 
 	const movementIntent = Vec2.zero()

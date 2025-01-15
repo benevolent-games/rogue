@@ -25,6 +25,7 @@ export const blockSimula = simula<RogueEntities, Station>()<"block">(
 		}],
 		updated: body => {
 			getState().coordinates = body.box.center.array()
+			entityZen.box.center.set(body.box.center)
 			entityZen.update()
 		},
 	})

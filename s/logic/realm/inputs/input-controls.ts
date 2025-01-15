@@ -1,6 +1,8 @@
 
 import {ev} from "@benev/slate"
 import {Arcseconds} from "@benev/toolbox"
+
+import {UserInputs} from "./user-inputs.js"
 import {Cameraman} from "../utils/cameraman.js"
 import {DragQueen} from "./pointer/drag-queen.js"
 
@@ -10,7 +12,10 @@ export class InputControls {
 	sensitivityApd = 720
 	dragQueen: DragQueen
 
-	constructor(public cameraman: Cameraman) {
+	constructor(
+			public cameraman: Cameraman,
+			public userInputs: UserInputs,
+		) {
 		const isRightMouse = (event: PointerEvent) => event.button === 2
 		const isMiddleMouse = (event: PointerEvent) => event.button === 1
 		const sensitivityRadians = Arcseconds.toRadians(this.sensitivityApd)
@@ -41,10 +46,25 @@ export class InputControls {
 	attach(element: HTMLElement) {
 		const unattach1 = this.dragQueen.attach(element)
 		const unattach2 = this.#wheelCamera(element)
+		const unattach3 = this.userInputs.grip.state.normal.cameraReset.onPressChange(cause => {
+			if (cause.pressed)
+				this.cameraman.reset()
+		})
 		return () => {
 			unattach1()
 			unattach2()
+			unattach3()
 		}
+	}
+
+	tick() {
+		const {normal} = this.userInputs.grip.state
+		this.cameraman.desired.tilt -= normal.cameraTiltUp.value
+		this.cameraman.desired.tilt += normal.cameraTiltDown.value
+		this.cameraman.desired.swivel -= normal.cameraSwivelLeft.value
+		this.cameraman.desired.swivel += normal.cameraSwivelRight.value
+		this.cameraman.desired.distance -= normal.cameraZoomIn.value
+		this.cameraman.desired.distance += normal.cameraZoomOut.value
 	}
 }
 
