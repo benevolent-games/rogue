@@ -6,6 +6,8 @@ import {splitAxis} from "../utils/split-axis.js"
 
 export class PointerDevice extends GripDevice {
 	dispose: () => void
+	clientX = 0
+	clientY = 0
 
 	static buttonCode(event: PointerEvent) {
 		switch (event.button) {
@@ -42,7 +44,6 @@ export class PointerDevice extends GripDevice {
 		}
 
 		this.dispose = ev(target, {
-
 			pointerdown: (event: PointerEvent) => {
 				const code = PointerDevice.buttonCode(event)
 				dispatch(event, code, 1)
@@ -54,9 +55,13 @@ export class PointerDevice extends GripDevice {
 			},
 
 			pointermove: (event: PointerEvent) => {
+				this.clientX = event.clientX
+				this.clientY = event.clientY
+
 				const {movementX, movementY} = event
 				const [left, right] = splitAxis(movementX)
 				const [down, up] = splitAxis(movementY)
+
 				if (movementX) {
 					if (movementX >= 0)
 						dispatch(event, `PointerMoveRight`, Math.abs(right))

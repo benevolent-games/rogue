@@ -6,7 +6,7 @@ import {cardinals} from "../../../../tools/directions.js"
 import {getPlayerRotation} from "./get-player-rotation.js"
 import {Cameraman} from "../../../realm/utils/cameraman.js"
 import {CrusaderInputData, CrusaderState} from "../types.js"
-import {UserInputs} from "../../../realm/utils/user-inputs.js"
+import {UserInputs} from "../../../realm/inputs/user-inputs.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
 export function getPlayerInput(
