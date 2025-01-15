@@ -53,7 +53,7 @@ export class Realm {
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
-		this.inputControls = new InputControls(this.cameraman)
+		this.inputControls = new InputControls(this.cameraman, this.userInputs)
 		this.cursor = new Cursor(this.cameraman)
 
 		this.#cursorGraphic = debug
@@ -82,6 +82,7 @@ export class Realm {
 
 	tick() {
 		this.userInputs.grip.update()
+		this.inputControls.tick()
 		this.cameraman.tick()
 		this.cursor.tick()
 

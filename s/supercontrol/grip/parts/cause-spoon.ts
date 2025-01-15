@@ -11,14 +11,14 @@ export class CauseSpoon extends Cause {
 
 	update() {
 		let pressed = 0
-		const [first] = [...this.causes]
+		const [first, ...dependencies] = [...this.causes]
 
-		for (const cause of this.causes) {
-			if (cause.pressed)
+		for (const dependency of dependencies) {
+			if (dependency.pressed)
 				pressed += 1
 		}
 
-		this.value = (pressed === this.causes.size)
+		this.value = (pressed === dependencies.length)
 			? first.value
 			: 0
 	}
