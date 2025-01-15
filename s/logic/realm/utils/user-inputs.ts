@@ -8,7 +8,7 @@ import {PointerDevice} from "../../../supercontrol/grip/devices/pointer-device.j
 import {GamepadDevice} from "../../../supercontrol/grip/devices/gamepad-device.js"
 import {KeyboardDevice} from "../../../supercontrol/grip/devices/keyboard-device.js"
 
-export type InputPredilection = "touch" | "keyboard"
+export type InputPredilection = "touch" | "keyboard" | "gamepad"
 
 export class UserInputs {
 	grip: Grip<GameBindings2>
@@ -32,14 +32,19 @@ export class UserInputs {
 			.attachDevice(this.devices.gamepad)
 
 		this.#trash.disposer(
+			this.devices.gamepad.anyButton.onPressChange(cause => {
+				if (cause.pressed)
+					this.predilection.value = "gamepad"
+			})
+		)
+
+		this.#trash.disposer(
 			ev(target, {
 				pointerdown: ({pointerType}: PointerEvent) => {
-					if (pointerType === "touch") {
+					if (pointerType === "touch")
 						this.predilection.value = "touch"
-					}
-					else if (pointerType === "mouse") {
+					else if (pointerType === "mouse")
 						this.predilection.value = "keyboard"
-					}
 				},
 			})
 		)

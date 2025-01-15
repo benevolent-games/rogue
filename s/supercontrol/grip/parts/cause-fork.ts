@@ -1,7 +1,7 @@
 
 import {pubsub} from "@benev/slate"
-import {Cause} from "./cause.js"
 import {CauseSpoon} from "./cause-spoon.js"
+import {isPressed} from "../utils/is-pressed.js"
 
 /** group of spoons with an OR relationship */
 export class CauseFork {
@@ -11,7 +11,7 @@ export class CauseFork {
 	on = pubsub<[CauseFork]>()
 
 	get pressed() {
-		return Cause.isPressed(this.value)
+		return isPressed(this.value)
 	}
 
 	get valueChanged() {
@@ -19,7 +19,7 @@ export class CauseFork {
 	}
 
 	get pressedChanged() {
-		return Cause.isPressed(this.value) !== Cause.isPressed(this.previous)
+		return isPressed(this.value) !== isPressed(this.previous)
 	}
 
 	update() {

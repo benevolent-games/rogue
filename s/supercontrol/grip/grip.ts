@@ -49,14 +49,18 @@ export class Grip<B extends GripBindings> {
 	}
 
 	obtainCause(code: string) {
-		return this.#causes.guarantee(code, () => new Cause(code))
+		return this.#causes.guarantee(code, () => new Cause())
 	}
 
 	attachDevice(device: GripDevice) {
 		this.#devices.set(
 			device,
 			device.onInput(
-				(code, value) => this.#causes.get(code)?.set(value),
+				(code, value) => {
+					const cause = this.#causes.get(code)
+					if (cause)
+						cause.value = value
+				},
 			),
 		)
 		return this

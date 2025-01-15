@@ -1,35 +1,43 @@
 
 import {pubsub} from "@benev/slate"
+import {isPressed} from "../utils/is-pressed.js"
 
 export class Cause {
-	static isPressed(value: number) {
-		return Math.abs(value) >= 0.5
+	#value = 0
+	#previous = 0
+	#time = Date.now()
+
+	onValueChange = pubsub<[Cause]>()
+	onPressChange = pubsub<[Cause]>()
+
+	get value() {
+		return this.#value
 	}
 
-	value = 0
-	previous = 0
-	time = Date.now()
-	on = pubsub<[Cause]>()
+	set value(value: number) {
+		this.#time = Date.now()
+		this.#previous = this.#value
+		this.#value = value
+		if (this.valueChanged)
+			this.onValueChange.publish(this)
+		if (this.pressedChanged)
+			this.onPressChange.publish(this)
+	}
 
-	constructor(public code: string) {}
+	get time() {
+		return this.#time
+	}
 
 	get pressed() {
-		return Cause.isPressed(this.value)
+		return isPressed(this.#value)
 	}
 
 	get valueChanged() {
-		return this.value !== this.previous
+		return this.#value !== this.#previous
 	}
 
 	get pressedChanged() {
-		return Cause.isPressed(this.value) !== Cause.isPressed(this.previous)
-	}
-
-	set(value: number) {
-		this.previous = this.value
-		this.value = value
-		this.time = Date.now()
-		this.on.publish(this)
+		return isPressed(this.#value) !== isPressed(this.#previous)
 	}
 }
 

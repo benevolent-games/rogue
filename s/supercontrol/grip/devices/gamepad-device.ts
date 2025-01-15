@@ -9,7 +9,7 @@ export class GamepadDevice extends GripDevice {
 	#gamepads = new Set<Gamepad>()
 
 	dispose: () => void
-	anyButtonPressed = false
+	anyButton = new Cause()
 	gamepadsSignal = signal<Gamepad[]>([])
 
 	constructor() {
@@ -41,13 +41,12 @@ export class GamepadDevice extends GripDevice {
 		const dispatch = (code: string, value: number) =>
 			void this.onInput.publish(code, value)
 
-		this.anyButtonPressed = false
+		let anyButtonValue = 0
 
 		for (const gamepad of this.gamepads) {
 			gamepadButtonCodes.forEach((code, index) => {
 				const value = gamepad.buttons.at(index)?.value ?? 0
-				if (Cause.isPressed(value))
-					this.anyButtonPressed = true
+				anyButtonValue += value
 				dispatch(code, value)
 			})
 
@@ -67,6 +66,8 @@ export class GamepadDevice extends GripDevice {
 			dispatch("g.stick.right.left", rightLeft)
 			dispatch("g.stick.right.right", rightRight)
 		}
+
+		this.anyButton.value = anyButtonValue
 	}
 }
 
