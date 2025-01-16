@@ -78,38 +78,67 @@ export default css`
 		overflow: auto;
 	}
 
-	/* DYNAMICS */
+	&:not([x-menu-open]) {
+		background: transparent;
+		box-shadow: none;
 
-	transition: 150ms linear all;
-	section { opacity: 1; transition: 150ms linear opacity; }
-	nav > [x-tab] { opacity: 1; transition: 150ms linear opacity; }
+		nav > [x-tab] { display: none; }
+		section { display: none;  }
 
-	nav > [x-menu-button] {
-		pointer-events: all;
-		transition: 150ms linear all;
+		& [x-menu-button] {
+			pointer-events: all;
+			opacity: 0.2;
+			transform: scale(100%);
+
+			&:hover {
+				opacity: 1;
+				transform: scale(110%);
+			}
+
+			& svg * { filter: none !important; }
+		}
 	}
 
 	&[x-menu-open] {
 		pointer-events: all;
-		& [x-menu-button] {
-			transform: scale(130%);
-		}
-	}
-
-	&:not([x-menu-open]) {
-		background: transparent;
-		box-shadow: none;
-		backdrop-filter: none;
-
-		nav > [x-tab] { opacity: 0; }
-		section { opacity: 0;  }
-
-		& [x-menu-button] {
-			opacity: 0.2;
-			& svg * { filter: none !important; }
-		}
+		& [x-menu-button] { transform: scale(130%); }
 	}
 }
 
 `
+
+//////// FANCY ANIMATIONS ////////
+// abandoned, to improve performance
+
+// /* DYNAMICS */
+//
+// transition: 150ms linear all;
+// section { opacity: 1; transition: 150ms linear opacity; }
+// nav > [x-tab] { opacity: 1; transition: 150ms linear opacity; }
+//
+// nav > [x-menu-button] {
+// 	pointer-events: all;
+// 	transition: 150ms linear all;
+// }
+//
+// &[x-menu-open] {
+// 	pointer-events: all;
+// 	& [x-menu-button] {
+// 		transform: scale(130%);
+// 	}
+// }
+//
+// &:not([x-menu-open]) {
+// 	background: transparent;
+// 	box-shadow: none;
+// 	backdrop-filter: none;
+//
+// 	nav > [x-tab] { opacity: 0; }
+// 	section { opacity: 0;  }
+//
+// 	& [x-menu-button] {
+// 		opacity: 0.2;
+// 		& svg * { filter: none !important; }
+// 	}
+// }
 
