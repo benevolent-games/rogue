@@ -19,6 +19,8 @@ const sens = {
 
 export const gameBindings = () => Grip.bindings({
 	normal: {
+		menu: [["KeyB"], ["g.alpha"], ["g.gamma"]],
+
 		sprint: [["ShiftLeft"], ["g.stick.left.click"], ["g.trigger.left"]],
 
 		moveUp: [["KeyW"], ["Up"], ["g.stick.left.up"]],

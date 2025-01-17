@@ -83,7 +83,7 @@ export class Realm {
 	}
 
 	tick() {
-		this.userInputs.grip.update()
+		this.userInputs.poll()
 		this.inputControls.tick()
 		this.cameraman.tick()
 		this.cursor.tick()

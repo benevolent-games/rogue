@@ -25,6 +25,13 @@ export const Gameplay = shadowView(use => (o: {
 
 	use.styles(themeCss, stylesCss)
 
+	const menuOpen = use.signal(false)
+
+	use.mount(() => o.realm.userInputs.grip.state.normal.menu.pressed.on(pressed => {
+		if (pressed)
+			menuOpen.value = !menuOpen.value
+	}))
+
 	// prevent ctrl-w insta-killing the tab
 	use.mount(() => ev(window, {
 		beforeunload: (event: BeforeUnloadEvent) => {
@@ -68,7 +75,7 @@ export const Gameplay = shadowView(use => (o: {
 			${o.realm.world.canvas}
 
 			<div class=overlay>
-				${Gigamenu(panels)}
+				${Gigamenu([menuOpen, panels])}
 
 				<div class=buttonbar>
 					<button class="naked" title="reset camera" @click="${() => o.realm.cameraman.reset()}">

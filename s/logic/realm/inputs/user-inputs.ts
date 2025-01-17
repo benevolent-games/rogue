@@ -50,6 +50,10 @@ export class UserInputs {
 		)
 	}
 
+	poll() {
+		this.grip.poll()
+	}
+
 	dispose() {
 		this.grip.dispose()
 	}

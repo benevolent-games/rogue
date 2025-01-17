@@ -1,5 +1,5 @@
 
-import {html, nap, shadowView} from "@benev/slate"
+import {html, nap, requestAnimationFrameLoop, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -7,6 +7,7 @@ import {Gigamenu} from "../gigamenu/view.js"
 import {constants} from "../../../constants.js"
 import {loadImage2} from "../../../tools/loading/load-image.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
+import { UserInputs } from "../../../logic/realm/inputs/user-inputs.js"
 
 export const MainMenu = shadowView(use => ({nav}: {
 		nav: {
@@ -15,6 +16,22 @@ export const MainMenu = shadowView(use => ({nav}: {
 	}) => {
 
 	use.styles(themeCss, stylesCss)
+
+	const menuOpen = use.signal(false)
+
+	const userInputs = use.init(() => {
+		const userInputs = new UserInputs(window)
+		const stop = requestAnimationFrameLoop(() => userInputs.poll())
+		return [userInputs, () => {
+			stop()
+			userInputs.dispose()
+		}]
+	})
+
+	use.mount(() => userInputs.grip.state.normal.menu.pressed.on(pressed => {
+		if (pressed)
+			menuOpen.value = !menuOpen.value
+	}))
 
 	const ready = use.signal(false)
 	const img = use.once(() => loadImage2(constants.urls.cover))
@@ -29,7 +46,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 	return html`
 		<section class=plate>
 			<div class=overlay>
-				${Gigamenu([AccountPanel()])}
+				${Gigamenu([menuOpen, [AccountPanel()]])}
 			</div>
 
 			<figure>

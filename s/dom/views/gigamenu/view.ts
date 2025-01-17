@@ -1,25 +1,17 @@
 
-import {ev, html, shadowView} from "@benev/slate"
+import {ev, html, shadowView, Signal} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Gigapanel} from "./utils/gigapanel.js"
 import benevolent2Svg from "../../icons/benev/benevolent2.svg.js"
 
-export const Gigamenu = shadowView(use => (...panels: Gigapanel[]) => {
+export const Gigamenu = shadowView(use => (menuOpen: Signal<boolean>, panels: Gigapanel[]) => {
 	use.name("gigamenu")
 	use.styles(themeCss, stylesCss)
 
-	const menuOpen = use.signal(false)
 	const activeIndex = use.signal(0)
 	const activePanel = panels.at(activeIndex.value)
-
-	use.mount(() => ev(window, {keydown: (event: KeyboardEvent) => {
-		if (event.code === "Tab" || event.code === "KeyB") {
-			menuOpen.value = !menuOpen.value
-			event.preventDefault()
-		}
-	}}))
 
 	const plate = use.defer(() => use.shadow.querySelector(".plate"))
 

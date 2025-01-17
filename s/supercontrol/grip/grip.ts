@@ -90,7 +90,7 @@ export class Grip<B extends GripBindings> {
 			this.unattachDevice(device)
 	}
 
-	update() {
+	poll() {
 		for (const device of this.devices)
 			device.poll()
 
