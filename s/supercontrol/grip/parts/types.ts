@@ -8,6 +8,7 @@ export type SpoonOptions = {
 	without?: string[]
 	sensitivity?: number
 	style?: InputStyle
+	threshold?: number
 }
 
 export type ForkBind = SpoonBind[]

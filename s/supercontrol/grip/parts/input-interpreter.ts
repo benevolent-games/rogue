@@ -6,7 +6,7 @@ export type InputStyle = "eager" | "tap" | "hold"
 export class InputInterpreter {
 
 	/** number of milliseconds that distinguishes a tap from a hold */
-	threshold = 150
+	threshold = 250
 
 	/** this cause receives raw input */
 	eager = new Cause()

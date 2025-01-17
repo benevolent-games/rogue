@@ -44,6 +44,9 @@ export class Grip<B extends GripBindings> {
 			if (options.sensitivity)
 				spoon.sensitivity = options.sensitivity
 
+			if (options.threshold)
+				spoon.interpreter.threshold = options.threshold
+
 			for (const code of options.with ?? [])
 				spoon.with.add(this.obtainCause(code))
 
