@@ -33,7 +33,7 @@ export const gameBindings = () => Grip.bindings({
 
 		cameraReset: [["BracketRight"], ["g.beta"], ["g.stick.right.click", {style: "tap"}]],
 
-		cameraSwivelLeft: [
+		cameraSwivelRight: [
 			["KeyU", {sensitivity: sens.camera.key}],
 			["g.stick.right.left", {
 				with: ["g.stick.right.click"],
@@ -41,7 +41,7 @@ export const gameBindings = () => Grip.bindings({
 			}],
 		],
 
-		cameraSwivelRight: [
+		cameraSwivelLeft: [
 			["KeyO", {sensitivity: sens.camera.key}],
 			["g.stick.right.right", {
 				with: ["g.stick.right.click"],
@@ -49,7 +49,7 @@ export const gameBindings = () => Grip.bindings({
 			}],
 		],
 
-		cameraTiltUp: [
+		cameraTiltDown: [
 			["KeyP", {sensitivity: sens.camera.key}],
 			["g.stick.right.up", {
 				with: ["g.stick.right.click"],
@@ -57,7 +57,7 @@ export const gameBindings = () => Grip.bindings({
 			}],
 		],
 
-		cameraTiltDown: [
+		cameraTiltUp: [
 			["BracketLeft", {sensitivity: sens.camera.key}],
 			["g.stick.right.down", {
 				with: ["g.stick.right.click"],
