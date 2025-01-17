@@ -32,8 +32,8 @@ export class UserInputs {
 			.attachDevice(this.devices.gamepad)
 
 		this.#trash.disposer(
-			this.devices.gamepad.anyButton.onPressChange(cause => {
-				if (cause.pressed)
+			this.devices.gamepad.anyButton.pressed.on(pressed => {
+				if (pressed)
 					this.predilection.value = "gamepad"
 			})
 		)

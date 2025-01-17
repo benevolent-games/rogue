@@ -1,5 +1,5 @@
 
-import {Scalar, Vec2} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
 
 import {Cursor} from "../../../realm/parts/cursor.js"
 import {cardinals} from "../../../../tools/directions.js"
@@ -19,7 +19,7 @@ export function getPlayerInput(
 
 	const {grip} = userInputs
 	const walkSpeedFraction = state.speed / state.speedSprint
-	const sprint = grip.state.normal.sprint.pressed
+	const sprint = grip.state.normal.sprint.pressed.value
 	const keyIntent = Vec2.zero()
 
 	// stick movement
@@ -28,10 +28,10 @@ export function getPlayerInput(
 	// grip keyboard inputs
 	{
 		const directions = [
-			grip.state.normal.moveUp.value,
-			grip.state.normal.moveRight.value,
-			grip.state.normal.moveDown.value,
-			grip.state.normal.moveLeft.value,
+			grip.state.normal.moveUp.input.value,
+			grip.state.normal.moveRight.input.value,
+			grip.state.normal.moveDown.input.value,
+			grip.state.normal.moveLeft.input.value,
 		]
 
 		directions.forEach((value, index) => {

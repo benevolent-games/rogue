@@ -1,55 +1,54 @@
 
-import { Scalar } from "@benev/toolbox"
 import {Cause} from "./cause.js"
+import {isPressed} from "../utils/is-pressed.js"
+import {InputInterpreter, InputStyle} from "./input-interpreter.js"
 
 /**
  * group of causes with an AND relationship.
  *  - they must activate together
  *  - the spoon adopts the value of the first cause
  */
-export class CauseSpoon extends Cause {
+export class CauseSpoon {
 	with = new Set<Cause>()
 	without = new Set<Cause>()
 	sensitivity = 1
-	deadzone = 0.2
+	interpreter: InputInterpreter
 
-	constructor(public cause: Cause) {
-		super()
+	constructor(public primary: Cause, style: InputStyle) {
+		this.interpreter = new InputInterpreter(style)
 	}
 
-	#applyDeadzone(value: number) {
-		if (value < this.deadzone)
-			return 0
-
-		if (value > 1)
-			return value
-
-		return Scalar.remap(
-			value,
-			this.deadzone, 1,
-			0, 1,
-		)
+	get amalgam() {
+		return this.interpreter.canonical
 	}
 
 	update() {
+		if (this.#preconditionsAreSatisfied()) {
+			const input = this.primary.input.value * this.sensitivity
+			const pressed = isPressed(this.primary.input.value)
+			this.interpreter.set(input, pressed)
+		}
+		else {
+			this.interpreter.set(0, false)
+		}
+	}
+
+	#preconditionsAreSatisfied() {
 		let pressedWiths = 0
 		let pressedWithouts = 0
 
 		for (const cause of this.with)
-			if (cause.pressed)
+			if (cause.pressed.value)
 				pressedWiths += 1
 
 		for (const cause of this.without)
-			if (cause.pressed)
-				pressedWiths += 1
+			if (cause.pressed.value)
+				pressedWithouts += 1
 
 		const satisfiedWith = pressedWiths === this.with.size
 		const satisfiedWithout = pressedWithouts === 0
-		const satisfied = satisfiedWith && satisfiedWithout
 
-		this.value = satisfied
-			? this.#applyDeadzone(this.cause.value) * this.sensitivity
-			: 0
+		return satisfiedWith && satisfiedWithout
 	}
 }
 

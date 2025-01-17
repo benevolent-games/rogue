@@ -1,5 +1,5 @@
 
-import { ev } from "@benev/slate"
+import {ev} from "@benev/slate"
 import {PointerCaptor} from "./captor.js"
 
 type Activity = {

@@ -1,12 +1,13 @@
 
 import {CauseFork} from "./cause-fork.js"
+import {InputStyle} from "./input-interpreter.js"
 
 export type SpoonBind = [string, SpoonOptions?]
 export type SpoonOptions = {
 	with?: string[]
 	without?: string[]
 	sensitivity?: number
-	deadzone?: number
+	style?: InputStyle
 }
 
 export type ForkBind = SpoonBind[]

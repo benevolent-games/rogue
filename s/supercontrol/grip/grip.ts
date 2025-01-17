@@ -4,6 +4,7 @@ import {deep, Map2, ob} from "@benev/slate"
 import {Cause} from "./parts/cause.js"
 import {GripDevice} from "./devices/device.js"
 import {CauseFork} from "./parts/cause-fork.js"
+import {isPressed} from "./utils/is-pressed.js"
 import {CauseSpoon} from "./parts/cause-spoon.js"
 import {asBindings, ForkBind, GripBindings, GripState} from "./parts/types.js"
 
@@ -35,16 +36,13 @@ export class Grip<B extends GripBindings> {
 	}
 
 	#makeFork(forkBind: ForkBind) {
-		const fork = new CauseFork()
-		this.#forks.add(fork)
+		const spoons = new Set<CauseSpoon>()
 		for (const [code, options = {}] of forkBind) {
-			const spoon = new CauseSpoon(this.obtainCause(code))
+			const style = options.style ?? "eager"
+			const spoon = new CauseSpoon(this.obtainCause(code), style)
 
 			if (options.sensitivity)
 				spoon.sensitivity = options.sensitivity
-
-			if (options.deadzone)
-				spoon.deadzone = options.deadzone
 
 			for (const code of options.with ?? [])
 				spoon.with.add(this.obtainCause(code))
@@ -52,8 +50,10 @@ export class Grip<B extends GripBindings> {
 			for (const code of options.without ?? [])
 				spoon.without.add(this.obtainCause(code))
 
-			fork.spoons.add(spoon)
+			spoons.add(spoon)
 		}
+		const fork = new CauseFork(spoons)
+		this.#forks.add(fork)
 		return fork
 	}
 
@@ -65,11 +65,7 @@ export class Grip<B extends GripBindings> {
 		this.#devices.set(
 			device,
 			device.onInput(
-				(code, value) => {
-					const cause = this.#causes.get(code)
-					if (cause)
-						cause.value = value
-				},
+				(code, input) => this.#causes.get(code)?.set(input),
 			),
 		)
 		return this

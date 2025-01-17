@@ -46,8 +46,8 @@ export class InputControls {
 	attach(element: HTMLElement) {
 		const unattach1 = this.dragQueen.attach(element)
 		const unattach2 = this.#wheelCamera(element)
-		const unattach3 = this.userInputs.grip.state.normal.cameraReset.onPressChange(cause => {
-			if (cause.pressed)
+		const unattach3 = this.userInputs.grip.state.normal.cameraReset.pressed.on(pressed => {
+			if (pressed)
 				this.cameraman.reset()
 		})
 		return () => {
@@ -59,12 +59,12 @@ export class InputControls {
 
 	tick() {
 		const {normal} = this.userInputs.grip.state
-		this.cameraman.desired.tilt -= normal.cameraTiltUp.value
-		this.cameraman.desired.tilt += normal.cameraTiltDown.value
-		this.cameraman.desired.swivel -= normal.cameraSwivelLeft.value
-		this.cameraman.desired.swivel += normal.cameraSwivelRight.value
-		this.cameraman.desired.distance -= normal.cameraZoomIn.value
-		this.cameraman.desired.distance += normal.cameraZoomOut.value
+		this.cameraman.desired.tilt -= normal.cameraTiltUp.input.value
+		this.cameraman.desired.tilt += normal.cameraTiltDown.input.value
+		this.cameraman.desired.swivel -= normal.cameraSwivelLeft.input.value
+		this.cameraman.desired.swivel += normal.cameraSwivelRight.input.value
+		this.cameraman.desired.distance -= normal.cameraZoomIn.input.value
+		this.cameraman.desired.distance += normal.cameraZoomOut.input.value
 	}
 }
 
