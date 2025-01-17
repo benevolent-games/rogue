@@ -149,5 +149,7 @@ export class Context {
 }
 
 export const context = new Context()
-console.log(context)
+
+context.refreshSession()
+	.then(() => console.log(context))
 
