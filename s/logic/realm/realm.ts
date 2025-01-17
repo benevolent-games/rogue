@@ -3,8 +3,8 @@ import "./utils/fix-babylon-draco-urls.js"
 import "@benev/toolbox/x/babylon-side-effects.js"
 
 import {Prop, Vec3} from "@benev/toolbox"
-import {deferPromise, pubsub, Trashbin} from "@benev/slate"
 import {Constants} from "@babylonjs/core/Engines/constants.js"
+import {deferPromise, pubsub, signal, Trashbin} from "@benev/slate"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {Glbs} from "./glbs.js"
@@ -24,6 +24,8 @@ import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 const debug = false
 
 export class Realm {
+	frame = signal(0)
+
 	stats = new GameStats()
 	userInputs = new UserInputs(window)
 	playerPosition = Vec3.zero()
@@ -90,6 +92,7 @@ export class Realm {
 			this.#cursorGraphic.position.set(...this.cursor.position.array())
 
 		this.#updateStats()
+		this.frame.value += 1
 	}
 
 	#updateStats() {

@@ -1,5 +1,4 @@
 
-import {signal} from "@benev/slate"
 import {RunningAverage} from "@benev/toolbox"
 
 export class GameStats {
@@ -15,39 +14,37 @@ export class GameStats {
 export type TimingReports = Record<string, TimingReport | ScalarReport>
 
 export class ScalarReport {
-	#number = signal(0)
+	#number = 0
 	#averager = new RunningAverage(60)
 
 	get number() {
-		return this.#number.value
+		return this.#number
 	}
 
 	set number(n: number) {
-		this.#number.value = n
+		this.#number = n
 		this.#averager.add(n)
 	}
 
 	get average() {
-		void this.#number.value
 		return this.#averager.average
 	}
 }
 
 export class TimingReport {
-	#time = signal(0)
+	#time = 0
 	#averager = new RunningAverage(60)
 
 	get time() {
-		return this.#time.value
+		return this.#time
 	}
 
 	set time(ms: number) {
-		this.#time.value = ms
+		this.#time = ms
 		this.#averager.add(ms)
 	}
 
 	get average() {
-		void this.#time.value
 		return this.#averager.average
 	}
 
