@@ -19,11 +19,11 @@ export class DungeonStyle {
 			public randy: Randy,
 		) {
 
-		const floors = warehouse.require({label: "floor", size: true})
-		const walls = warehouse.require({label: "wall", size: true})
-		const stumps = warehouse.require({label: "wall", size: "0.5"}).list()
-		const concaves = warehouse.require({label: "concave"}).list()
-		const convexes = warehouse.require({label: "convex"}).list()
+		const floors = warehouse.filterRequire({label: "floor", size: true})
+		const walls = warehouse.filterRequire({label: "wall", size: true})
+		const stumps = warehouse.filterRequire({label: "wall", size: "0.5"}).list()
+		const concaves = warehouse.filterRequire({label: "concave"}).list()
+		const convexes = warehouse.filterRequire({label: "convex"}).list()
 
 		this.floors = new Map2(
 			[...floors.categorize("size").entries()]

@@ -20,6 +20,7 @@ import {World} from "../../tools/babylon/world.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
+import { Pimsley } from "./parts/pimsley.js"
 
 const debug = false
 
@@ -32,6 +33,7 @@ export class Realm {
 	onFilesDropped = pubsub<[File[]]>()
 	ready = deferPromise<void>()
 
+	pimsley: Pimsley
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
 	cameraman: Cameraman
@@ -50,6 +52,7 @@ export class Realm {
 			public dungeonStore: DungeonStore,
 		) {
 
+		this.pimsley = new Pimsley(glbs.pimsleyContainer)
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.indicators = new Indicators(world.scene, this.materials)

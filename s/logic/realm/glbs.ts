@@ -8,12 +8,17 @@ import {prepareDungeonContainer} from "../dungeons/skinning/prepare-dungeon-cont
 export class Glbs {
 	constructor(
 		public dungeonContainer: AssetContainer,
+		public pimsleyContainer: AssetContainer,
 	) {}
 
 	static async load(world: World) {
-		const dungeonContainer = await world.loadContainer(constants.urls.dungeonGlb)
+		const [dungeonContainer, pimsleyContainer] = await Promise.all([
+			world.loadContainer(constants.urls.dungeonGlb),
+			world.loadContainer(constants.urls.pimsleyGlb),
+		])
 		prepareDungeonContainer(dungeonContainer)
-		return new this(dungeonContainer)
+		prepareDungeonContainer(pimsleyContainer)
+		return new this(dungeonContainer, pimsleyContainer)
 	}
 
 	dispose() {

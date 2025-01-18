@@ -63,7 +63,7 @@ export class DungeonSkin {
 
 		const useInstances = true
 
-		for (const cargo of this.assets.warehouse.search({label: "floor"}))
+		for (const cargo of this.assets.warehouse.filter({label: "floor"}))
 			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
 		return new Flooring(this.lifeguard, floorPlan)
@@ -84,7 +84,7 @@ export class DungeonSkin {
 
 		const useInstances = false
 
-		for (const cargo of this.assets.warehouse.search({label: "wall"})) {
+		for (const cargo of this.assets.warehouse.filter({label: "wall"})) {
 			this.lifeguard.pool(cargo, useInstances).preload(
 				(cargo.manifest.get("size") === "0.5")
 					? preloadMore
@@ -92,10 +92,10 @@ export class DungeonSkin {
 			)
 		}
 
-		for (const cargo of this.assets.warehouse.search({label: "convex"}))
+		for (const cargo of this.assets.warehouse.filter({label: "convex"}))
 			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
-		for (const cargo of this.assets.warehouse.search({label: "concave"}))
+		for (const cargo of this.assets.warehouse.filter({label: "concave"}))
 			this.lifeguard.pool(cargo, useInstances).preload(preload)
 
 		return new Walling(this.realm, this.lifeguard, plan, getWallStyle)

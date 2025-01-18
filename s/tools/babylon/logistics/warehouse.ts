@@ -43,12 +43,26 @@ export class Warehouse extends Set<Cargo> {
 		return result
 	}
 
-	search(query: ManifestQuery) {
+	filter(query: ManifestQuery) {
 		return this.#query(query, false)
 	}
 
-	require(query: ManifestQuery) {
+	filterRequire(query: ManifestQuery) {
 		return this.#query(query, true)
+	}
+
+	get(query: ManifestQuery) {
+		for (const cargo of this) {
+			if (cargo.manifest.match(query))
+				return cargo
+		}
+	}
+
+	require(query: ManifestQuery) {
+		const cargo = this.get(query)
+		if (!cargo)
+			throw new Error(`cargo not found in warehouse, ${JSON.stringify(query)}`)
+		return cargo
 	}
 
 	/** organize objects by their value for the given manifest key */
