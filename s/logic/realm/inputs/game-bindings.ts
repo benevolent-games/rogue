@@ -21,17 +21,17 @@ export const gameBindings = () => Grip.bindings({
 	normal: {
 		menu: [["KeyB"], ["g.alpha"], ["g.gamma"]],
 
-		sprint: [["ShiftLeft"], ["g.stick.left.click"], ["g.trigger.left"]],
+		sprint: [["ShiftLeft"], ["g.stick.left.click"]],
 
 		moveUp: [["KeyW"], ["Up"], ["g.stick.left.up"]],
 		moveDown: [["KeyS"], ["Down"], ["g.stick.left.down"]],
 		moveLeft: [["KeyA"], ["Left"], ["g.stick.left.left"]],
 		moveRight: [["KeyD"], ["Right"], ["g.stick.left.right"]],
 
-		lookUp: [["KeyI"], ["g.stick.right.up"]],
-		lookDown: [["KeyK"], ["g.stick.right.down"]],
-		lookLeft: [["KeyJ"], ["g.stick.right.left"]],
-		lookRight: [["KeyL"], ["g.stick.right.right"]],
+		lookUp: [["KeyI"], ["g.stick.right.up", {without: ["g.stick.right.click"]}]],
+		lookDown: [["KeyK"], ["g.stick.right.down", {without: ["g.stick.right.click"]}]],
+		lookLeft: [["KeyJ"], ["g.stick.right.left", {without: ["g.stick.right.click"]}]],
+		lookRight: [["KeyL"], ["g.stick.right.right", {without: ["g.stick.right.click"]}]],
 
 		cameraReset: [["BracketRight"], ["g.beta"], ["g.stick.right.click", {style: "tap"}]],
 

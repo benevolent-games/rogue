@@ -4,8 +4,8 @@ import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
 import {Circle} from "../../physics/shapes/circle.js"
-import {Vec2Fns} from "../../../tools/temp/vec2-fns.js"
 import {Circular} from "../../../tools/temp/circular.js"
+import {rotation} from "../../../tools/temp/rotation.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
@@ -58,7 +58,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 			state.rotation = Circular.normalize(
 				(sprintingDetected && !movementIntent.equals_(0, 0))
-					? Vec2Fns.asRotation(movementIntent) + Degrees.toRadians(180)
+					? rotation(movementIntent) + Degrees.toRadians(90)
 					: data.rotation
 			)
 		},

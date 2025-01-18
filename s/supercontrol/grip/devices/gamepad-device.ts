@@ -14,11 +14,14 @@ export class GamepadDevice extends GripDevice {
 
 	poll() {
 		const {deadzone} = this
-		const dispatch = (code: string, value: number) =>
-			void this.onInput.publish(code, value)
 
 		let anyButtonValue = 0
 		let anyButtonPressed = false
+
+		const dispatch = (code: string, value: number) => {
+			anyButtonPressed ||= isPressed(value)
+			void this.onInput.publish(code, value)
+		}
 
 		for (const gamepad of this.tracker.gamepads) {
 			gamepadButtonCodes.forEach((code, index) => {

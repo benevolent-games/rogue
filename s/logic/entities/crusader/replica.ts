@@ -6,17 +6,17 @@ import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
+import {PlayerInputs} from "./utils/player-inputs.js"
 import {Circular} from "../../../tools/temp/circular.js"
-import {getPlayerInput} from "./utils/get-player-input.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 
-const {smoothing} = constants.crusader
+const {smoothing, rotationSmoothing} = constants.crusader
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
-	const {lighting, buddies, materials, userInputs, cameraman, cursor} = realm
+	const {lighting, buddies, materials} = realm
 	const inControl = state.author === replicator.author
 
 	function buddyPosition(coordinates: Coordinates) {
@@ -34,24 +34,19 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const smoothedRotation = new Scalar(state.rotation)
 
 	const trashbin = new Trashbin()
+	const playerInputs = new PlayerInputs(realm, state, buddyCoordinates)
 
 	if (inControl) {
 		realm.cameraman.pivotInstantly(buddyCoordinates.clone())
 	}
 
 	return {
-		gatherInputs: () => {
-			if (inControl) {
-				const input = getPlayerInput(state, userInputs, cameraman, cursor, buddyCoordinates)
-				return [input]
-			}
-		},
-
+		gatherInputs: () => inControl ? [playerInputs.get()] : undefined,
 		replicate: (_tick, state) => {
 			buddyCoordinates.lerp_(...state.coordinates, smoothing)
 			const position = buddyPosition(buddyCoordinates)
-			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, smoothing)
 
+			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, rotationSmoothing)
 			buddy.position.set(...position.array())
 			buddy.rotationQuaternion = Quaternion.RotationYawPitchRoll(smoothedRotation.x, 0, 0)
 
