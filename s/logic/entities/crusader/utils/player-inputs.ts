@@ -2,7 +2,6 @@
 import {Degrees, Vec2} from "@benev/toolbox"
 import {Realm} from "../../../realm/realm.js"
 import {cardinals} from "../../../../tools/directions.js"
-import {rotation} from "../../../../tools/temp/rotation.js"
 import {CrusaderInputData, CrusaderState} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
@@ -90,7 +89,7 @@ export class PlayerInputs {
 		this.movementIntent.set(move)
 
 		if (this.#moveIsPressed()) {
-			this.rotation = rotation(move) + Degrees.toRadians(90)
+			this.rotation = move.rotation() + Degrees.toRadians(90)
 		}
 	}
 
@@ -118,15 +117,14 @@ export class PlayerInputs {
 			.rotate(this.realm.cameraman.smoothed.swivel)
 
 		if (this.#lookIsPressed())
-			this.rotation = rotation(look) + Degrees.toRadians(90)
+			this.rotation = look.rotation() + Degrees.toRadians(90)
 	}
 
 	#updateRotationViaCursor() {
-		this.rotation = Degrees.toRadians(90) + rotation(
-			this.realm.cursor.coordinates
-				.clone()
-				.subtract(this.buddyCoordinates)
-		)
+		this.rotation = Degrees.toRadians(90) + this.realm.cursor.coordinates
+			.clone()
+			.subtract(this.buddyCoordinates)
+			.rotation()
 	}
 }
 
