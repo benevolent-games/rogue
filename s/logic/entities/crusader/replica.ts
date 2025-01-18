@@ -1,6 +1,6 @@
 
 import {Trashbin} from "@benev/slate"
-import {Scalar} from "@benev/toolbox"
+import {Degrees, Scalar} from "@benev/toolbox"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
 import {Realm} from "../../realm/realm.js"
@@ -16,18 +16,21 @@ const {smoothing, rotationSmoothing} = constants.crusader
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
-	const {lighting, buddies, materials} = realm
+	const {lighting, buddies, materials, pimsleyFactory} = realm
 	const inControl = state.author === replicator.author
 
 	function buddyPosition(coordinates: Coordinates) {
 		return coordinates
 			.position()
-			.add_(0, 1, 0)
+			.add_(0, 0, 0)
 	}
 
-	const buddy = inControl
-		? buddies.create(materials.cyan)
-		: buddies.create(materials.yellow)
+	const [pimsley, pimsleyRelease] = pimsleyFactory.acquire()
+	const rotationOffset = Degrees.toRadians(180)
+
+	// const buddy = inControl
+	// 	? buddies.create(materials.cyan)
+	// 	: buddies.create(materials.yellow)
 
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
@@ -47,8 +50,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			const position = buddyPosition(buddyCoordinates)
 
 			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, rotationSmoothing)
-			buddy.position.set(...position.array())
-			buddy.rotationQuaternion = Quaternion.RotationYawPitchRoll(smoothedRotation.x, 0, 0)
+			pimsley.root.position.set(...position.array())
+			pimsley.root.rotationQuaternion = Quaternion.RotationYawPitchRoll(smoothedRotation.x + rotationOffset, 0, 0)
 
 			if (inControl) {
 				realm.cameraman.desired.pivot = buddyCoordinates
@@ -63,7 +66,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		dispose: () => {
-			buddy.dispose()
+			pimsleyRelease()
 			trashbin.dispose()
 		},
 	}

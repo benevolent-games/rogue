@@ -1,25 +1,29 @@
 
-import {Prop} from "@benev/toolbox"
-import {AssetContainer} from "@babylonjs/core/assetContainer.js"
+import {AssetContainer} from "@babylonjs/core"
+import {PoolNoodle} from "../../../tools/babylon/optimizers/pool.js"
+import {ContainerInstance} from "../../../tools/babylon/logistics/container-instance.js"
 
-import {Warehouse} from "../../../tools/babylon/logistics/warehouse.js"
-import {PropPool} from "../../../tools/babylon/optimizers/prop-pool.js"
-
-export class Pimsley {
-	#pool: PropPool
-	#warehouse: Warehouse
+export class Pimsley implements PoolNoodle {
+	instance: ContainerInstance
 
 	constructor(container: AssetContainer) {
-		this.#warehouse = Warehouse.from(container)
-		const root = this.#warehouse.require({label: "root"})
-		this.#pool = new PropPool(root, false)
-		this.#pool.preload(4)
+		this.instance = new ContainerInstance(container)
 	}
 
-	make() {
-		const prop = this.#pool.acquire()
-		const dispose = () => this.#pool.release(prop)
-		return [prop, dispose] as [Prop, () => void]
+	get root() {
+		return this.instance.root
+	}
+
+	enable() {
+		this.root.setEnabled(true)
+	}
+
+	disable() {
+		this.root.setEnabled(false)
+	}
+
+	dispose() {
+		this.instance.dispose()
 	}
 }
 
