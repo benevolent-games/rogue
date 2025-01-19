@@ -13,8 +13,7 @@ export class PimsleyFactory {
 			return {payload: pimsley, noodle: pimsley}
 		})
 
-		// TODO
-		this.#pool.preload(1)
+		this.#pool.preload(4)
 	}
 
 	acquire() {

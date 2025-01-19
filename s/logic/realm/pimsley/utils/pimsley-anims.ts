@@ -13,7 +13,6 @@ export class PimsleyAnims {
 			animationGroups.require("run-backwards"),
 			animationGroups.require("strafe-left"),
 			animationGroups.require("strafe-right"),
-			animationGroups.require("turn"),
 		)
 	}
 }
