@@ -7,7 +7,7 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
-		pimsleyGlb: "/assets/glbs/pimsley-anims10.glb",
+		pimsleyGlb: "/assets/glbs/pimsley-anims13.glb",
 		shaders: {
 			retro: "/assets/shaders/retro-02.json",
 		},
@@ -42,9 +42,9 @@ export const constants = {
 	},
 
 	camera: {
-		pivotHeight: 1.6,
+		pivotHeight: 1.2,
 		swivelSnappingIncrements: Degrees.toRadians(45),
-		distanceBounds: new Vec2(6, 25),
+		distanceBounds: new Vec2(3, 25),
 		tiltBounds: new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60)),
 		initial: {
 			swivel: Degrees.toRadians(0),

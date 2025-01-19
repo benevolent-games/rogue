@@ -85,7 +85,7 @@ export class AmbleGroup {
 
 		this.idle.weight = Scalar.clamp(1 - activity, min)
 		this.forwards.weight = weight(forwards)
-		this.backwards.weight = weight(backwards * 2)
+		this.backwards.weight = weight(backwards)
 		this.leftwards.weight = weight(leftwards * 2)
 		this.rightwards.weight = weight(rightwards * 2)
 		this.turn.weight = turneyness
