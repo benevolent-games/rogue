@@ -16,7 +16,7 @@ export class ContainerInstance {
 	animationGroups = new Map2<string, AnimationGroup>()
 
 	constructor(container: AssetContainer) {
-		this.instantiated = container.instantiateModelsToScene()
+		this.instantiated = container.instantiateModelsToScene(n => n)
 		const [__root__] = this.instantiated.rootNodes
 		this.root = __root__.getChildren()[0] as Prop
 

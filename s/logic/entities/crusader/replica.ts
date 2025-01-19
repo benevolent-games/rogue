@@ -1,6 +1,6 @@
 
 import {Trashbin} from "@benev/slate"
-import {Degrees, Scalar} from "@benev/toolbox"
+import {Degrees, Scalar, Vec2} from "@benev/toolbox"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
 import {Realm} from "../../realm/realm.js"
@@ -10,6 +10,7 @@ import {PlayerInputs} from "./utils/player-inputs.js"
 import {Circular} from "../../../tools/temp/circular.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
+import { Speedometer } from "./utils/speedometer.js"
 
 const {smoothing, rotationSmoothing} = constants.crusader
 
@@ -43,6 +44,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		realm.cameraman.pivotInstantly(buddyCoordinates.clone())
 	}
 
+	const speedometer = new Speedometer(buddyCoordinates)
+
 	return {
 		gatherInputs: () => inControl ? [playerInputs.get()] : undefined,
 		replicate: (_tick, state) => {
@@ -51,7 +54,14 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, rotationSmoothing)
 			pimsley.root.position.set(...position.array())
-			pimsley.root.rotationQuaternion = Quaternion.RotationYawPitchRoll(smoothedRotation.x + rotationOffset, 0, 0)
+			const correctedRotation = smoothedRotation.x + rotationOffset
+			pimsley.root.rotationQuaternion = Quaternion.RotationYawPitchRoll(correctedRotation, 0, 0)
+
+			const relativeVelocity = speedometer
+				.update(buddyCoordinates)
+				.rotate(-correctedRotation)
+
+			pimsley.anims.amble.setWeightsByVector(relativeVelocity)
 
 			if (inControl) {
 				realm.cameraman.desired.pivot = buddyCoordinates

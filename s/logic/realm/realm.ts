@@ -19,8 +19,8 @@ import {UserInputs} from "./inputs/user-inputs.js"
 import {World} from "../../tools/babylon/world.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
-import {PimsleyFactory} from "./parts/pimsley-factory.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
+import {PimsleyFactory} from "./pimsley/pimsley-factory.js"
 
 const debug = false
 
