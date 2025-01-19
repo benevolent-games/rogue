@@ -7,7 +7,7 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
-		pimsleyGlb: "/assets/glbs/pimsley-anims3.glb",
+		pimsleyGlb: "/assets/glbs/pimsley-anims10.glb",
 		shaders: {
 			retro: "/assets/shaders/retro-02.json",
 		},
@@ -35,7 +35,7 @@ export const constants = {
 
 	crusader: {
 		smoothing: 30 / 100,
-		rotationSmoothing: 40 / 100,
+		rotationSmoothing: 20 / 100,
 		radius: 0.4,
 		speed: 2,
 		speedSprint: 4,

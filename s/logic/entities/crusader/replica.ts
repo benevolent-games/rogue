@@ -11,6 +11,7 @@ import {Circular} from "../../../tools/temp/circular.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 import { Speedometer } from "./utils/speedometer.js"
+import { Anglemeter } from "./utils/anglemeter.js"
 
 const {smoothing, rotationSmoothing} = constants.crusader
 
@@ -29,6 +30,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const [pimsley, pimsleyRelease] = pimsleyFactory.acquire()
 	const rotationOffset = Degrees.toRadians(180)
 
+	console.log(pimsley)
+
 	// const buddy = inControl
 	// 	? buddies.create(materials.cyan)
 	// 	: buddies.create(materials.yellow)
@@ -45,6 +48,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	}
 
 	const speedometer = new Speedometer(buddyCoordinates)
+	const anglemeter = new Anglemeter(smoothedRotation.x)
 
 	return {
 		gatherInputs: () => inControl ? [playerInputs.get()] : undefined,
@@ -53,15 +57,19 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			const position = buddyPosition(buddyCoordinates)
 
 			smoothedRotation.x = Circular.lerp(smoothedRotation.x, state.rotation, rotationSmoothing)
-			pimsley.root.position.set(...position.array())
 			const correctedRotation = smoothedRotation.x + rotationOffset
+
+			pimsley.root.position.set(...position.array())
 			pimsley.root.rotationQuaternion = Quaternion.RotationYawPitchRoll(correctedRotation, 0, 0)
+
+			const angularVelocity = anglemeter
+				.update(smoothedRotation.x)
 
 			const relativeVelocity = speedometer
 				.update(buddyCoordinates)
 				.rotate(-correctedRotation)
 
-			pimsley.anims.amble.setWeightsByVector(relativeVelocity)
+			pimsley.anims.amble.animate(relativeVelocity, angularVelocity)
 
 			if (inControl) {
 				realm.cameraman.desired.pivot = buddyCoordinates

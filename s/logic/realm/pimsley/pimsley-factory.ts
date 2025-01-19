@@ -12,7 +12,9 @@ export class PimsleyFactory {
 			const pimsley = new Pimsley(container)
 			return {payload: pimsley, noodle: pimsley}
 		})
-		this.#pool.preload(4)
+
+		// TODO
+		this.#pool.preload(1)
 	}
 
 	acquire() {

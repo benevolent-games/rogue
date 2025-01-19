@@ -6,13 +6,14 @@ export class PimsleyAnims {
 	amble: AmbleGroup
 
 	constructor({animationGroups}: ContainerInstance) {
-		console.log(animationGroups)
+		console.log("pimsley animations", animationGroups)
 		this.amble = new AmbleGroup(
-			animationGroups.require("idle-stand-animated"),
+			animationGroups.require("idle-standmovement"),
 			animationGroups.require("run-forwards"),
-			animationGroups.require("grab-backward"),
+			animationGroups.require("run-backwards"),
 			animationGroups.require("strafe-left"),
 			animationGroups.require("strafe-right"),
+			animationGroups.require("turn"),
 		)
 	}
 }

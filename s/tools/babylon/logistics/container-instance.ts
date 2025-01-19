@@ -1,6 +1,7 @@
 
 import {Map2} from "@benev/slate"
 import {Prop} from "@benev/toolbox"
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {AssetContainer, InstantiatedEntries} from "@babylonjs/core/assetContainer.js"
 
@@ -18,16 +19,22 @@ export class ContainerInstance {
 	constructor(container: AssetContainer) {
 		this.instantiated = container.instantiateModelsToScene(n => n)
 		const [__root__] = this.instantiated.rootNodes
-		this.root = __root__.getChildren()[0] as Prop
+
+		this.root = new TransformNode("containerInstanceRoot", container.scene)
 
 		this.warehouse = new Warehouse(
 			container.scene,
-			[this.root, ...getChildProps(this.root).values()]
+			this.instantiated.rootNodes
+				.filter(root => root instanceof TransformNode)
+				.flatMap(root => [root, ...getChildProps(root).values()])
 				.map(prop => new Cargo(container.scene, prop, Manifest.scan(prop)))
 		)
 
 		for (const animationGroup of this.instantiated.animationGroups)
 			this.animationGroups.set(animationGroup.name, animationGroup)
+
+		for (const cargo of this.warehouse)
+			cargo.prop.setParent(this.root)
 	}
 
 	dispose() {
