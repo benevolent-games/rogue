@@ -18,6 +18,7 @@ const {smoothing} = constants.crusader
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
+	const trashbin = new Trashbin()
 	const {lighting, pimsleyFactory} = realm
 	const inControl = state.author === replicator.author
 
@@ -38,8 +39,9 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const initial = Coordinates.from(state.coordinates)
 	const buddyCoordinates = initial.clone()
 
-	const trashbin = new Trashbin()
-	const playerInputs = new PlayerInputs(realm, state, buddyCoordinates)
+	const playerInputs = trashbin.disposable(
+		new PlayerInputs(realm, state, buddyCoordinates)
+	)
 
 	if (inControl) {
 		realm.cameraman.pivotInstantly(buddyCoordinates.clone())

@@ -1,5 +1,7 @@
 
+import {Trashbin} from "@benev/slate"
 import {Degrees, Vec2} from "@benev/toolbox"
+
 import {Realm} from "../../../realm/realm.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {CrusaderInputData, CrusaderState} from "../types.js"
@@ -10,17 +12,35 @@ export class PlayerInputs {
 	rotation = 0
 	movementIntent = Vec2.zero()
 
+	mouse = true
+
+	#trash = new Trashbin()
+
 	constructor(
-		public realm: Realm,
-		public state: CrusaderState,
-		public buddyCoordinates: Coordinates,
-	) {}
+			public realm: Realm,
+			public state: CrusaderState,
+			public buddyCoordinates: Coordinates,
+		) {
+
+		this.#trash.disposer(
+			this.realm.userInputs.devices.pointer.onInput(code => {
+				switch (code) {
+					case "LMB":
+					case "MMB":
+					case "RMB":
+						this.mouse = true
+				}
+			})
+		)
+	}
 
 	get(): CrusaderInputData {
+		this.#lookButtonsDeactivateMouseMode()
+
 		this.#updateSprint()
 		this.#updateMovementIntent()
 
-		if (this.realm.userInputs.predilection.value === "keyboard")
+		if (this.realm.userInputs.predilection.value === "keyboard" && this.mouse)
 			this.#updateRotationViaCursor()
 		else
 			this.#updateRotationViaGripActions()
@@ -29,6 +49,23 @@ export class PlayerInputs {
 			sprint: this.sprint,
 			rotation: this.rotation,
 			movementIntent: this.movementIntent.array(),
+		}
+	}
+
+	dispose() {
+		this.#trash.dispose()
+	}
+
+	#lookButtonsDeactivateMouseMode() {
+		const {normal} = this.realm.userInputs.grip.state
+		const buttons = [
+			normal.lookUp,
+			normal.lookDown,
+			normal.lookLeft,
+			normal.lookRight,
+		]
+		if (buttons.some(b => b.pressed.changed && b.pressed.value)) {
+			this.mouse = false
 		}
 	}
 
