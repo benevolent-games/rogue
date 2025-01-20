@@ -1,7 +1,8 @@
 
 import "@benev/slate/x/node.js"
 import {constants} from "./constants.js"
-import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard, git_latest_tag} from "@benev/turtle"
+import {get_ref_name} from "./tools/get_ref_name.js"
+import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
 const favicon = "/assets/graphics/favicon-ivLoKJGtTXd.png"
@@ -10,7 +11,7 @@ const socialImage = "/assets/images/items/ivLoKJGtTXd.webp"
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
 	const hash = await git_commit_hash()
-	const tag = await git_latest_tag()
+	const gitRef = await get_ref_name()
 
 	return easypage({
 		path,
@@ -22,7 +23,7 @@ export default template(async basic => {
 			<link rel="icon" href="${favicon}"/>
 			<link rel="stylesheet" href="${path.version.root("index.css")}"/>
 			<meta data-commit-hash="${hash}"/>
-			<meta data-git-tag="${tag}"/>
+			<meta data-git-ref="${gitRef}"/>
 
 			<link rel="preconnect" href="https://fonts.googleapis.com">
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

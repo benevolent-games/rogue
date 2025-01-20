@@ -5,7 +5,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Gigamenu} from "../gigamenu/view.js"
 import {constants} from "../../../constants.js"
-import {readGitTag} from "../../../tools/read-git-tag.js"
+import {readGitRef} from "../../../tools/read-git-ref.js"
 import {loadImage2} from "../../../tools/loading/load-image.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {UserInputs} from "../../../logic/realm/inputs/user-inputs.js"
@@ -27,7 +27,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 		}]
 	})
 
-	const gitTag = use.once(() => readGitTag())
+	const gitTag = use.once(() => readGitRef())
 
 	use.mount(() => userInputs.grip.state.normal.menu.pressed.on(pressed => {
 		if (pressed)
