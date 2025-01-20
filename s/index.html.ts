@@ -1,8 +1,8 @@
 
 import "@benev/slate/x/node.js"
 import {constants} from "./constants.js"
+import {readJson} from "./tools/ssg/read-json.js"
 import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
-import { readPackageJson } from "./tools/ssg/read-package-json.js"
 
 const domain = "rogue.benevolent.games"
 const favicon = "/assets/graphics/favicon-ivLoKJGtTXd.png"
@@ -11,7 +11,7 @@ const socialImage = "/assets/images/items/ivLoKJGtTXd.webp"
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
 	const hash = await git_commit_hash()
-	const version = (await readPackageJson()).version
+	const version = (await readJson("package.json")).version
 
 	return easypage({
 		path,
