@@ -1,10 +1,10 @@
 
-import {Degrees, Vec2} from "@benev/toolbox"
+import {Degrees, Vec2, Circular} from "@benev/toolbox"
+
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
 import {Circle} from "../../physics/shapes/circle.js"
-import {Circular} from "../../../tools/temp/circular.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
