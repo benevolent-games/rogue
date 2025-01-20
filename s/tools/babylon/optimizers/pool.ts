@@ -1,5 +1,5 @@
 
-import {Map2} from "@benev/slate"
+import {Map2, Trashbin} from "@benev/slate"
 import {loop} from "@benev/toolbox"
 
 export type PoolNoodle = {
@@ -38,6 +38,13 @@ export class Pool<P> {
 		const noodle = this.#noodles.require(payload)
 		this.#alive.add(payload)
 		noodle.enable()
+		return payload
+	}
+
+	acquireCleanly(trashbin: Trashbin) {
+		const payload = this.acquire()
+		const releaser = () => this.release(payload)
+		trashbin.disposer(releaser)
 		return payload
 	}
 

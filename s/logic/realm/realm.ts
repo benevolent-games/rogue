@@ -21,7 +21,7 @@ import {DebugCapsules} from "./utils/debug-capsules.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
-import {PimsleyFactory} from "./pimsley/pimsley-factory.js"
+import {PalletPool} from "../../tools/babylon/optimizers/pallet-pool.js"
 
 const debug = false
 
@@ -34,7 +34,7 @@ export class Realm {
 	onFilesDropped = pubsub<[File[]]>()
 	ready = deferPromise<void>()
 
-	pimsleyFactory: PimsleyFactory
+	pimsleyPallets: PalletPool
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
 	debugCapsules: DebugCapsules
@@ -54,7 +54,7 @@ export class Realm {
 			public dungeonStore: DungeonStore,
 		) {
 
-		this.pimsleyFactory = new PimsleyFactory(glbs.pimsleyContainer)
+		this.pimsleyPallets = new PalletPool(glbs.pimsleyContainer)
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.debugCapsules = new DebugCapsules(world.scene, this.materials)
@@ -109,7 +109,7 @@ export class Realm {
 	dispose() {
 		this.#trash.dispose()
 		this.userInputs.dispose()
-		this.pimsleyFactory.dispose()
+		this.pimsleyPallets.dispose()
 	}
 }
 

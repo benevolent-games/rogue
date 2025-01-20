@@ -8,6 +8,7 @@ import {constants} from "../../../constants.js"
 import {Anglemeter} from "./utils/anglemeter.js"
 import {Speedometer} from "./utils/speedometer.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
+import {Pimsley} from "../../realm/pimsley/pimsley.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {DrunkHeading} from "../../realm/pimsley/utils/drunk-heading.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
@@ -20,21 +21,15 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
 	const trash = new Trashbin()
-	const {lighting, pimsleyFactory} = realm
+	const {lighting, pimsleyPallets} = realm
 	const inControl = state.author === replicator.author
+	const coordinates = Coordinates.from(state.coordinates)
 
-	const [pimsley, pimsleyRelease] = pimsleyFactory.acquire()
+	const pallet = pimsleyPallets.acquireCleanly(trash)
+	const pimsley = new Pimsley({pallet})
+
 	const rotationOffset = Degrees.toRadians(180)
 	const drunkHeading = new DrunkHeading()
-
-	const capsule = debug
-		? trash.disposable(
-			realm.debugCapsules.get(crusader.height, crusader.radius)
-		)
-		: null
-
-	const initial = Coordinates.from(state.coordinates)
-	const coordinates = initial.clone()
 
 	const playerInputs = trash.disposable(
 		new PlayerInputs(realm, state, coordinates)
@@ -48,6 +43,12 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const rotation = new Circular(state.rotation)
 	const speedometer = new Speedometer(coordinates)
 	const anglemeter = new Anglemeter(rotation.x)
+
+	const capsule = debug
+		? trash.disposable(
+			realm.debugCapsules.get(crusader.height, crusader.radius)
+		)
+		: null
 
 	return {
 		gatherInputs: () => inControl
@@ -91,7 +92,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 					.setPosition(rawPosition)
 					.setRotation(Quat.rotate_(0, correctedRotation, 0))
 
-			pimsley.applySpatial({
+			pimsley.pallet.applySpatial({
 				position,
 				rotation: Quat.rotate_(0, correctedRotation, 0),
 			})
@@ -114,7 +115,6 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		},
 
 		dispose: () => {
-			pimsleyRelease()
 			trash.dispose()
 		},
 	}

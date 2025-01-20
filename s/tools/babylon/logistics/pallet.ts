@@ -6,11 +6,15 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {AssetContainer, InstantiatedEntries} from "@babylonjs/core/assetContainer.js"
 
 import {Cargo} from "./cargo.js"
+import {Spatial} from "./types.js"
 import {Manifest} from "./manifest.js"
 import {Warehouse} from "./warehouse.js"
+import {applySpatial} from "./apply-spatial.js"
+import {PoolNoodle} from "../optimizers/pool.js"
 import {getChildProps} from "../babylon-helpers.js"
 
-export class ContainerInstance {
+/** an instance of an asset container, useful to maintain the brittle relationships between animationGroups and skeletons */
+export class Pallet implements PoolNoodle {
 	root: Prop
 	warehouse: Warehouse
 	instantiated: InstantiatedEntries
@@ -35,6 +39,18 @@ export class ContainerInstance {
 
 		for (const cargo of this.warehouse)
 			cargo.prop.setParent(this.root)
+	}
+
+	applySpatial(spatial: Partial<Spatial>) {
+		applySpatial(this.root, spatial)
+	}
+
+	enable() {
+		this.root.setEnabled(true)
+	}
+
+	disable() {
+		this.root.setEnabled(false)
 	}
 
 	dispose() {
