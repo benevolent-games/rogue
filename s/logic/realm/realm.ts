@@ -17,6 +17,7 @@ import {Indicators} from "./utils/indicators.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {World} from "../../tools/babylon/world.js"
+import {DebugCapsules} from "./utils/debug-capsules.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
@@ -36,6 +37,7 @@ export class Realm {
 	pimsleyFactory: PimsleyFactory
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
+	debugCapsules: DebugCapsules
 	cameraman: Cameraman
 	indicators: Indicators
 	stuff: Stuff
@@ -43,7 +45,7 @@ export class Realm {
 	cursor: Cursor
 
 	#cursorGraphic: Prop | null
-	#trashbin = new Trashbin()
+	#trash = new Trashbin()
 
 	constructor(
 			public world: World,
@@ -55,6 +57,7 @@ export class Realm {
 		this.pimsleyFactory = new PimsleyFactory(glbs.pimsleyContainer)
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
+		this.debugCapsules = new DebugCapsules(world.scene, this.materials)
 		this.indicators = new Indicators(world.scene, this.materials)
 		this.stuff = new Stuff(world.scene, this.materials)
 		this.cameraman = new Cameraman(world.scene, lighting)
@@ -65,8 +68,9 @@ export class Realm {
 			? this.indicators.cursor.instance()
 			: null
 
-		this.#trashbin.disposer(this.inputControls.attach(world.canvas))
-		this.#trashbin.disposer(this.cursor.attach(world.canvas))
+		this.#trash.disposable(this.debugCapsules)
+		this.#trash.disposer(this.inputControls.attach(world.canvas))
+		this.#trash.disposer(this.cursor.attach(world.canvas))
 	}
 
 	static async load(dungeonStore: DungeonStore) {
@@ -103,7 +107,7 @@ export class Realm {
 	}
 
 	dispose() {
-		this.#trashbin.dispose()
+		this.#trash.dispose()
 		this.userInputs.dispose()
 		this.pimsleyFactory.dispose()
 	}

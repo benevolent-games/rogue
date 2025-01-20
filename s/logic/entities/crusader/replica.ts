@@ -1,7 +1,6 @@
 
 import {Trashbin} from "@benev/slate"
-import {Degrees, Circular, Scalar} from "@benev/toolbox"
-import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
+import {Degrees, Circular, Scalar, Quat} from "@benev/toolbox"
 
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
@@ -13,43 +12,41 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {DrunkHeading} from "../../realm/pimsley/utils/drunk-heading.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 
-const {smoothing} = constants.crusader
+const {crusader} = constants
+
+const debug = false
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
-	const trashbin = new Trashbin()
+	const trash = new Trashbin()
 	const {lighting, pimsleyFactory} = realm
 	const inControl = state.author === replicator.author
-
-	function buddyPosition(coordinates: Coordinates) {
-		return coordinates
-			.position()
-			.add_(0, 0, 0)
-	}
 
 	const [pimsley, pimsleyRelease] = pimsleyFactory.acquire()
 	const rotationOffset = Degrees.toRadians(180)
 	const drunkHeading = new DrunkHeading()
 
-	// const buddy = inControl
-	// 	? buddies.create(materials.cyan)
-	// 	: buddies.create(materials.yellow)
+	const capsule = debug
+		? trash.disposable(
+			realm.debugCapsules.get(crusader.height, crusader.radius)
+		)
+		: null
 
 	const initial = Coordinates.from(state.coordinates)
-	const buddyCoordinates = initial.clone()
+	const coordinates = initial.clone()
 
-	const playerInputs = trashbin.disposable(
-		new PlayerInputs(realm, state, buddyCoordinates)
+	const playerInputs = trash.disposable(
+		new PlayerInputs(realm, state, coordinates)
 	)
 
 	if (inControl) {
-		realm.cameraman.pivotInstantly(buddyCoordinates.clone())
+		realm.cameraman.pivotInstantly(coordinates.clone())
 	}
 
 	const turningSpeed = new Scalar(Degrees.toRadians(240))
 	const rotation = new Circular(state.rotation)
-	const speedometer = new Speedometer(buddyCoordinates)
+	const speedometer = new Speedometer(coordinates)
 	const anglemeter = new Anglemeter(rotation.x)
 
 	return {
@@ -60,41 +57,44 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		replicate: (tick, state) => {
 			const deltaTime = 1 / constants.sim.tickRate
 
-			buddyCoordinates.lerp_(...state.coordinates, smoothing)
-			const position = buddyPosition(buddyCoordinates)
-			const absoluteVelocity = speedometer.update(buddyCoordinates)
+			const rawCoordinates = Coordinates.from(state.coordinates)
+			const rawPosition = rawCoordinates.position()
 
+			coordinates.lerp(rawCoordinates, crusader.smoothing)
+			const position = coordinates.position()
+
+			const absoluteVelocity = speedometer.update(coordinates)
 			const speed = absoluteVelocity.magnitude()
 
-			const turningSpeedTarget = speed < 1
-				? Scalar.remap(
-					speed,
-					0, 1,
-					Degrees.toRadians(1000), Degrees.toRadians(540),
-					true,
-				)
-				: Scalar.remap(
-					speed,
-					1, constants.crusader.speedSprint,
-					Degrees.toRadians(540), Degrees.toRadians(180),
-					true,
-				)
+			const turningSpeedTarget = Scalar.remap(
+				speed,
+				0, constants.crusader.speedSprint,
+				constants.crusader.turnCaps.standstill, constants.crusader.turnCaps.fullsprint,
+				true,
+			)
 
 			turningSpeed.lerp(turningSpeedTarget, 0.03)
 			rotation.lerp(state.rotation, 0.4, turningSpeed.x * deltaTime)
 
 			const rotationTweakFactor = Scalar.remap(
 				speed,
-				0, constants.crusader.speedSprint,
+				0, crusader.speedSprint,
 				0, 1,
 				true,
 			)
 
-			const rotationTweak = rotationTweakFactor * drunkHeading.update(tick) * Degrees.toRadians(60)
+			const rotationTweak = rotationTweakFactor * drunkHeading.update(tick) * crusader.sprintRotationMaxDeviation
 			const correctedRotation = rotation.x + rotationOffset + rotationTweak
 
-			pimsley.root.position.set(...position.array())
-			pimsley.root.rotationQuaternion = Quaternion.RotationYawPitchRoll(correctedRotation, 0, 0)
+			if (capsule)
+				capsule
+					.setPosition(rawPosition)
+					.setRotation(Quat.rotate_(0, correctedRotation, 0))
+
+			pimsley.applySpatial({
+				position,
+				rotation: Quat.rotate_(0, correctedRotation, 0),
+			})
 
 			const angularVelocity = anglemeter.update(rotation.x)
 			const relativeVelocity = absoluteVelocity.rotate(-correctedRotation)
@@ -102,10 +102,10 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			pimsley.anims.amble.animate(tick, relativeVelocity, angularVelocity)
 
 			if (inControl) {
-				realm.cameraman.desired.pivot = buddyCoordinates
+				realm.cameraman.desired.pivot = coordinates
 				realm.playerPosition = position
 				lighting.torch.position.set(
-					...buddyCoordinates
+					...coordinates
 						.position()
 						.add_(0, 3, 0)
 						.array()
@@ -115,7 +115,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 
 		dispose: () => {
 			pimsleyRelease()
-			trashbin.dispose()
+			trash.dispose()
 		},
 	}
 })

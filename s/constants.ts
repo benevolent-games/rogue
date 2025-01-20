@@ -35,9 +35,15 @@ export const constants = {
 
 	crusader: {
 		smoothing: 15 / 100,
-		radius: 0.4,
+		radius: 0.3,
+		height: 1.8,
 		speed: 2,
 		speedSprint: 4,
+		sprintRotationMaxDeviation: Degrees.toRadians(40),
+		turnCaps: {
+			standstill: Degrees.toRadians(700),
+			fullsprint: Degrees.toRadians(240),
+		},
 	},
 
 	camera: {

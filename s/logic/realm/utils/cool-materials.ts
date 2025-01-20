@@ -11,6 +11,8 @@ export class CoolMaterials {
 	yellow: PBRMaterial
 	deepPurple: PBRMaterial
 
+	friendlyCapsule: PBRMaterial
+
 	constructor(private scene: Scene) {
 		this.gray = this.create(.1, .1, .1)
 		this.pearl = this.create(.7, .7, .7)
@@ -18,13 +20,16 @@ export class CoolMaterials {
 		this.red = this.create(.7, .1, .1)
 		this.yellow = this.create(.6, .5, .1)
 		this.deepPurple = this.create(.2, .1, .7)
+
+		this.friendlyCapsule = this.create(.1, .7, .7, .2)
 	}
 
-	create(r: number, g: number, b: number) {
+	create(r: number, g: number, b: number, a = 1) {
 		const m = new PBRMaterial("custom", this.scene)
 		m.albedoColor = new Color3(r, g, b)
 		m.roughness = 0.9
 		m.metallic = 0
+		m.alpha = a
 		return m
 	}
 }

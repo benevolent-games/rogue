@@ -40,7 +40,7 @@ export class CapsuleBuddies {
 
 		const nose = this.baseNose.clone("noseinstance")
 		nose.material = material
-		nose.position.z -= constants.crusader.radius - (this.#noseSize / 4)
+		nose.position.z += constants.crusader.radius - (this.#noseSize / 4)
 		nose.setParent(buddy)
 		nose.rotationQuaternion = Quaternion.RotationYawPitchRoll(Degrees.toRadians(45), 0, 0)
 

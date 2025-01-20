@@ -17,9 +17,5 @@ export type RogueEntities = AsEntities<{
 		state: CrusaderState
 		input: CrusaderInputData
 	}
-	// blob: {
-	// 	state: BlockState
-	// 	input: undefined
-	// }
 }>
 
