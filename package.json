@@ -46,7 +46,7 @@
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",
-		"@benev/turtle": "^0.6.7",
+		"@benev/turtle": "^0.6.8",
 		"chokidar": "^4.0.3",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
