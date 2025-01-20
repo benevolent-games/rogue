@@ -1,7 +1,7 @@
 {
 	"name": "@benev/rogue-crusade",
 	"private": true,
-	"version": "0.8.29",
+	"version": "0.8.30",
 	"description": "The Ultimate Roguelike",
 	"license": "UNLICENSED",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
