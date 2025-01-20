@@ -75,17 +75,19 @@ canvas {
 		}
 	}
 
-	.coolarea {
+	.toucharea {
+		pointer-events: none;
 		position: absolute;
-		bottom: 0;
+		inset: 0;
 		width: 100%;
-		padding: 6%;
+		height: 100%;
+		opacity: 0.3;
 
-		> [view="nub-stick"] {
-			pointer-events: all;
-			opacity: 0.2;
-			width: unset;
-			height: 8em;
+		> [view="virtual-gamepad"] {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
 		}
 	}
 }

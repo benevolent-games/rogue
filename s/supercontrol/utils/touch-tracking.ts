@@ -32,14 +32,14 @@ export function touchTracking({target, buttons, touchdown, touchup}: {
 	}
 
 	function subtractive(event: TouchEvent) {
-		for (const touch of Array.from(event.touches)) {
+		for (const touch of Array.from(event.changedTouches)) {
 			const track = grabTrack(touch)
 			track.button = undefined
 			tracks.delete(touch.identifier)
 		}
 	}
 
-	return ev(target, {
+	return ev(window, {
 		touchstart: additive,
 		touchmove: additive,
 		touchcancel: subtractive,
@@ -62,9 +62,12 @@ class Track {
 	set button(next: HTMLButtonElement | undefined) {
 		const previous = this.#button
 		const changed = next !== previous
+
 		this.#button = next
-		if (changed && previous)
+
+		if (changed && previous) {
 			this.touchup(previous)
+		}
 		if (changed && next)
 			this.touchdown(next)
 	}

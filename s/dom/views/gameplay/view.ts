@@ -1,6 +1,5 @@
 
 import {ev, html, shadowView} from "@benev/slate"
-import {NubStick} from "@benev/toolbox/x/tact/nubs/stick/view.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -16,6 +15,7 @@ import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"
+import {VirtualGamepad} from "../../../supercontrol/views/virtual-gamepad/view.js"
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
@@ -88,8 +88,8 @@ export const Gameplay = shadowView(use => (o: {
 
 				${o.realm.userInputs.predilection.value === "touch"
 					? html`
-						<div class=coolarea>
-							${NubStick([o.realm.userInputs.stick])}
+						<div class=toucharea>
+							${VirtualGamepad([o.realm.userInputs.devices.virtualGamepad])}
 						</div>
 					`
 					: null}

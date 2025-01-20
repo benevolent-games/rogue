@@ -3,11 +3,14 @@ import {css} from "@benev/slate"
 export default css`
 
 :host {
-	pointer-events: all;
-	position: relative;
+	pointer-events: none;
+
 	display: flex;
 	flex-direction: column;
 	container: my-layout / size;
+
+	width: 100%;
+	height: 100%;
 }
 
 * {
