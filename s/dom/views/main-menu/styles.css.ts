@@ -58,6 +58,8 @@ export default css`
 		display: flex;
 		flex-wrap: wrap;
 		padding: 1em 3em;
+		align-items: center;
+		gap: 1em;
 
 		border-top: 0.2em solid #111;
 		border-bottom: 0.2em solid #333;
@@ -75,6 +77,11 @@ export default css`
 
 		> a {
 			img { width: 2em; }
+		}
+
+		> .version {
+			font-size: 1em;
+			opacity: 0.4;
 		}
 	}
 

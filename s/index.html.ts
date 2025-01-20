@@ -1,6 +1,7 @@
 
 import "@benev/slate/x/node.js"
 import {constants} from "./constants.js"
+import {git_latest_tag} from "./tools/temp/git_latest_tag.js"
 import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
@@ -10,6 +11,7 @@ const socialImage = "/assets/images/items/ivLoKJGtTXd.webp"
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
 	const hash = await git_commit_hash()
+	const tag = await git_latest_tag()
 
 	return easypage({
 		path,
@@ -21,6 +23,7 @@ export default template(async basic => {
 			<link rel="icon" href="${favicon}"/>
 			<link rel="stylesheet" href="${path.version.root("index.css")}"/>
 			<meta data-commit-hash="${hash}"/>
+			<meta data-git-tag="${tag}"/>
 
 			<link rel="preconnect" href="https://fonts.googleapis.com">
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
