@@ -5,7 +5,6 @@ import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 import {Grip} from "../../../supercontrol/grip/grip.js"
 import {gameBindings, GameBindings} from "../inputs/game-bindings.js"
 import {PointerDevice} from "../../../supercontrol/grip/devices/pointer-device.js"
-import {GamepadDevice} from "../../../supercontrol/grip/devices/gamepad-device.js"
 import {KeyboardDevice} from "../../../supercontrol/grip/devices/keyboard-device.js"
 import {VirtualGamepadDevice} from "../../../supercontrol/views/virtual-gamepad/device.js"
 
@@ -19,8 +18,7 @@ export class UserInputs {
 	devices = {
 		keyboard: new KeyboardDevice(window, e => e.preventDefault()),
 		pointer: new PointerDevice(window),
-		gamepad: new GamepadDevice(),
-		virtualGamepad: new VirtualGamepadDevice(),
+		gamepad: new VirtualGamepadDevice(),
 	}
 
 	#trash = new Trashbin()
@@ -32,7 +30,6 @@ export class UserInputs {
 			.attachDevice(this.devices.keyboard)
 			.attachDevice(this.devices.pointer)
 			.attachDevice(this.devices.gamepad)
-			.attachDevice(this.devices.virtualGamepad)
 
 		this.#trash.disposer(
 			this.devices.gamepad.anyButton.pressed.on(pressed => {

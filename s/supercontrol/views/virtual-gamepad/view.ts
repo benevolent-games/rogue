@@ -36,11 +36,11 @@ export const VirtualGamepad = shadowView(use => (device: VirtualGamepadDevice) =
 		buttons,
 		touchdown: button => {
 			const code = codes.require(button)
-			device.inputs[code] = 1
+			device.virtualInputs[code] = 1
 		},
 		touchup: button => {
 			const code = codes.require(button)
-			device.inputs[code] = 0
+			device.virtualInputs[code] = 0
 		},
 	}))
 

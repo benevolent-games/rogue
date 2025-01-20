@@ -12,15 +12,19 @@ export class GamepadDevice extends GripDevice {
 	anyButton = new Cause()
 	dispose = () => this.tracker.dispose()
 
+	dispatch(code: string, input: number) {
+		this.onInput.publish(code, input)
+	}
+
 	poll() {
 		const {deadzone} = this
 
 		let anyButtonValue = 0
 		let anyButtonPressed = false
 
-		const dispatch = (code: string, value: number) => {
-			anyButtonPressed ||= isPressed(value)
-			void this.onInput.publish(code, value)
+		const dispatch = (code: string, input: number) => {
+			anyButtonPressed ||= isPressed(input)
+			this.dispatch(code, input)
 		}
 
 		for (const gamepad of this.tracker.gamepads) {

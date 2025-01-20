@@ -1,24 +1,39 @@
 
 import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 
-import {GripDevice} from "../../grip/devices/device.js"
+import {GamepadDevice} from "../../grip/devices/gamepad-device.js"
 import {breakupStickInputs} from "../../utils/breakup-stick-inputs.js"
 import {GamepadInputs, gamepadInputs} from "./utils/gamepad-inputs.js"
 
-export class VirtualGamepadDevice extends GripDevice {
+export class VirtualGamepadDevice extends GamepadDevice {
 	stickLeft = new Stick("stickLeft")
 	stickRight = new Stick("stickRight")
 
-	inputs: GamepadInputs = gamepadInputs()
+	realInputs: GamepadInputs = gamepadInputs()
+	virtualInputs: GamepadInputs = gamepadInputs()
+
+	dispatch(code: string, input: number) {
+		this.realInputs[code as keyof GamepadInputs] = input
+	}
 
 	poll() {
+		const combinedInputs = gamepadInputs()
+
+		super.poll()
 		this.#updateStickInputs()
-		for (const [code, input] of Object.entries(this.inputs))
+
+		for (const [code, input] of Object.entries(this.realInputs))
+			combinedInputs[code as keyof GamepadInputs] += input
+
+		for (const [code, input] of Object.entries(this.virtualInputs))
+			combinedInputs[code as keyof GamepadInputs] += input
+
+		for (const [code, input] of Object.entries(combinedInputs))
 			this.onInput.publish(code, input)
 	}
 
 	#updateStickInputs() {
-		const {inputs} = this
+		const {virtualInputs: inputs} = this
 
 		const [leftX, leftY] = this.stickLeft.vector
 		const left = breakupStickInputs(leftX, leftY)

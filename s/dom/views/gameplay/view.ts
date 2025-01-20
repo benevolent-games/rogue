@@ -89,7 +89,7 @@ export const Gameplay = shadowView(use => (o: {
 				${o.realm.userInputs.predilection.value === "touch"
 					? html`
 						<div class=toucharea>
-							${VirtualGamepad([o.realm.userInputs.devices.virtualGamepad])}
+							${VirtualGamepad([o.realm.userInputs.devices.gamepad])}
 						</div>
 					`
 					: null}
