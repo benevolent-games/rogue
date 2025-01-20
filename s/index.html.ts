@@ -1,8 +1,7 @@
 
 import "@benev/slate/x/node.js"
 import {constants} from "./constants.js"
-import {git_latest_tag} from "./tools/temp/git_latest_tag.js"
-import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard} from "@benev/turtle"
+import {template, html, easypage, headScripts, git_commit_hash, read_file, renderSocialCard, git_latest_tag} from "@benev/turtle"
 
 const domain = "rogue.benevolent.games"
 const favicon = "/assets/graphics/favicon-ivLoKJGtTXd.png"
