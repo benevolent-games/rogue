@@ -22,6 +22,7 @@ import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 import {PalletPool} from "../../tools/babylon/optimizers/pallet-pool.js"
+import { Averager } from "../../tools/averager.js"
 
 const debug = false
 
@@ -73,13 +74,15 @@ export class Realm {
 		this.#trash.disposer(this.cursor.attach(world.canvas))
 	}
 
-	// dynamic framerate timestep for visual animations and replication
-	get seconds() {
-		return this.world.gameloop.delta.ms / 1000
-	}
+	#millisecondsAverager = new Averager(10)
 
 	get milliseconds() {
-		return this.world.gameloop.delta.ms
+		return this.#millisecondsAverager.average
+	}
+
+	// dynamic framerate timestep for visual animations and replication
+	get seconds() {
+		return this.milliseconds / 1000
 	}
 
 	static async load(dungeonStore: DungeonStore) {
@@ -99,6 +102,8 @@ export class Realm {
 	}
 
 	tick() {
+		this.#millisecondsAverager.add(this.world.gameloop.delta.ms)
+
 		this.userInputs.poll()
 		this.inputControls.tick()
 		this.cameraman.tick(this.seconds)
