@@ -50,8 +50,6 @@ export class Simtron {
 		const playerId = this.simulator.create("crusader", {
 			author,
 			rotation: 0,
-			speed: constants.crusader.speed,
-			speedSprint: constants.crusader.speedSprint,
 			coordinates: Coordinates.import(spawnpoint).array(),
 		})
 

@@ -3,9 +3,13 @@ import {Trashbin} from "@benev/slate"
 import {Degrees, Vec2} from "@benev/toolbox"
 
 import {Realm} from "../../../realm/realm.js"
+import {constants} from "../../../../constants.js"
 import {cardinals} from "../../../../tools/directions.js"
 import {CrusaderInputData, CrusaderState} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
+
+const {crusader} = constants
+const {speed, speedSprint} = crusader.movement
 
 export class PlayerInputs {
 	sprint = false
@@ -102,7 +106,7 @@ export class PlayerInputs {
 
 	#updateMovementIntent() {
 		const {normal} = this.realm.userInputs.grip.state
-		const walkSpeedFraction = this.state.speed / this.state.speedSprint
+		const walkSpeedFraction = speed / speedSprint
 		const move = Vec2.zero()
 		const directions = [
 			normal.moveUp.input.value,

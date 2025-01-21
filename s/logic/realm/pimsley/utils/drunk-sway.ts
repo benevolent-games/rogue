@@ -15,7 +15,7 @@ export class DrunkSway {
 
 	update(tick: number, seconds: number) {
 		if (tick % 60 === 0) {
-			this.#frequency.target = this.#randy.range(2, 4)
+			this.#frequency.target = this.#randy.range(1, 4)
 			this.#amplitude.target = this.#randy.range(0, 1)
 		}
 

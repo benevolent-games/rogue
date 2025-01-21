@@ -34,18 +34,26 @@ export const constants = {
 	},
 
 	crusader: {
-		sharpness: 8,
-		radius: 0.3,
 		height: 1.8,
+		radius: 0.3,
 		torchHeight: 3,
-		speed: 2,
-		speedSprint: 4,
-		sprintSway: Degrees.toRadians(40),
+		movement: {
+			speed: 2.5,
+			speedSprint: 4,
+			omnidirectionalSprint: false,
+		},
+		anim: {
+			speedMultiplier: 1.25,
+			movementSharpness: 10,
+			rotationSharpness: 10,
+			legworkSharpness: 10,
+			sprintSway: Degrees.toRadians(30),
+		},
 		turnCap: {
 			sharpness: 10,
 			adaptationSharpness: 3,
 			standstill: Degrees.toRadians(700),
-			fullsprint: Degrees.toRadians(240),
+			fullsprint: Degrees.toRadians(180),
 		},
 	},
 

@@ -8,6 +8,9 @@ import {Circle} from "../../physics/shapes/circle.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
+const {crusader} = constants
+const {speed, speedSprint} = crusader.movement
+
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	({id, station, state, getState, fromAuthor}) => {
 
@@ -41,15 +44,14 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		simulate: (_tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
 
-			const speed = state.speed
-			const speedSprint = state.speedSprint
-
 			const movementIntent = Coordinates.from(data.movementIntent)
 			const newVelocity = movementIntent
 				.clampMagnitude(1)
 				.multiplyBy(speedSprint)
 
-			const sprintingDetected = newVelocity.magnitude() > speed
+			const sprintingDetected = crusader.movement.omnidirectionalSprint
+				? false
+				: newVelocity.magnitude() > speed
 
 			body.box.center.set_(...state.coordinates)
 			body.velocity.set(newVelocity)

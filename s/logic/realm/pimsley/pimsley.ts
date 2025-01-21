@@ -46,12 +46,12 @@ export class Pimsley {
 	update(tick: number, seconds: number) {
 		const {options, coordinates, rotation} = this
 
-		coordinates.approach(options.coordinates, crusader.sharpness, seconds)
+		coordinates.approach(options.coordinates, crusader.anim.movementSharpness, seconds)
 		const absoluteMovement = this.speedometer.measure(seconds)
 		const moveSpeed = absoluteMovement.magnitude()
 
 		const turnCap = this.#getTurnCap(seconds, moveSpeed)
-		rotation.approach(options.rotation, 10, seconds, turnCap)
+		rotation.approach(options.rotation, crusader.anim.rotationSharpness, seconds, turnCap)
 		const spin = this.anglemeter.measure(seconds)
 		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
 
@@ -70,7 +70,7 @@ export class Pimsley {
 
 	/** radians per second */
 	#getTurnCap(seconds: number, moveSpeed: number) {
-		const {speedSprint, turnCap: {adaptationSharpness, standstill, fullsprint}} = crusader
+		const {movement: {speedSprint}, turnCap: {adaptationSharpness, standstill, fullsprint}} = crusader
 		const target = Scalar.remap(
 			moveSpeed,
 			0, speedSprint,
@@ -83,11 +83,11 @@ export class Pimsley {
 	#getRotationalSway(tick: number, seconds: number, moveSpeed: number) {
 		const factor = Scalar.remap(
 			moveSpeed,
-			0, crusader.speedSprint,
+			0, crusader.movement.speedSprint,
 			0, 1,
 			true,
 		)
-		return factor * this.drunkSway.update(tick, seconds) * crusader.sprintSway
+		return factor * this.drunkSway.update(tick, seconds) * crusader.anim.sprintSway
 	}
 }
 

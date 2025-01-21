@@ -5,6 +5,7 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {constants} from "../../../../constants.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
 
+const {crusader} = constants
 const min = 0.001
 
 export class AmbleGroup {
@@ -38,41 +39,39 @@ export class AmbleGroup {
 	}
 
 	animate(_tick: number, seconds: number, rawMovement: Vec2, _rawSpin: number) {
-		const movement = this.smoothedVelocity.approach(rawMovement, 8, seconds)
-
-		const {crusader} = constants
-		const moveSpeed = movement.magnitude()
+		const movement = this.smoothedVelocity.approach(rawMovement, crusader.anim.legworkSharpness, seconds)
 		const [backwards, forwards] = splitAxis(movement.y)
 		const [leftwards, rightwards] = splitAxis(movement.x)
-
-		const activity = Scalar.clamp(
-			Scalar.remap(moveSpeed, 0, crusader.speedSprint, 0, 1)
-		)
 
 		const strafeyness = Scalar.clamp(
 			Scalar.remap(
 				Math.abs(movement.x),
-				0, crusader.speed,
+				0, crusader.movement.speed,
 				0, 1,
 			)
 		)
 
-		const speed = Scalar.clamp(
-			Scalar.remap(moveSpeed, 0, crusader.speedSprint, 0.5, 1.5)
-		)
-
 		const weight = (x: number) => Scalar.clamp(
-			Scalar.remap(x, 0, crusader.speedSprint, 0, 1),
+			Scalar.remap(x, 0, crusader.movement.speedSprint, 0, 1, true),
 			min,
 		)
 
-		this.forwards.speedRatio = speed + (0.2 * strafeyness)
-
-		this.idle.weight = Scalar.clamp(1 - activity, min)
+		this.forwards.speedRatio = (1 + (0.2 * strafeyness)) * crusader.anim.speedMultiplier
 		this.forwards.weight = weight(forwards)
 		this.backwards.weight = weight(backwards)
-		this.leftwards.weight = weight(leftwards * 2)
-		this.rightwards.weight = weight(rightwards * 2)
+		this.leftwards.weight = weight(leftwards)
+		this.rightwards.weight = weight(rightwards)
+
+		this.idle.weight = new Scalar(0)
+			.add(
+				this.forwards.weight,
+				this.backwards.weight,
+				this.leftwards.weight,
+				this.rightwards.weight,
+			)
+			.clamp(min)
+			.inverse()
+			.x
 	}
 }
 
