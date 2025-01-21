@@ -44,9 +44,10 @@ export const constants = {
 		},
 		anim: {
 			speedMultiplier: 1,
-			movementSharpness: 10,
-			rotationSharpness: 10,
-			legworkSharpness: 10,
+			strafeSpeedIncrease: 0.6,
+			movementSharpness: 20,
+			rotationSharpness: 20,
+			legworkSharpness: 5,
 			sprintSway: Degrees.toRadians(30),
 		},
 		turnCap: {

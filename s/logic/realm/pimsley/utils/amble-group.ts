@@ -48,6 +48,7 @@ export class AmbleGroup {
 				Math.abs(movement.x),
 				0, crusader.movement.speed,
 				0, 1,
+				true,
 			)
 		)
 
@@ -56,7 +57,10 @@ export class AmbleGroup {
 			min,
 		)
 
-		this.forwards.speedRatio = (1 + (0.4 * strafeyness)) * crusader.anim.speedMultiplier
+		this.forwards.speedRatio = crusader.anim.speedMultiplier * (
+			1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
+		)
+
 		this.forwards.weight = weight(forwards)
 		this.backwards.weight = weight(backwards)
 		this.leftwards.weight = weight(leftwards)
