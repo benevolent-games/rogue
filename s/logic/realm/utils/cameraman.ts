@@ -43,7 +43,7 @@ export class Cameraman {
 	/** smoothed final results actually displayed */
 	smoothed = new CameramanState()
 
-	sharpness = 5
+	sharpness = constants.camera.moveSharpness
 
 	constructor(scene: Scene, public lighting: Lighting) {
 		this.camera = new ArcRotateCamera(
