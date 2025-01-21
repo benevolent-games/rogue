@@ -43,14 +43,13 @@ export const constants = {
 			omnidirectionalSprint: false,
 		},
 		anim: {
-			speedMultiplier: 1.25,
+			speedMultiplier: 1,
 			movementSharpness: 10,
 			rotationSharpness: 10,
 			legworkSharpness: 10,
 			sprintSway: Degrees.toRadians(30),
 		},
 		turnCap: {
-			sharpness: 10,
 			adaptationSharpness: 3,
 			standstill: Degrees.toRadians(700),
 			fullsprint: Degrees.toRadians(180),

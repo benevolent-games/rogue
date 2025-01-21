@@ -1,5 +1,5 @@
 
-import {Degrees, Vec2, Circular} from "@benev/toolbox"
+import {Degrees, Vec2, Circular, Scalar} from "@benev/toolbox"
 
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
@@ -49,9 +49,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				.clampMagnitude(1)
 				.multiplyBy(speedSprint)
 
+			const halfwayBetweenWalkAndSprint = Scalar.lerp(speed, speedSprint, 0.5)
+
 			const sprintingDetected = crusader.movement.omnidirectionalSprint
 				? false
-				: newVelocity.magnitude() > speed
+				: newVelocity.magnitude() > halfwayBetweenWalkAndSprint
 
 			body.box.center.set_(...state.coordinates)
 			body.velocity.set(newVelocity)

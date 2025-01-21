@@ -70,13 +70,18 @@ export class Pimsley {
 
 	/** radians per second */
 	#getTurnCap(seconds: number, moveSpeed: number) {
-		const {movement: {speedSprint}, turnCap: {adaptationSharpness, standstill, fullsprint}} = crusader
+		const {
+			movement: {speedSprint},
+			turnCap: {adaptationSharpness, standstill, fullsprint},
+		} = crusader
+
 		const target = Scalar.remap(
 			moveSpeed,
 			0, speedSprint,
 			standstill, fullsprint,
 			true,
 		)
+
 		return this.turnCap.approach(target, adaptationSharpness, seconds).x
 	}
 
