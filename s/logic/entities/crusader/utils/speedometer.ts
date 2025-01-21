@@ -1,23 +1,24 @@
 
 import {Vec2} from "@benev/toolbox"
-import {constants} from "../../../../constants.js"
 
 export class Speedometer {
+	#vector: Vec2
 	#previous: Vec2
 	#velocity = Vec2.zero()
 
-	constructor(place: Vec2) {
-		this.#previous = place.clone()
+	constructor(vector: Vec2) {
+		this.#vector = vector
+		this.#previous = vector.clone()
 	}
 
-	update(place: Vec2) {
-		const difference = place.clone().subtract(this.#previous)
-		this.#previous = place.clone()
-		this.#velocity = difference.multiplyBy(constants.sim.tickRate)
+	measure(deltaTime: number) {
+		const difference = this.#vector.clone().subtract(this.#previous)
+		this.#previous = this.#vector.clone()
+		this.#velocity = difference.divideBy(deltaTime)
 		return this.#velocity
 	}
 
-	/** measured velocity in meters-per-second */
+	/** meters per second */
 	get velocity() {
 		return this.#velocity
 	}

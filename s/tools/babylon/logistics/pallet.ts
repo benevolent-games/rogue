@@ -24,7 +24,7 @@ export class Pallet implements PoolNoodle {
 		this.instantiated = container.instantiateModelsToScene(n => n)
 		const [__root__] = this.instantiated.rootNodes
 
-		this.root = new TransformNode("containerInstanceRoot", container.scene)
+		this.root = new TransformNode("pallet", container.scene)
 
 		this.warehouse = new Warehouse(
 			container.scene,
@@ -37,8 +37,9 @@ export class Pallet implements PoolNoodle {
 		for (const animationGroup of this.instantiated.animationGroups)
 			this.animationGroups.set(animationGroup.name, animationGroup)
 
-		for (const cargo of this.warehouse)
+		for (const cargo of this.warehouse) {
 			cargo.prop.setParent(this.root)
+		}
 	}
 
 	applySpatial(spatial: Partial<Spatial>) {

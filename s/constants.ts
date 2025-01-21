@@ -23,6 +23,7 @@ export const constants = {
 
 	sim: {
 		tickRate: 60,
+		deltaTime: 1 / 60,
 		snapshotRate: 1,
 		localSnapshotArea: new Vec2(25, 25),
 	},
@@ -34,13 +35,15 @@ export const constants = {
 	},
 
 	crusader: {
-		smoothing: 15 / 100,
+		sharpness: 15 / 100,
 		radius: 0.3,
 		height: 1.8,
+		torchHeight: 3,
 		speed: 2,
 		speedSprint: 4,
-		sprintRotationMaxDeviation: Degrees.toRadians(40),
-		turnCaps: {
+		sprintSway: Degrees.toRadians(40),
+		turnCap: {
+			sharpness: 3 / 100,
 			standstill: Degrees.toRadians(700),
 			fullsprint: Degrees.toRadians(240),
 		},

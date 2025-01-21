@@ -3,7 +3,7 @@ import {Randy} from "@benev/toolbox"
 import {constants} from "../../../../constants.js"
 import {Smoothie} from "../../../../tools/smoothie.js"
 
-export class DrunkHeading {
+export class DrunkSway {
 	#frequency = new Smoothie(1)
 	#amplitude = new Smoothie(1)
 

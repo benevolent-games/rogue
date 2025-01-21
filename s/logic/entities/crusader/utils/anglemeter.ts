@@ -1,23 +1,24 @@
 
-import {constants} from "../../../../constants.js"
-import {Circular} from "../../../../tools/temp/circular.js"
+import {Circular} from "@benev/toolbox"
 
 export class Anglemeter {
-	#previous: number
+	#angle: Circular
+	#previous: Circular
 	#velocity = 0
 
-	constructor(angle: number) {
-		this.#previous = angle
+	constructor(angle: Circular) {
+		this.#angle = angle
+		this.#previous = angle.clone()
 	}
 
-	update(angle: number) {
-		const difference = Circular.distance(angle, this.#previous)
-		this.#previous = Circular.normalize(angle)
-		this.#velocity = difference * constants.sim.tickRate
+	measure(deltaTime: number) {
+		const difference = this.#angle.difference(this.#previous)
+		this.#previous = this.#angle.clone()
+		this.#velocity = difference / deltaTime
 		return this.#velocity
 	}
 
-	/** measured velocity in radians-per-second */
+	/** radians per second */
 	get velocity() {
 		return this.#velocity
 	}

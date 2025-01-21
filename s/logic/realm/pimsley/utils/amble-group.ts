@@ -37,29 +37,29 @@ export class AmbleGroup {
 		rightwards.syncAllAnimationsWith(sync)
 	}
 
-	animate(tick: number, rawVelocity: Vec2, _rawAngularVelocity: number) {
-		const vector = this.smoothedVelocity.lerp(rawVelocity, 0.2)
+	animate(_tick: number, rawMovement: Vec2, _rawSpin: number) {
+		const movement = this.smoothedVelocity.lerp(rawMovement, 0.2)
 		// const angularVelocity = this.smoothedAngularVelocity.lerp(rawAngularVelocity, 0.2).x
 
 		const {crusader} = constants
-		const magnitude = vector.magnitude()
-		const [backwards, forwards] = splitAxis(vector.y)
-		const [leftwards, rightwards] = splitAxis(vector.x)
+		const moveSpeed = movement.magnitude()
+		const [backwards, forwards] = splitAxis(movement.y)
+		const [leftwards, rightwards] = splitAxis(movement.x)
 
 		const activity = Scalar.clamp(
-			Scalar.remap(magnitude, 0, crusader.speedSprint, 0, 1)
+			Scalar.remap(moveSpeed, 0, crusader.speedSprint, 0, 1)
 		)
 
 		const strafeyness = Scalar.clamp(
 			Scalar.remap(
-				Math.abs(vector.x),
+				Math.abs(movement.x),
 				0, crusader.speed,
 				0, 1,
 			)
 		)
 
 		const speed = Scalar.clamp(
-			Scalar.remap(magnitude, 0, crusader.speedSprint, 0.5, 1.5)
+			Scalar.remap(moveSpeed, 0, crusader.speedSprint, 0.5, 1.5)
 		)
 
 		const weight = (x: number) => Scalar.clamp(
