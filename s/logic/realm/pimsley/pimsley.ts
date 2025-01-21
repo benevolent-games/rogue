@@ -5,8 +5,8 @@ import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
 import {Coordinates} from "../utils/coordinates.js"
-import {PimsleyAnims} from "./utils/pimsley-anims.js"
 import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
+import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
 
@@ -22,7 +22,7 @@ export class Pimsley {
 	attack: Ref<boolean>
 	block: Ref<boolean>
 
-	anims: PimsleyAnims
+	anims: PimsleyChoreographer
 	anglemeter: Anglemeter
 	speedometer: Speedometer
 
@@ -45,7 +45,7 @@ export class Pimsley {
 		this.attack = options.attack
 		this.block = options.block
 
-		this.anims = new PimsleyAnims(options.pallet)
+		this.anims = new PimsleyChoreographer(options.pallet)
 		this.anglemeter = new Anglemeter(this.rotation)
 		this.speedometer = new Speedometer(this.coordinates)
 	}
@@ -67,14 +67,14 @@ export class Pimsley {
 
 		const movement = absoluteMovement.rotate(-displayRotation)
 
-		this.anims.amble.animate(
+		this.anims.animate({
 			tick,
 			seconds,
 			movement,
 			spin,
-			attack.value,
-			block.value,
-		)
+			attack: attack.value,
+			block: block.value,
+		})
 
 		this.pallet.applySpatial({
 			position: coordinates.position(),
