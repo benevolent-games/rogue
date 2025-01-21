@@ -24,7 +24,7 @@ export class Walling {
 
 	#detector: WallDetector
 
-	fadeSpeed = 3 / 100
+	fadeSpeed = 3
 
 	constructor(
 			realm: Realm,
@@ -57,11 +57,11 @@ export class Walling {
 			make(stump, style => style.stump())
 	}
 
-	renderArea(area: Box2) {
+	renderArea(seconds: number, area: Box2) {
 		const walls = new Set(this.#hashgrid.queryItems(area))
 		this.#spawning(walls)
 		this.#despawning(walls)
-		this.#fading()
+		this.#fading(seconds)
 	}
 
 	#spawning(walls: Set<WallSpec>) {
@@ -89,7 +89,7 @@ export class Walling {
 		}
 	}
 
-	#fading() {
+	#fading(seconds: number) {
 		for (const {spec, meshes} of this.#alive.values()) {
 
 			// determine target opacity
@@ -100,10 +100,11 @@ export class Walling {
 			// animate fading
 			const previous = spec.currentOpacity
 			if (spec.currentOpacity !== spec.targetOpacity) {
-				spec.currentOpacity = Scalar.lerp(
+				spec.currentOpacity = Scalar.approach(
 					spec.currentOpacity,
 					spec.targetOpacity,
 					this.fadeSpeed,
+					seconds,
 				)
 				const diff = Math.abs(spec.targetOpacity - spec.currentOpacity)
 				if (diff < 0.05)

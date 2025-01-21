@@ -121,8 +121,8 @@ export async function clientFlow(
 
 	// init 3d rendering
 	world.rendering.setCamera(realm.cameraman.camera)
-	world.gameloop.on(() => replicator.replicate(renderTick))
 	world.gameloop.on(() => realm.tick())
+	world.gameloop.on(() => replicator.replicate(renderTick))
 	world.gameloop.start()
 
 	smartloop.start()

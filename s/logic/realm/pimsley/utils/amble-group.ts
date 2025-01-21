@@ -37,9 +37,8 @@ export class AmbleGroup {
 		rightwards.syncAllAnimationsWith(sync)
 	}
 
-	animate(_tick: number, rawMovement: Vec2, _rawSpin: number) {
-		const movement = this.smoothedVelocity.lerp(rawMovement, 0.2)
-		// const angularVelocity = this.smoothedAngularVelocity.lerp(rawAngularVelocity, 0.2).x
+	animate(_tick: number, seconds: number, rawMovement: Vec2, _rawSpin: number) {
+		const movement = this.smoothedVelocity.approach(rawMovement, 8, seconds)
 
 		const {crusader} = constants
 		const moveSpeed = movement.magnitude()

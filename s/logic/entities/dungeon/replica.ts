@@ -43,7 +43,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			localArea.center.set(realm.cameraman.desired.pivot)
 
 			const c1 = new Clock()
-			dungeonRenderer.render(localArea)
+			dungeonRenderer.render(realm.seconds, localArea)
 			if (c1.elapsed > 3)
 				c1.log("dungeon culling was slow")
 		},

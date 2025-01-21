@@ -1,5 +1,5 @@
 
-import {Circular, Degrees, Quat, Scalar, Vec2, Vec3} from "@benev/toolbox"
+import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
 
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
@@ -9,7 +9,7 @@ import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
 
-const {crusader, sim: {deltaTime}} = constants
+const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
 
 export class Pimsley {
@@ -43,24 +43,24 @@ export class Pimsley {
 		this.speedometer = new Speedometer(this.coordinates)
 	}
 
-	update(tick: number) {
+	update(tick: number, seconds: number) {
 		const {options, coordinates, rotation} = this
 
-		coordinates.lerp(options.coordinates, crusader.sharpness)
-		const absoluteMovement = this.speedometer.measure(deltaTime)
+		coordinates.approach(options.coordinates, crusader.sharpness, seconds)
+		const absoluteMovement = this.speedometer.measure(seconds)
 		const moveSpeed = absoluteMovement.magnitude()
 
-		const turnCap = this.#getTurnCap(moveSpeed)
-		rotation.lerp(options.rotation, 0.4, turnCap * deltaTime)
-		const spin = this.anglemeter.measure(deltaTime)
-		const sway = this.#getRotationalSway(tick, moveSpeed)
+		const turnCap = this.#getTurnCap(seconds, moveSpeed)
+		rotation.approach(options.rotation, 10, seconds, turnCap)
+		const spin = this.anglemeter.measure(seconds)
+		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
 
 		const displayRotation = this.displayRotation
 			.set(rotationOffset + rotation.x + sway).x
 
 		const movement = absoluteMovement.rotate(-displayRotation)
 
-		this.anims.amble.animate(tick, movement, spin)
+		this.anims.amble.animate(tick, seconds, movement, spin)
 
 		this.pallet.applySpatial({
 			position: coordinates.position(),
@@ -69,25 +69,25 @@ export class Pimsley {
 	}
 
 	/** radians per second */
-	#getTurnCap(moveSpeed: number) {
-		const {speedSprint, turnCap: {sharpness, standstill, fullsprint}} = crusader
+	#getTurnCap(seconds: number, moveSpeed: number) {
+		const {speedSprint, turnCap: {adaptationSharpness, standstill, fullsprint}} = crusader
 		const target = Scalar.remap(
 			moveSpeed,
 			0, speedSprint,
 			standstill, fullsprint,
 			true,
 		)
-		return this.turnCap.lerp(target, sharpness).x
+		return this.turnCap.approach(target, adaptationSharpness, seconds).x
 	}
 
-	#getRotationalSway(tick: number, moveSpeed: number) {
+	#getRotationalSway(tick: number, seconds: number, moveSpeed: number) {
 		const factor = Scalar.remap(
 			moveSpeed,
 			0, crusader.speedSprint,
 			0, 1,
 			true,
 		)
-		return factor * this.drunkSway.update(tick) * crusader.sprintSway
+		return factor * this.drunkSway.update(tick, seconds) * crusader.sprintSway
 	}
 }
 

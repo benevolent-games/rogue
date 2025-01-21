@@ -21,7 +21,7 @@ export const blockReplica = replica<RogueEntities, Realm>()<"block">(
 		replicate: (_, state) => {
 			const {coordinates} = readBlock(state)
 			block.setCoordinates(
-				smoothCoordinates.lerp(coordinates, 20 / 100)
+				smoothCoordinates.approach(coordinates, 8, realm.seconds)
 			)
 		},
 

@@ -1,5 +1,5 @@
 
-import {Degrees, Scalar, Vec3} from "@benev/toolbox"
+import {Circular, Degrees, Scalar, Vec3} from "@benev/toolbox"
 
 import {Scene} from "@babylonjs/core/scene.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
@@ -8,7 +8,6 @@ import {ArcRotateCamera} from "@babylonjs/core/Cameras/arcRotateCamera.js"
 import {Lighting} from "./lighting.js"
 import {Coordinates} from "./coordinates.js"
 import {constants} from "../../../constants.js"
-import {Circular} from "../../../tools/temp/circular.js"
 
 const alphaReset = Degrees.toRadians(-90)
 
@@ -44,7 +43,7 @@ export class Cameraman {
 	/** smoothed final results actually displayed */
 	smoothed = new CameramanState()
 
-	lerp = 10 / 100
+	sharpness = 5
 
 	constructor(scene: Scene, public lighting: Lighting) {
 		this.camera = new ArcRotateCamera(
@@ -86,10 +85,10 @@ export class Cameraman {
 		this.#updateCamera()
 	}
 
-	tick() {
+	tick(seconds: number) {
 		this.#applyDesireConstraints()
 		this.#updateEnforced()
-		this.#updateSmoothed()
+		this.#updateSmoothed(seconds)
 		this.#updateCamera()
 		this.#updateSpotlight()
 	}
@@ -108,18 +107,20 @@ export class Cameraman {
 	#updateEnforced() {
 		this.enforced = this.desired.clone()
 		this.enforced.swivel = Circular.normalize(
-			Math.round(
-				this.enforced.swivel / constants.camera.swivelSnappingIncrements
-			) * constants.camera.swivelSnappingIncrements
+			constants.camera.swivelSnappingIncrements === 0
+				? this.enforced.swivel
+				: Math.round(
+					this.enforced.swivel / constants.camera.swivelSnappingIncrements
+				) * constants.camera.swivelSnappingIncrements
 		)
 	}
 
-	#updateSmoothed() {
-		const {lerp} = this
-		this.smoothed.pivot.lerp(this.enforced.pivot, lerp)
-		this.smoothed.swivel = Circular.lerp(this.smoothed.swivel, this.enforced.swivel, lerp)
-		this.smoothed.tilt = Scalar.lerp(this.smoothed.tilt, this.enforced.tilt, lerp)
-		this.smoothed.distance = Scalar.lerp(this.smoothed.distance, this.enforced.distance, lerp)
+	#updateSmoothed(seconds: number) {
+		const {sharpness} = this
+		this.smoothed.pivot.approach(this.enforced.pivot, sharpness, seconds)
+		this.smoothed.swivel = Circular.approach(this.smoothed.swivel, this.enforced.swivel, sharpness, seconds)
+		this.smoothed.tilt = Scalar.approach(this.smoothed.tilt, this.enforced.tilt, sharpness, seconds)
+		this.smoothed.distance = Scalar.approach(this.smoothed.distance, this.enforced.distance, sharpness, seconds)
 	}
 
 	#updateCamera() {

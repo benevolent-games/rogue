@@ -7,20 +7,20 @@ export class DrunkSway {
 	#frequency = new Smoothie(1)
 	#amplitude = new Smoothie(1)
 
-	#smoothing = 3 / 100
+	#speed = 3
 	#randy = new Randy()
 
 	#phase = 0
 	#lastUpdateTime = 0
 
-	update(tick: number) {
+	update(tick: number, seconds: number) {
 		if (tick % 60 === 0) {
 			this.#frequency.target = this.#randy.range(2, 4)
 			this.#amplitude.target = this.#randy.range(0, 1)
 		}
 
-		const frequency = this.#frequency.lerp(this.#smoothing)
-		const amplitude = this.#amplitude.lerp(this.#smoothing)
+		const frequency = this.#frequency.approach(this.#speed, seconds)
+		const amplitude = this.#amplitude.approach(this.#speed, seconds)
 
 		const time = tick * (1 / constants.sim.tickRate)
 		const deltaTime = time - this.#lastUpdateTime;

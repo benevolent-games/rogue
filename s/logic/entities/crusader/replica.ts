@@ -48,7 +48,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			coordinates.set_(...state.coordinates)
 			rotation.set(state.rotation)
 
-			pimsley.update(tick)
+			pimsley.update(tick, realm.seconds)
 
 			if (capsule)
 				capsule

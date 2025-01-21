@@ -12,8 +12,8 @@ export class Smoothie {
 		return this.x = Scalar.step(this.x, this.target, delta)
 	}
 
-	lerp(fraction: number) {
-		return this.x = Scalar.lerp(this.x, this.target, fraction)
+	approach(speed: number, seconds: number) {
+		return this.x = Scalar.approach(this.x, this.target, speed, seconds)
 	}
 }
 

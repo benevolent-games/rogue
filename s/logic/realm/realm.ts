@@ -73,6 +73,15 @@ export class Realm {
 		this.#trash.disposer(this.cursor.attach(world.canvas))
 	}
 
+	// dynamic framerate timestep for visual animations and replication
+	get seconds() {
+		return this.world.gameloop.delta.ms / 1000
+	}
+
+	get milliseconds() {
+		return this.world.gameloop.delta.ms
+	}
+
 	static async load(dungeonStore: DungeonStore) {
 		const world = await World.load()
 		const lighting = new Lighting(world.scene)
@@ -92,7 +101,7 @@ export class Realm {
 	tick() {
 		this.userInputs.poll()
 		this.inputControls.tick()
-		this.cameraman.tick()
+		this.cameraman.tick(this.seconds)
 		this.cursor.tick()
 
 		if (this.#cursorGraphic)

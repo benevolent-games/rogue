@@ -23,7 +23,6 @@ export const constants = {
 
 	sim: {
 		tickRate: 60,
-		deltaTime: 1 / 60,
 		snapshotRate: 1,
 		localSnapshotArea: new Vec2(25, 25),
 	},
@@ -35,7 +34,7 @@ export const constants = {
 	},
 
 	crusader: {
-		sharpness: 15 / 100,
+		sharpness: 8,
 		radius: 0.3,
 		height: 1.8,
 		torchHeight: 3,
@@ -43,7 +42,8 @@ export const constants = {
 		speedSprint: 4,
 		sprintSway: Degrees.toRadians(40),
 		turnCap: {
-			sharpness: 3 / 100,
+			sharpness: 10,
+			adaptationSharpness: 3,
 			standstill: Degrees.toRadians(700),
 			fullsprint: Degrees.toRadians(240),
 		},
@@ -51,7 +51,7 @@ export const constants = {
 
 	camera: {
 		pivotHeight: 1.2,
-		swivelSnappingIncrements: Degrees.toRadians(45),
+		swivelSnappingIncrements: 0, // Degrees.toRadians(45),
 		distanceBounds: new Vec2(3, 25),
 		tiltBounds: new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60)),
 		initial: {

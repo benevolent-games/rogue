@@ -42,9 +42,9 @@ export class DungeonRenderer {
 		return skin
 	}
 
-	render(area: Box2) {
+	render(seconds: number, area: Box2) {
 		this.skin.flooring.renderArea(area)
-		this.skin.walling.renderArea(area)
+		this.skin.walling.renderArea(seconds, area)
 	}
 
 	dispose() {
