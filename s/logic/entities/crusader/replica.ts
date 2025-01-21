@@ -1,5 +1,5 @@
 
-import {Trashbin} from "@benev/slate"
+import {Ref, Trashbin} from "@benev/slate"
 import {Circular, Quat} from "@benev/toolbox"
 
 import {Realm} from "../../realm/realm.js"
@@ -20,11 +20,13 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const {lighting, pimsleyPallets} = realm
 	const inControl = state.author === replicator.author
 
+	const block = new Ref(false)
+	const attack = new Ref(false)
 	const rotation = new Circular(state.rotation)
 	const coordinates = Coordinates.from(state.coordinates)
 
 	const pallet = pimsleyPallets.acquireCleanly(trash)
-	const pimsley = new Pimsley({pallet, rotation, coordinates})
+	const pimsley = new Pimsley({pallet, rotation, coordinates, block, attack})
 
 	const capsule = debug
 		? trash.disposable(
@@ -47,6 +49,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		replicate: (tick, state) => {
 			coordinates.set_(...state.coordinates)
 			rotation.set(state.rotation)
+			attack.value = state.attack
+			block.value = state.block
 
 			pimsley.update(tick, realm.seconds)
 

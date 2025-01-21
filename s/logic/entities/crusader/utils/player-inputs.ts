@@ -12,6 +12,8 @@ const {crusader} = constants
 const {speed, speedSprint} = crusader.movement
 
 export class PlayerInputs {
+	attack = false
+	block = false
 	sprint = false
 	rotation = 0
 	movementIntent = Vec2.zero()
@@ -50,6 +52,8 @@ export class PlayerInputs {
 			this.#updateRotationViaGripActions()
 
 		return {
+			attack: this.attack,
+			block: this.block,
 			sprint: this.sprint,
 			rotation: this.rotation,
 			movementIntent: this.movementIntent.array(),

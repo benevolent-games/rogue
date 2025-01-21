@@ -38,7 +38,15 @@ export class AmbleGroup {
 		rightwards.syncAllAnimationsWith(sync)
 	}
 
-	animate(_tick: number, seconds: number, rawMovement: Vec2, _rawSpin: number) {
+	animate(
+			_tick: number,
+			seconds: number,
+			rawMovement: Vec2,
+			_rawSpin: number,
+			attack: boolean,
+			block: boolean,
+		) {
+
 		const movement = this.smoothedVelocity.approach(rawMovement, crusader.anim.legworkSharpness, seconds)
 		const [backwards, forwards] = splitAxis(movement.y)
 		const [leftwards, rightwards] = splitAxis(movement.x)

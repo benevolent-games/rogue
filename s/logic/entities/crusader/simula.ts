@@ -17,6 +17,8 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	const {phys} = station.dungeon
 
 	let data: RogueEntities["crusader"]["input"] = {
+		attack: false,
+		block: false,
 		sprint: false,
 		movementIntent: Vec2.zero().array(),
 		rotation: 0,
@@ -64,6 +66,9 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					? movementIntent.rotation() + Degrees.toRadians(90)
 					: data.rotation
 			)
+
+			state.attack = data.attack
+			state.block = data.block
 		},
 		dispose: () => {
 			body.dispose()

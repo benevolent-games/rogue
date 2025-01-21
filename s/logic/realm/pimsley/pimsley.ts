@@ -1,4 +1,5 @@
 
+import {Ref} from "@benev/slate"
 import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
 
 import {DrunkSway} from "./utils/drunk-sway.js"
@@ -18,6 +19,8 @@ export class Pimsley {
 	rotation: Circular
 	coordinates: Coordinates
 	displayRotation: Circular
+	attack: Ref<boolean>
+	block: Ref<boolean>
 
 	anims: PimsleyAnims
 	anglemeter: Anglemeter
@@ -30,6 +33,8 @@ export class Pimsley {
 			pallet: Pallet
 			rotation: Circular
 			coordinates: Coordinates
+			attack: Ref<boolean>
+			block: Ref<boolean>
 		}) {
 
 		this.pallet = options.pallet
@@ -37,6 +42,8 @@ export class Pimsley {
 		this.rotation = options.rotation.clone()
 		this.coordinates = options.coordinates.clone()
 		this.displayRotation = this.rotation.clone()
+		this.attack = options.attack
+		this.block = options.block
 
 		this.anims = new PimsleyAnims(options.pallet)
 		this.anglemeter = new Anglemeter(this.rotation)
@@ -44,7 +51,7 @@ export class Pimsley {
 	}
 
 	update(tick: number, seconds: number) {
-		const {options, coordinates, rotation} = this
+		const {options, coordinates, rotation, attack, block} = this
 
 		coordinates.approach(options.coordinates, crusader.anim.movementSharpness, seconds)
 		const absoluteMovement = this.speedometer.measure(seconds)
@@ -60,7 +67,14 @@ export class Pimsley {
 
 		const movement = absoluteMovement.rotate(-displayRotation)
 
-		this.anims.amble.animate(tick, seconds, movement, spin)
+		this.anims.amble.animate(
+			tick,
+			seconds,
+			movement,
+			spin,
+			attack.value,
+			block.value,
+		)
 
 		this.pallet.applySpatial({
 			position: coordinates.position(),

@@ -21,6 +21,9 @@ export const gameBindings = () => Grip.bindings({
 	normal: {
 		menu: [["KeyB"], ["g.alpha"], ["g.gamma"]],
 
+		attack: [["LMB"], ["g.trigger.right"]],
+		block: [["RMB"], ["g.trigger.left"]],
+
 		sprint: [["ShiftLeft"], ["g.stick.left.click"]],
 
 		moveUp: [["KeyW"], ["Up"], ["g.stick.left.up"]],
@@ -64,7 +67,7 @@ export const gameBindings = () => Grip.bindings({
 			["g.stick.right.down", {
 				with: ["g.stick.right.click"],
 				sensitivity: sens.camera.stick,
-			}]
+			}],
 		],
 
 		cameraZoomIn: [
@@ -72,7 +75,7 @@ export const gameBindings = () => Grip.bindings({
 			["g.up", {
 				with: ["g.stick.right.click"],
 				sensitivity: sens.zoom.stick,
-			}]
+			}],
 		],
 
 		cameraZoomOut: [
@@ -80,7 +83,7 @@ export const gameBindings = () => Grip.bindings({
 			["g.down", {
 				with: ["g.stick.right.click"],
 				sensitivity: sens.zoom.stick,
-			}]
+			}],
 		],
 	},
 })
