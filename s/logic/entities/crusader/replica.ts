@@ -49,6 +49,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		replicate: (tick, state) => {
 			coordinates.set_(...state.coordinates)
 			rotation.set(state.rotation)
+
 			attack.value = !!state.attack
 			block.value = state.block
 

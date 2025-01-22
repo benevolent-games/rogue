@@ -48,14 +48,13 @@ export const constants = {
 			speedMultiplier: 5 / 10,
 			strafeSpeedIncrease: 0.2,
 			movementSharpness: 20,
-			rotationSharpness: 20,
-			legworkSharpness: 5,
 			sprintSway: Degrees.toRadians(15),
 		},
-		turnCap: {
-			adaptationSharpness: 3,
-			standstill: Degrees.toRadians(900),
-			fullsprint: Degrees.toRadians(240),
+		grace: {
+			adaptation: 3,
+			legworkSharpness: new Vec2(5, 3),
+			turnSharpness: new Vec2(20, 3),
+			turnCap: new Vec2(Degrees.toRadians(900), Degrees.toRadians(180)),
 		},
 	},
 

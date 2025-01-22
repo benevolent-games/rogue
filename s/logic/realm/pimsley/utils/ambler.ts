@@ -21,11 +21,11 @@ export class Ambler {
 	}) {}
 
 	animate(state: AmbleState) {
-		const {seconds} = state
+		const {seconds, grace} = state
 
 		const movement = this.smoothedVelocity.approach(
 			state.movement,
-			crusader.anim.legworkSharpness,
+			grace.legworkSharpness,
 			seconds,
 		)
 

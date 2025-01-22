@@ -1,6 +1,6 @@
 
 import {Ref} from "@benev/slate"
-import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
+import {Circular, Degrees, Quat, Scalar, Vec2} from "@benev/toolbox"
 
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
@@ -9,6 +9,7 @@ import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
 import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
+import { GraceTracker } from "./utils/grace.js"
 
 const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
@@ -26,8 +27,9 @@ export class Pimsley {
 	anglemeter: Anglemeter
 	speedometer: Speedometer
 
+	graceTracker = new GraceTracker()
 	drunkSway = new DrunkSway()
-	turnCap = new Scalar(Degrees.toRadians(240))
+	// turnCap = new Scalar(Degrees.toRadians(240))
 
 	constructor(public options: {
 			pallet: Pallet
@@ -56,9 +58,10 @@ export class Pimsley {
 		coordinates.approach(options.coordinates, crusader.anim.movementSharpness, seconds)
 		const absoluteMovement = this.speedometer.measure(seconds)
 		const moveSpeed = absoluteMovement.magnitude()
+		const grace = this.graceTracker.update(moveSpeed, seconds)
 
-		const turnCap = this.#getTurnCap(seconds, moveSpeed)
-		rotation.approach(options.rotation, crusader.anim.rotationSharpness, seconds, turnCap)
+		// const turnCap = this.#getTurnCap(seconds, moveSpeed)
+		rotation.approach(options.rotation, grace.turnSharpness, seconds, grace.turnCap)
 		const spin = this.anglemeter.measure(seconds)
 		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
 
@@ -72,6 +75,7 @@ export class Pimsley {
 			seconds,
 			movement,
 			spin,
+			grace,
 			attack: attack.value,
 			block: block.value,
 		})
@@ -82,22 +86,22 @@ export class Pimsley {
 		})
 	}
 
-	/** radians per second */
-	#getTurnCap(seconds: number, moveSpeed: number) {
-		const {
-			movement: {speedSprint},
-			turnCap: {adaptationSharpness, standstill, fullsprint},
-		} = crusader
-
-		const target = Scalar.remap(
-			moveSpeed,
-			0, speedSprint,
-			standstill, fullsprint,
-			true,
-		)
-
-		return this.turnCap.approach(target, adaptationSharpness, seconds).x
-	}
+	// /** radians per second */
+	// #getTurnCap(seconds: number, moveSpeed: number) {
+	// 	const {
+	// 		movement: {speedSprint},
+	// 		turnCap: {adaptationSharpness, standstill, fullsprint},
+	// 	} = crusader
+	//
+	// 	const target = Scalar.remap(
+	// 		moveSpeed,
+	// 		0, speedSprint,
+	// 		standstill, fullsprint,
+	// 		true,
+	// 	)
+	//
+	// 	return this.turnCap.approach(target, adaptationSharpness, seconds).x
+	// }
 
 	#getRotationalSway(tick: number, seconds: number, moveSpeed: number) {
 		const factor = Scalar.remap(
