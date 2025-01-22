@@ -45,6 +45,7 @@ export const constants = {
 		anim: {
 			speedMultiplier: 1,
 			strafeSpeedIncrease: 0.6,
+			// strafeSpeedIncrease: 2,
 			movementSharpness: 20,
 			rotationSharpness: 20,
 			legworkSharpness: 5,

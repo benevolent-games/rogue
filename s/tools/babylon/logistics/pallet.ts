@@ -20,7 +20,7 @@ export class Pallet implements PoolNoodle {
 	instantiated: InstantiatedEntries
 	animationGroups = new Map2<string, AnimationGroup>()
 
-	constructor(container: AssetContainer) {
+	constructor(public container: AssetContainer) {
 		this.instantiated = container.instantiateModelsToScene(n => n)
 		const [__root__] = this.instantiated.rootNodes
 

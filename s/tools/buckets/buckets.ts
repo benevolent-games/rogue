@@ -54,7 +54,7 @@ export class BucketStack implements Vessel {
 }
 
 export class BucketShare extends BucketStack {
-	fill(amount: number): number {
+	fill(amount: number) {
 		if (amount <= 0) return 0
 
 		let remaining = amount

@@ -43,6 +43,7 @@ export class PlayerInputs {
 	get(): CrusaderInputData {
 		this.#lookButtonsDeactivateMouseMode()
 
+		this.#updateCombat()
 		this.#updateSprint()
 		this.#updateMovementIntent()
 
@@ -75,6 +76,12 @@ export class PlayerInputs {
 		if (buttons.some(b => b.pressed.changed && b.pressed.value)) {
 			this.mouse = false
 		}
+	}
+
+	#updateCombat() {
+		const {normal} = this.realm.userInputs.grip.state
+		this.attack = normal.attack.pressed.value
+		this.block = normal.block.pressed.value
 	}
 
 	#updateSprint() {
@@ -133,9 +140,8 @@ export class PlayerInputs {
 
 		this.movementIntent.set(move)
 
-		if (this.#moveIsPressed()) {
+		if (this.#moveIsPressed())
 			this.rotation = move.rotation() + Degrees.toRadians(90)
-		}
 	}
 
 	#updateRotationViaGripActions() {

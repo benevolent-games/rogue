@@ -1,6 +1,5 @@
 
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
-
 import {Bucket} from "./buckets.js"
 
 export class BabylonAnimBucket extends Bucket {
@@ -10,7 +9,7 @@ export class BabylonAnimBucket extends Bucket {
 	}
 
 	#setWeight(weight: number) {
-		this.animationGroup.weight = Math.max(weight, Number.EPSILON)
+		this.animationGroup.weight = Math.max(weight, 0.001)
 	}
 
 	fill(amount: number) {

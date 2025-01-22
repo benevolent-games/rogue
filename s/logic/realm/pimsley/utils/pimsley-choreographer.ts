@@ -1,38 +1,72 @@
 
+import {Scalar} from "@benev/toolbox"
+
 import {Ambler} from "./ambler.js"
 import {PimsleyAnimState} from "../types.js"
+import {choosePimsleyAnims} from "./choose-pimsley-anims.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
-import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
-	#anims: PimsleyAnims
-	#graph: BucketStack
 	#ambler: Ambler
+	#actualizeAnimations: () => void
+
+	#attack = new Scalar(0)
 
 	constructor(pallet: Pallet) {
-		const anims = this.#anims = choosePimsleyAnims(pallet)
+		const anims = choosePimsleyAnims(pallet)
+		this.#ambler = new Ambler(anims)
 
-		this.#graph = new BucketStack([
-			anims.attack,
+		const upperStack = new BucketStack([
+			anims.attack.upper,
 			new BucketShare([
-				anims.forward,
-				anims.backward,
-				anims.leftward,
-				anims.rightward,
+				anims.forward.upper,
+				anims.backward.upper,
+				anims.leftward.upper,
+				anims.rightward.upper,
 			]),
-			anims.idle,
+			anims.idle.upper,
 		])
 
-		anims.attack.capacity = 0
+		const lowerStack = new BucketStack([
+			new BucketShare([
+				anims.forward.lower,
+				anims.backward.lower,
+				anims.leftward.lower,
+				anims.rightward.lower,
+			]),
+			anims.attack.lower,
+			anims.idle.lower,
+		])
 
-		this.#ambler = new Ambler(anims)
+		anims.idle.capacity = 1
+		anims.attack.capacity = 0
+		anims.forward.capacity = 0
+		anims.backward.capacity = 0
+		anims.leftward.capacity = 0
+		anims.rightward.capacity = 0
+
+		anims.attack.execute(a => a.play(true))
+		anims.forward.execute(a => a.play(true))
+		anims.backward.execute(a => a.play(true))
+		anims.leftward.execute(a => a.play(true))
+		anims.rightward.execute(a => a.play(true))
+		anims.idle.execute(a => a.play(true))
+
+		this.#actualizeAnimations = () => {
+			upperStack.dump()
+			upperStack.fill(1)
+
+			lowerStack.dump()
+			lowerStack.fill(1)
+		}
+
+		this.#actualizeAnimations()
 	}
 
 	animate(state: PimsleyAnimState) {
 		this.#ambler.animate(state)
-		this.#graph.dump()
-		this.#graph.fill(1)
+		this.#actualizeAnimations()
 	}
 }
 
