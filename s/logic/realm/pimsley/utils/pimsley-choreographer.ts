@@ -1,7 +1,6 @@
 
-import {Scalar} from "@benev/toolbox"
-
 import {Ambler} from "./ambler.js"
+import {Combatant} from "./combatant.js"
 import {PimsleyAnimState} from "../types.js"
 import {choosePimsleyAnims} from "./choose-pimsley-anims.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
@@ -9,13 +8,14 @@ import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
 	#ambler: Ambler
+	#combatant: Combatant
 	#actualizeAnimations: () => void
-
-	#attack = new Scalar(0)
 
 	constructor(pallet: Pallet) {
 		const anims = choosePimsleyAnims(pallet)
+
 		this.#ambler = new Ambler(anims)
+		this.#combatant = new Combatant(anims)
 
 		const upperStack = new BucketStack([
 			anims.attack.upper,
@@ -66,6 +66,7 @@ export class PimsleyChoreographer {
 
 	animate(state: PimsleyAnimState) {
 		this.#ambler.animate(state)
+		this.#combatant.animate(state)
 		this.#actualizeAnimations()
 	}
 }

@@ -19,6 +19,18 @@ export class PimsleyAnim {
 		this.lower.animationGroup.goToFrame(frame, true)
 	}
 
+	get from() {
+		return this.upper.animationGroup.from
+	}
+
+	get to() {
+		return this.upper.animationGroup.to
+	}
+
+	get durationSeconds() {
+		return (this.to - this.from) / 60
+	}
+
 	get speedRatio() {
 		return this.upper.animationGroup.speedRatio
 	}
