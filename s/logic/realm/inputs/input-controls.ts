@@ -16,15 +16,12 @@ export class InputControls {
 			public cameraman: Cameraman,
 			public userInputs: UserInputs,
 		) {
-		const isRightMouse = (event: PointerEvent) => event.button === 2
+
 		const isMiddleMouse = (event: PointerEvent) => event.button === 1
 		const sensitivityRadians = Arcseconds.toRadians(this.sensitivityApd)
 
 		this.dragQueen = new DragQueen({
-			predicate: event => (
-				isRightMouse(event) ||
-				isMiddleMouse(event)
-			),
+			predicate: event => isMiddleMouse(event),
 			onAnyDrag: () => {},
 			onAnyClick: () => {},
 			onIntendedDrag: event => {

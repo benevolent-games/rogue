@@ -38,15 +38,15 @@ export const constants = {
 		radius: 0.3,
 		torchHeight: 3,
 		movement: {
-			speed: 2,
+			speed: 1.75,
 			speedSprint: 3,
 			attackingSpeedMultiplier: 1,
 			sprintWhileAttacking: false,
 			omnidirectionalSprint: false,
 		},
 		anim: {
-			speedMultiplier: 0.75,
-			strafeSpeedIncrease: 0.6,
+			speedMultiplier: 5 / 10,
+			strafeSpeedIncrease: 0.2,
 			movementSharpness: 20,
 			rotationSharpness: 20,
 			legworkSharpness: 5,
@@ -54,8 +54,8 @@ export const constants = {
 		},
 		turnCap: {
 			adaptationSharpness: 3,
-			standstill: Degrees.toRadians(700),
-			fullsprint: Degrees.toRadians(180),
+			standstill: Degrees.toRadians(900),
+			fullsprint: Degrees.toRadians(240),
 		},
 	},
 

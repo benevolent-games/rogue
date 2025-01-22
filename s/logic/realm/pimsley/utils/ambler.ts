@@ -23,7 +23,12 @@ export class Ambler {
 	animate(state: AmbleState) {
 		const {seconds} = state
 
-		const movement = this.smoothedVelocity.approach(state.movement, crusader.anim.legworkSharpness, seconds)
+		const movement = this.smoothedVelocity.approach(
+			state.movement,
+			crusader.anim.legworkSharpness,
+			seconds,
+		)
+
 		const [backwards, forwards] = splitAxis(movement.y)
 		const [leftwards, rightwards] = splitAxis(movement.x)
 
@@ -36,11 +41,11 @@ export class Ambler {
 			)
 		)
 
-		const weight = (x: number) => Scalar.clamp(
-			Scalar.remap(x, 0, crusader.movement.speedSprint, 0, 1, true),
+		const weight = (x: number, max: number) => Scalar.clamp(
+			Scalar.remap(x, 0, max, 0, 1, true),
 		)
 
-		const speed = crusader.anim.speedMultiplier * (
+		const speed = (crusader.movement.speed * crusader.anim.speedMultiplier) * (
 			1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
 		)
 
@@ -49,10 +54,10 @@ export class Ambler {
 		this.anims.leftward.speedRatio = speed
 		this.anims.rightward.speedRatio = speed
 
-		this.anims.forward.capacity = weight(forwards)
-		this.anims.backward.capacity = weight(backwards)
-		this.anims.leftward.capacity = weight(leftwards)
-		this.anims.rightward.capacity = weight(rightwards)
+		this.anims.forward.capacity = weight(forwards, crusader.movement.speedSprint)
+		this.anims.backward.capacity = weight(backwards, crusader.movement.speedSprint)
+		this.anims.leftward.capacity = weight(leftwards, crusader.movement.speed)
+		this.anims.rightward.capacity = weight(rightwards, crusader.movement.speed)
 	}
 }
 
