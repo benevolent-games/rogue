@@ -51,7 +51,7 @@ export class Simtron {
 			author,
 			rotation: 0,
 			coordinates: Coordinates.import(spawnpoint).array(),
-			attack: false,
+			attack: null,
 			block: false,
 		})
 

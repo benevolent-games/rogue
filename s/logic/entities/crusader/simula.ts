@@ -43,7 +43,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	})
 
 	return {
-		simulate: (_tick, state, inputs) => {
+		simulate: (tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
 
 			const movementIntent = Coordinates.from(data.movementIntent)
@@ -67,8 +67,13 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					: data.rotation
 			)
 
-			state.attack = data.attack
 			state.block = data.block
+
+			if (state.attack && tick >= state.attack.expiresAtTick)
+				state.attack = null
+
+			if (data.attack && !state.attack)
+				state.attack = {expiresAtTick: tick + 76}
 		},
 		dispose: () => {
 			body.dispose()

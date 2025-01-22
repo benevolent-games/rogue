@@ -3,8 +3,9 @@ import {Scalar} from "@benev/toolbox"
 import {PimsleyAnim} from "./pimsley-anim.js"
 
 export class Combatant {
+	#attack = false
+	#attackPrevious = false
 	#attackBlend = 0
-	#attack: Attack | null = null
 
 	constructor(public anims: {
 		attack: PimsleyAnim,
@@ -16,29 +17,15 @@ export class Combatant {
 			seconds: number,
 		}) {
 
-		if (state.attack && !this.#attack) {
-			this.anims.attack.execute(a => a.reset())
-			this.#attack = new Attack(this.anims.attack.durationSeconds)
-		}
+		this.#attackPrevious = this.#attack
+		this.#attack = !!state.attack
+		const change = this.#attack !== this.#attackPrevious
 
-		if (this.#attack && this.#attack.isExpired()) {
-			this.#attack = null
-		}
+		if (change && this.#attack)
+			this.anims.attack.execute(a => a.reset())
 
 		this.#attackBlend = Scalar.approach(this.#attackBlend, this.#attack ? 1 : 0, 10, state.seconds)
 		this.anims.attack.capacity = this.#attackBlend
-	}
-}
-
-export class Attack {
-	expiresAt: number
-
-	constructor(public durationSeconds: number) {
-		this.expiresAt = Date.now() + (this.durationSeconds * 1000)
-	}
-
-	isExpired() {
-		return Date.now() >= this.expiresAt
 	}
 }
 

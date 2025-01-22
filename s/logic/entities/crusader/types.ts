@@ -5,7 +5,7 @@ export type CrusaderState = {
 	author: number
 	coordinates: Vec2Array
 	rotation: number
-	attack: boolean
+	attack: AttackState | null
 	block: boolean
 }
 
@@ -15,5 +15,9 @@ export type CrusaderInputData = {
 	sprint: boolean
 	rotation: number
 	movementIntent: Vec2Array
+}
+
+export type AttackState = {
+	expiresAtTick: number
 }
 
