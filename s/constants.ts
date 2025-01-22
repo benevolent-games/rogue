@@ -7,7 +7,7 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
-		pimsleyGlb: "/assets/glbs/pimsley-anims14.glb",
+		pimsleyGlb: "/assets/glbs/pimsley-anims13.glb",
 		shaders: {
 			retro: "/assets/shaders/retro-02.json",
 		},
@@ -39,13 +39,13 @@ export const constants = {
 		torchHeight: 3,
 		movement: {
 			speed: 2,
-			speedSprint: 4,
+			speedSprint: 3,
 			attackingSpeedMultiplier: 1,
 			sprintWhileAttacking: false,
 			omnidirectionalSprint: false,
 		},
 		anim: {
-			speedMultiplier: 1,
+			speedMultiplier: 0.75,
 			strafeSpeedIncrease: 0.6,
 			movementSharpness: 20,
 			rotationSharpness: 20,
