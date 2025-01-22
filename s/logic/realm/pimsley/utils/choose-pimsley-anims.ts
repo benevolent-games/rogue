@@ -11,12 +11,18 @@ export function choosePimsleyAnims(pallet: Pallet) {
 	)
 
 	return {
-		attack: anim("swing"),
 		idle: anim("idle-standmovement"),
+
 		forward: anim("run-forwards"),
 		backward: anim("run-backwards"),
 		leftward: anim("strafe-left"),
 		rightward: anim("strafe-right"),
+		turnLeft: anim("turn-left"),
+		turnRight: anim("turn-right"),
+
+		attack: anim("attack-swing"),
+		block: anim("block-shield"),
+		leanCorrection: anim("spine-lean-correction"),
 	}
 }
 

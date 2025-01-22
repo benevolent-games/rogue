@@ -7,7 +7,7 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
-		pimsleyGlb: "/assets/glbs/pimsley-anims13.glb",
+		pimsleyGlb: "/assets/glbs/pimsley-anims14.glb",
 		shaders: {
 			retro: "/assets/shaders/retro-02.json",
 		},
@@ -45,7 +45,6 @@ export const constants = {
 		anim: {
 			speedMultiplier: 1,
 			strafeSpeedIncrease: 0.6,
-			// strafeSpeedIncrease: 2,
 			movementSharpness: 20,
 			rotationSharpness: 20,
 			legworkSharpness: 5,
