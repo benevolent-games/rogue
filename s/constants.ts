@@ -60,7 +60,7 @@ export const constants = {
 	},
 
 	camera: {
-		moveSharpness: 10,
+		moveSharpness: 3,
 		pivotHeight: 1.2,
 		swivelSnappingIncrements: 0, // Degrees.toRadians(45),
 		distanceBounds: new Vec2(3, 25),
