@@ -48,7 +48,7 @@ export const constants = {
 			movementSharpness: 20,
 			rotationSharpness: 20,
 			legworkSharpness: 5,
-			sprintSway: Degrees.toRadians(30),
+			sprintSway: Degrees.toRadians(15),
 		},
 		turnCap: {
 			adaptationSharpness: 3,
