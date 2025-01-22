@@ -46,10 +46,23 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		simulate: (tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
 
+			state.block = data.block
+
+			if (state.attack && tick >= state.attack.expiresAtTick)
+				state.attack = null
+
+			if (data.attack && !state.attack)
+				state.attack = {expiresAtTick: tick + 76}
+
+			const speedLimit = state.attack
+				? speed * crusader.movement.attackingSpeedMultiplier
+				: speedSprint * crusader.movement.attackingSpeedMultiplier
+
 			const movementIntent = Coordinates.from(data.movementIntent)
 			const newVelocity = movementIntent
 				.clampMagnitude(1)
 				.multiplyBy(speedSprint)
+				.clampMagnitude(speedLimit)
 
 			const halfwayBetweenWalkAndSprint = Scalar.lerp(speed, speedSprint, 0.5)
 
@@ -67,13 +80,6 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					: data.rotation
 			)
 
-			state.block = data.block
-
-			if (state.attack && tick >= state.attack.expiresAtTick)
-				state.attack = null
-
-			if (data.attack && !state.attack)
-				state.attack = {expiresAtTick: tick + 76}
 		},
 		dispose: () => {
 			body.dispose()

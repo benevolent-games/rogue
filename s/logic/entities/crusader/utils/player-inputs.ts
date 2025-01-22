@@ -86,7 +86,7 @@ export class PlayerInputs {
 
 	#updateSprint() {
 		const {grip} = this.realm.userInputs
-		const cancel = this.#lookIsPressed() || !this.#moveIsPressed()
+		const cancel = this.#lookIsPressed() || !this.#moveIsPressed() || this.#combatButtonIsPressed()
 		const sprint = grip.state.normal.sprint.pressed.value
 
 		if (cancel)
@@ -112,6 +112,14 @@ export class PlayerInputs {
 			normal.lookDown.pressed.value ||
 			normal.lookLeft.pressed.value ||
 			normal.lookRight.pressed.value
+		)
+	}
+
+	#combatButtonIsPressed() {
+		const {normal} = this.realm.userInputs.grip.state
+		return (
+			normal.attack.pressed.value ||
+			normal.block.pressed.value
 		)
 	}
 
