@@ -2,8 +2,8 @@
 import {Scalar, Vec2} from "@benev/toolbox"
 
 import {AmbleState} from "../types.js"
-import {Anim} from "../../../../tools/anims.js"
 import {constants} from "../../../../constants.js"
+import {BabylonAnimBucket} from "../../../../tools/buckets/babylon-anim.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
 
 const {crusader} = constants
@@ -13,18 +13,18 @@ export class Ambler {
 	smoothedAngularVelocity = new Scalar(0)
 
 	constructor(public anims: {
-			idle: Anim,
-			forward: Anim,
-			backward: Anim,
-			leftward: Anim,
-			rightward: Anim,
+			idle: BabylonAnimBucket,
+			forward: BabylonAnimBucket,
+			backward: BabylonAnimBucket,
+			leftward: BabylonAnimBucket,
+			rightward: BabylonAnimBucket,
 		}) {
 
-		anims.idle.weight = 0
-		anims.forward.weight = 0
-		anims.backward.weight = 0
-		anims.leftward.weight = 0
-		anims.rightward.weight = 0
+		anims.idle.capacity = 1
+		anims.forward.capacity = 1
+		anims.backward.capacity = 1
+		anims.leftward.capacity = 1
+		anims.rightward.capacity = 1
 
 		anims.idle.animationGroup.play(true)
 		anims.forward.animationGroup.play(true)
@@ -62,21 +62,21 @@ export class Ambler {
 			1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
 		)
 
-		this.anims.forward.weight = weight(forwards)
-		this.anims.backward.weight = weight(backwards)
-		this.anims.leftward.weight = weight(leftwards)
-		this.anims.rightward.weight = weight(rightwards)
+		this.anims.forward.capacity = weight(forwards)
+		this.anims.backward.capacity = weight(backwards)
+		this.anims.leftward.capacity = weight(leftwards)
+		this.anims.rightward.capacity = weight(rightwards)
 
-		this.anims.idle.weight = new Scalar(0)
-			.add(
-				this.anims.forward.weight,
-				this.anims.backward.weight,
-				this.anims.leftward.weight,
-				this.anims.rightward.weight,
-			)
-			.inverse()
-			.clamp()
-			.x
+		// this.anims.idle.weight = new Scalar(0)
+		// 	.add(
+		// 		this.anims.forward.weight,
+		// 		this.anims.backward.weight,
+		// 		this.anims.leftward.weight,
+		// 		this.anims.rightward.weight,
+		// 	)
+		// 	.inverse()
+		// 	.clamp()
+		// 	.x
 	}
 }
 

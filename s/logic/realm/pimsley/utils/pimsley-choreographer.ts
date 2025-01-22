@@ -1,20 +1,21 @@
 
 import {Ambler} from "./ambler.js"
 import {PimsleyAnimState} from "../types.js"
-import {choosePimsleyAnims} from "./choose-pimsley-anims.js"
-import {AnimMixer, AnimStack} from "../../../../tools/anims.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
+import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
+import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
-	#graph: AnimStack
+	#anims: PimsleyAnims
+	#graph: BucketStack
 	#ambler: Ambler
 
 	constructor(pallet: Pallet) {
-		const anims = choosePimsleyAnims(pallet)
+		const anims = this.#anims = choosePimsleyAnims(pallet)
 
-		this.#graph = new AnimStack([
+		this.#graph = new BucketStack([
 			anims.attack,
-			new AnimMixer([
+			new BucketShare([
 				anims.forward,
 				anims.backward,
 				anims.leftward,
@@ -23,12 +24,15 @@ export class PimsleyChoreographer {
 			anims.idle,
 		])
 
+		anims.attack.capacity = 0
+
 		this.#ambler = new Ambler(anims)
 	}
 
 	animate(state: PimsleyAnimState) {
 		this.#ambler.animate(state)
-		this.#graph.update()
+		this.#graph.dump()
+		this.#graph.fill(1)
 	}
 }
 
