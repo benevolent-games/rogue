@@ -25,6 +25,8 @@ export class PimsleyChoreographer {
 				anims.leftward.upper,
 				anims.rightward.upper,
 			]),
+			anims.turnLeft.upper,
+			anims.turnRight.upper,
 			anims.idle.upper,
 		])
 
@@ -36,6 +38,8 @@ export class PimsleyChoreographer {
 				anims.rightward.lower,
 			]),
 			anims.attack.lower,
+			anims.turnLeft.upper,
+			anims.turnRight.upper,
 			anims.idle.lower,
 		])
 
@@ -45,6 +49,8 @@ export class PimsleyChoreographer {
 		anims.backward.capacity = 0
 		anims.leftward.capacity = 0
 		anims.rightward.capacity = 0
+		anims.turnLeft.capacity = 0
+		anims.turnRight.capacity = 0
 
 		anims.attack.execute(a => a.play(true))
 		anims.forward.execute(a => a.play(true))

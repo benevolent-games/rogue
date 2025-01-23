@@ -14,10 +14,14 @@ export class Ambler {
 
 	constructor(public anims: {
 		idle: PimsleyAnim,
+
 		forward: PimsleyAnim,
 		backward: PimsleyAnim,
 		leftward: PimsleyAnim,
 		rightward: PimsleyAnim,
+
+		turnLeft: PimsleyAnim,
+		turnRight: PimsleyAnim,
 	}) {}
 
 	animate(state: AmbleState) {
@@ -53,11 +57,15 @@ export class Ambler {
 		this.anims.backward.speedRatio = speed
 		this.anims.leftward.speedRatio = speed
 		this.anims.rightward.speedRatio = speed
+		this.anims.turnLeft.speedRatio = speed
+		this.anims.turnRight.speedRatio = speed
 
 		this.anims.forward.capacity = weight(forwards, crusader.movement.sprintSpeed)
 		this.anims.backward.capacity = weight(backwards, crusader.movement.sprintSpeed)
 		this.anims.leftward.capacity = weight(leftwards, crusader.movement.walkSpeed)
 		this.anims.rightward.capacity = weight(rightwards, crusader.movement.walkSpeed)
+		this.anims.turnLeft.capacity = weight(1, crusader.movement.walkSpeed)
+		this.anims.turnRight.capacity = weight(0, crusader.movement.walkSpeed)
 	}
 }
 
