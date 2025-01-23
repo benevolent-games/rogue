@@ -14,12 +14,10 @@ export class Ambler {
 
 	constructor(public anims: {
 		idle: PimsleyAnim,
-
 		forward: PimsleyAnim,
 		backward: PimsleyAnim,
 		leftward: PimsleyAnim,
 		rightward: PimsleyAnim,
-
 		turnLeft: PimsleyAnim,
 		turnRight: PimsleyAnim,
 	}) {}

@@ -6,12 +6,12 @@ export type CrusaderState = {
 	coordinates: Vec2Array
 	rotation: number
 	attack: AttackState | null
-	block: boolean
+	block: number
 }
 
 export type CrusaderInputData = {
 	attack: boolean
-	block: boolean
+	block: number
 	sprint: boolean
 	rotation: number
 	movementIntent: Vec2Array

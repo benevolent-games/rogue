@@ -19,6 +19,7 @@ export class PimsleyChoreographer {
 
 		const upperStack = new BucketStack([
 			anims.attack.upper,
+			anims.block.upper,
 			new BucketShare([
 				anims.forward.upper,
 				anims.backward.upper,
@@ -40,6 +41,7 @@ export class PimsleyChoreographer {
 			anims.turnLeft.lower,
 			anims.turnRight.lower,
 			anims.attack.lower,
+			anims.block.lower,
 			anims.idle.lower,
 		])
 
@@ -51,15 +53,19 @@ export class PimsleyChoreographer {
 		anims.rightward.capacity = 0
 		anims.turnLeft.capacity = 0
 		anims.turnRight.capacity = 0
+		anims.block.capacity = 0
 
+		anims.idle.execute(a => a.play(true))
 		anims.attack.execute(a => a.play(true))
+		anims.block.execute(a => a.play(true))
 		anims.forward.execute(a => a.play(true))
 		anims.backward.execute(a => a.play(true))
 		anims.leftward.execute(a => a.play(true))
 		anims.rightward.execute(a => a.play(true))
 		anims.turnLeft.execute(a => a.play(true))
 		anims.turnRight.execute(a => a.play(true))
-		anims.idle.execute(a => a.play(true))
+		// anims.leanCorrection.capacity = 0
+		// anims.leanCorrection.execute(a => a.play(true))
 
 		this.#actualizeAnimations = () => {
 			upperStack.dump()

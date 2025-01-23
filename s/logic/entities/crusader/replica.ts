@@ -20,7 +20,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const {lighting, pimsleyPallets} = realm
 	const inControl = state.author === replicator.author
 
-	const block = new Ref(false)
+	const block = new Ref(0)
 	const attack = new Ref(false)
 	const rotation = new Circular(state.rotation)
 	const coordinates = Coordinates.from(state.coordinates)

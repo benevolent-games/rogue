@@ -21,22 +21,21 @@ export class Pimsley {
 	coordinates: Coordinates
 	displayRotation: Circular
 	attack: Ref<boolean>
-	block: Ref<boolean>
+	block: Ref<number>
 
 	anims: PimsleyChoreographer
 	anglemeter: Anglemeter
 	speedometer: Speedometer
 
-	graceTracker = new GraceTracker()
 	drunkSway = new DrunkSway()
-	// turnCap = new Scalar(Degrees.toRadians(240))
+	graceTracker = new GraceTracker()
 
 	constructor(public options: {
 			pallet: Pallet
 			rotation: Circular
 			coordinates: Coordinates
 			attack: Ref<boolean>
-			block: Ref<boolean>
+			block: Ref<number>
 		}) {
 
 		this.pallet = options.pallet
@@ -60,7 +59,6 @@ export class Pimsley {
 		const moveSpeed = absoluteMovement.magnitude()
 		const grace = this.graceTracker.update(moveSpeed, seconds)
 
-		// const turnCap = this.#getTurnCap(seconds, moveSpeed)
 		rotation.approach(options.rotation, grace.turnSharpness, seconds, grace.turnCap)
 		const spin = this.anglemeter.measure(seconds)
 		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
@@ -76,8 +74,8 @@ export class Pimsley {
 			movement,
 			spin,
 			grace,
-			attack: attack.value,
 			block: block.value,
+			attack: attack.value,
 		})
 
 		this.pallet.applySpatial({

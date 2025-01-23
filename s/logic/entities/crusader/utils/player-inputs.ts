@@ -13,8 +13,8 @@ const {walkSpeed, sprintSpeed} = crusader.movement
 
 export class PlayerInputs {
 	attack = false
-	block = false
 	sprint = false
+	block = 0
 	rotation = 0
 	movementIntent = Vec2.zero()
 
@@ -81,7 +81,7 @@ export class PlayerInputs {
 	#updateCombat() {
 		const {normal} = this.realm.userInputs.grip.state
 		this.attack = normal.attack.pressed.value
-		this.block = normal.block.pressed.value
+		this.block = normal.block.input.value
 	}
 
 	#updateSprint() {

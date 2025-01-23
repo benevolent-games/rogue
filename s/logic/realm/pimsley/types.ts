@@ -9,7 +9,7 @@ export type PimsleyAnimState = {
 	grace: Grace
 	spin: number
 	attack: boolean
-	block: boolean
+	block: number
 }
 
 export type AmbleState = {

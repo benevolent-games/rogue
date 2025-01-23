@@ -52,7 +52,7 @@ export class Simtron {
 			rotation: 0,
 			coordinates: Coordinates.import(spawnpoint).array(),
 			attack: null,
-			block: false,
+			block: 0,
 		})
 
 		console.log("SPAWN PLAYER", spawnpoint)
