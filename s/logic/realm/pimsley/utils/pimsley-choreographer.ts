@@ -37,9 +37,9 @@ export class PimsleyChoreographer {
 				anims.leftward.lower,
 				anims.rightward.lower,
 			]),
+			anims.turnLeft.lower,
+			anims.turnRight.lower,
 			anims.attack.lower,
-			anims.turnLeft.upper,
-			anims.turnRight.upper,
 			anims.idle.lower,
 		])
 
@@ -57,6 +57,8 @@ export class PimsleyChoreographer {
 		anims.backward.execute(a => a.play(true))
 		anims.leftward.execute(a => a.play(true))
 		anims.rightward.execute(a => a.play(true))
+		anims.turnLeft.execute(a => a.play(true))
+		anims.turnRight.execute(a => a.play(true))
 		anims.idle.execute(a => a.play(true))
 
 		this.#actualizeAnimations = () => {

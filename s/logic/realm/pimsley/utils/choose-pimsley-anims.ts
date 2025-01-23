@@ -33,6 +33,7 @@ export function choosePimsleyAnims(pallet: Pallet) {
 
 		turnLeft: anim("turn-left"),
 		turnRight: anim("turn-right"),
+
 		// block: anim("block-shield"),
 		// leanCorrection: additive("spine-lean-correction", 50 / 100),
 	}

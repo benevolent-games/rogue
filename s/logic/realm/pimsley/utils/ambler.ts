@@ -10,7 +10,7 @@ const {crusader} = constants
 
 export class Ambler {
 	smoothedVelocity = new Vec2(0, 0)
-	smoothedAngularVelocity = new Scalar(0)
+	smoothedSpin = new Scalar(0)
 
 	constructor(public anims: {
 		idle: PimsleyAnim,
@@ -33,8 +33,15 @@ export class Ambler {
 			seconds,
 		)
 
+		this.smoothedSpin.approach(
+			state.spin,
+			grace.legworkSharpness,
+			seconds,
+		)
+
 		const [backwards, forwards] = splitAxis(movement.y)
 		const [leftwards, rightwards] = splitAxis(movement.x)
+		const [turnLeft, turnRight] = splitAxis(this.smoothedSpin.x)
 
 		const strafeyness = Scalar.clamp(
 			Scalar.remap(
@@ -43,10 +50,6 @@ export class Ambler {
 				0, 1,
 				true,
 			)
-		)
-
-		const weight = (x: number, max: number) => Scalar.clamp(
-			Scalar.remap(x, 0, max, 0, 1, true),
 		)
 
 		const speed = (crusader.movement.walkSpeed * crusader.anim.speedMultiplier) * (
@@ -60,12 +63,16 @@ export class Ambler {
 		this.anims.turnLeft.speedRatio = speed
 		this.anims.turnRight.speedRatio = speed
 
+		const weight = (x: number, max: number) => Scalar.clamp(
+			Scalar.remap(x, 0, max, 0, 1, true),
+		)
+
 		this.anims.forward.capacity = weight(forwards, crusader.movement.sprintSpeed)
 		this.anims.backward.capacity = weight(backwards, crusader.movement.sprintSpeed)
 		this.anims.leftward.capacity = weight(leftwards, crusader.movement.walkSpeed)
 		this.anims.rightward.capacity = weight(rightwards, crusader.movement.walkSpeed)
-		this.anims.turnLeft.capacity = weight(1, crusader.movement.walkSpeed)
-		this.anims.turnRight.capacity = weight(0, crusader.movement.walkSpeed)
+		this.anims.turnLeft.capacity = weight(turnLeft, crusader.movement.walkSpeed)
+		this.anims.turnRight.capacity = weight(turnRight, crusader.movement.walkSpeed)
 	}
 }
 
