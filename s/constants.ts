@@ -52,9 +52,16 @@ export const constants = {
 		},
 		grace: {
 			adaptation: 3,
-			legworkSharpness: new Vec2(5, 3),
-			turnSharpness: new Vec2(20, 3),
-			turnCap: new Vec2(Degrees.toRadians(900), Degrees.toRadians(180)),
+			walk: {
+				legworkSharpness: 5,
+				turnSharpness: 20,
+				turnCap: Degrees.toRadians(900),
+			},
+			sprint: {
+				legworkSharpness: 3,
+				turnSharpness: 3,
+				turnCap: Degrees.toRadians(180),
+			},
 		},
 	},
 

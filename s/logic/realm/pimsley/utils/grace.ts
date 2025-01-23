@@ -18,9 +18,9 @@ export class GraceTracker {
 		const targetFactor = Scalar.remap(currentSpeed, movement.walkSpeed, movement.sprintSpeed, 0, 1, true)
 		const factor = this.factor.approach(targetFactor, grace.adaptation, seconds).x
 		return {
-			turnCap: Scalar.lerp(grace.turnCap.x, grace.turnCap.y, factor),
-			turnSharpness: Scalar.lerp(grace.turnSharpness.x, grace.turnSharpness.y, factor),
-			legworkSharpness: Scalar.lerp(grace.legworkSharpness.x, grace.legworkSharpness.y, factor),
+			turnCap: Scalar.lerp(grace.walk.turnCap, grace.sprint.turnCap, factor),
+			turnSharpness: Scalar.lerp(grace.walk.turnSharpness, grace.sprint.turnSharpness, factor),
+			legworkSharpness: Scalar.lerp(grace.walk.legworkSharpness, grace.sprint.legworkSharpness, factor),
 		}
 	}
 }
