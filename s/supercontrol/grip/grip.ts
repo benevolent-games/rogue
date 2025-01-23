@@ -4,7 +4,6 @@ import {deep, Map2, ob} from "@benev/slate"
 import {Cause} from "./parts/cause.js"
 import {GripDevice} from "./devices/device.js"
 import {CauseFork} from "./parts/cause-fork.js"
-import {isPressed} from "./utils/is-pressed.js"
 import {CauseSpoon} from "./parts/cause-spoon.js"
 import {asBindings, ForkBind, GripBindings, GripState} from "./parts/types.js"
 

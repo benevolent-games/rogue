@@ -1,5 +1,5 @@
 
-import {deep, Map2} from "@benev/slate"
+import {Map2} from "@benev/slate"
 import {Entities, EntityEntry, Snapshot} from "./types.js"
 
 export class GameState<xEntities extends Entities> {
@@ -17,7 +17,7 @@ export class GameState<xEntities extends Entities> {
 	}
 
 	snapshot(): Snapshot {
-		return deep.clone({
+		return structuredClone({
 			id: this.id,
 			entities: [...this.entities.entries()],
 		})

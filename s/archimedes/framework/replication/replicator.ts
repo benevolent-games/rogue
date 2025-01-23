@@ -30,7 +30,7 @@ export class Replicator<xEntities extends Entities, xRealm> {
 			.map(([id, entity]) => {
 				const inputs = entity.gatherInputs(tick)
 				return (inputs && inputs.length > 0)
-					? deep.clone({
+					? structuredClone({
 						entity: id,
 						author: this.author,
 						messages: inputs ?? [],
