@@ -74,6 +74,8 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					: data.rotation
 			)
 
+			slowRotation.approach(state.rotation, 10, station.seconds, crusader.combat.turnCap)
+
 			state.block = data.block
 
 			if (state.attack && tick >= state.attack.expiresAtTick)
@@ -81,12 +83,13 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 
 			if (data.attack && !state.attack) {
 				state.attack = {expiresAtTick: tick + 76, rotation: data.rotation}
-				if (crusader.combat.attackTurnCapEnabled)
+				if (crusader.combat.turnCapEnabled)
 					slowRotation.x = data.rotation
 			}
 
-			if (crusader.combat.attackTurnCapEnabled && state.attack) {
-				slowRotation.approach(data.rotation, 10, station.seconds, crusader.combat.attackTurnCap)
+			const combative = !!(state.attack || state.block > 0.1)
+
+			if (crusader.combat.turnCapEnabled && combative) {
 				state.rotation = slowRotation.x
 			}
 		},

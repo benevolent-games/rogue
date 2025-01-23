@@ -45,8 +45,8 @@ export const constants = {
 			omnidirectionalSprint: false,
 		},
 		combat: {
-			attackTurnCapEnabled: true,
-			attackTurnCap: Degrees.toRadians(90),
+			turnCapEnabled: true,
+			turnCap: Degrees.toRadians(90),
 		},
 		anim: {
 			speedMultiplier: 5 / 10,
@@ -58,8 +58,8 @@ export const constants = {
 			adaptation: 3,
 			walk: {
 				legworkSharpness: 5,
-				turnSharpness: 20,
-				turnCap: Degrees.toRadians(900),
+				turnSharpness: 10,
+				turnCap: Degrees.toRadians(720),
 			},
 			sprint: {
 				legworkSharpness: 3,
