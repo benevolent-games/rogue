@@ -94,6 +94,12 @@ export class AccountantDatabase {
 			avatars: [],
 		}],
 
+		// duck
+		["464bb19697e966987182a040c7127bd87239ea625a1f953cbe3f4ebb1397db41", {
+			tags: ["blessed"],
+			avatars: [],
+		}],
+
 		// thrills
 		["25429b3b6f4685ac5bf5e752684479e9fe79eb3688433bc8d3398012d8d33568", {
 			tags: ["blessed"],
@@ -102,6 +108,12 @@ export class AccountantDatabase {
 
 		// revolux
 		["94636022cac00d5b6f3c505b9cee21edca6bd7bc2061b124c3ac6c9a9cb0464a", {
+			tags: ["knighted"],
+			avatars: [],
+		}],
+
+		// rafuu
+		["51c7692d7af585b01a3dcec2f5a6705b49936c3a00a12f3886ade7dbc2b4a62d", {
 			tags: ["knighted"],
 			avatars: [],
 		}],
