@@ -9,7 +9,7 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
 const {crusader} = constants
-const {speed, speedSprint} = crusader.movement
+const {walkSpeed, sprintSpeed} = crusader.movement
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	({id, station, state, getState, fromAuthor}) => {
@@ -55,16 +55,16 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 				state.attack = {expiresAtTick: tick + 76}
 
 			const speedLimit = state.attack
-				? speed * crusader.movement.attackingSpeedMultiplier
-				: speedSprint * crusader.movement.attackingSpeedMultiplier
+				? walkSpeed * crusader.movement.attackingSpeedMultiplier
+				: sprintSpeed * crusader.movement.attackingSpeedMultiplier
 
 			const movementIntent = Coordinates.from(data.movementIntent)
 			const newVelocity = movementIntent
 				.clampMagnitude(1)
-				.multiplyBy(speedSprint)
+				.multiplyBy(sprintSpeed)
 				.clampMagnitude(speedLimit)
 
-			const halfwayBetweenWalkAndSprint = Scalar.lerp(speed, speedSprint, 0.5)
+			const halfwayBetweenWalkAndSprint = Scalar.lerp(walkSpeed, sprintSpeed, 0.5)
 
 			const sprintingDetected = crusader.movement.omnidirectionalSprint
 				? false

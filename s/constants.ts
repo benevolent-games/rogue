@@ -38,8 +38,8 @@ export const constants = {
 		radius: 0.3,
 		torchHeight: 3,
 		movement: {
-			speed: 2.00,
-			speedSprint: 3.00,
+			walkSpeed: 2.00,
+			sprintSpeed: 3.00,
 			attackingSpeedMultiplier: 1,
 			sprintWhileAttacking: false,
 			omnidirectionalSprint: false,

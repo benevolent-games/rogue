@@ -9,7 +9,7 @@ import {CrusaderInputData, CrusaderState} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
 const {crusader} = constants
-const {speed, speedSprint} = crusader.movement
+const {walkSpeed, sprintSpeed} = crusader.movement
 
 export class PlayerInputs {
 	attack = false
@@ -125,7 +125,7 @@ export class PlayerInputs {
 
 	#updateMovementIntent() {
 		const {normal} = this.realm.userInputs.grip.state
-		const walkSpeedFraction = speed / speedSprint
+		const walkSpeedFraction = walkSpeed / sprintSpeed
 		const move = Vec2.zero()
 		const directions = [
 			normal.moveUp.input.value,

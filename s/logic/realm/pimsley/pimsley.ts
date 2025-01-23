@@ -1,7 +1,8 @@
 
 import {Ref} from "@benev/slate"
-import {Circular, Degrees, Quat, Scalar, Vec2} from "@benev/toolbox"
+import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
 
+import {GraceTracker} from "./utils/grace.js"
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
 import {Coordinates} from "../utils/coordinates.js"
@@ -9,7 +10,6 @@ import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
 import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
-import { GraceTracker } from "./utils/grace.js"
 
 const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
@@ -86,27 +86,10 @@ export class Pimsley {
 		})
 	}
 
-	// /** radians per second */
-	// #getTurnCap(seconds: number, moveSpeed: number) {
-	// 	const {
-	// 		movement: {speedSprint},
-	// 		turnCap: {adaptationSharpness, standstill, fullsprint},
-	// 	} = crusader
-	//
-	// 	const target = Scalar.remap(
-	// 		moveSpeed,
-	// 		0, speedSprint,
-	// 		standstill, fullsprint,
-	// 		true,
-	// 	)
-	//
-	// 	return this.turnCap.approach(target, adaptationSharpness, seconds).x
-	// }
-
 	#getRotationalSway(tick: number, seconds: number, moveSpeed: number) {
 		const factor = Scalar.remap(
 			moveSpeed,
-			0, crusader.movement.speedSprint,
+			0, crusader.movement.sprintSpeed,
 			0, 1,
 			true,
 		)

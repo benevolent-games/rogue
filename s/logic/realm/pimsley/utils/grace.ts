@@ -3,6 +3,7 @@ import {Scalar} from "@benev/toolbox"
 import {constants} from "../../../../constants.js"
 
 const {crusader} = constants
+const {movement, grace} = crusader
 
 export type Grace = {
 	turnCap: number
@@ -12,9 +13,9 @@ export type Grace = {
 
 export class GraceTracker {
 	factor = new Scalar(0)
+
 	update(currentSpeed: number, seconds: number): Grace {
-		const {movement, grace} = crusader
-		const targetFactor = Scalar.remap(currentSpeed, movement.speed, movement.speedSprint, 0, 1, true)
+		const targetFactor = Scalar.remap(currentSpeed, movement.walkSpeed, movement.sprintSpeed, 0, 1, true)
 		const factor = this.factor.approach(targetFactor, grace.adaptation, seconds).x
 		return {
 			turnCap: Scalar.lerp(grace.turnCap.x, grace.turnCap.y, factor),

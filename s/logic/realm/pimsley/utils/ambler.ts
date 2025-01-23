@@ -35,7 +35,7 @@ export class Ambler {
 		const strafeyness = Scalar.clamp(
 			Scalar.remap(
 				Math.abs(movement.x),
-				0, crusader.movement.speed,
+				0, crusader.movement.walkSpeed,
 				0, 1,
 				true,
 			)
@@ -45,7 +45,7 @@ export class Ambler {
 			Scalar.remap(x, 0, max, 0, 1, true),
 		)
 
-		const speed = (crusader.movement.speed * crusader.anim.speedMultiplier) * (
+		const speed = (crusader.movement.walkSpeed * crusader.anim.speedMultiplier) * (
 			1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
 		)
 
@@ -54,10 +54,10 @@ export class Ambler {
 		this.anims.leftward.speedRatio = speed
 		this.anims.rightward.speedRatio = speed
 
-		this.anims.forward.capacity = weight(forwards, crusader.movement.speedSprint)
-		this.anims.backward.capacity = weight(backwards, crusader.movement.speedSprint)
-		this.anims.leftward.capacity = weight(leftwards, crusader.movement.speed)
-		this.anims.rightward.capacity = weight(rightwards, crusader.movement.speed)
+		this.anims.forward.capacity = weight(forwards, crusader.movement.sprintSpeed)
+		this.anims.backward.capacity = weight(backwards, crusader.movement.sprintSpeed)
+		this.anims.leftward.capacity = weight(leftwards, crusader.movement.walkSpeed)
+		this.anims.rightward.capacity = weight(rightwards, crusader.movement.walkSpeed)
 	}
 }
 
