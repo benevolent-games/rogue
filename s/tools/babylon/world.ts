@@ -1,5 +1,5 @@
 
-import {Scene} from "@babylonjs/core/scene.js"
+import {Scene, ScenePerformancePriority} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Iron, AnyEngine, Gameloop, Rendering, loadGlb, Scalar} from "@benev/toolbox"
 
@@ -39,6 +39,11 @@ export class World {
 		})
 
 		const scene = Iron.scene({engine, background: [0, 0, 0, 1]})
+		scene.performancePriority = ScenePerformancePriority.Intermediate
+		scene.skipPointerMovePicking = true
+		scene.skipPointerDownPicking = true
+		scene.skipPointerUpPicking = true
+
 		const gameloop = Iron.gameloop(engine, [scene])
 		const rendering = Iron.rendering(scene)
 
