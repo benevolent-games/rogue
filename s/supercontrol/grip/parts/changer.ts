@@ -7,7 +7,7 @@ export class Changer<X> {
 
 	on = pubsub<[X]>()
 
-	constructor(value: X) {
+	constructor(value: X, public intercept: (x: X) => X = x => x) {
 		this.#value = value
 		this.#previous = value
 	}
@@ -17,6 +17,7 @@ export class Changer<X> {
 	}
 
 	set value(value: X) {
+		value = this.intercept(value)
 		this.#previous = this.#value
 		this.#value = value
 		if (this.changed)

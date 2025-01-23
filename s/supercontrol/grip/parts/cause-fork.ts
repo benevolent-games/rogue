@@ -4,8 +4,11 @@ import {CauseSpoon} from "./cause-spoon.js"
 
 /** group of spoons with an OR relationship */
 export class CauseFork extends Cause {
-	constructor(public spoons: Set<CauseSpoon>) {
+	constructor(public spoons: Set<CauseSpoon>, isModeActive: () => boolean) {
 		super()
+
+		this.input.intercept = value => (isModeActive() ? value : 0)
+		this.pressed.intercept = value => (isModeActive() ? value : false)
 
 		// forward tap events
 		for (const spoon of spoons) {

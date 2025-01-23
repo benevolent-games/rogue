@@ -25,7 +25,7 @@ export class UserInputs {
 
 	constructor(target: EventTarget) {
 		this.grip = new Grip(gameBindings())
-		this.grip.modes.add("normal")
+		this.grip.enableMode("normal")
 		this.grip
 			.attachDevice(this.devices.keyboard)
 			.attachDevice(this.devices.pointer)
