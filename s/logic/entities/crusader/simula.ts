@@ -42,17 +42,11 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		},
 	})
 
+	const slowRotation = new Circular(state.rotation)
+
 	return {
 		simulate: (tick, state, inputs) => {
 			data = fromAuthor(state.author, inputs).at(-1) ?? data
-
-			state.block = data.block
-
-			if (state.attack && tick >= state.attack.expiresAtTick)
-				state.attack = null
-
-			if (data.attack && !state.attack)
-				state.attack = {expiresAtTick: tick + 76}
 
 			const speedLimit = state.attack
 				? walkSpeed * crusader.movement.attackingSpeedMultiplier
@@ -80,6 +74,21 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 					: data.rotation
 			)
 
+			state.block = data.block
+
+			if (state.attack && tick >= state.attack.expiresAtTick)
+				state.attack = null
+
+			if (data.attack && !state.attack) {
+				state.attack = {expiresAtTick: tick + 76, rotation: data.rotation}
+				if (crusader.combat.attackTurnCapEnabled)
+					slowRotation.x = data.rotation
+			}
+
+			if (crusader.combat.attackTurnCapEnabled && state.attack) {
+				slowRotation.approach(data.rotation, 10, station.seconds, crusader.combat.attackTurnCap)
+				state.rotation = slowRotation.x
+			}
 		},
 		dispose: () => {
 			body.dispose()

@@ -44,6 +44,10 @@ export const constants = {
 			sprintWhileAttacking: false,
 			omnidirectionalSprint: false,
 		},
+		combat: {
+			attackTurnCapEnabled: true,
+			attackTurnCap: Degrees.toRadians(90),
+		},
 		anim: {
 			speedMultiplier: 5 / 10,
 			strafeSpeedIncrease: 0.2,

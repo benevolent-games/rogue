@@ -13,7 +13,7 @@ export class Station {
 	#authorCoordinates = new Map2<number, Coordinates>()
 
 	// fixed timestep for simulation
-	readonly deltaTime = 1 / constants.sim.tickRate
+	readonly seconds = 1 / constants.sim.tickRate
 
 	importantEntities = new Set<number>()
 	entityHashgrid = new ZenGrid<number>(Vec2.all(16))

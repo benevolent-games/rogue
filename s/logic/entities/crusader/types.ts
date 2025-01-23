@@ -19,5 +19,6 @@ export type CrusaderInputData = {
 
 export type AttackState = {
 	expiresAtTick: number
+	rotation: number
 }
 
