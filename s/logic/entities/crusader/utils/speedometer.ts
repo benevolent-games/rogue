@@ -18,6 +18,12 @@ export class Speedometer {
 		return this.#velocity
 	}
 
+	reset(vector: Vec2) {
+		this.#vector = vector
+		this.#previous = this.#vector.clone()
+		this.#velocity = Vec2.zero()
+	}
+
 	/** meters per second */
 	get velocity() {
 		return this.#velocity

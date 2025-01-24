@@ -18,6 +18,12 @@ export class Anglemeter {
 		return this.#velocity
 	}
 
+	reset(angle: Circular) {
+		this.#angle = angle
+		this.#previous = this.#angle.clone()
+		this.#velocity = 0
+	}
+
 	/** radians per second */
 	get velocity() {
 		return this.#velocity

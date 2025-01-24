@@ -7,8 +7,8 @@ import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
+import {PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
-import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 
 const debug = false
 const {crusader} = constants
@@ -17,7 +17,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	({realm, state, replicator}) => {
 
 	const trash = new Trashbin()
-	const {lighting, pimsleyPallets} = realm
+	const {lighting, pimsleyPool} = realm
 	const inControl = state.author === replicator.author
 
 	const characteristics: PimsleyCharacteristics = {
@@ -27,8 +27,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		coordinates: Coordinates.from(state.coordinates),
 	}
 
-	const pallet = pimsleyPallets.acquireCleanly(trash)
-	const pimsley = new Pimsley(pallet, characteristics)
+	const pimsley = pimsleyPool.acquireCleanly(trash)
+	pimsley.init(characteristics)
 
 	const capsule = debug
 		? trash.disposable(

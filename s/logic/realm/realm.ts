@@ -13,16 +13,16 @@ import {Cursor} from "./parts/cursor.js"
 import {Lighting} from "./utils/lighting.js"
 import {Cameraman} from "./utils/cameraman.js"
 import {GameStats} from "./parts/game-stats.js"
+import {Averager} from "../../tools/averager.js"
 import {Indicators} from "./utils/indicators.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {UserInputs} from "./inputs/user-inputs.js"
 import {World} from "../../tools/babylon/world.js"
+import {PimsleyPool} from "./pimsley/pimsley-pool.js"
 import {DebugCapsules} from "./utils/debug-capsules.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
-import {PalletPool} from "../../tools/babylon/optimizers/pallet-pool.js"
-import { Averager } from "../../tools/averager.js"
 
 const debug = false
 
@@ -35,7 +35,7 @@ export class Realm {
 	onFilesDropped = pubsub<[File[]]>()
 	ready = deferPromise<void>()
 
-	pimsleyPallets: PalletPool
+	pimsleyPool: PimsleyPool
 	materials: CoolMaterials
 	buddies: CapsuleBuddies
 	debugCapsules: DebugCapsules
@@ -55,7 +55,7 @@ export class Realm {
 			public dungeonStore: DungeonStore,
 		) {
 
-		this.pimsleyPallets = new PalletPool(glbs.pimsleyContainer)
+		this.pimsleyPool = new PimsleyPool(glbs.pimsleyContainer)
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.debugCapsules = new DebugCapsules(world.scene, this.materials)
@@ -123,7 +123,7 @@ export class Realm {
 	dispose() {
 		this.#trash.dispose()
 		this.userInputs.dispose()
-		this.pimsleyPallets.dispose()
+		this.pimsleyPool.dispose()
 	}
 }
 

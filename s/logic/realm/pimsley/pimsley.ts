@@ -21,29 +21,32 @@ export type PimsleyCharacteristics = {
 }
 
 export class Pimsley {
-	block: number
-	attack: boolean
-	rotation: Circular
-	coordinates: Coordinates
-	displayRotation: Circular
+	block = 0
+	attack = false
+	rotation = new Circular(0)
+	coordinates = Coordinates.zero()
+	displayRotation = new Circular(0)
 
-	anims: PimsleyChoreographer
-	anglemeter: Anglemeter
-	speedometer: Speedometer
+	anglemeter = new Anglemeter(this.rotation)
+	speedometer = new Speedometer(this.coordinates)
 
 	drunkSway = new DrunkSway()
 	graceTracker = new GraceTracker()
 
-	constructor(public pallet: Pallet, characteristics: PimsleyCharacteristics) {
+	anims: PimsleyChoreographer
+
+	constructor(public pallet: Pallet) {
+		this.anims = new PimsleyChoreographer(pallet)
+	}
+
+	init(characteristics: PimsleyCharacteristics) {
 		this.rotation = characteristics.rotation.clone()
 		this.displayRotation = characteristics.rotation.clone()
 		this.coordinates = characteristics.coordinates.clone()
 		this.attack = characteristics.attack
 		this.block = characteristics.block
-
-		this.anims = new PimsleyChoreographer(pallet)
-		this.anglemeter = new Anglemeter(this.rotation)
-		this.speedometer = new Speedometer(this.coordinates)
+		this.anglemeter.reset(this.rotation)
+		this.speedometer.reset(this.coordinates)
 	}
 
 	update({tick, seconds, ...characteristics}: {
