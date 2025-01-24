@@ -34,8 +34,8 @@ export class DebugCapsules {
 		const mesh = this.#trash.disposable(
 			MeshBuilder.CreateCapsule("debugcapsule", {height, radius}, scene)
 		)
-
 		mesh.material = material
+		scene.removeMesh(mesh)
 
 		const crate = new Crate(scene, mesh)
 		this.#pool = new PropPool(crate, true)
