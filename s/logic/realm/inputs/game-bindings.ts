@@ -36,7 +36,12 @@ export const gameBindings = () => Grip.bindings({
 		lookLeft: [["KeyJ"], ["g.stick.right.left", {without: ["g.stick.right.click"]}]],
 		lookRight: [["KeyL"], ["g.stick.right.right", {without: ["g.stick.right.click"]}]],
 
-		cameraReset: [["BracketRight"], ["g.beta"], ["g.stick.right.click", {style: "tap"}]],
+		cameraReset: [
+			["BracketRight"],
+			["g.beta"],
+			["g.stick.right.click", {style: "tap"}],
+			["MMB", {style: "tap"}],
+		],
 
 		cameraSwivelRight: [
 			["KeyU", {sensitivity: sens.camera.key}],
