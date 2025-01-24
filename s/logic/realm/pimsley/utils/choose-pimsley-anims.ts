@@ -1,7 +1,7 @@
 
 import {PimsleyAnim} from "./pimsley-anim.js"
+import {AdditiveAnim} from "./additive-anim.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
-import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 export type PimsleyAnims = ReturnType<typeof choosePimsleyAnims>
 
@@ -13,13 +13,7 @@ export function choosePimsleyAnims(pallet: Pallet) {
 
 	const additive = (s: string, referenceFraction: number) => {
 		const animationGroup = pallet.animationGroups.require(s)
-		const referenceFrame = animationGroup.from + (
-			(animationGroup.to - animationGroup.from) * referenceFraction
-		)
-		return new PimsleyAnim(
-			pallet.container.scene,
-			AnimationGroup.MakeAnimationAdditive(animationGroup, {referenceFrame}),
-		)
+		return new AdditiveAnim(animationGroup, referenceFraction)
 	}
 
 	return {
@@ -35,7 +29,7 @@ export function choosePimsleyAnims(pallet: Pallet) {
 
 		attack: anim("swing"),
 		block: anim("shield-block"),
-		// leanCorrection: additive("spine-lean-correction", 50 / 100),
+		headSwivel: additive("head-swivel", 50 / 100),
 	}
 }
 

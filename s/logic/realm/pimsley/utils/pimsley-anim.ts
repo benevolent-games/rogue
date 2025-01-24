@@ -20,6 +20,13 @@ export class PimsleyAnim {
 		this.lower.animationGroup.goToFrame(frame, true)
 	}
 
+	goToPercent(percent: number) {
+		const durationFrames = (this.to - this.from)
+		const frame = this.from + (durationFrames * percent)
+		this.upper.animationGroup.goToFrame(frame, true)
+		this.lower.animationGroup.goToFrame(frame, true)
+	}
+
 	get from() {
 		return this.upper.animationGroup.from
 	}

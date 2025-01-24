@@ -3,17 +3,18 @@ import {Ambler} from "./ambler.js"
 import {Combatant} from "./combatant.js"
 import {PimsleyAnimState} from "../types.js"
 import {PimsleyAnim} from "./pimsley-anim.js"
-import {choosePimsleyAnims} from "./choose-pimsley-anims.js"
+import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
+	anims: PimsleyAnims
 	#ambler: Ambler
 	#combatant: Combatant
 	#actualizeAnimations: () => void
 
 	constructor(pallet: Pallet) {
-		const anims = choosePimsleyAnims(pallet)
+		const anims = this.anims = choosePimsleyAnims(pallet)
 
 		this.#ambler = new Ambler(anims)
 		this.#combatant = new Combatant(anims)
@@ -70,6 +71,11 @@ export class PimsleyChoreographer {
 		setup(anims.turnLeft)
 		setup(anims.turnRight)
 
+		anims.headSwivel.animationGroup.weight = 1
+		anims.headSwivel.animationGroup.speedRatio = 0
+		anims.headSwivel.goto(0)
+		anims.headSwivel.animationGroup.play(true)
+
 		this.#actualizeAnimations = () => {
 			upperStack.dump()
 			upperStack.fill(1)
@@ -84,6 +90,7 @@ export class PimsleyChoreographer {
 	animate(state: PimsleyAnimState) {
 		this.#ambler.animate(state)
 		this.#combatant.animate(state)
+		this.anims.headSwivel.goto(90 / 100)
 		this.#actualizeAnimations()
 	}
 }
