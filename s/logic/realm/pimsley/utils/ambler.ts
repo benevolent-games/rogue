@@ -1,8 +1,9 @@
 
-import {Scalar, Vec2} from "@benev/toolbox"
+import {Degrees, Scalar, Vec2} from "@benev/toolbox"
 
 import {AmbleState} from "../types.js"
 import {PimsleyAnim} from "./pimsley-anim.js"
+import {AdditiveAnim} from "./additive-anim.js"
 import {constants} from "../../../../constants.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
 
@@ -11,6 +12,7 @@ const {crusader} = constants
 export class Ambler {
 	smoothedVelocity = new Vec2(0, 0)
 	smoothedSpin = new Scalar(0)
+	smoothedRotationDiscrepancy = new Scalar(0)
 
 	constructor(public anims: {
 		idle: PimsleyAnim,
@@ -20,6 +22,7 @@ export class Ambler {
 		rightward: PimsleyAnim,
 		turnLeft: PimsleyAnim,
 		turnRight: PimsleyAnim,
+		headSwivel: AdditiveAnim,
 	}) {}
 
 	animate(state: AmbleState) {
@@ -60,6 +63,16 @@ export class Ambler {
 		this.anims.rightward.speedRatio = speed
 		this.anims.turnLeft.speedRatio = speed
 		this.anims.turnRight.speedRatio = speed
+
+		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
+		const padding = 0.3
+		this.anims.headSwivel.goto(Scalar.remap(
+			this.smoothedRotationDiscrepancy.x,
+			-Degrees.toRadians(90 * (1 - padding)),
+			Degrees.toRadians(90 * (1 - padding)),
+			padding, 1 - padding,
+			true,
+		))
 
 		const weight = (x: number, max: number) => Scalar.clamp(
 			Scalar.remap(x, 0, max, 0, 1, true),

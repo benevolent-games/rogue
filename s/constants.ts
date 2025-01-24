@@ -58,8 +58,8 @@ export const constants = {
 			adaptation: 3,
 			walk: {
 				legworkSharpness: 5,
-				turnSharpness: 10,
-				turnCap: Degrees.toRadians(720),
+				turnSharpness: 5,
+				turnCap: Degrees.toRadians(500),
 			},
 			sprint: {
 				legworkSharpness: 3,

@@ -64,6 +64,7 @@ export class Pimsley {
 		rotation.approach(characteristics.rotation, grace.turnSharpness, seconds, grace.turnCap)
 		const spin = this.anglemeter.measure(seconds)
 		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
+		const rotationDiscrepancy = characteristics.rotation.difference(rotation)
 
 		const displayRotation = this.displayRotation
 			.set(rotationOffset + rotation.x + sway).x
@@ -78,6 +79,7 @@ export class Pimsley {
 			grace,
 			block: characteristics.block,
 			attack: characteristics.attack,
+			rotationDiscrepancy,
 		})
 
 		this.pallet.applySpatial({

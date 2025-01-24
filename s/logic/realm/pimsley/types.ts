@@ -10,6 +10,7 @@ export type PimsleyAnimState = {
 	spin: number
 	attack: boolean
 	block: number
+	rotationDiscrepancy: number
 }
 
 export type AmbleState = {
@@ -17,5 +18,6 @@ export type AmbleState = {
 	movement: Vec2
 	spin: number
 	grace: Grace
+	rotationDiscrepancy: number
 }
 
