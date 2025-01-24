@@ -1,14 +1,14 @@
 
-import {Ref, Trashbin} from "@benev/slate"
+import {Trashbin} from "@benev/slate"
 import {Circular, Quat} from "@benev/toolbox"
 
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
-import {Pimsley} from "../../realm/pimsley/pimsley.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
+import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 
 const debug = false
 const {crusader} = constants
@@ -20,13 +20,15 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const {lighting, pimsleyPallets} = realm
 	const inControl = state.author === replicator.author
 
-	const block = new Ref(0)
-	const attack = new Ref(false)
-	const rotation = new Circular(state.rotation)
-	const coordinates = Coordinates.from(state.coordinates)
+	const characteristics: PimsleyCharacteristics = {
+		block: state.block,
+		attack: !!state.attack,
+		rotation: new Circular(state.rotation),
+		coordinates: Coordinates.from(state.coordinates),
+	}
 
 	const pallet = pimsleyPallets.acquireCleanly(trash)
-	const pimsley = new Pimsley({pallet, rotation, coordinates, block, attack})
+	const pimsley = new Pimsley(pallet, characteristics)
 
 	const capsule = debug
 		? trash.disposable(
@@ -35,11 +37,11 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		: null
 
 	const playerInputs = trash.disposable(
-		new PlayerInputs(realm, state, coordinates)
+		new PlayerInputs(realm, state, characteristics.coordinates)
 	)
 
 	if (inControl)
-		realm.cameraman.pivotInstantly(coordinates.clone())
+		realm.cameraman.pivotInstantly(characteristics.coordinates.clone())
 
 	return {
 		gatherInputs: () => inControl
@@ -47,17 +49,21 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			: undefined,
 
 		replicate: (tick, state) => {
-			coordinates.set_(...state.coordinates)
-			rotation.set(state.rotation)
+			characteristics.coordinates.set_(...state.coordinates)
+			characteristics.rotation.set(state.rotation)
 
-			attack.value = !!state.attack
-			block.value = state.block
+			characteristics.attack = !!state.attack
+			characteristics.block = state.block
 
-			pimsley.update(tick, realm.seconds)
+			pimsley.update({
+				tick,
+				seconds: realm.seconds,
+				...characteristics,
+			})
 
 			if (capsule)
 				capsule
-					.setPosition(coordinates.position())
+					.setPosition(characteristics.coordinates.position())
 					.setRotation(Quat.rotate_(0, pimsley.displayRotation.x, 0))
 
 			if (inControl) {

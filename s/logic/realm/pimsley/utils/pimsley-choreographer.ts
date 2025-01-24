@@ -2,6 +2,7 @@
 import {Ambler} from "./ambler.js"
 import {Combatant} from "./combatant.js"
 import {PimsleyAnimState} from "../types.js"
+import {PimsleyAnim} from "./pimsley-anim.js"
 import {choosePimsleyAnims} from "./choose-pimsley-anims.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
@@ -47,25 +48,27 @@ export class PimsleyChoreographer {
 
 		anims.idle.capacity = 1
 		anims.attack.capacity = 0
+		anims.block.capacity = 0
 		anims.forward.capacity = 0
 		anims.backward.capacity = 0
 		anims.leftward.capacity = 0
 		anims.rightward.capacity = 0
 		anims.turnLeft.capacity = 0
 		anims.turnRight.capacity = 0
-		anims.block.capacity = 0
 
-		anims.idle.execute(a => a.play(true))
-		anims.attack.execute(a => a.play(true))
-		anims.block.execute(a => a.play(true))
-		anims.forward.execute(a => a.play(true))
-		anims.backward.execute(a => a.play(true))
-		anims.leftward.execute(a => a.play(true))
-		anims.rightward.execute(a => a.play(true))
-		anims.turnLeft.execute(a => a.play(true))
-		anims.turnRight.execute(a => a.play(true))
-		// anims.leanCorrection.capacity = 0
-		// anims.leanCorrection.execute(a => a.play(true))
+		const setup = (p: PimsleyAnim) => p.execute(a => {
+			a.play(true)
+		})
+
+		setup(anims.idle)
+		setup(anims.attack)
+		setup(anims.block)
+		setup(anims.forward)
+		setup(anims.backward)
+		setup(anims.leftward)
+		setup(anims.rightward)
+		setup(anims.turnLeft)
+		setup(anims.turnRight)
 
 		this.#actualizeAnimations = () => {
 			upperStack.dump()

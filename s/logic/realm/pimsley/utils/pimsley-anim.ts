@@ -1,8 +1,9 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
+import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
+
 import {splitBodyAnimations} from "./split-body-animations.js"
 import {BabylonAnimBucket} from "../../../../tools/buckets/babylon-anim.js"
-import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 export class PimsleyAnim {
 	upper: BabylonAnimBucket

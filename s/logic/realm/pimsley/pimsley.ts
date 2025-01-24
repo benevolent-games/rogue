@@ -1,5 +1,4 @@
 
-import {Ref} from "@benev/slate"
 import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
 
 import {GraceTracker} from "./utils/grace.js"
@@ -14,14 +13,19 @@ import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
 const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
 
-export class Pimsley {
-	pallet: Pallet
+export type PimsleyCharacteristics = {
+	block: number
+	attack: boolean
+	rotation: Circular
+	coordinates: Coordinates
+}
 
+export class Pimsley {
+	block: number
+	attack: boolean
 	rotation: Circular
 	coordinates: Coordinates
 	displayRotation: Circular
-	attack: Ref<boolean>
-	block: Ref<number>
 
 	anims: PimsleyChoreographer
 	anglemeter: Anglemeter
@@ -30,36 +34,31 @@ export class Pimsley {
 	drunkSway = new DrunkSway()
 	graceTracker = new GraceTracker()
 
-	constructor(public options: {
-			pallet: Pallet
-			rotation: Circular
-			coordinates: Coordinates
-			attack: Ref<boolean>
-			block: Ref<number>
-		}) {
+	constructor(public pallet: Pallet, characteristics: PimsleyCharacteristics) {
+		this.rotation = characteristics.rotation.clone()
+		this.displayRotation = characteristics.rotation.clone()
+		this.coordinates = characteristics.coordinates.clone()
+		this.attack = characteristics.attack
+		this.block = characteristics.block
 
-		this.pallet = options.pallet
-
-		this.rotation = options.rotation.clone()
-		this.coordinates = options.coordinates.clone()
-		this.displayRotation = this.rotation.clone()
-		this.attack = options.attack
-		this.block = options.block
-
-		this.anims = new PimsleyChoreographer(options.pallet)
+		this.anims = new PimsleyChoreographer(pallet)
 		this.anglemeter = new Anglemeter(this.rotation)
 		this.speedometer = new Speedometer(this.coordinates)
 	}
 
-	update(tick: number, seconds: number) {
-		const {options, coordinates, rotation, attack, block} = this
+	update({tick, seconds, ...characteristics}: {
+			tick: number,
+			seconds: number,
+		} & PimsleyCharacteristics) {
 
-		coordinates.approach(options.coordinates, crusader.anim.movementSharpness, seconds)
+		const {coordinates, rotation} = this
+
+		coordinates.approach(characteristics.coordinates, crusader.anim.movementSharpness, seconds)
 		const absoluteMovement = this.speedometer.measure(seconds)
 		const moveSpeed = absoluteMovement.magnitude()
 		const grace = this.graceTracker.update(moveSpeed, seconds)
 
-		rotation.approach(options.rotation, grace.turnSharpness, seconds, grace.turnCap)
+		rotation.approach(characteristics.rotation, grace.turnSharpness, seconds, grace.turnCap)
 		const spin = this.anglemeter.measure(seconds)
 		const sway = this.#getRotationalSway(tick, seconds, moveSpeed)
 
@@ -74,8 +73,8 @@ export class Pimsley {
 			movement,
 			spin,
 			grace,
-			block: block.value,
-			attack: attack.value,
+			block: characteristics.block,
+			attack: characteristics.attack,
 		})
 
 		this.pallet.applySpatial({
