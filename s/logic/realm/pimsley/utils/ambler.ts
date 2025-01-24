@@ -34,6 +34,8 @@ export class Ambler {
 			seconds,
 		)
 
+		const velocity = movement.magnitude()
+
 		this.smoothedSpin.approach(
 			state.spin,
 			grace.legworkSharpness,
@@ -53,9 +55,15 @@ export class Ambler {
 			)
 		)
 
-		const speed = (crusader.movement.walkSpeed * crusader.anim.speedMultiplier) * (
-			1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
+		const speedBase = Scalar.remap(
+			velocity,
+			crusader.movement.walkSpeed, crusader.movement.sprintSpeed,
+			(crusader.movement.walkSpeed * crusader.anim.walkSpeedRatio),
+			(crusader.movement.walkSpeed * crusader.anim.sprintSpeedRatio),
+			true,
 		)
+		const strafeSpeedBuff = 1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
+		const speed = speedBase * strafeSpeedBuff
 
 		this.anims.forward.speedRatio = speed
 		this.anims.backward.speedRatio = speed

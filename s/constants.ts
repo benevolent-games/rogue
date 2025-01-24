@@ -38,7 +38,7 @@ export const constants = {
 		radius: 0.3,
 		torchHeight: 3,
 		movement: {
-			walkSpeed: 1.70,
+			walkSpeed: 1.5,
 			sprintSpeed: 3.00,
 			attackingSpeedMultiplier: 1,
 			sprintWhileAttacking: false,
@@ -49,10 +49,11 @@ export const constants = {
 			turnCap: Degrees.toRadians(90),
 		},
 		anim: {
-			speedMultiplier: 5 / 10,
+			walkSpeedRatio: 5 / 10,
+			sprintSpeedRatio: 7 / 10,
 			strafeSpeedIncrease: 0.2,
 			movementSharpness: 20,
-			sprintSway: Degrees.toRadians(15),
+			sprintSway: Degrees.toRadians(30),
 		},
 		grace: {
 			adaptation: 3,
