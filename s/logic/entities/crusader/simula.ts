@@ -1,22 +1,24 @@
 
-import {Degrees, Vec2, Circular, Scalar} from "@benev/toolbox"
+import {Vec2} from "@benev/toolbox"
 
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {Station} from "../../station/station.js"
-import {Circle} from "../../physics/shapes/circle.js"
+import {BipedSim} from "../../commons/biped/sim.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
-const {crusader} = constants
-const {walkSpeed, sprintSpeed} = crusader.movement
-
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
-	({id, station, state, getState, fromAuthor}) => {
+	({id, station, getState, fromAuthor}) => {
 
-	const {phys} = station.dungeon
+	const bipedSim = new BipedSim(
+		id,
+		station,
+		() => getState().biped,
+		constants.crusader,
+	)
 
-	let data: RogueEntities["crusader"]["input"] = {
+	let input: RogueEntities["crusader"]["input"] = {
 		attack: false,
 		block: 0,
 		sprint: false,
@@ -24,78 +26,22 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		rotation: 0,
 	}
 
-	const circle = new Circle(
-		Vec2.from(state.coordinates),
-		constants.crusader.radius,
-	)
-
-	const entityZen = station.entityHashgrid.create(circle.boundingBox(), id)
-
-	const body = phys.makeBody({
-		parts: [{shape: circle, mass: 80}],
-		updated: body => {
-			const coordinates = Coordinates.from(body.box.center)
-			getState().coordinates = coordinates.array()
-			entityZen.box.center.set(coordinates)
-			entityZen.update()
-			station.updateAuthorCoordinates(state.author, coordinates)
-		},
-	})
-
-	const slowRotation = new Circular(state.rotation)
-
 	return {
 		simulate: (tick, state, inputs) => {
-			data = fromAuthor(state.author, inputs).at(-1) ?? data
+			input = fromAuthor(state.author, inputs).at(-1) ?? input
 
-			const speedLimit = state.attack
-				? walkSpeed * crusader.movement.attackingSpeedMultiplier
-				: sprintSpeed * crusader.movement.attackingSpeedMultiplier
+			bipedSim.activity.movementIntent.set_(...input.movementIntent)
+			bipedSim.activity.rotation = input.rotation
+			bipedSim.activity.sprint = input.sprint
+			bipedSim.activity.attack = input.attack
+			bipedSim.activity.block = input.block
 
-			const movementIntent = Coordinates.from(data.movementIntent)
-			const newVelocity = movementIntent
-				.clampMagnitude(1)
-				.multiplyBy(sprintSpeed)
-				.clampMagnitude(speedLimit)
-
-			const halfwayBetweenWalkAndSprint = Scalar.lerp(walkSpeed, sprintSpeed, 0.5)
-
-			const sprintingDetected = crusader.movement.omnidirectionalSprint
-				? false
-				: newVelocity.magnitude() > halfwayBetweenWalkAndSprint
-
-			body.box.center.set_(...state.coordinates)
-			body.velocity.set(newVelocity)
-			phys.wakeup(body)
-
-			state.rotation = Circular.normalize(
-				(sprintingDetected && !movementIntent.equals_(0, 0))
-					? movementIntent.rotation() + Degrees.toRadians(90)
-					: data.rotation
-			)
-
-			slowRotation.approach(state.rotation, 10, station.seconds, crusader.combat.turnCap)
-
-			state.block = data.block
-
-			if (state.attack && tick >= state.attack.expiresAtTick)
-				state.attack = null
-
-			if (data.attack && !state.attack) {
-				state.attack = {expiresAtTick: tick + 76, rotation: data.rotation}
-				if (crusader.combat.turnCapEnabled)
-					slowRotation.x = data.rotation
-			}
-
-			const combative = !!(state.attack || state.block > 0.1)
-
-			if (crusader.combat.turnCapEnabled && combative) {
-				state.rotation = slowRotation.x
-			}
+			bipedSim.simulate(tick)
+			const coordinates = Coordinates.from(bipedSim.body.box.center)
+			station.updateAuthorCoordinates(state.author, coordinates)
 		},
 		dispose: () => {
-			body.dispose()
-			entityZen.delete()
+			bipedSim.dispose()
 		},
 	}
 })

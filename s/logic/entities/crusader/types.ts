@@ -1,12 +1,10 @@
 
 import {Vec2Array} from "@benev/toolbox"
+import {BipedState} from "../../commons/biped/types.js"
 
 export type CrusaderState = {
 	author: number
-	coordinates: Vec2Array
-	rotation: number
-	attack: AttackState | null
-	block: number
+	biped: BipedState
 }
 
 export type CrusaderInputData = {
@@ -15,10 +13,5 @@ export type CrusaderInputData = {
 	sprint: boolean
 	rotation: number
 	movementIntent: Vec2Array
-}
-
-export type AttackState = {
-	expiresAtTick: number
-	rotation: number
 }
 

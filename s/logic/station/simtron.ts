@@ -49,10 +49,12 @@ export class Simtron {
 
 		const playerId = this.simulator.create("crusader", {
 			author,
-			rotation: 0,
-			coordinates: Coordinates.import(spawnpoint).array(),
-			attack: null,
-			block: 0,
+			biped: {
+				rotation: 0,
+				coordinates: Coordinates.import(spawnpoint).array(),
+				attack: null,
+				block: 0,
+			},
 		})
 
 		console.log("SPAWN PLAYER", spawnpoint)

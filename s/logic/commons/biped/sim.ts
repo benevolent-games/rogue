@@ -1,0 +1,112 @@
+
+import {Circular, Degrees, Scalar, Vec2} from "@benev/toolbox"
+
+import {Station} from "../../station/station.js"
+import {Zen} from "../../../tools/hash/zen-grid.js"
+import {PhysBody} from "../../physics/parts/body.js"
+import {Circle} from "../../physics/shapes/circle.js"
+import {Coordinates} from "../../realm/utils/coordinates.js"
+import {BipedActivity, BipedOptions, BipedState} from "./types.js"
+
+export class BipedSim {
+	circle: Circle
+	slowRotation: Circular
+	body: PhysBody
+	entityZen: Zen<number>
+
+	activity: BipedActivity = {
+		block: 0,
+		attack: false,
+		sprint: false,
+		rotation: 0,
+		movementIntent: new Vec2(0, 0),
+	}
+
+	get phys() {
+		return this.station.dungeon.phys
+	}
+
+	constructor(
+			public id: number,
+			public station: Station,
+			public getState: () => BipedState,
+			public options: BipedOptions,
+		) {
+
+		this.circle = new Circle(
+			Vec2.from(getState().coordinates),
+			options.radius,
+		)
+
+		this.slowRotation = new Circular(getState().rotation)
+
+		this.entityZen = station.entityHashgrid.create(this.circle.boundingBox(), id)
+
+		this.body = station.dungeon.phys.makeBody({
+			parts: [{shape: this.circle, mass: 80}],
+			updated: body => {
+				const state = getState()
+				const coordinates = Coordinates.from(body.box.center)
+				state.coordinates = coordinates.array()
+				this.entityZen.box.center.set(coordinates)
+				this.entityZen.update()
+			},
+		})
+	}
+
+	simulate(tick: number) {
+		const state = this.getState()
+		const {activity, options} = this
+		const {walkSpeed, sprintSpeed, attackingSpeedMultiplier, omnidirectionalSprint} = this.options.movement
+		
+		const speedLimit = state.attack
+			? walkSpeed * attackingSpeedMultiplier
+			: sprintSpeed * attackingSpeedMultiplier
+
+		const movementIntent = Coordinates.from(activity.movementIntent)
+		const newVelocity = movementIntent
+			.clampMagnitude(1)
+			.multiplyBy(sprintSpeed)
+			.clampMagnitude(speedLimit)
+
+		const halfwayBetweenWalkAndSprint = Scalar.lerp(walkSpeed, sprintSpeed, 0.5)
+
+		const sprintingDetected = omnidirectionalSprint
+			? false
+			: newVelocity.magnitude() > halfwayBetweenWalkAndSprint
+
+		this.body.box.center.set_(...state.coordinates)
+		this.body.velocity.set(newVelocity)
+		this.phys.wakeup(this.body)
+
+		state.rotation = Circular.normalize(
+			(sprintingDetected && !movementIntent.equals_(0, 0))
+				? movementIntent.rotation() + Degrees.toRadians(90)
+				: activity.rotation
+		)
+
+		this.slowRotation.approach(state.rotation, 10, this.station.seconds, this.options.combat.turnCap)
+
+		state.block = activity.block
+
+		if (state.attack && tick >= state.attack.expiresAtTick)
+			state.attack = null
+
+		if (activity.attack && !state.attack) {
+			state.attack = {expiresAtTick: tick + 76, rotation: activity.rotation}
+			if (options.combat.turnCapEnabled)
+				this.slowRotation.x = activity.rotation
+		}
+
+		const combative = !!(state.attack || state.block > 0.1)
+
+		if (options.combat.turnCapEnabled && combative)
+			state.rotation = this.slowRotation.x
+	}
+
+	dispose() {
+		this.body.dispose()
+		this.entityZen.delete()
+	}
+}
+

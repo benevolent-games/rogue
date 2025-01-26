@@ -1,4 +1,5 @@
 
+import {BotState} from "./bot/types.js"
 import {BlockState} from "./block/state.js"
 import {DungeonOptions} from "../dungeons/layouting/types.js"
 import {AsEntities} from "../../archimedes/framework/parts/types.js"
@@ -16,6 +17,10 @@ export type RogueEntities = AsEntities<{
 	crusader: {
 		state: CrusaderState
 		input: CrusaderInputData
+	}
+	bot: {
+		state: BotState
+		input: undefined
 	}
 }>
 
