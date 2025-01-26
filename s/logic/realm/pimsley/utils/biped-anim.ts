@@ -5,7 +5,7 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {splitBodyAnimations} from "./split-body-animations.js"
 import {BabylonAnimBucket} from "../../../../tools/buckets/babylon-anim.js"
 
-export class PimsleyAnim {
+export class BipedAnim {
 	upper: BabylonAnimBucket
 	lower: BabylonAnimBucket
 

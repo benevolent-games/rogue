@@ -48,7 +48,7 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 	}
 
 	{
-		const howManyBots = 20
+		const howManyBots = 10
 		const radius = constants.crusader.radius
 		const diameter = radius * 2
 		let count = 0

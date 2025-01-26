@@ -1,8 +1,8 @@
 
 import {Ambler} from "./ambler.js"
 import {Combatant} from "./combatant.js"
+import {BipedAnim} from "./biped-anim.js"
 import {PimsleyAnimState} from "../types.js"
-import {PimsleyAnim} from "./pimsley-anim.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
@@ -12,93 +12,83 @@ export class PimsleyChoreographer {
 	#ambler: Ambler
 	#combatant: Combatant
 	#actualizeAnimations: () => void
+	#stacks: {upper: BucketStack, lower: BucketStack}
 
 	constructor(pallet: Pallet) {
-		const anims = this.anims = choosePimsleyAnims(pallet)
+		this.anims = choosePimsleyAnims(pallet)
+		this.#stacks = this.#organizeStacks(this.anims)
+		this.#ambler = new Ambler(this.anims)
+		this.#combatant = new Combatant(this.anims)
 
-		this.#ambler = new Ambler(anims)
-		this.#combatant = new Combatant(anims)
+		this.anims.blended.idle.capacity = 1
+		this.anims.blended.attack.capacity = 0
+		this.anims.blended.block.capacity = 0
+		this.anims.blended.forward.capacity = 0
+		this.anims.blended.backward.capacity = 0
+		this.anims.blended.leftward.capacity = 0
+		this.anims.blended.rightward.capacity = 0
+		this.anims.blended.turnLeft.capacity = 0
+		this.anims.blended.turnRight.capacity = 0
 
-		const upperStack = new BucketStack([
-			anims.attack.upper,
-			anims.block.upper,
-			new BucketShare([
-				anims.forward.upper,
-				anims.backward.upper,
-				anims.leftward.upper,
-				anims.rightward.upper,
-			]),
-			anims.turnLeft.upper,
-			anims.turnRight.upper,
-			anims.idle.upper,
-		])
-
-		const lowerStack = new BucketStack([
-			new BucketShare([
-				anims.forward.lower,
-				anims.backward.lower,
-				anims.leftward.lower,
-				anims.rightward.lower,
-			]),
-			anims.turnLeft.lower,
-			anims.turnRight.lower,
-			anims.attack.lower,
-			anims.block.lower,
-			anims.idle.lower,
-		])
-
-		anims.idle.capacity = 1
-		anims.attack.capacity = 0
-		anims.block.capacity = 0
-		anims.forward.capacity = 0
-		anims.backward.capacity = 0
-		anims.leftward.capacity = 0
-		anims.rightward.capacity = 0
-		anims.turnLeft.capacity = 0
-		anims.turnRight.capacity = 0
-
-		anims.headSwivel.animationGroup.weight = 1
-		anims.headSwivel.animationGroup.speedRatio = 1
-		anims.headSwivel.animationGroup.play(true)
-		anims.headSwivel.goto(0.5)
+		this.anims.additive.headSwivel.animationGroup.weight = 1
+		this.anims.additive.headSwivel.animationGroup.speedRatio = 1
+		this.anims.additive.headSwivel.goto(0.5)
 
 		this.#actualizeAnimations = () => {
-			upperStack.dump()
-			upperStack.fill(1)
+			this.#stacks.upper.dump()
+			this.#stacks.upper.fill(1)
 
-			lowerStack.dump()
-			lowerStack.fill(1)
+			this.#stacks.lower.dump()
+			this.#stacks.lower.fill(1)
 		}
 
 		this.#actualizeAnimations()
 	}
 
+	#organizeStacks({blended}: PimsleyAnims) {
+		const upper = new BucketStack([
+			blended.attack.upper,
+			blended.block.upper,
+			new BucketShare([
+				blended.forward.upper,
+				blended.backward.upper,
+				blended.leftward.upper,
+				blended.rightward.upper,
+			]),
+			blended.turnLeft.upper,
+			blended.turnRight.upper,
+			blended.idle.upper,
+		])
+
+		const lower = new BucketStack([
+			new BucketShare([
+				blended.forward.lower,
+				blended.backward.lower,
+				blended.leftward.lower,
+				blended.rightward.lower,
+			]),
+			blended.turnLeft.lower,
+			blended.turnRight.lower,
+			blended.attack.lower,
+			blended.block.lower,
+			blended.idle.lower,
+		])
+
+		return {lower, upper}
+	}
+
 	freeze() {
-		const {anims} = this
-		const freeze = (p: PimsleyAnim) => p.execute(a => a.stop())
-		freeze(anims.idle)
-		freeze(anims.attack)
-		freeze(anims.block)
-		freeze(anims.forward)
-		freeze(anims.backward)
-		freeze(anims.leftward)
-		freeze(anims.rightward)
-		freeze(anims.turnLeft)
-		freeze(anims.turnRight)
+		for (const anim of Object.values(this.anims.blended))
+			anim.execute(a => a.stop())
+		for (const anim of Object.values(this.anims.additive))
+			anim.animationGroup.stop()
 	}
 
 	unfreeze() {
-		const {anims} = this
-		const unfreeze = (p: PimsleyAnim) => p.execute(a => a.play(true))
-		unfreeze(anims.idle)
-		unfreeze(anims.attack)
-		unfreeze(anims.block)
-		unfreeze(anims.forward)
-		unfreeze(anims.backward)
-		unfreeze(anims.leftward)
-		unfreeze(anims.rightward)
-		unfreeze(anims.turnLeft)
-		unfreeze(anims.turnRight)
+		for (const anim of Object.values(this.anims.blended))
+			anim.execute(a => a.play(true))
+		for (const anim of Object.values(this.anims.additive))
+			anim.animationGroup.stop(true)
 	}
 
 	animate(state: PimsleyAnimState) {
