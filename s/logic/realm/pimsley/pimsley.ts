@@ -9,6 +9,8 @@ import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
 import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
+import { Material } from "@babylonjs/core/Materials/material.js"
+import { getMeshoids } from "../../../tools/babylon/babylon-helpers.js"
 
 const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
@@ -37,6 +39,14 @@ export class Pimsley {
 
 	constructor(public pallet: Pallet) {
 		this.anims = new PimsleyChoreographer(pallet)
+	}
+
+	applyMaterial(material: Material) {
+		for (const cargo of this.pallet.warehouse) {
+			for (const [,mesh] of getMeshoids(cargo.prop)) {
+				mesh.material = material
+			}
+		}
 	}
 
 	init(characteristics: PimsleyCharacteristics) {

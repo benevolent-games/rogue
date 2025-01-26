@@ -10,7 +10,7 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 
-const debug = true
+const debug = false
 const {crusader} = constants
 
 export const botReplica = replica<RogueEntities, Realm>()<"bot">(
@@ -26,8 +26,10 @@ export const botReplica = replica<RogueEntities, Realm>()<"bot">(
 		coordinates: Coordinates.from(biped.coordinates),
 	}
 
+	const material = realm.materials.create(0.7, 0, 0)
+
 	const bipedRep = trash.disposable(
-		new BipedRep(realm, () => getState().biped, {...crusader, debug})
+		new BipedRep(realm, () => getState().biped, {...crusader, debug, material})
 	)
 
 	return {

@@ -20,7 +20,7 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 	const inControl = state.author === replicator.author
 
 	const bipedRep = trash.disposable(
-		new BipedRep(realm, () => getState().biped, {...crusader, debug})
+		new BipedRep(realm, () => getState().biped, {...crusader, debug, material: null})
 	)
 
 	const playerInputs = trash.disposable(
