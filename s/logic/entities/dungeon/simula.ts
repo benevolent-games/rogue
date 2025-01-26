@@ -5,9 +5,9 @@ import {Dungeon} from "../../dungeons/dungeon.js"
 import {simula} from "../../../archimedes/framework/simulation/types.js"
 
 export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
-	({id, station, state}) => {
+	({id, station, getState}) => {
 
-	const layout = station.dungeonStore.make(state.options)
+	const layout = station.dungeonStore.make(getState().options)
 	const dungeon = new Dungeon(layout)
 	station.dungeon = dungeon
 

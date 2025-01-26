@@ -10,8 +10,9 @@ import {replica} from "../../../archimedes/framework/replication/types.js"
 import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
-	({realm, state}) => {
+	({realm, getState}) => {
 
+	const state = getState()
 	const cullingRange = 20
 	const wallDetector = new WallDetector(realm)
 
@@ -39,7 +40,7 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 
 	return {
 		gatherInputs: () => undefined,
-		replicate: (_tick) => {
+		replicate: _ => {
 			localArea.center.set(realm.cameraman.desired.pivot)
 
 			const c1 = new Clock()

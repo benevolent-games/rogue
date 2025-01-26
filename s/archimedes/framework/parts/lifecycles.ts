@@ -6,12 +6,12 @@ export class Lifecycles<T extends {dispose: () => void}> {
 	entities = new Map2<number, T>
 
 	constructor(
-		public instancers: Map2<string, (id: number, entityState: any) => T>,
+		public instancers: Map2<string, (id: number) => T>,
 	) {}
 
-	add(id: number, kind: string, state: any) {
+	add(id: number, kind: string) {
 		const instancer = this.instancers.require(kind)
-		const instance = instancer(id, state)
+		const instance = instancer(id)
 		this.entities.set(id, instance)
 		return instance
 	}
@@ -27,9 +27,9 @@ export class Lifecycles<T extends {dispose: () => void}> {
 	conform(gameState: GameState<any>) {
 
 		// creations
-		for (const [id, [kind, state]] of gameState.entities) {
+		for (const [id, [kind]] of gameState.entities) {
 			if (!this.entities.has(id))
-				this.add(id, kind, state)
+				this.add(id, kind)
 		}
 
 		// deletions

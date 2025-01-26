@@ -18,12 +18,11 @@ export class Simulator<xEntities extends Entities, xStation> {
 
 		this.lifecycles = new Lifecycles<SimulaReturn<any>>(
 			new Map2(Object.entries(simulas).map(([kind, simula]) => {
-				const fn = (id: number, state: any) => simula({
+				const fn = (id: number) => simula({
 					simulator: this,
 					gameState,
 					station,
 					id,
-					state,
 					getState: () => gameState.entities.require(id)[1],
 					fromAuthor: (author, inputs) => inputsFromAuthor(author, inputs),
 				} as SimulaPack<any, any, xStation>)
@@ -34,7 +33,7 @@ export class Simulator<xEntities extends Entities, xStation> {
 
 	create<xKind extends keyof xEntities>(kind: xKind, state: xEntities[xKind]["state"]) {
 		const id = this.gameState.create(kind, state)
-		this.lifecycles.add(id, kind as string, state)
+		this.lifecycles.add(id, kind as string)
 		return id
 	}
 
@@ -47,9 +46,8 @@ export class Simulator<xEntities extends Entities, xStation> {
 		this.lifecycles.conform(this.gameState)
 
 		for (const [id, entity] of this.lifecycles.entities) {
-			const [,entityState] = this.gameState.entities.require(id)
 			const relevantInputs = inputs.filter(shell => shell.entity === id)
-			entity.simulate(tick, entityState, relevantInputs)
+			entity.simulate(tick, relevantInputs)
 		}
 	}
 }

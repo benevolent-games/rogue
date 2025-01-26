@@ -1,6 +1,6 @@
 
-import {Circular, Quat} from "@benev/toolbox"
 import {Trashbin} from "@benev/slate"
+import {Circular, Quat} from "@benev/toolbox"
 
 import {BipedState} from "./types.js"
 import {Realm} from "../../realm/realm.js"
@@ -16,13 +16,15 @@ export class BipedRep {
 
 	constructor(
 			public realm: Realm,
-			public state: BipedState,
+			public getState: () => BipedState,
 			public options: {
 				debug: boolean
 				height: number
 				radius: number
 			},
 		) {
+
+		const state = getState()
 
 		this.characteristics = {
 			block: state.block,
@@ -42,6 +44,12 @@ export class BipedRep {
 	}
 
 	replicate(tick: number) {
+		const state = this.getState()
+		this.characteristics.coordinates.set_(...state.coordinates)
+		this.characteristics.rotation.set(state.rotation)
+		this.characteristics.attack = !!state.attack
+		this.characteristics.block = state.block
+
 		this.pimsley.update({
 			tick,
 			seconds: this.realm.seconds,

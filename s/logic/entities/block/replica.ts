@@ -5,8 +5,9 @@ import {RogueEntities} from "../entities.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 
 export const blockReplica = replica<RogueEntities, Realm>()<"block">(
-	({realm, state}) => {
+	({realm, getState}) => {
 
+	const state = getState()
 	const {coordinates, dimensions} = readBlock(state)
 
 	const block = realm.stuff.makeBlockGraphic()
@@ -18,7 +19,8 @@ export const blockReplica = replica<RogueEntities, Realm>()<"block">(
 	return {
 		gatherInputs: () => undefined,
 
-		replicate: (_, state) => {
+		replicate: _ => {
+			const state = getState()
 			const {coordinates} = readBlock(state)
 			block.setCoordinates(
 				smoothCoordinates.approach(coordinates, 8, realm.seconds)

@@ -27,7 +27,8 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	}
 
 	return {
-		simulate: (tick, state, inputs) => {
+		simulate: (tick, inputs) => {
+			const state = getState()
 			input = fromAuthor(state.author, inputs).at(-1) ?? input
 
 			bipedSim.activity.movementIntent.set_(...input.movementIntent)

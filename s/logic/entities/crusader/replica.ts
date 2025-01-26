@@ -12,15 +12,15 @@ const debug = false
 const {crusader} = constants
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
-	({realm, state, replicator}) => {
+	({realm, getState, replicator}) => {
 
-	const {biped} = state
+	const state = getState()
 	const trash = new Trashbin()
 	const {lighting} = realm
 	const inControl = state.author === replicator.author
 
 	const bipedRep = trash.disposable(
-		new BipedRep(realm, biped, {...crusader, debug})
+		new BipedRep(realm, () => getState().biped, {...crusader, debug})
 	)
 
 	const playerInputs = trash.disposable(
@@ -35,7 +35,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 			? [playerInputs.get()]
 			: undefined,
 
-		replicate: (tick, {biped}) => {
+		replicate: (tick) => {
+			const {biped} = getState()
 			bipedRep.characteristics.coordinates.set_(...biped.coordinates)
 			bipedRep.characteristics.rotation.set(biped.rotation)
 			bipedRep.characteristics.attack = !!biped.attack

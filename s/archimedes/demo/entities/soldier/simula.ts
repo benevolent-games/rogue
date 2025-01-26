@@ -5,10 +5,11 @@ import {DemoStation} from "../../station.js"
 import {simula} from "../../../framework/simulation/types.js"
 
 export const soldierSimula = simula<GameEntities, DemoStation>()<"soldier">(
-	({id, station, simulator, fromAuthor}) => {
+	({id, station, simulator, getState, fromAuthor}) => {
 
 	return {
-		simulate: (_, state, inputs) => {
+		simulate: (_, inputs) => {
+			const state = getState()
 
 			let data = {movement: Vec2.zero().array()}
 			for (const input of fromAuthor(null, inputs))
