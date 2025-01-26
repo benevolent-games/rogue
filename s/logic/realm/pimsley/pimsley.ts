@@ -5,12 +5,12 @@ import {GraceTracker} from "./utils/grace.js"
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
 import {Coordinates} from "../utils/coordinates.js"
+import {Material} from "@babylonjs/core/Materials/material.js"
 import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
+import {getMeshoids} from "../../../tools/babylon/babylon-helpers.js"
 import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
-import { Material } from "@babylonjs/core/Materials/material.js"
-import { getMeshoids } from "../../../tools/babylon/babylon-helpers.js"
 
 const {crusader} = constants
 const rotationOffset = Degrees.toRadians(180)
@@ -35,10 +35,18 @@ export class Pimsley {
 	drunkSway = new DrunkSway()
 	graceTracker = new GraceTracker()
 
-	anims: PimsleyChoreographer
+	choreographer: PimsleyChoreographer
 
 	constructor(public pallet: Pallet) {
-		this.anims = new PimsleyChoreographer(pallet)
+		this.choreographer = new PimsleyChoreographer(pallet)
+	}
+
+	freeze() {
+		this.choreographer.freeze()
+	}
+
+	unfreeze() {
+		this.choreographer.unfreeze()
 	}
 
 	applyMaterial(material: Material) {
@@ -81,7 +89,7 @@ export class Pimsley {
 
 		const movement = absoluteMovement.rotate(-displayRotation)
 
-		this.anims.animate({
+		this.choreographer.animate({
 			tick,
 			seconds,
 			movement,

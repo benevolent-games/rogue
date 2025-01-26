@@ -57,20 +57,6 @@ export class PimsleyChoreographer {
 		anims.turnLeft.capacity = 0
 		anims.turnRight.capacity = 0
 
-		const setup = (p: PimsleyAnim) => p.execute(a => {
-			a.play(true)
-		})
-
-		setup(anims.idle)
-		setup(anims.attack)
-		setup(anims.block)
-		setup(anims.forward)
-		setup(anims.backward)
-		setup(anims.leftward)
-		setup(anims.rightward)
-		setup(anims.turnLeft)
-		setup(anims.turnRight)
-
 		anims.headSwivel.animationGroup.weight = 1
 		anims.headSwivel.animationGroup.speedRatio = 1
 		anims.headSwivel.animationGroup.play(true)
@@ -85,6 +71,34 @@ export class PimsleyChoreographer {
 		}
 
 		this.#actualizeAnimations()
+	}
+
+	freeze() {
+		const {anims} = this
+		const freeze = (p: PimsleyAnim) => p.execute(a => a.stop())
+		freeze(anims.idle)
+		freeze(anims.attack)
+		freeze(anims.block)
+		freeze(anims.forward)
+		freeze(anims.backward)
+		freeze(anims.leftward)
+		freeze(anims.rightward)
+		freeze(anims.turnLeft)
+		freeze(anims.turnRight)
+	}
+
+	unfreeze() {
+		const {anims} = this
+		const unfreeze = (p: PimsleyAnim) => p.execute(a => a.play(true))
+		unfreeze(anims.idle)
+		unfreeze(anims.attack)
+		unfreeze(anims.block)
+		unfreeze(anims.forward)
+		unfreeze(anims.backward)
+		unfreeze(anims.leftward)
+		unfreeze(anims.rightward)
+		unfreeze(anims.turnLeft)
+		unfreeze(anims.turnRight)
 	}
 
 	animate(state: PimsleyAnimState) {

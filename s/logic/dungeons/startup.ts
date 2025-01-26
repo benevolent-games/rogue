@@ -18,7 +18,7 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 		out: for (const {sector, cell, tiles} of layout.floors) {
 			for (const spawn of randy.take(10, tiles.array())) {
 				count += 1
-				if (count > howManyBoxesToSpawn)
+				if (count >= howManyBoxesToSpawn)
 					break out
 
 				const dimensions = new Vec3(
@@ -48,14 +48,14 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 	}
 
 	{
+		const howManyBots = 20
 		const radius = constants.crusader.radius
 		const diameter = radius * 2
-		const howManyBots = 2
 		let count = 0
 		out: for (const {sector, cell, tiles} of layout.floors) {
 			for (const spawn of randy.take(10, tiles.array())) {
 				count += 1
-				if (count > howManyBots)
+				if (count >= howManyBots)
 					break out
 
 				const proposedSpawnpoint = layout.space

@@ -11,8 +11,14 @@ export class PimsleyPool extends Pool<Pimsley> {
 			const pallet = new Pallet(container)
 			const pimsley = new Pimsley(pallet)
 			return {payload: pimsley, noodle: {
-				enable: () => pallet.root.setEnabled(true),
-				disable: () => pallet.root.setEnabled(false),
+				enable: () => {
+					pallet.root.setEnabled(true)
+					pimsley.unfreeze()
+				},
+				disable: () => {
+					pallet.root.setEnabled(false)
+					pimsley.freeze()
+				},
 				dispose: () => pallet.dispose(),
 			}}
 		})
