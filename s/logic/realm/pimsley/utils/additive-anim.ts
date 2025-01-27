@@ -19,9 +19,5 @@ export class AdditiveAnim {
 		const frame = AdditiveAnim.frame(this.animationGroup, fraction)
 		this.animationGroup.goToFrame(frame, true)
 	}
-
-	// pose(fraction: number) {
-	// 	const frame = AdditiveAnim.frame(this.animationGroup, fraction)
-	// }
 }
 

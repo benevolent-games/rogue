@@ -15,16 +15,17 @@ export class BipedAnim {
 		this.lower = new BabylonAnimBucket(parts.lower)
 	}
 
-	goToFrame(frame: number) {
-		this.upper.animationGroup.goToFrame(frame, true)
-		this.lower.animationGroup.goToFrame(frame, true)
+	goToFrame(frame: number, useWeights: boolean) {
+		// if (useWeights && this.upper.animationGroup.weight > 0)
+			this.upper.animationGroup.goToFrame(frame, useWeights)
+		// if (useWeights && this.lower.animationGroup.weight > 0)
+			this.lower.animationGroup.goToFrame(frame, useWeights)
 	}
 
-	goToPercent(percent: number) {
+	goToPercent(percent: number, useWeights: boolean) {
 		const durationFrames = (this.to - this.from)
 		const frame = this.from + (durationFrames * percent)
-		this.upper.animationGroup.goToFrame(frame, true)
-		this.lower.animationGroup.goToFrame(frame, true)
+		this.goToFrame(frame, useWeights)
 	}
 
 	get from() {

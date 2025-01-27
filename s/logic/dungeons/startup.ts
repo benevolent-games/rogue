@@ -53,7 +53,7 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 		const diameter = radius * 2
 		let count = 0
 		out: for (const {sector, cell, tiles} of layout.floors) {
-			for (const spawn of randy.take(10, tiles.array())) {
+			for (const spawn of randy.take(20, tiles.array())) {
 				count += 1
 				if (count >= howManyBots)
 					break out
