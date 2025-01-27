@@ -9,7 +9,18 @@ export class BabylonAnimBucket extends Bucket {
 	}
 
 	#setWeight(weight: number) {
-		this.animationGroup.weight = Math.max(weight, 0.001)
+		this.animationGroup.weight = weight < 0.001
+			? 0
+			: weight
+
+		// if (this.alwaysOn) {
+		// 	this.animationGroup.weight = Math.max(weight, 0.001)
+		// }
+		// else {
+		// 	this.animationGroup.weight = weight < 0.001
+		// 		? 0
+		// 		: weight
+		// }
 	}
 
 	fill(amount: number) {
