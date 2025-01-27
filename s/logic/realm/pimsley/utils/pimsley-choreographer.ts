@@ -117,7 +117,7 @@ export class PimsleyChoreographer {
 		// this.anims.blended.idle.upper.fill(1)
 		// this.anims.blended.idle.lower.fill(1)
 
-		fn(this.anims.blended.idle, false)
+		// fn(this.anims.blended.idle, false)
 		fn(this.anims.blended.idle, true)
 		fn(this.anims.blended.forward, true)
 		fn(this.anims.blended.backward, true)
