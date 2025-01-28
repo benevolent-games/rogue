@@ -3,7 +3,6 @@ import {Vec2} from "@benev/toolbox"
 import {Grace} from "./utils/grace"
 
 export type PimsleyAnimState = {
-	tick: number
 	seconds: number
 	movement: Vec2
 	grace: Grace
