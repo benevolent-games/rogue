@@ -77,7 +77,9 @@ export class BipedSim {
 
 		this.body.box.center.set_(...state.coordinates)
 		this.body.velocity.set(newVelocity)
-		this.phys.wakeup(this.body)
+
+		if (options.alwaysAwake)
+			this.phys.wakeup(this.body)
 
 		state.rotation = Circular.normalize(
 			(sprintingDetected && !movementIntent.equals_(0, 0))

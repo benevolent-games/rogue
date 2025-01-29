@@ -15,7 +15,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		id,
 		station,
 		() => getState().biped,
-		constants.crusader,
+		{...constants.crusader, alwaysAwake: true},
 	)
 
 	let input: RogueEntities["crusader"]["input"] = {

@@ -32,9 +32,9 @@ export class PimsleyChoreographer {
 		this.anims.blended.turnLeft.capacity = 0
 		this.anims.blended.turnRight.capacity = 0
 
-		this.anims.additive.headSwivel.animationGroup.weight = 1
-		this.anims.additive.headSwivel.animationGroup.speedRatio = 1
-		this.anims.additive.headSwivel.goto(0.5)
+		// this.anims.additive.headSwivel.animationGroup.weight = 1
+		// this.anims.additive.headSwivel.animationGroup.speedRatio = 1
+		// this.anims.additive.headSwivel.goto(0.5)
 	}
 
 	#organizeStacks({blended}: PimsleyAnims) {
@@ -70,6 +70,11 @@ export class PimsleyChoreographer {
 	}
 
 	freeze() {
+		for (const anim of Object.values(this.anims.blended))
+			anim.execute(a => {
+				a.stop()
+			})
+
 		// for (const anim of Object.values(this.anims.blended))
 		// 	anim.execute(a => a.stop())
 		// for (const anim of Object.values(this.anims.additive))
@@ -77,6 +82,12 @@ export class PimsleyChoreographer {
 	}
 
 	unfreeze() {
+		for (const anim of Object.values(this.anims.blended))
+			anim.execute(a => {
+				a.play(true)
+				a.pause()
+			})
+
 		// for (const anim of Object.values(this.anims.blended))
 		// 	anim.execute(a => a.play(true))
 		// for (const anim of Object.values(this.anims.additive))
@@ -103,21 +114,10 @@ export class PimsleyChoreographer {
 		this.#stacks.lower.dump()
 		this.#stacks.lower.fill(1)
 
-		for (const anim of Object.values(this.anims.blended))
-			anim.execute(a => {
-				a.play(true)
-				a.pause()
-			})
-
 		const fn = (anim: BipedAnim, useWeights: boolean) => {
 			anim.goToFrame(this.#timeline.frame(anim), useWeights)
 		}
 
-		// this.anims.blended.idle.capacity = 1
-		// this.anims.blended.idle.upper.fill(1)
-		// this.anims.blended.idle.lower.fill(1)
-
-		// fn(this.anims.blended.idle, false)
 		fn(this.anims.blended.idle, true)
 		fn(this.anims.blended.forward, true)
 		fn(this.anims.blended.backward, true)
@@ -127,6 +127,24 @@ export class PimsleyChoreographer {
 		fn(this.anims.blended.turnRight, true)
 		fn(this.anims.blended.attack, true)
 		fn(this.anims.blended.block, true)
+
+
+
+
+
+
+		// this.anims.blended.idle.capacity = 1
+		// this.anims.blended.idle.upper.fill(1)
+		// this.anims.blended.idle.lower.fill(1)
+
+		// fn(this.anims.blended.idle, false)
+
+
+
+
+
+
+
 
 		// this.anims.blended.forward.goToFrame(this.#timeline.frame(this.anims.blended.forward), true)
 		// this.anims.blended.leftward.goToFrame(this.#timeline.frame(this.anims.blended.leftward), true)

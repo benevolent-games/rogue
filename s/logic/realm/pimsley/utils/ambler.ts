@@ -55,22 +55,23 @@ export class Ambler {
 		const strafeSpeedBuff = 1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
 		const speed = speedBase * strafeSpeedBuff
 
-		this.anims.blended.forward.speedRatio = speed
-		this.anims.blended.backward.speedRatio = speed
-		this.anims.blended.leftward.speedRatio = speed
-		this.anims.blended.rightward.speedRatio = speed
-		this.anims.blended.turnLeft.speedRatio = speed
-		this.anims.blended.turnRight.speedRatio = speed
+		// this.anims.blended.forward.speedRatio = speed
+		// this.anims.blended.backward.speedRatio = speed
+		// this.anims.blended.leftward.speedRatio = speed
+		// this.anims.blended.rightward.speedRatio = speed
+		// this.anims.blended.turnLeft.speedRatio = speed
+		// this.anims.blended.turnRight.speedRatio = speed
 
 		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
 		const padding = 0.3
-		this.anims.additive.headSwivel.goto(Scalar.remap(
-			this.smoothedRotationDiscrepancy.x,
-			-Degrees.toRadians(90 * (1 - padding)),
-			Degrees.toRadians(90 * (1 - padding)),
-			padding, 1 - padding,
-			true,
-		))
+
+		// this.anims.additive.headSwivel.goto(Scalar.remap(
+		// 	this.smoothedRotationDiscrepancy.x,
+		// 	-Degrees.toRadians(90 * (1 - padding)),
+		// 	Degrees.toRadians(90 * (1 - padding)),
+		// 	padding, 1 - padding,
+		// 	true,
+		// ))
 
 		const weight = (x: number, max: number) => Scalar.clamp(
 			Scalar.remap(x, 0, max, 0, 1, true),

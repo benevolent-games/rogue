@@ -12,7 +12,7 @@ export const botSimula = simula<RogueEntities, Station>()<"bot">(
 		id,
 		station,
 		() => getState().biped,
-		constants.crusader,
+		{...constants.crusader, alwaysAwake: false},
 	)
 
 	return {
