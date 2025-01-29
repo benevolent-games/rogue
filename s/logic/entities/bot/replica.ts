@@ -26,10 +26,8 @@ export const botReplica = replica<RogueEntities, Realm>()<"bot">(
 		coordinates: Coordinates.from(biped.coordinates),
 	}
 
-	const material = realm.materials.create(0.7, 0, 0)
-
 	const bipedRep = trash.disposable(
-		new BipedRep(realm, () => getState().biped, {...crusader, debug, material})
+		new BipedRep(realm, () => getState().biped, {...crusader, debug})
 	)
 
 	return {

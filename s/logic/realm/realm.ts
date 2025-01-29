@@ -72,6 +72,8 @@ export class Realm {
 			? this.indicators.cursor.instance()
 			: null
 
+		this.pimsleyPool.preload(40)
+
 		this.#trash.disposable(this.debugCapsules)
 		this.#trash.disposer(this.inputControls.attach(world.canvas))
 		this.#trash.disposer(this.cursor.attach(world.canvas))

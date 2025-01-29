@@ -1,7 +1,6 @@
 
 import {Trashbin} from "@benev/slate"
 import {Circular, Quat} from "@benev/toolbox"
-import {Material} from "@babylonjs/core/Materials/material.js"
 
 import {BipedState} from "./types.js"
 import {Realm} from "../../realm/realm.js"
@@ -19,7 +18,6 @@ export class BipedRep {
 			public realm: Realm,
 			public getState: () => BipedState,
 			public options: {
-				material: Material | null
 				debug: boolean
 				height: number
 				radius: number
@@ -37,9 +35,6 @@ export class BipedRep {
 
 		this.pimsley = realm.pimsleyPool.acquireCleanly(this.trash)
 		this.pimsley.init(this.characteristics)
-
-		if (options.material)
-			this.pimsley.applyMaterial(options.material)
 
 		this.capsule = options.debug
 			? this.trash.disposable(

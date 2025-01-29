@@ -32,6 +32,12 @@ export class PimsleyChoreographer {
 		this.anims.blended.turnLeft.capacity = 0
 		this.anims.blended.turnRight.capacity = 0
 
+		for (const anim of Object.values(this.anims.blended))
+			anim.execute(a => {
+				a.play(true)
+				a.pause()
+			})
+
 		// this.anims.additive.headSwivel.animationGroup.weight = 1
 		// this.anims.additive.headSwivel.animationGroup.speedRatio = 1
 		// this.anims.additive.headSwivel.goto(0.5)
@@ -70,28 +76,18 @@ export class PimsleyChoreographer {
 	}
 
 	freeze() {
-		for (const anim of Object.values(this.anims.blended))
-			anim.execute(a => {
-				a.stop()
-			})
-
 		// for (const anim of Object.values(this.anims.blended))
-		// 	anim.execute(a => a.stop())
-		// for (const anim of Object.values(this.anims.additive))
-		// 	anim.animationGroup.stop()
+		// 	anim.execute(a => {
+		// 		a.stop()
+		// 	})
 	}
 
 	unfreeze() {
-		for (const anim of Object.values(this.anims.blended))
-			anim.execute(a => {
-				a.play(true)
-				a.pause()
-			})
-
 		// for (const anim of Object.values(this.anims.blended))
-		// 	anim.execute(a => a.play(true))
-		// for (const anim of Object.values(this.anims.additive))
-		// 	anim.animationGroup.play(true)
+		// 	anim.execute(a => {
+		// 		a.play(true)
+		// 		a.pause()
+		// 	})
 	}
 
 	tick = 0
