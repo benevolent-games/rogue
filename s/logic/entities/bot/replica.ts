@@ -30,6 +30,8 @@ export const botReplica = replica<RogueEntities, Realm>()<"bot">(
 		new BipedRep(realm, () => getState().biped, {...crusader, debug})
 	)
 
+	bipedRep.pimsley.applyMaterial(realm.materials.red)
+
 	return {
 		gatherInputs: () => undefined,
 
