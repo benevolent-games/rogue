@@ -48,15 +48,16 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 	}
 
 	{
-		const howManyBots = 5
+		const howManyBots = 10
 		const radius = constants.crusader.radius
 		const diameter = radius * 2
 		let count = 0
 		out: for (const {sector, cell, tiles} of layout.floors) {
 			for (const spawn of randy.take(40, tiles.array())) {
-				count += 1
 				if (count >= howManyBots)
 					break out
+
+				count += 1
 
 				const proposedSpawnpoint = layout.space
 					.toGlobalTileSpace(sector, cell, spawn)

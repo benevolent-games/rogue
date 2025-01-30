@@ -1,5 +1,5 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Randy, Vec2} from "@benev/toolbox"
 import {Mind} from "./mind.js"
 import {Agency} from "./agency.js"
 import {Percept} from "./perception.js"
@@ -9,26 +9,24 @@ export abstract class Mentality {
 	constructor(public mind: Mind) {
 		this.init()
 	}
+
 	init() {}
-	abstract think(): void
+
+	abstract think(tick: number): void
 }
 
 /** totally randomly walking around */
 export class Wandering extends Mentality {
-	tick = 0
-
 	init() {
 		this.mind.agency = new Agency()
 	}
 
-	think() {
-		const tick = this.tick++
-		const rethink = (tick % 60) === 0
-		if (!rethink)
-			return undefined
-
-		const {agency} = this.mind
+	think(tick: number) {
+		const {id, agency} = this.mind
+		const phase = id + Math.floor(((id * 10) + tick) / 60)
+		this.mind.randy = new Randy(phase)
 		agency.pace = 1
+		agency.ambulationGoal = new Vec2(0, 1)
 		agency.ambulationGoal = this.#getRandomPointNearby()
 		agency.lookingAt = this.#getRandomPointNearby()
 	}
@@ -45,7 +43,7 @@ export class Wandering extends Mentality {
 
 /** patrolling around looking for trouble */
 export class Patrolling extends Mentality {
-	think() {}
+	think(tick: number) {}
 }
 
 /** attacking a target */
@@ -54,7 +52,7 @@ export class Attacking extends Mentality {
 		super(mind)
 	}
 
-	think() {}
+	think(tick: number) {}
 }
 
 /** fleeing from a danger */
@@ -63,6 +61,6 @@ export class Fleeing extends Mentality {
 		super(mind)
 	}
 
-	think() {}
+	think(tick: number) {}
 }
 

@@ -1,5 +1,4 @@
 
-import {Randy} from "@benev/toolbox"
 import {Mind} from "./mind/mind.js"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
@@ -17,12 +16,11 @@ export const botSimula = simula<RogueEntities, Station>()<"bot">(
 		{...constants.crusader},
 	)
 
-	const mind = new Mind(new Randy(id))
+	const mind = new Mind(id)
 
 	return {
 		simulate: tick => {
-			mind.randy = new Randy(tick)
-			bipedSim.activity = mind.behave(getState().biped)
+			bipedSim.activity = mind.behave(tick, getState().biped)
 			bipedSim.wake()
 			bipedSim.simulate(tick)
 		},
