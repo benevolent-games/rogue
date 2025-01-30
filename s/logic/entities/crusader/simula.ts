@@ -15,7 +15,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		id,
 		station,
 		() => getState().biped,
-		{...constants.crusader, alwaysAwake: true},
+		{...constants.crusader},
 	)
 
 	let input: RogueEntities["crusader"]["input"] = {
@@ -37,6 +37,7 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 			bipedSim.activity.attack = input.attack
 			bipedSim.activity.block = input.block
 
+			bipedSim.wake()
 			bipedSim.simulate(tick)
 			const coordinates = Coordinates.from(bipedSim.body.box.center)
 			station.updateAuthorCoordinates(state.author, coordinates)

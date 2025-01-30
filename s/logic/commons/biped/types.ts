@@ -3,7 +3,6 @@ import {Vec2, Vec2Array} from "@benev/toolbox"
 
 export type BipedOptions = {
 	radius: number
-	alwaysAwake: boolean
 	movement: {
 		walkSpeed: number
 		sprintSpeed: number
