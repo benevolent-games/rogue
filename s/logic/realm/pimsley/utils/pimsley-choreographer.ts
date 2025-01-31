@@ -3,26 +3,23 @@ import {Ambler} from "./ambler.js"
 import {Combatant} from "./combatant.js"
 import {BipedAnim} from "./biped-anim.js"
 import {PimsleyAnimState} from "../types.js"
-import {AnimTimeline} from "./anim-timeline.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {Changer} from "../../../../supercontrol/grip/parts/changer.js"
 import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
-	#timeline = new AnimTimeline()
-
 	priority = 0
 	anims: PimsleyAnims
 
 	#ambler: Ambler
 	#combatant: Combatant
-	#stacks: {upper: BucketStack, lower: BucketStack}
-
 	#highPriority = new Changer(true)
+	#stacks: {upper: BucketStack, lower: BucketStack}
 
 	constructor(pallet: Pallet) {
 		this.anims = choosePimsleyAnims(pallet)
+
 		this.#stacks = this.#organizeStacks(this.anims)
 		this.#ambler = new Ambler(this.anims)
 		this.#combatant = new Combatant(this.anims)
@@ -84,22 +81,8 @@ export class PimsleyChoreographer {
 		return {lower, upper}
 	}
 
-	freeze() {
-		// for (const anim of Object.values(this.anims.blended))
-		// 	anim.execute(a => {
-		// 		a.stop()
-		// 	})
-	}
-
-	unfreeze() {
-		// for (const anim of Object.values(this.anims.blended))
-		// 	anim.execute(a => {
-		// 		a.play(true)
-		// 		a.pause()
-		// 	})
-	}
-
-	tick = 0
+	freeze() {}
+	unfreeze() {}
 
 	animate(state: PimsleyAnimState) {
 		this.#ambler.animate(state)
@@ -113,8 +96,8 @@ export class PimsleyChoreographer {
 
 		this.#highPriority.value = this.priority < 2
 
-		const fn = (anim: BipedAnim) => {
-			anim.goToFrame(this.#timeline.frame(anim), true)
+		const fn = (anim: BipedAnim, timeline = this.#ambler.timeline) => {
+			anim.goToFraction(timeline.playhead, true)
 		}
 
 		fn(this.anims.blended.idle)
@@ -124,32 +107,13 @@ export class PimsleyChoreographer {
 		fn(this.anims.blended.rightward)
 		fn(this.anims.blended.turnLeft)
 		fn(this.anims.blended.turnRight)
-		fn(this.anims.blended.attack)
+		fn(this.anims.blended.attack, this.#combatant.timeline)
 		fn(this.anims.blended.block)
 
 		if (this.#highPriority.value)
 			this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
 		else if (this.#highPriority.changed)
 			this.anims.additive.headSwivel.goto(0.5, true)
-
-
-
-
-		// this.anims.blended.idle.capacity = 1
-		// this.anims.blended.idle.upper.fill(1)
-		// this.anims.blended.idle.lower.fill(1)
-
-		// fn(this.anims.blended.idle, false)
-
-
-
-
-
-
-
-
-		// this.anims.blended.forward.goToFrame(this.#timeline.frame(this.anims.blended.forward), true)
-		// this.anims.blended.leftward.goToFrame(this.#timeline.frame(this.anims.blended.leftward), true)
 	}
 }
 

@@ -1,6 +1,7 @@
 
 import {Scalar} from "@benev/toolbox"
 import {PimsleyAnimState} from "../types.js"
+import {AnimTimeline} from "./anim-timeline.js"
 import {PimsleyAnims} from "./choose-pimsley-anims.js"
 
 export class Combatant {
@@ -10,7 +11,11 @@ export class Combatant {
 
 	#blockBlend = 0
 
-	constructor(public anims: PimsleyAnims) {}
+	timeline = new AnimTimeline()
+
+	constructor(public anims: PimsleyAnims) {
+		this.timeline.setSpeed(anims.blended.attack)
+	}
 
 	animate(state: PimsleyAnimState) {
 		this.#animateAttacks(state)
@@ -18,12 +23,15 @@ export class Combatant {
 	}
 
 	#animateAttacks(state: PimsleyAnimState) {
+		this.timeline.update()
+
 		this.#attackPrevious = this.#attack
 		this.#attack = !!state.attack
 		const change = this.#attack !== this.#attackPrevious
 
-		if (change && this.#attack)
-			this.anims.blended.attack.execute(a => a.reset())
+		if (change && this.#attack) {
+			this.timeline.playhead = 0
+		}
 
 		this.#attackBlend = Scalar.approach(
 			this.#attackBlend,

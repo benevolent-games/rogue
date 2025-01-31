@@ -29,7 +29,7 @@ export class BipedAnim {
 		this.previousWeight = weight
 	}
 
-	goToPercent(percent: number, useWeights: boolean) {
+	goToFraction(percent: number, useWeights: boolean) {
 		const durationFrames = (this.to - this.from)
 		const frame = this.from + (durationFrames * percent)
 		this.goToFrame(frame, useWeights)

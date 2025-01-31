@@ -1,40 +1,32 @@
 
-import { Map2 } from "@benev/slate"
-import {Chronometer} from "../../../../tools/chronometer.js"
+import {Scalar} from "@benev/toolbox"
 
 export type Animlike = {
 	to: number
 	from: number
-	speedRatio: number
 }
 
-class Animstate {
-	constructor(
-		public playhead: number,
-		public last: number,
-	) {}
-}
+export class AnimTimeline {
+	playhead = 0
+	loopsPerSecond = 1
 
-export class AnimTimeline extends Chronometer {
-	readonly framerate = 60
-	#states = new Map2<Animlike, Animstate>()
+	#last = performance.now()
 
-	constructor() {
-		super()
-		this.start()
+	update() {
+		const now = performance.now()
+		const milliseconds = now - this.#last
+		const seconds = milliseconds / 1000
+		this.#last = now
+
+		const traversal = seconds * this.loopsPerSecond
+		this.playhead = Scalar.wrap(this.playhead + traversal)
 	}
 
-	frame(anim: Animlike) {
-		const {to, from, speedRatio} = anim
-		const {framerate, seconds} = this
-		const state = this.#states.guarantee(anim, () => new Animstate(0, seconds))
-
-		const deltaSeconds = seconds - state.last
-		state.last = seconds
-
-		const durationSeconds = (to - from) / framerate
-		state.playhead = (state.playhead + (deltaSeconds * speedRatio)) % durationSeconds
-		return from + (state.playhead * framerate)
+	setSpeed(anim: Animlike, speedRatio = 1, framerate = 60) {
+		const duration = anim.to - anim.from
+		const durationInSeconds = duration / (framerate * speedRatio)
+		this.loopsPerSecond = 1 / durationInSeconds
+		return this
 	}
 }
 

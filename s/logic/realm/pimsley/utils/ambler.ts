@@ -5,6 +5,7 @@ import {AmbleState} from "../types.js"
 import {constants} from "../../../../constants.js"
 import {PimsleyAnims} from "./choose-pimsley-anims.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
+import { AnimTimeline } from "./anim-timeline.js"
 
 const {crusader} = constants
 
@@ -14,7 +15,7 @@ export class Ambler {
 	smoothedRotationDiscrepancy = new Scalar(0)
 
 	headSwivel = 0.5
-	speed = 1
+	timeline = new AnimTimeline()
 
 	constructor(public anims: PimsleyAnims) {}
 
@@ -56,14 +57,10 @@ export class Ambler {
 			true,
 		)
 		const strafeSpeedBuff = 1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
-		this.speed = speedBase * strafeSpeedBuff
+		const speed = speedBase * strafeSpeedBuff
 
-		// this.anims.blended.forward.speedRatio = speed
-		// this.anims.blended.backward.speedRatio = speed
-		// this.anims.blended.leftward.speedRatio = speed
-		// this.anims.blended.rightward.speedRatio = speed
-		// this.anims.blended.turnLeft.speedRatio = speed
-		// this.anims.blended.turnRight.speedRatio = speed
+		this.timeline.setSpeed(this.anims.blended.forward, speed)
+		this.timeline.update()
 
 		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
 		const padding = 0.1
