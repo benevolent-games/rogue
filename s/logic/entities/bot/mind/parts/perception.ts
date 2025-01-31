@@ -1,5 +1,5 @@
 
-import {Coordinates} from "../../../realm/utils/coordinates.js"
+import {Coordinates} from "../../../../realm/utils/coordinates.js"
 
 /** something the bot can see, hear, or remembers */
 export class Percept {
