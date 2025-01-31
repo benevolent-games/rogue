@@ -15,8 +15,19 @@ export abstract class Mentality {
 		}
 	}
 
-	constructor(public mind: Mind) {}
+	#lastPhase = 0
+
+	constructor(public mind: Mind) {
+		this.#lastPhase = mind.chronex.phase
+	}
 
 	abstract think(): BipedActivity
+
+	isNewPhase() {
+		const currentPhase = this.mind.chronex.phase
+		const lastPhase = this.#lastPhase
+		this.#lastPhase = currentPhase
+		return currentPhase !== lastPhase
+	}
 }
 

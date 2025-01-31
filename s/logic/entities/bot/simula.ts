@@ -13,10 +13,10 @@ export const botSimula = simula<RogueEntities, Station>()<"bot">(
 		id,
 		station,
 		() => getState().biped,
-		{...constants.crusader},
+		constants.crusader,
 	)
 
-	const mind = new Mind(id)
+	const mind = new Mind(station, id)
 
 	return {
 		simulate: tick => {

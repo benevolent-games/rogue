@@ -5,6 +5,7 @@ import {Chronex} from "./parts/chronex.js"
 import {Mentality} from "./parts/mentality.js"
 import {Perception} from "./parts/perception.js"
 import {Personality} from "./parts/personality.js"
+import {Station} from "../../../station/station.js"
 import {Wandering} from "./mentalities/wandering.js"
 import {BipedActivity, BipedState} from "../../../commons/biped/types.js"
 
@@ -16,16 +17,16 @@ export class Mind {
 	personality: Personality
 	mentality: Mentality
 
-	constructor(public id: number) {
-		const randy = new Randy(id)
-		this.chronex = new Chronex(id, randy)
+	constructor(public station: Station, public seed: number) {
+		const randy = new Randy(seed)
+		this.chronex = new Chronex(seed, randy)
 		this.personality = Personality.generate(randy)
 		this.mentality = new Wandering(this)
 	}
 
 	behave(tick: number, state: BipedState): BipedActivity {
-		this.#updatePerceptions(state)
 		this.chronex.update(tick)
+		this.#updatePerceptions(state)
 		return this.mentality.think()
 	}
 
