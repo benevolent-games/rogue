@@ -28,5 +28,12 @@ export class Prioritizer<P> {
 		this.sort()
 		return this
 	}
+
+	getPriorityIndex(priority: P) {
+		const index = this.sorted.indexOf(priority)
+		if (index === -1)
+			throw new Error("priority not found")
+		return index
+	}
 }
 

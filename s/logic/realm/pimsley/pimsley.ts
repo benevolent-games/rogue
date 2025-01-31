@@ -44,6 +44,7 @@ export class Pimsley {
 	constructor(public realm: Realm, public pallet: Pallet) {
 		this.choreographer = new PimsleyChoreographer(pallet)
 		this.animo = {
+			setPriorityIndex: index => this.choreographer.priority = index,
 			getCoordinates: () => this.coordinates,
 			animate: (_frame, _seconds) => {
 				this.choreographer.animate(this.animState)

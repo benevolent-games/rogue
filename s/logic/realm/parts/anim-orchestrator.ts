@@ -4,6 +4,7 @@ import {range} from "../../../tools/range.js"
 import {Prioritizer} from "../../../tools/prioritizer.js"
 
 export type Animo = {
+	setPriorityIndex(index: number): void
 	getCoordinates: () => Vec2
 	animate: (frame: number, seconds: number) => void
 }
@@ -41,6 +42,7 @@ export class AnimOrchestrator {
 			const animos = this.animos.sorted.slice(start, end)
 
 			animos.forEach((animo, index) => {
+				animo.setPriorityIndex(this.animos.getPriorityIndex(animo))
 				const offset = index % bucketCount
 
 				for (let i = 0; i < bucketCount; i += nth) {

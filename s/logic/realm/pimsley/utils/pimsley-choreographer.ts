@@ -5,16 +5,21 @@ import {BipedAnim} from "./biped-anim.js"
 import {PimsleyAnimState} from "../types.js"
 import {AnimTimeline} from "./anim-timeline.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
+import {Changer} from "../../../../supercontrol/grip/parts/changer.js"
 import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
 
 export class PimsleyChoreographer {
 	#timeline = new AnimTimeline()
 
+	priority = 0
 	anims: PimsleyAnims
+
 	#ambler: Ambler
 	#combatant: Combatant
 	#stacks: {upper: BucketStack, lower: BucketStack}
+
+	#highPriority = new Changer(true)
 
 	constructor(pallet: Pallet) {
 		this.anims = choosePimsleyAnims(pallet)
@@ -106,22 +111,26 @@ export class PimsleyChoreographer {
 		this.#stacks.lower.dump()
 		this.#stacks.lower.fill(1)
 
-		const fn = (anim: BipedAnim, useWeights: boolean) => {
-			anim.goToFrame(this.#timeline.frame(anim), useWeights)
+		this.#highPriority.value = this.priority < 2
+
+		const fn = (anim: BipedAnim) => {
+			anim.goToFrame(this.#timeline.frame(anim), true)
 		}
 
-		fn(this.anims.blended.idle, true)
-		fn(this.anims.blended.forward, true)
-		fn(this.anims.blended.backward, true)
-		fn(this.anims.blended.leftward, true)
-		fn(this.anims.blended.rightward, true)
-		fn(this.anims.blended.turnLeft, true)
-		fn(this.anims.blended.turnRight, true)
-		fn(this.anims.blended.attack, true)
-		fn(this.anims.blended.block, true)
+		fn(this.anims.blended.idle)
+		fn(this.anims.blended.forward)
+		fn(this.anims.blended.backward)
+		fn(this.anims.blended.leftward)
+		fn(this.anims.blended.rightward)
+		fn(this.anims.blended.turnLeft)
+		fn(this.anims.blended.turnRight)
+		fn(this.anims.blended.attack)
+		fn(this.anims.blended.block)
 
-		this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
-
+		if (this.#highPriority.value)
+			this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
+		else if (this.#highPriority.changed)
+			this.anims.additive.headSwivel.goto(0.5, true)
 
 
 
