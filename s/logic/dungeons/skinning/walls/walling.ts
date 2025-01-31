@@ -94,7 +94,7 @@ export class Walling {
 
 			// determine target opacity
 			spec.targetOpacity = this.#detector.detect(spec)
-				? 0
+				? 0.2
 				: 1
 
 			// animate fading
