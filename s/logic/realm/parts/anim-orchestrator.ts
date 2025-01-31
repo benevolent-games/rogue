@@ -21,9 +21,9 @@ export class AnimOrchestrator {
 
 	ranges = [
 		{nth: 1, start: 0, end: 3},
-		{nth: 2, start: 3, end: 9},
-		{nth: 4, start: 9, end: 20},
-		{nth: 8, start: 20, end: undefined},
+		{nth: 2, start: 3, end: 6},
+		{nth: 4, start: 6, end: 12},
+		{nth: 8, start: 12, end: undefined},
 	]
 
 	animos = new Prioritizer<Animo>(
