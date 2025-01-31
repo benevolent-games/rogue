@@ -38,9 +38,13 @@ export class PimsleyChoreographer {
 				a.pause()
 			})
 
-		// this.anims.additive.headSwivel.animationGroup.weight = 1
-		// this.anims.additive.headSwivel.animationGroup.speedRatio = 1
-		// this.anims.additive.headSwivel.goto(0.5)
+		for (const anim of Object.values(this.anims.additive)) {
+			anim.animationGroup.play(true)
+			anim.animationGroup.pause()
+		}
+
+		this.anims.additive.headSwivel.animationGroup.weight = 1
+		this.anims.additive.headSwivel.goto(0.5, true)
 	}
 
 	#organizeStacks({blended}: PimsleyAnims) {
@@ -92,15 +96,7 @@ export class PimsleyChoreographer {
 
 	tick = 0
 
-	isActive() {
-		const tick = this.tick++
-		return (tick % 5) === 0
-	}
-
 	animate(state: PimsleyAnimState) {
-		// if (!this.isActive())
-		// 	return undefined
-
 		this.#ambler.animate(state)
 		this.#combatant.animate(state)
 
@@ -124,6 +120,7 @@ export class PimsleyChoreographer {
 		fn(this.anims.blended.attack, true)
 		fn(this.anims.blended.block, true)
 
+		this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
 
 
 

@@ -15,9 +15,9 @@ export class AdditiveAnim {
 		this.animationGroup = AnimationGroup.MakeAnimationAdditive(originalGroup, {referenceFrame})
 	}
 
-	goto(fraction: number) {
+	goto(fraction: number, useWeighted = false) {
 		const frame = AdditiveAnim.frame(this.animationGroup, fraction)
-		this.animationGroup.goToFrame(frame, true)
+		this.animationGroup.goToFrame(frame, useWeighted)
 	}
 }
 

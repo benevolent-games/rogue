@@ -13,6 +13,9 @@ export class Ambler {
 	smoothedSpin = new Scalar(0)
 	smoothedRotationDiscrepancy = new Scalar(0)
 
+	headSwivel = 0.5
+	speed = 1
+
 	constructor(public anims: PimsleyAnims) {}
 
 	animate(state: AmbleState) {
@@ -53,7 +56,7 @@ export class Ambler {
 			true,
 		)
 		const strafeSpeedBuff = 1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
-		const speed = speedBase * strafeSpeedBuff
+		this.speed = speedBase * strafeSpeedBuff
 
 		// this.anims.blended.forward.speedRatio = speed
 		// this.anims.blended.backward.speedRatio = speed
@@ -63,15 +66,15 @@ export class Ambler {
 		// this.anims.blended.turnRight.speedRatio = speed
 
 		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
-		const padding = 0.3
+		const padding = 0.1
 
-		// this.anims.additive.headSwivel.goto(Scalar.remap(
-		// 	this.smoothedRotationDiscrepancy.x,
-		// 	-Degrees.toRadians(90 * (1 - padding)),
-		// 	Degrees.toRadians(90 * (1 - padding)),
-		// 	padding, 1 - padding,
-		// 	true,
-		// ))
+		this.headSwivel = Scalar.remap(
+			this.smoothedRotationDiscrepancy.x,
+			-Degrees.toRadians(90 * (1 - padding)),
+			Degrees.toRadians(90 * (1 - padding)),
+			padding, 1 - padding,
+			true,
+		)
 
 		const weight = (x: number, max: number) => Scalar.clamp(
 			Scalar.remap(x, 0, max, 0, 1, true),
