@@ -7,6 +7,7 @@ import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {Changer} from "../../../../supercontrol/grip/parts/changer.js"
 import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
+import { Scalar } from "@benev/toolbox"
 
 export class PimsleyChoreographer {
 	priority = 0
@@ -88,11 +89,8 @@ export class PimsleyChoreographer {
 		this.#ambler.animate(state)
 		this.#combatant.animate(state)
 
-		this.#stacks.upper.dump()
-		this.#stacks.upper.fill(1)
-
-		this.#stacks.lower.dump()
-		this.#stacks.lower.fill(1)
+		this.#stacks.upper.cycle(1)
+		this.#stacks.lower.cycle(1)
 
 		this.#highPriority.value = this.priority < 2
 
@@ -100,15 +98,55 @@ export class PimsleyChoreographer {
 			anim.goToFraction(timeline.playhead, true)
 		}
 
-		fn(this.anims.blended.idle)
-		fn(this.anims.blended.forward)
-		fn(this.anims.blended.backward)
-		fn(this.anims.blended.leftward)
-		fn(this.anims.blended.rightward)
-		fn(this.anims.blended.turnLeft)
-		fn(this.anims.blended.turnRight)
-		fn(this.anims.blended.attack, this.#combatant.timeline)
-		fn(this.anims.blended.block)
+		const schedule: [BipedAnim, () => void][] = []
+
+		const consider = (anim: BipedAnim, timeline = this.#ambler.timeline) => {
+			schedule.push([anim, () => fn(anim, timeline)])
+		}
+
+		this.anims.blended.idle.goToFraction(this.#ambler.timeline.playhead, false)
+
+		consider(this.anims.blended.forward)
+		consider(this.anims.blended.backward)
+		consider(this.anims.blended.leftward)
+		consider(this.anims.blended.rightward)
+		consider(this.anims.blended.turnLeft)
+		consider(this.anims.blended.turnRight)
+		consider(this.anims.blended.attack, this.#combatant.timeline)
+		consider(this.anims.blended.block)
+
+		schedule.sort(([a], [b]) => b.capacity - a.capacity)
+
+		const actual = (this.#highPriority.value)
+			? schedule
+			: schedule.slice(0, 3)
+
+		const {idle} = this.anims.blended
+		const idleScheduled = [idle, () => fn(idle)] as [BipedAnim, () => void]
+		const seriously = [idleScheduled, ...actual]
+
+		// upper
+		{
+			const waterSum = seriously.reduce((s, [anim]) => s + anim.upper.water, 0)
+			const remaining = Scalar.clamp(1 - waterSum)
+			if (remaining > 0) {
+				idle.upper.water = Scalar.clamp(idle.upper.water + remaining)
+			}
+			// const waterSum2 = seriously.reduce((s, [anim]) => s + anim.upper.water, 0)
+			// console.log("fix!", waterSum2.toFixed(2), remaining)
+		}
+
+		// lower
+		{
+			const waterSum = seriously.reduce((s, [anim]) => s + anim.lower.water, 0)
+			const remaining = Scalar.clamp(1 - waterSum)
+			if (remaining > 0) {
+				idle.lower.water = Scalar.clamp(idle.lower.water + remaining)
+			}
+		}
+
+		for (const [,fn] of seriously)
+			fn()
 
 		if (this.#highPriority.value)
 			this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
