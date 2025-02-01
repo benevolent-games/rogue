@@ -118,6 +118,12 @@ export class AccountantDatabase {
 			avatars: [],
 		}],
 
+		// fernando
+		["08ffa63511559e7b3c4722d03c03fa50924fb7e5b35396bb039fba7f0a419556", {
+			tags: ["knighted"],
+			avatars: [],
+		}],
+
 		// mope
 		["47713bfb62e73de626f8071243601d775bda48d1a67d352d59265403538f8e29", {
 			tags: ["blessed"],
