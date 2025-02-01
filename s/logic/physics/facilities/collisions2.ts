@@ -6,11 +6,12 @@ import {Circle} from "../shapes/circle.js"
 
 export const Collisions2 = {
 	pointVsBox(point: Vec2, box: Box2) {
+		const {min, max} = box
 		return (
-			point.x >= box.min.x &&
-			point.x <= box.max.x &&
-			point.y >= box.min.y &&
-			point.y <= box.max.y
+			point.x >= min.x &&
+			point.x <= max.x &&
+			point.y >= min.y &&
+			point.y <= max.y
 		)
 	},
 

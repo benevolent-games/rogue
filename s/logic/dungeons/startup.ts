@@ -48,13 +48,14 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 	}
 
 	{
-		const howManyBots = 30
+		const howManyBots = 500
+		const botsPerCell = 5
+		const startCell = 1
 		const radius = constants.crusader.radius
 		const diameter = radius * 2
 		let count = 0
-		const startCell = 1
 		out: for (const {sector, cell, tiles} of [...layout.floors].slice(startCell)) {
-			for (const spawn of randy.take(5, tiles.array())) {
+			for (const spawn of randy.take(botsPerCell, tiles.array())) {
 				if (count >= howManyBots)
 					break out
 

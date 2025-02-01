@@ -29,6 +29,7 @@ export class Simtron {
 	}
 
 	simulate(tick: number, inputs: InputShell<any>[], physicsTiming = new TimingReport()) {
+		this.station.update(tick)
 		this.simulator.simulate(tick, inputs)
 		const dungeon = this.station.possibleDungeon
 		if (dungeon) {
@@ -62,8 +63,8 @@ export class Simtron {
 	}
 
 	getTailoredSnapshot(author: number) {
-		const coordinates = this.station.getAuthorCoordinates(author)
-		// console.log(`author #${author} coordinates ${coordinates.toString()}`)
+		const aware = this.station.awareness.awares.require(author)
+		const coordinates = aware.area.center
 		const entityIds = new Set([
 			...this.station.importantEntities,
 			...this.station.entityHashgrid.queryItems(

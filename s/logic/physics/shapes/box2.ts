@@ -1,5 +1,6 @@
 
 import {Vec2} from "@benev/toolbox"
+import {Collisions2} from "../facilities/collisions2.js"
 
 export class Box2 {
 	constructor(
@@ -31,6 +32,10 @@ export class Box2 {
 
 	boundingBox() {
 		return this
+	}
+
+	contains(point: Vec2) {
+		return Collisions2.pointVsBox(point, this)
 	}
 
 	clone() {

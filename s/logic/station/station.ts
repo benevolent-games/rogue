@@ -1,24 +1,29 @@
 
-import {Vec2} from "@benev/toolbox"
+import {Glacier} from "./utils/glacier.js"
+import {constants} from "../../constants.js"
 import {Dungeon} from "../dungeons/dungeon.js"
+import {Awareness} from "./utils/awareness.js"
 import {deferPromise, Map2} from "@benev/slate"
 import {DungeonStore} from "../dungeons/store.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
-import {Coordinates} from "../realm/utils/coordinates.js"
-import {constants} from "../../constants.js"
 
 export class Station {
 	#dungeon: Dungeon | null = null
 	#readyPromise = deferPromise<void>()
-	#authorCoordinates = new Map2<number, Coordinates>()
 
 	// fixed timestep for simulation
 	readonly seconds = 1 / constants.sim.tickRate
 
 	importantEntities = new Set<number>()
 	entityHashgrid = new ZenGrid<number>(constants.sim.hashgridExtent)
+	awareness = new Awareness()
+	glacier = new Glacier(this.awareness)
 
 	constructor(public dungeonStore: DungeonStore) {}
+
+	update(_tick: number) {
+		this.glacier.recompute()
+	}
 
 	get ready() {
 		return this.#readyPromise.promise
@@ -37,14 +42,6 @@ export class Station {
 
 	get possibleDungeon() {
 		return this.#dungeon
-	}
-
-	getAuthorCoordinates(author: number) {
-		return this.#authorCoordinates.guarantee(author, () => Coordinates.zero())
-	}
-
-	updateAuthorCoordinates(author: number, coordinates: Coordinates) {
-		this.getAuthorCoordinates(author).set(coordinates)
 	}
 }
 
