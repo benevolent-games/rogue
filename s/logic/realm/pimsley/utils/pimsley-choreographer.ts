@@ -53,8 +53,7 @@ export class PimsleyChoreographer {
 		this.anims.additive.headSwivel.animationGroup.weight = 1
 		this.anims.additive.headSwivel.goto(0.5, true)
 
-		this.#upperSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.upper, this.#ambler.timeline))
-		// this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.idle.upper, this.#ambler.timeline))
+		this.#upperSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.upper, this.#ambler.idleTimeline))
 		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.attack.upper, this.#combatant.timeline))
 		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.block.upper, this.#ambler.timeline))
 		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.forward.upper, this.#ambler.timeline))
@@ -64,8 +63,7 @@ export class PimsleyChoreographer {
 		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.turnLeft.upper, this.#ambler.timeline))
 		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.turnRight.upper, this.#ambler.timeline))
 
-		this.#lowerSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.lower, this.#ambler.timeline))
-		// this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.idle.lower, this.#ambler.timeline))
+		this.#lowerSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.lower, this.#ambler.idleTimeline))
 		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.attack.lower, this.#combatant.timeline))
 		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.block.lower, this.#ambler.timeline))
 		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.forward.lower, this.#ambler.timeline))

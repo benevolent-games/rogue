@@ -2,10 +2,10 @@
 import {Degrees, Scalar, Vec2} from "@benev/toolbox"
 
 import {AmbleState} from "../types.js"
+import {AnimTimeline} from "./anim-timeline.js"
 import {constants} from "../../../../constants.js"
 import {PimsleyAnims} from "./choose-pimsley-anims.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
-import { AnimTimeline } from "./anim-timeline.js"
 
 const {crusader} = constants
 
@@ -16,8 +16,11 @@ export class Ambler {
 
 	headSwivel = 0.5
 	timeline = new AnimTimeline()
+	idleTimeline = new AnimTimeline()
 
-	constructor(public anims: PimsleyAnims) {}
+	constructor(public anims: PimsleyAnims) {
+		this.idleTimeline.setSpeed(anims.blended.idle)
+	}
 
 	animate(state: AmbleState) {
 		const {seconds, grace} = state
@@ -61,6 +64,7 @@ export class Ambler {
 
 		this.timeline.setSpeed(this.anims.blended.forward, speed)
 		this.timeline.update()
+		this.idleTimeline.update()
 
 		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
 		const padding = 0.1
