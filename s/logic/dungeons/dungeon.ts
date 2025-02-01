@@ -3,13 +3,14 @@ import {Randy, Vec2} from "@benev/toolbox"
 
 import {Phys} from "../physics/phys.js"
 import {DungeonLayout} from "./layout.js"
+import {constants} from "../../constants.js"
 import {Box2} from "../physics/shapes/box2.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
 
 export class Dungeon {
 	phys = new Phys()
 	tileSize = new Vec2(1, 1)
-	floorGrid = new ZenGrid<void>(Vec2.new(16, 16))
+	floorGrid = new ZenGrid<void>(constants.sim.hashgridExtent)
 
 	constructor(public layout: DungeonLayout) {
 		for (const wall of this.layout.walls.tiles())

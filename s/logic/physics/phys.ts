@@ -39,7 +39,7 @@ export class Phys {
 	bodies = new Set<PhysBody>()
 	fixedBodies = new Set<PhysBody>()
 	dynamicBodies = new Set<PhysBody>()
-	bodyGrid = new ZenGrid<PhysBody>(new Vec2(8, 8))
+	bodyGrid = new ZenGrid<PhysBody>(constants.sim.hashgridExtent)
 	awakes = new Map2<PhysBody, Awakened>()
 
 	#addBody(body: PhysBody) {

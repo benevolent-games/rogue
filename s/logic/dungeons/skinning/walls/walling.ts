@@ -10,6 +10,7 @@ import {WallAlive} from "./wall-alive.js"
 import {Realm} from "../../../realm/realm.js"
 import {WallDetector} from "./wall-detector.js"
 import {DungeonPlacer} from "../utils/placer.js"
+import {constants} from "../../../../constants.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {GlobalTileVec2} from "../../layouting/space.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
@@ -19,7 +20,7 @@ import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js
 
 export class Walling {
 	#placer = new DungeonPlacer(1)
-	#hashgrid = new ZenGrid<WallSpec>(new Vec2(16, 16))
+	#hashgrid = new ZenGrid<WallSpec>(constants.sim.hashgridExtent)
 	#alive = new Map2<WallSpec, WallAlive>()
 
 	#detector: WallDetector

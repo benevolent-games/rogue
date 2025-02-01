@@ -24,6 +24,7 @@ export const constants = {
 	sim: {
 		tickRate: 60,
 		snapshotRate: 1,
+		hashgridExtent: Vec2.all(8),
 		localSnapshotArea: new Vec2(25, 25),
 	},
 

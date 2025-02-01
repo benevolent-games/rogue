@@ -1,9 +1,9 @@
 
 import {Map2} from "@benev/slate"
-import {Vec2} from "@benev/toolbox"
 
 import {FloorSegment} from "../floors/types.js"
 import {DungeonPlacer} from "../utils/placer.js"
+import {constants} from "../../../../constants.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
@@ -17,7 +17,7 @@ class FloorSpec {
 
 export class Flooring {
 	#placer = new DungeonPlacer(1)
-	#hashgrid = new ZenGrid<FloorSpec>(new Vec2(16, 16))
+	#hashgrid = new ZenGrid<FloorSpec>(constants.sim.hashgridExtent)
 	#releasers = new Map2<FloorSpec, () => void>()
 
 	constructor(public lifeguard: Lifeguard, floors: FloorSegment[]) {

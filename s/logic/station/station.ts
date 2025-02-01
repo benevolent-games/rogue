@@ -16,7 +16,7 @@ export class Station {
 	readonly seconds = 1 / constants.sim.tickRate
 
 	importantEntities = new Set<number>()
-	entityHashgrid = new ZenGrid<number>(Vec2.all(16))
+	entityHashgrid = new ZenGrid<number>(constants.sim.hashgridExtent)
 
 	constructor(public dungeonStore: DungeonStore) {}
 
