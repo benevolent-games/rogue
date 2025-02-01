@@ -23,6 +23,8 @@ export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
 		new BipedRep(realm, () => getState().biped, {...crusader, debug})
 	)
 
+	bipedRep.pimsley.applyMaterial(realm.materials.cyan)
+
 	const playerInputs = trash.disposable(
 		new PlayerInputs(realm, bipedRep.characteristics.coordinates)
 	)
