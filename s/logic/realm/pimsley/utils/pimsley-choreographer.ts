@@ -1,17 +1,21 @@
 
+import {Scalar} from "@benev/toolbox"
 import {Ambler} from "./ambler.js"
 import {Combatant} from "./combatant.js"
-import {BipedAnim} from "./biped-anim.js"
 import {PimsleyAnimState} from "../types.js"
+import {AnimTimeline} from "./anim-timeline.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 import {Changer} from "../../../../supercontrol/grip/parts/changer.js"
 import {choosePimsleyAnims, PimsleyAnims} from "./choose-pimsley-anims.js"
+import {BabylonAnimBucket} from "../../../../tools/buckets/babylon-anim.js"
 import {BucketShare, BucketStack} from "../../../../tools/buckets/buckets.js"
-import { Scalar } from "@benev/toolbox"
 
 export class PimsleyChoreographer {
 	priority = 0
 	anims: PimsleyAnims
+
+	#upperSchedule: AnimScheduler
+	#lowerSchedule: AnimScheduler
 
 	#ambler: Ambler
 	#combatant: Combatant
@@ -48,6 +52,28 @@ export class PimsleyChoreographer {
 
 		this.anims.additive.headSwivel.animationGroup.weight = 1
 		this.anims.additive.headSwivel.goto(0.5, true)
+
+		this.#upperSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.upper, this.#ambler.timeline))
+		// this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.idle.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.attack.upper, this.#combatant.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.block.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.forward.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.backward.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.leftward.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.rightward.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.turnLeft.upper, this.#ambler.timeline))
+		this.#upperSchedule.add(new ScheduledAnim(this.anims.blended.turnRight.upper, this.#ambler.timeline))
+
+		this.#lowerSchedule = new AnimScheduler(new ScheduledAnim(this.anims.blended.idle.lower, this.#ambler.timeline))
+		// this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.idle.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.attack.lower, this.#combatant.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.block.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.forward.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.backward.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.leftward.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.rightward.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.turnLeft.lower, this.#ambler.timeline))
+		this.#lowerSchedule.add(new ScheduledAnim(this.anims.blended.turnRight.lower, this.#ambler.timeline))
 	}
 
 	#organizeStacks({blended}: PimsleyAnims) {
@@ -92,66 +118,49 @@ export class PimsleyChoreographer {
 		this.#stacks.upper.cycle(1)
 		this.#stacks.lower.cycle(1)
 
-		this.#highPriority.value = this.priority < 2
+		this.#highPriority.value = this.priority < 3
 
-		const fn = (anim: BipedAnim, timeline = this.#ambler.timeline) => {
-			anim.goToFraction(timeline.playhead, true)
-		}
-
-		const schedule: [BipedAnim, () => void][] = []
-
-		const consider = (anim: BipedAnim, timeline = this.#ambler.timeline) => {
-			schedule.push([anim, () => fn(anim, timeline)])
-		}
+		const limit = this.#highPriority.value
+			? 8
+			: 2
 
 		this.anims.blended.idle.goToFraction(this.#ambler.timeline.playhead, false)
-
-		consider(this.anims.blended.forward)
-		consider(this.anims.blended.backward)
-		consider(this.anims.blended.leftward)
-		consider(this.anims.blended.rightward)
-		consider(this.anims.blended.turnLeft)
-		consider(this.anims.blended.turnRight)
-		consider(this.anims.blended.attack, this.#combatant.timeline)
-		consider(this.anims.blended.block)
-
-		schedule.sort(([a], [b]) => b.capacity - a.capacity)
-
-		const actual = (this.#highPriority.value)
-			? schedule
-			: schedule.slice(0, 3)
-
-		const {idle} = this.anims.blended
-		const idleScheduled = [idle, () => fn(idle)] as [BipedAnim, () => void]
-		const seriously = [idleScheduled, ...actual]
-
-		// upper
-		{
-			const waterSum = seriously.reduce((s, [anim]) => s + anim.upper.water, 0)
-			const remaining = Scalar.clamp(1 - waterSum)
-			if (remaining > 0) {
-				idle.upper.water = Scalar.clamp(idle.upper.water + remaining)
-			}
-			// const waterSum2 = seriously.reduce((s, [anim]) => s + anim.upper.water, 0)
-			// console.log("fix!", waterSum2.toFixed(2), remaining)
-		}
-
-		// lower
-		{
-			const waterSum = seriously.reduce((s, [anim]) => s + anim.lower.water, 0)
-			const remaining = Scalar.clamp(1 - waterSum)
-			if (remaining > 0) {
-				idle.lower.water = Scalar.clamp(idle.lower.water + remaining)
-			}
-		}
-
-		for (const [,fn] of seriously)
-			fn()
+		this.#upperSchedule.execute(limit)
+		this.#lowerSchedule.execute(limit)
 
 		if (this.#highPriority.value)
 			this.anims.additive.headSwivel.goto(this.#ambler.headSwivel, true)
 		else if (this.#highPriority.changed)
 			this.anims.additive.headSwivel.goto(0.5, true)
+	}
+}
+
+class ScheduledAnim {
+	constructor(
+		public anim: BabylonAnimBucket,
+		public timeline: AnimTimeline,
+	) {}
+}
+
+class AnimScheduler {
+	schedule: ScheduledAnim[] = []
+	constructor(public fallback: ScheduledAnim) {}
+
+	add(anim: ScheduledAnim) {
+		this.schedule.push(anim)
+	}
+
+	execute(limit: number): ScheduledAnim[] {
+		const sorted = this.schedule.toSorted((a, b) => b.anim.water - a.anim.water)
+		const selected = [this.fallback, ...sorted.slice(0, limit)]
+		const waterSum = selected.reduce((s, a) => s + a.anim.water, 0)
+		const remaining = Scalar.clamp(1 - waterSum)
+		this.fallback.anim.fill(remaining)
+
+		for (const {anim, timeline} of selected)
+			anim.goToFraction(timeline.playhead, true)
+
+		return selected
 	}
 }
 
