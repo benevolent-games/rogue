@@ -4,7 +4,7 @@ import {Scalar} from "@benev/toolbox"
 export type Vessel = {
 	water: number
 	capacity: number
-	fill(amount: number): number
+	fill(water: number): number
 	dump(): void
 }
 
@@ -38,18 +38,23 @@ export class BucketStack implements Vessel {
 		return this.vessels.reduce((x, v) => x + v.capacity, 0)
 	}
 
-	fill(amount: number) {
+	fill(water: number) {
 		for (const vessel of this.vessels) {
-			if (amount === 0)
+			if (water === 0)
 				return 0
-			amount = vessel.fill(amount)
+			water = vessel.fill(water)
 		}
-		return amount
+		return water
 	}
 
 	dump() {
 		for (const vessel of this.vessels)
 			vessel.dump()
+	}
+
+	cycle(water: number) {
+		this.dump()
+		this.fill(water)
 	}
 }
 

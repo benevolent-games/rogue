@@ -11,7 +11,6 @@ export type SimulaReturn<xEntity extends Entity> = {
 	dispose: () => void
 	simulate: (
 		tick: number,
-		state: xEntity["state"],
 		inputs: InputShell<xEntity["input"]>[],
 	) => void
 }
@@ -20,7 +19,6 @@ export type SimulaPack<xEntities extends Entities, xKind extends keyof xEntities
 	simulator: Simulator<xEntities, xStation>
 	station: xStation
 	id: number
-	state: xEntities[xKind]["state"]
 	getState: () => xEntities[xKind]["state"]
 	fromAuthor: (author: null | number, inputs: InputShell<xEntities[xKind]["input"]>[]) => xEntities[xKind]["input"][]
 }

@@ -9,8 +9,9 @@ import {simula} from "../../../archimedes/framework/simulation/types.js"
 const density = 100
 
 export const blockSimula = simula<RogueEntities, Station>()<"block">(
-	({id, station, state, getState}) => {
+	({id, station, getState}) => {
 
+	const state = getState()
 	const coordinates = Coordinates.from(state.coordinates)
 	const dimensions = Vec3.from(state.dimensions)
 	const boxExtent = new Vec2(dimensions.x, dimensions.z)
@@ -31,7 +32,8 @@ export const blockSimula = simula<RogueEntities, Station>()<"block">(
 	})
 
 	return {
-		simulate: (_tick, state) => {
+		simulate: (_tick) => {
+			const state = getState()
 			body.box.center.set_(...state.coordinates)
 		},
 		dispose: () => {

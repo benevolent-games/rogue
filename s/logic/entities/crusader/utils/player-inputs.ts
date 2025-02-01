@@ -3,9 +3,9 @@ import {Trashbin} from "@benev/slate"
 import {Degrees, Vec2} from "@benev/toolbox"
 
 import {Realm} from "../../../realm/realm.js"
+import {CrusaderInputData} from "../types.js"
 import {constants} from "../../../../constants.js"
 import {cardinals} from "../../../../tools/directions.js"
-import {CrusaderInputData, CrusaderState} from "../types.js"
 import {Coordinates} from "../../../realm/utils/coordinates.js"
 
 const {crusader} = constants
@@ -24,7 +24,6 @@ export class PlayerInputs {
 
 	constructor(
 			public realm: Realm,
-			public state: CrusaderState,
 			public buddyCoordinates: Coordinates,
 		) {
 

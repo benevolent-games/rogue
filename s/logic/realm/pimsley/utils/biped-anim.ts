@@ -5,7 +5,7 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {splitBodyAnimations} from "./split-body-animations.js"
 import {BabylonAnimBucket} from "../../../../tools/buckets/babylon-anim.js"
 
-export class PimsleyAnim {
+export class BipedAnim {
 	upper: BabylonAnimBucket
 	lower: BabylonAnimBucket
 
@@ -15,16 +15,24 @@ export class PimsleyAnim {
 		this.lower = new BabylonAnimBucket(parts.lower)
 	}
 
-	goToFrame(frame: number) {
-		this.upper.animationGroup.goToFrame(frame, true)
-		this.lower.animationGroup.goToFrame(frame, true)
+	previousWeight = 0
+
+	goToFrame(frame: number, useWeights: boolean) {
+		const weight = this.upper.animationGroup.weight
+		const changed = weight !== this.previousWeight
+
+		if (useWeights && (this.upper.animationGroup.weight > 0 || changed))
+			this.upper.animationGroup.goToFrame(frame, useWeights)
+		if (useWeights && (this.lower.animationGroup.weight > 0 || changed))
+			this.lower.animationGroup.goToFrame(frame, useWeights)
+
+		this.previousWeight = weight
 	}
 
-	goToPercent(percent: number) {
+	goToFraction(percent: number, useWeights: boolean) {
 		const durationFrames = (this.to - this.from)
 		const frame = this.from + (durationFrames * percent)
-		this.upper.animationGroup.goToFrame(frame, true)
-		this.lower.animationGroup.goToFrame(frame, true)
+		this.goToFrame(frame, useWeights)
 	}
 
 	get from() {

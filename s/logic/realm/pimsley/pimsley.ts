@@ -1,11 +1,16 @@
 
-import {Circular, Degrees, Quat, Scalar} from "@benev/toolbox"
+import {Circular, Degrees, Quat, Scalar, Vec2} from "@benev/toolbox"
 
+import {Realm} from "../realm.js"
+import {PimsleyAnimState} from "./types.js"
 import {GraceTracker} from "./utils/grace.js"
 import {DrunkSway} from "./utils/drunk-sway.js"
 import {constants} from "../../../constants.js"
+import {Animo} from "../parts/anim-orchestrator.js"
 import {Coordinates} from "../utils/coordinates.js"
+import {Material} from "@babylonjs/core/Materials/material.js"
 import {Pallet} from "../../../tools/babylon/logistics/pallet.js"
+import {getMeshoids} from "../../../tools/babylon/babylon-helpers.js"
 import {PimsleyChoreographer} from "./utils/pimsley-choreographer.js"
 import {Anglemeter} from "../../entities/crusader/utils/anglemeter.js"
 import {Speedometer} from "../../entities/crusader/utils/speedometer.js"
@@ -33,10 +38,36 @@ export class Pimsley {
 	drunkSway = new DrunkSway()
 	graceTracker = new GraceTracker()
 
-	anims: PimsleyChoreographer
+	choreographer: PimsleyChoreographer
+	animo: Animo
 
-	constructor(public pallet: Pallet) {
-		this.anims = new PimsleyChoreographer(pallet)
+	constructor(public realm: Realm, public pallet: Pallet) {
+		this.choreographer = new PimsleyChoreographer(pallet)
+		this.animo = {
+			setPriorityIndex: index => this.choreographer.priority = index,
+			getCoordinates: () => this.coordinates,
+			animate: (_frame, _seconds) => {
+				this.choreographer.animate(this.animState)
+			},
+		}
+	}
+
+	freeze() {
+		this.choreographer.freeze()
+		this.realm.animOrchestrator.animos.delete(this.animo)
+	}
+
+	unfreeze() {
+		this.choreographer.unfreeze()
+		this.realm.animOrchestrator.animos.add(this.animo)
+	}
+
+	applyMaterial(material: Material) {
+		for (const cargo of this.pallet.warehouse) {
+			for (const [,mesh] of getMeshoids(cargo.prop)) {
+				mesh.material = material
+			}
+		}
 	}
 
 	init(characteristics: PimsleyCharacteristics) {
@@ -47,6 +78,20 @@ export class Pimsley {
 		this.block = characteristics.block
 		this.anglemeter.reset(this.rotation)
 		this.speedometer.reset(this.coordinates)
+	}
+
+	animState: PimsleyAnimState = {
+		seconds: 1 / 60,
+		block: 0,
+		attack: false,
+		spin: 0,
+		movement: Vec2.zero(),
+		rotationDiscrepancy: 0,
+		grace: {
+			turnCap: 1,
+			turnSharpness: 1,
+			legworkSharpness: 1,
+		},
 	}
 
 	update({tick, seconds, ...characteristics}: {
@@ -71,8 +116,12 @@ export class Pimsley {
 
 		const movement = absoluteMovement.rotate(-displayRotation)
 
-		this.anims.animate({
-			tick,
+		this.pallet.applySpatial({
+			position: coordinates.position(),
+			rotation: Quat.rotate_(0, displayRotation, 0),
+		})
+
+		this.animState = {
 			seconds,
 			movement,
 			spin,
@@ -80,12 +129,7 @@ export class Pimsley {
 			block: characteristics.block,
 			attack: characteristics.attack,
 			rotationDiscrepancy,
-		})
-
-		this.pallet.applySpatial({
-			position: coordinates.position(),
-			rotation: Quat.rotate_(0, displayRotation, 0),
-		})
+		}
 	}
 
 	#getRotationalSway(tick: number, seconds: number, moveSpeed: number) {

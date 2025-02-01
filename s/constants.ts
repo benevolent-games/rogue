@@ -51,7 +51,7 @@ export const constants = {
 		anim: {
 			walkSpeedRatio: 5 / 10,
 			sprintSpeedRatio: 7 / 10,
-			strafeSpeedIncrease: 0.2,
+			strafeSpeedIncrease: 2 / 10,
 			movementSharpness: 20,
 			sprintSway: Degrees.toRadians(30),
 		},

@@ -1,35 +1,36 @@
 
-import {PimsleyAnim} from "./pimsley-anim.js"
+import {BipedAnim} from "./biped-anim.js"
 import {AdditiveAnim} from "./additive-anim.js"
 import {Pallet} from "../../../../tools/babylon/logistics/pallet.js"
 
 export type PimsleyAnims = ReturnType<typeof choosePimsleyAnims>
 
 export function choosePimsleyAnims(pallet: Pallet) {
-	const anim = (s: string) => new PimsleyAnim(
+	const bipedAnim = (s: string) => new BipedAnim(
 		pallet.container.scene,
 		pallet.animationGroups.require(s),
 	)
 
-	const additive = (s: string, referenceFraction: number) => {
+	const additiveAnim = (s: string, referenceFraction: number) => {
 		const animationGroup = pallet.animationGroups.require(s)
 		return new AdditiveAnim(animationGroup, referenceFraction)
 	}
 
 	return {
-		idle: anim("idle-standmovement"),
-
-		forward: anim("run-forwards"),
-		backward: anim("run-backwards"),
-		leftward: anim("strafe-left"),
-		rightward: anim("strafe-right"),
-
-		turnLeft: anim("turn-left"),
-		turnRight: anim("turn-right"),
-
-		attack: anim("swing"),
-		block: anim("shield-block"),
-		headSwivel: additive("head-swivel", 50 / 100),
+		blended: {
+			attack: bipedAnim("swing"),
+			block: bipedAnim("shield-block"),
+			forward: bipedAnim("run-forwards"),
+			backward: bipedAnim("run-backwards"),
+			leftward: bipedAnim("strafe-left"),
+			rightward: bipedAnim("strafe-right"),
+			turnLeft: bipedAnim("turn-left"),
+			turnRight: bipedAnim("turn-right"),
+			idle: bipedAnim("idle-standmovement"),
+		},
+		additive: {
+			headSwivel: additiveAnim("head-swivel", 50 / 100),
+		},
 	}
 }
 

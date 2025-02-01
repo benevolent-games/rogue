@@ -23,6 +23,7 @@ import {DebugCapsules} from "./utils/debug-capsules.js"
 import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
+import {AnimOrchestrator} from "./parts/anim-orchestrator.js"
 
 const debug = false
 
@@ -44,6 +45,7 @@ export class Realm {
 	stuff: Stuff
 	inputControls: InputControls
 	cursor: Cursor
+	animOrchestrator: AnimOrchestrator
 
 	#cursorGraphic: Prop | null
 	#trash = new Trashbin()
@@ -55,7 +57,7 @@ export class Realm {
 			public dungeonStore: DungeonStore,
 		) {
 
-		this.pimsleyPool = new PimsleyPool(glbs.pimsleyContainer)
+		this.pimsleyPool = new PimsleyPool(this, glbs.pimsleyContainer)
 		this.buddies = new CapsuleBuddies(world.scene)
 		this.materials = new CoolMaterials(world.scene)
 		this.debugCapsules = new DebugCapsules(world.scene, this.materials)
@@ -64,10 +66,13 @@ export class Realm {
 		this.cameraman = new Cameraman(world.scene, lighting)
 		this.inputControls = new InputControls(this.cameraman, this.userInputs)
 		this.cursor = new Cursor(this.cameraman)
+		this.animOrchestrator = new AnimOrchestrator(this.cameraman.smoothed.pivot)
 
 		this.#cursorGraphic = debug
 			? this.indicators.cursor.instance()
 			: null
+
+		this.pimsleyPool.preload(40)
 
 		this.#trash.disposable(this.debugCapsules)
 		this.#trash.disposer(this.inputControls.attach(world.canvas))
@@ -108,6 +113,10 @@ export class Realm {
 		this.inputControls.tick()
 		this.cameraman.tick(this.seconds)
 		this.cursor.tick()
+		this.animOrchestrator.centerpoint = this.cameraman.smoothed.pivot
+
+		this.animOrchestrator.animos.sort()
+		this.animOrchestrator.animate(this.seconds)
 
 		if (this.#cursorGraphic)
 			this.#cursorGraphic.position.set(...this.cursor.position.array())

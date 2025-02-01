@@ -2,10 +2,10 @@
 import {Degrees, Scalar, Vec2} from "@benev/toolbox"
 
 import {AmbleState} from "../types.js"
-import {PimsleyAnim} from "./pimsley-anim.js"
-import {AdditiveAnim} from "./additive-anim.js"
 import {constants} from "../../../../constants.js"
+import {PimsleyAnims} from "./choose-pimsley-anims.js"
 import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
+import { AnimTimeline } from "./anim-timeline.js"
 
 const {crusader} = constants
 
@@ -14,16 +14,10 @@ export class Ambler {
 	smoothedSpin = new Scalar(0)
 	smoothedRotationDiscrepancy = new Scalar(0)
 
-	constructor(public anims: {
-		idle: PimsleyAnim,
-		forward: PimsleyAnim,
-		backward: PimsleyAnim,
-		leftward: PimsleyAnim,
-		rightward: PimsleyAnim,
-		turnLeft: PimsleyAnim,
-		turnRight: PimsleyAnim,
-		headSwivel: AdditiveAnim,
-	}) {}
+	headSwivel = 0.5
+	timeline = new AnimTimeline()
+
+	constructor(public anims: PimsleyAnims) {}
 
 	animate(state: AmbleState) {
 		const {seconds, grace} = state
@@ -65,33 +59,30 @@ export class Ambler {
 		const strafeSpeedBuff = 1 + (crusader.anim.strafeSpeedIncrease * strafeyness)
 		const speed = speedBase * strafeSpeedBuff
 
-		this.anims.forward.speedRatio = speed
-		this.anims.backward.speedRatio = speed
-		this.anims.leftward.speedRatio = speed
-		this.anims.rightward.speedRatio = speed
-		this.anims.turnLeft.speedRatio = speed
-		this.anims.turnRight.speedRatio = speed
+		this.timeline.setSpeed(this.anims.blended.forward, speed)
+		this.timeline.update()
 
 		this.smoothedRotationDiscrepancy.approach(state.rotationDiscrepancy, 15, seconds)
-		const padding = 0.3
-		this.anims.headSwivel.goto(Scalar.remap(
+		const padding = 0.1
+
+		this.headSwivel = Scalar.remap(
 			this.smoothedRotationDiscrepancy.x,
 			-Degrees.toRadians(90 * (1 - padding)),
 			Degrees.toRadians(90 * (1 - padding)),
 			padding, 1 - padding,
 			true,
-		))
+		)
 
 		const weight = (x: number, max: number) => Scalar.clamp(
 			Scalar.remap(x, 0, max, 0, 1, true),
 		)
 
-		this.anims.forward.capacity = weight(forwards, crusader.movement.sprintSpeed)
-		this.anims.backward.capacity = weight(backwards, crusader.movement.sprintSpeed)
-		this.anims.leftward.capacity = weight(leftwards, crusader.movement.walkSpeed)
-		this.anims.rightward.capacity = weight(rightwards, crusader.movement.walkSpeed)
-		this.anims.turnLeft.capacity = weight(turnLeft, crusader.movement.walkSpeed)
-		this.anims.turnRight.capacity = weight(turnRight, crusader.movement.walkSpeed)
+		this.anims.blended.forward.capacity = weight(forwards, crusader.movement.sprintSpeed)
+		this.anims.blended.backward.capacity = weight(backwards, crusader.movement.sprintSpeed)
+		this.anims.blended.leftward.capacity = weight(leftwards, crusader.movement.walkSpeed)
+		this.anims.blended.rightward.capacity = weight(rightwards, crusader.movement.walkSpeed)
+		this.anims.blended.turnLeft.capacity = weight(turnLeft, crusader.movement.walkSpeed)
+		this.anims.blended.turnRight.capacity = weight(turnRight, crusader.movement.walkSpeed)
 	}
 }
 

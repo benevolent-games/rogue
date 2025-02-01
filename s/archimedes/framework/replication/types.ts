@@ -5,13 +5,13 @@ import {Entities, Entity} from "../parts/types.js"
 export type ReplicaPack<xEntities extends Entities, xKind extends keyof xEntities, xRealm> = {
 	id: number
 	realm: xRealm
-	state: xEntities[xKind]["state"]
+	getState: () => xEntities[xKind]["state"]
 	replicator: Replicator<xEntities, xRealm>
 }
 
 export type ReplicaReturn<xEntity extends Entity> = {
 	gatherInputs: (tick: number) => (xEntity["input"][] | undefined)
-	replicate: (tick: number, state: xEntity["state"]) => void
+	replicate: (tick: number) => void
 	dispose: () => void
 }
 

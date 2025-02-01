@@ -1,5 +1,5 @@
 
-import {deep, Map2} from "@benev/slate"
+import {Map2} from "@benev/slate"
 import {GameState} from "../parts/game-state.js"
 import {Lifecycles} from "../parts/lifecycles.js"
 import {Entities, InputShell} from "../parts/types.js"
@@ -17,9 +17,12 @@ export class Replicator<xEntities extends Entities, xRealm> {
 
 		this.lifecycles = new Lifecycles<ReplicaReturn<any>>(
 			new Map2(Object.entries(replicas).map(([kind, replica]) => {
-				const fn = (id: number, state: any) => replica(
-					{realm, id, state, replicator: this} as ReplicaPack<xEntities, any, xRealm>
-				)
+				const fn = (id: number) => replica({
+					id,
+					realm,
+					replicator: this,
+					getState: () => this.gameState.entities.require(id)[1],
+				} as ReplicaPack<xEntities, any, xRealm>)
 				return [kind, fn]
 			}))
 		)
@@ -42,10 +45,8 @@ export class Replicator<xEntities extends Entities, xRealm> {
 
 	replicate(tick: number) {
 		this.lifecycles.conform(this.gameState)
-		for (const [id, entity] of [...this.lifecycles.entities]) {
-			const [,state] = this.gameState.entities.require(id)
-			entity.replicate(tick, state)
-		}
+		for (const [,entity] of [...this.lifecycles.entities])
+			entity.replicate(tick)
 	}
 }
 

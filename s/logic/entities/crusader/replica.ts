@@ -1,74 +1,52 @@
 
 import {Trashbin} from "@benev/slate"
-import {Circular, Quat} from "@benev/toolbox"
 
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
+import {BipedRep} from "../../commons/biped/rep.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
-import {Coordinates} from "../../realm/utils/coordinates.js"
-import {PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 import {replica} from "../../../archimedes/framework/replication/types.js"
 
 const debug = false
 const {crusader} = constants
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(
-	({realm, state, replicator}) => {
+	({realm, getState, replicator}) => {
 
+	const state = getState()
 	const trash = new Trashbin()
-	const {lighting, pimsleyPool} = realm
+	const {lighting} = realm
 	const inControl = state.author === replicator.author
 
-	const characteristics: PimsleyCharacteristics = {
-		block: state.block,
-		attack: !!state.attack,
-		rotation: new Circular(state.rotation),
-		coordinates: Coordinates.from(state.coordinates),
-	}
-
-	const pimsley = pimsleyPool.acquireCleanly(trash)
-	pimsley.init(characteristics)
-
-	const capsule = debug
-		? trash.disposable(
-			realm.debugCapsules.get(crusader.height, crusader.radius)
-		)
-		: null
+	const bipedRep = trash.disposable(
+		new BipedRep(realm, () => getState().biped, {...crusader, debug})
+	)
 
 	const playerInputs = trash.disposable(
-		new PlayerInputs(realm, state, characteristics.coordinates)
+		new PlayerInputs(realm, bipedRep.characteristics.coordinates)
 	)
 
 	if (inControl)
-		realm.cameraman.pivotInstantly(characteristics.coordinates.clone())
+		realm.cameraman.pivotInstantly(bipedRep.characteristics.coordinates.clone())
 
 	return {
 		gatherInputs: () => inControl
 			? [playerInputs.get()]
 			: undefined,
 
-		replicate: (tick, state) => {
-			characteristics.coordinates.set_(...state.coordinates)
-			characteristics.rotation.set(state.rotation)
+		replicate: (tick) => {
+			const {biped} = getState()
+			bipedRep.characteristics.coordinates.set_(...biped.coordinates)
+			bipedRep.characteristics.rotation.set(biped.rotation)
+			bipedRep.characteristics.attack = !!biped.attack
+			bipedRep.characteristics.block = biped.block
 
-			characteristics.attack = !!state.attack
-			characteristics.block = state.block
-
-			pimsley.update({
-				tick,
-				seconds: realm.seconds,
-				...characteristics,
-			})
-
-			if (capsule)
-				capsule
-					.setPosition(characteristics.coordinates.position())
-					.setRotation(Quat.rotate_(0, pimsley.displayRotation.x, 0))
+			bipedRep.replicate(tick)
 
 			if (inControl) {
-				const position = pimsley.coordinates.position()
-				realm.cameraman.desired.pivot = pimsley.coordinates
+				const position = bipedRep.pimsley.coordinates.position()
+				realm.cameraman.desired.pivot = bipedRep.pimsley.coordinates
 				realm.playerPosition = position
 				lighting.torch.position.set(
 					...position.clone()
