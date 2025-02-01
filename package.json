@@ -34,15 +34,15 @@
 	},
 	"dependencies": {
 		"@authlocal/authlocal": "^0.2.0-9",
-		"@babylonjs/core": "^7.44.0",
-		"@babylonjs/inspector": "^7.44.0",
-		"@babylonjs/loaders": "^7.44.0",
+		"@babylonjs/core": "^7.47.2",
+		"@babylonjs/inspector": "^7.47.2",
+		"@babylonjs/loaders": "^7.47.2",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-6",
-		"@benev/toolbox": "^0.8.0-13",
+		"@benev/toolbox": "^0.8.0-14",
 		"renraku": "^0.4.3",
 		"sparrow-rtc": "^0.2.3",
-		"zx": "^8.3.0"
+		"zx": "^8.3.1"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.1",
