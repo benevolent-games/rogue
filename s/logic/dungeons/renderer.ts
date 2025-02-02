@@ -5,8 +5,8 @@ import {Realm} from "../realm/realm.js"
 import {DungeonLayout} from "./layout.js"
 import {Clock} from "../../tools/clock.js"
 import {DungeonSkin} from "./skinning/skin.js"
+import {Box2} from "../physics/shapes/box2.js"
 import {prepareDungeonContainer} from "./skinning/prepare-dungeon-container.js"
-import { Box2 } from "../physics/shapes/box2.js"
 
 /** Controls the rendering and re-rendering of a dungeon */
 export class DungeonRenderer {
