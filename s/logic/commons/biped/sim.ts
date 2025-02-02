@@ -4,15 +4,18 @@ import {Circular, Degrees, Scalar, Vec2} from "@benev/toolbox"
 import {Station} from "../../station/station.js"
 import {Zen} from "../../../tools/hash/zen-grid.js"
 import {PhysBody} from "../../physics/parts/body.js"
+import {AttackZoneSim} from "./utils/attack-zone.js"
 import {Circle} from "../../physics/shapes/circle.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {BipedActivity, BipedOptions, BipedState} from "./types.js"
 
 export class BipedSim {
+	coordinates: Coordinates
 	circle: Circle
 	slowRotation: Circular
 	body: PhysBody
 	entityZen: Zen<number>
+	attackZone: AttackZoneSim
 
 	activity: BipedActivity = {
 		block: 0,
@@ -33,25 +36,24 @@ export class BipedSim {
 			public options: BipedOptions,
 		) {
 
-		this.circle = new Circle(
-			Vec2.from(getState().coordinates),
-			options.radius,
-		)
-
+		this.coordinates = Coordinates.from(getState().coordinates)
+		this.circle = new Circle(this.coordinates, options.radius)
 		this.slowRotation = new Circular(getState().rotation)
 
 		this.entityZen = station.entityHashgrid.create(this.circle.boundingBox(), id)
 
 		this.body = station.dungeon.phys.makeBody({
 			parts: [{shape: this.circle, mass: 80}],
-			updated: body => {
+			updated: (body) => {
+				this.coordinates.set(body.box.center)
 				const state = getState()
-				const coordinates = Coordinates.from(body.box.center)
-				state.coordinates = coordinates.array()
-				this.entityZen.box.center.set(coordinates)
+				state.coordinates = this.coordinates.array()
+				this.entityZen.box.center.set(this.coordinates)
 				this.entityZen.update()
 			},
 		})
+
+		this.attackZone = new AttackZoneSim()
 	}
 
 	wake() {
@@ -105,6 +107,8 @@ export class BipedSim {
 
 		if (options.combat.turnCapEnabled && combative)
 			state.rotation = this.slowRotation.x
+
+		this.attackZone.update(this.coordinates, this.slowRotation)
 	}
 
 	dispose() {

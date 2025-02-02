@@ -41,7 +41,7 @@ export class Pool<P> {
 		return payload
 	}
 
-	acquireCleanly(trashbin: Trashbin) {
+	borrow(trashbin: Trashbin) {
 		const payload = this.acquire()
 		const releaser = () => this.release(payload)
 		trashbin.disposer(releaser)

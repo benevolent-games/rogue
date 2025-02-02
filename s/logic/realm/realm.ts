@@ -24,6 +24,7 @@ import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 import {AnimOrchestrator} from "./parts/anim-orchestrator.js"
+import {BipedIndicatorStore} from "../commons/biped/utils/biped-indicators.js"
 
 const debug = false
 
@@ -46,6 +47,7 @@ export class Realm {
 	inputControls: InputControls
 	cursor: Cursor
 	animOrchestrator: AnimOrchestrator
+	bipedIndicatorStore: BipedIndicatorStore
 
 	#cursorGraphic: Prop | null
 	#trash = new Trashbin()
@@ -57,16 +59,19 @@ export class Realm {
 			public dungeonStore: DungeonStore,
 		) {
 
+		const {scene} = world
+
 		this.pimsleyPool = new PimsleyPool(this, glbs.pimsleyContainer)
-		this.buddies = new CapsuleBuddies(world.scene)
-		this.materials = new CoolMaterials(world.scene)
-		this.debugCapsules = new DebugCapsules(world.scene, this.materials)
-		this.indicators = new Indicators(world.scene, this.materials)
-		this.stuff = new Stuff(world.scene, this.materials)
-		this.cameraman = new Cameraman(world.scene, lighting)
+		this.buddies = new CapsuleBuddies(scene)
+		this.materials = new CoolMaterials(scene)
+		this.debugCapsules = new DebugCapsules(scene, this.materials)
+		this.indicators = new Indicators(scene, this.materials)
+		this.stuff = new Stuff(scene, this.materials)
+		this.cameraman = new Cameraman(scene, lighting)
 		this.inputControls = new InputControls(this.cameraman, this.userInputs)
 		this.cursor = new Cursor(this.cameraman)
 		this.animOrchestrator = new AnimOrchestrator(this.cameraman.smoothed.pivot)
+		this.bipedIndicatorStore = new BipedIndicatorStore(scene, this.materials)
 
 		this.#cursorGraphic = debug
 			? this.indicators.cursor.instance()
@@ -75,6 +80,7 @@ export class Realm {
 		this.pimsleyPool.preload(40)
 
 		this.#trash.disposable(this.debugCapsules)
+		this.#trash.disposable(this.bipedIndicatorStore)
 		this.#trash.disposer(this.inputControls.attach(world.canvas))
 		this.#trash.disposer(this.cursor.attach(world.canvas))
 	}
