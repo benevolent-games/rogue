@@ -16,6 +16,7 @@ export type BipedOptions = {
 }
 
 export type BipedState = {
+	health: number
 	coordinates: Vec2Array
 	rotation: number
 	attack: BipedAttackState | null

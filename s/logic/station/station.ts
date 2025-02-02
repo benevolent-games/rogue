@@ -6,6 +6,7 @@ import {Awareness} from "./utils/awareness.js"
 import {deferPromise, Map2} from "@benev/slate"
 import {DungeonStore} from "../dungeons/store.js"
 import {ZenGrid} from "../../tools/hash/zen-grid.js"
+import { MortalRegistry } from "../commons/mortal/registry.js"
 
 export class Station {
 	#dungeon: Dungeon | null = null
@@ -16,6 +17,7 @@ export class Station {
 
 	importantEntities = new Set<number>()
 	entityHashgrid = new ZenGrid<number>(constants.sim.hashgridExtent)
+	mortals = new MortalRegistry()
 	awareness = new Awareness()
 	glacier = new Glacier(this.awareness)
 
