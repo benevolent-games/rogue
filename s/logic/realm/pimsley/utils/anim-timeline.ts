@@ -1,5 +1,6 @@
 
 import {Scalar} from "@benev/toolbox"
+import {deferPromise} from "@benev/slate"
 
 export type Animlike = {
 	to: number
@@ -12,6 +13,12 @@ export class AnimTimeline {
 
 	#last = performance.now()
 
+	#waiter = deferPromise<void>()
+
+	get wait() {
+		return this.#waiter.promise
+	}
+
 	update() {
 		const now = performance.now()
 		const milliseconds = now - this.#last
@@ -19,7 +26,17 @@ export class AnimTimeline {
 		this.#last = now
 
 		const traversal = seconds * this.loopsPerSecond
+
+		let was = this.playhead
 		this.playhead = Scalar.wrap(this.playhead + traversal)
+		const looped = (this.playhead < was)
+
+		if (looped) {
+			this.#waiter.resolve()
+			this.#waiter = deferPromise()
+		}
+
+		return looped
 	}
 
 	setSpeed(anim: Animlike, speedRatio = 1, framerate = 60) {

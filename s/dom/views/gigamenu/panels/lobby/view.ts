@@ -1,5 +1,5 @@
 
-import {Bytename, Hex, html, nap, shadowView} from "@benev/slate"
+import {Urname, Hex, html, nap, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {IdView} from "../../../id/view.js"
@@ -15,9 +15,8 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	const lobby = multiplayer.lobby.value
 	const inviteUrl = lobby.invite && Invites.url(lobby.invite)
 
-	const fullName = (hex: string) => Bytename.string(
-		Hex.bytes(hex).slice(0, 5),
-		"Xxxxxx Xxxxxxxxx ",
+	const fullName = (hex: string) => Urname.string(
+		Hex.bytes(hex).slice(0, 4),
 	)
 
 	const renderLobbySeat = (seat: LobbySeat) => html`

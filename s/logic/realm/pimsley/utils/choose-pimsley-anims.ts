@@ -18,8 +18,8 @@ export function choosePimsleyAnims(pallet: Pallet) {
 
 	return {
 		blended: {
-			attack: bipedAnim("swing"),
-			block: bipedAnim("shield-block"),
+			attack: bipedAnim("attack-swing"),
+			block: bipedAnim("block-shield"),
 			forward: bipedAnim("run-forwards"),
 			backward: bipedAnim("run-backwards"),
 			leftward: bipedAnim("strafe-left"),

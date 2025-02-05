@@ -51,6 +51,7 @@ export class Simtron {
 		const playerId = this.simulator.create("crusader", {
 			author,
 			biped: {
+				health: 1,
 				rotation: 0,
 				coordinates: Coordinates.import(spawnpoint).array(),
 				attack: null,

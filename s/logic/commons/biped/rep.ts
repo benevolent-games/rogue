@@ -4,6 +4,7 @@ import {Circular, Quat} from "@benev/toolbox"
 
 import {BipedState} from "./types.js"
 import {Realm} from "../../realm/realm.js"
+import {AttackZoneRep} from "./utils/attack-zone-rep.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {DebugCapsule} from "../../realm/utils/debug-capsules.js"
 import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
@@ -11,7 +12,9 @@ import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 export class BipedRep {
 	pimsley: Pimsley
 	capsule: DebugCapsule | null
+	attackZone: AttackZoneRep | null
 	characteristics: PimsleyCharacteristics
+
 	trash = new Trashbin()
 
 	constructor(
@@ -25,6 +28,7 @@ export class BipedRep {
 		) {
 
 		const state = getState()
+		const {trash} = this
 
 		this.characteristics = {
 			block: state.block,
@@ -33,12 +37,18 @@ export class BipedRep {
 			coordinates: Coordinates.from(state.coordinates),
 		}
 
-		this.pimsley = realm.pimsleyPool.acquireCleanly(this.trash)
+		this.pimsley = realm.pimsleyPool.borrow(this.trash)
 		this.pimsley.init(this.characteristics)
 
 		this.capsule = options.debug
-			? this.trash.disposable(
+			? trash.disposable(
 				realm.debugCapsules.get(options.height, options.radius)
+			)
+			: null
+
+		this.attackZone = options.debug
+			? trash.disposable(
+				new AttackZoneRep(realm.bipedIndicatorStore)
 			)
 			: null
 	}
@@ -60,6 +70,12 @@ export class BipedRep {
 			this.capsule
 				.setPosition(this.characteristics.coordinates.position())
 				.setRotation(Quat.rotate_(0, this.pimsley.displayRotation.x, 0))
+
+		if (this.attackZone)
+			this.attackZone.update(
+				this.characteristics.coordinates,
+				this.pimsley.displayRotation,
+			)
 	}
 
 	dispose() {

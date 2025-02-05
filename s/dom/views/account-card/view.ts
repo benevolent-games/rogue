@@ -1,5 +1,5 @@
 
-import {Bytename, deep, Hex, html, shadowView} from "@benev/slate"
+import {Urname, deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
@@ -28,7 +28,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 			loggedIn: false,
 			avatar,
 			id: identity.id,
-			name: Bytename.string(Hex.bytes(identity.id).slice(0, 5)),
+			name: Urname.string(Hex.bytes(identity.id).slice(0, 4)),
 			tags: ["rando"],
 		}
 	}

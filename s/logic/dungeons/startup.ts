@@ -73,6 +73,7 @@ export function dungeonStartup(simtron: Simtron, layout: DungeonLayout) {
 					box.center = availableCenter
 					simulator.create("bot", {
 						biped: {
+							health: 1,
 							block: 0,
 							rotation: 0,
 							attack: null,

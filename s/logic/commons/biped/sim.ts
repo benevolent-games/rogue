@@ -1,18 +1,25 @@
 
 import {Circular, Degrees, Scalar, Vec2} from "@benev/toolbox"
 
+import {Mortal} from "../mortal/registry.js"
 import {Station} from "../../station/station.js"
 import {Zen} from "../../../tools/hash/zen-grid.js"
 import {PhysBody} from "../../physics/parts/body.js"
+import {AttackZoneSim} from "./utils/attack-zone.js"
 import {Circle} from "../../physics/shapes/circle.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {BipedActivity, BipedOptions, BipedState} from "./types.js"
 
 export class BipedSim {
+	mortal: Mortal
+
+	coordinates: Coordinates
 	circle: Circle
 	slowRotation: Circular
 	body: PhysBody
 	entityZen: Zen<number>
+	mortalZen: Zen<Mortal>
+	attackZone: AttackZoneSim
 
 	activity: BipedActivity = {
 		block: 0,
@@ -33,25 +40,30 @@ export class BipedSim {
 			public options: BipedOptions,
 		) {
 
-		this.circle = new Circle(
-			Vec2.from(getState().coordinates),
-			options.radius,
-		)
-
+		this.coordinates = Coordinates.from(getState().coordinates)
+		this.circle = new Circle(this.coordinates, options.radius)
 		this.slowRotation = new Circular(getState().rotation)
+		this.mortal = new Mortal(this.circle)
 
-		this.entityZen = station.entityHashgrid.create(this.circle.boundingBox(), id)
+		const bounds = this.circle.boundingBox()
+		this.entityZen = station.entityHashgrid.create(bounds, id)
+		this.mortalZen = station.mortals.create(bounds, this.mortal)
 
 		this.body = station.dungeon.phys.makeBody({
 			parts: [{shape: this.circle, mass: 80}],
-			updated: body => {
+			updated: (body) => {
+				this.coordinates.set(body.box.center)
 				const state = getState()
-				const coordinates = Coordinates.from(body.box.center)
-				state.coordinates = coordinates.array()
-				this.entityZen.box.center.set(coordinates)
+				state.coordinates = this.coordinates.array()
+				bounds.center.set(this.coordinates)
+				// this.entityZen.box.center.set(this.coordinates)
+				// this.mortalZen.box.center.set(this.coordinates)
 				this.entityZen.update()
+				this.mortalZen.update()
 			},
 		})
+
+		this.attackZone = new AttackZoneSim()
 	}
 
 	wake() {
@@ -62,7 +74,9 @@ export class BipedSim {
 		const state = this.getState()
 		const {activity, options} = this
 		const {walkSpeed, sprintSpeed, attackingSpeedMultiplier, omnidirectionalSprint} = this.options.movement
-		
+
+		state.health = this.mortal.health.value
+
 		const speedLimit = state.attack
 			? walkSpeed * attackingSpeedMultiplier
 			: sprintSpeed * attackingSpeedMultiplier
@@ -105,6 +119,8 @@ export class BipedSim {
 
 		if (options.combat.turnCapEnabled && combative)
 			state.rotation = this.slowRotation.x
+
+		this.attackZone.update(this.coordinates, this.slowRotation)
 	}
 
 	dispose() {

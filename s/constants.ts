@@ -7,7 +7,7 @@ export const constants = {
 		benevLogo: "/assets/graphics/benevolent2.svg",
 		envmap: "/assets/studiolights.env",
 		dungeonGlb: "/assets/dungeons/byzantium-006.glb",
-		pimsleyGlb: "/assets/glbs/pimsley-anims17.glb",
+		pimsleyGlb: "/assets/glbs/pimsley-anims20.glb",
 		shaders: {
 			retro: "/assets/shaders/retro-02.json",
 		},
