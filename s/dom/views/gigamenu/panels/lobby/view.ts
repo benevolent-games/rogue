@@ -1,8 +1,8 @@
 
 import {html, nap, shadowView} from "@benev/slate"
+import {renderThumbprint} from "@authlocal/authlocal"
 
 import stylesCss from "./styles.css.js"
-import {IdView} from "../../../id/view.js"
 import themeCss from "../../../../theme.css.js"
 import {Invites} from "../../../../utils/invites.js"
 import {AccountCardView} from "../../../account-card/view.js"
@@ -28,7 +28,7 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 				`}
 				${seat.agent && html`
 					<span x-agent-name>
-						${IdView([seat.agent.reputation])}
+						${renderThumbprint(seat.agent.reputation)}
 					</span>
 				`}
 			</div>

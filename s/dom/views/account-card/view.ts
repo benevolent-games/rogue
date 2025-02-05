@@ -1,4 +1,5 @@
 
+import {renderThumbprint} from "@authlocal/authlocal"
 import {deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
@@ -6,7 +7,6 @@ import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import themeCss from "../../../dom/theme.css.js"
-import {IdView} from "../../../dom/views/id/view.js"
 import {Avatar} from "../../../features/accounts/avatars.js"
 import {Identity} from "../../../archimedes/net/multiplayer/types.js"
 import {AccountPayload, isAvatarAllowed} from "../../../features/accounts/sketch.js"
@@ -79,7 +79,7 @@ export const AccountCardView = shadowView(use => (
 			<span x-name>${info?.name ?? "~"}</span>
 
 			<ul x-features>
-				<li x-thumbprint>${info ? IdView([info.id]) : "~"}</li>
+				<li x-thumbprint>${info ? renderThumbprint(info.id) : "~"}</li>
 
 				${info && info.tags.map(tag => html`
 					<span>~</span>
