@@ -1,9 +1,10 @@
 
-import {Urname, deep, Hex, html, shadowView} from "@benev/slate"
+import {deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
+import {Names} from "../../../tools/names.js"
 import themeCss from "../../../dom/theme.css.js"
 import {IdView} from "../../../dom/views/id/view.js"
 import {Avatar} from "../../../features/accounts/avatars.js"
@@ -28,7 +29,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 			loggedIn: false,
 			avatar,
 			id: identity.id,
-			name: Urname.string(Hex.bytes(identity.id).slice(0, 4)),
+			name: Names.falrysk.generate(Hex.bytes(identity.id)),
 			tags: ["rando"],
 		}
 	}
@@ -79,7 +80,9 @@ export const AccountCardView = shadowView(use => (
 
 			<ul x-features>
 				<li x-thumbprint>${info ? IdView([info.id]) : "~"}</li>
+
 				${info && info.tags.map(tag => html`
+					<span>~</span>
 					<li x-tag>${tag}</li>
 				`)}
 			</ul>

@@ -1,5 +1,5 @@
 
-import {Urname, Hex, html, nap, shadowView} from "@benev/slate"
+import {html, nap, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {IdView} from "../../../id/view.js"
@@ -15,10 +15,6 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 	const lobby = multiplayer.lobby.value
 	const inviteUrl = lobby.invite && Invites.url(lobby.invite)
 
-	const fullName = (hex: string) => Urname.string(
-		Hex.bytes(hex).slice(0, 4),
-	)
-
 	const renderLobbySeat = (seat: LobbySeat) => html`
 		<li data-id="${seat.author}">
 			<div x-card>
@@ -32,7 +28,7 @@ export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
 				`}
 				${seat.agent && html`
 					<span x-agent-name>
-						${IdView([seat.agent.reputation, fullName(seat.agent.reputation)])}
+						${IdView([seat.agent.reputation])}
 					</span>
 				`}
 			</div>
