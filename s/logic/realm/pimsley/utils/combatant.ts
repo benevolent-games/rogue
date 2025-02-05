@@ -1,15 +1,12 @@
 
-import {Scalar} from "@benev/toolbox"
+import {linear, Scalar} from "@benev/toolbox"
 import {PimsleyAnimState} from "../types.js"
 import {AnimTimeline} from "./anim-timeline.js"
 import {PimsleyAnims} from "./choose-pimsley-anims.js"
 
 export class Combatant {
-	#attack = false
-	#attackPrevious = false
-	#attackBlend = 0
-
 	#blockBlend = 0
+	#playingAttackAnim = false
 
 	timeline = new AnimTimeline()
 
@@ -22,25 +19,29 @@ export class Combatant {
 		this.#animateBlocking(state)
 	}
 
+
 	#animateAttacks(state: PimsleyAnimState) {
 		this.timeline.update()
 
-		this.#attackPrevious = this.#attack
-		this.#attack = !!state.attack
-		const change = this.#attack !== this.#attackPrevious
-
-		if (change && this.#attack) {
+		if ((state.attack && !this.#playingAttackAnim)) {
+			this.#playingAttackAnim = true
 			this.timeline.playhead = 0
+
+			this.timeline.wait.then(() => {
+				this.#playingAttackAnim = false
+			})
 		}
 
-		this.#attackBlend = Scalar.approach(
-			this.#attackBlend,
-			this.#attack ? 1 : 0,
-			10,
-			state.seconds
-		)
+		const attackBlend = this.#playingAttackAnim
+			? linear(this.timeline.playhead, [
+				[0, 0],
+				[0.3, 1],
+				[0.7, 1],
+				[1, 0],
+			])
+			: 0
 
-		this.anims.blended.attack.capacity = this.#attackBlend
+		this.anims.blended.attack.capacity = attackBlend
 	}
 
 	#animateBlocking(state: PimsleyAnimState) {
