@@ -1,20 +1,20 @@
 
 import {Trashbin} from "@benev/slate"
-import {Circular, Degrees, Prop, Quat, Vec3} from "@benev/toolbox"
+import {Circular, Quat} from "@benev/toolbox"
 
 import {BipedState} from "./types.js"
 import {Realm} from "../../realm/realm.js"
+import {AttackZoneRep} from "./utils/attack-zone-rep.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {DebugCapsule} from "../../realm/utils/debug-capsules.js"
-import {applySpatial} from "../../../tools/babylon/logistics/apply-spatial.js"
 import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
-import { AttackZoneRep } from "./utils/attack-zone-rep.js"
 
 export class BipedRep {
 	pimsley: Pimsley
 	capsule: DebugCapsule | null
+	attackZone: AttackZoneRep | null
 	characteristics: PimsleyCharacteristics
-	attackZone: AttackZoneRep
+
 	trash = new Trashbin()
 
 	constructor(
@@ -46,9 +46,11 @@ export class BipedRep {
 			)
 			: null
 
-		this.attackZone = trash.disposable(
-			new AttackZoneRep(realm.bipedIndicatorStore)
-		)
+		this.attackZone = options.debug
+			? trash.disposable(
+				new AttackZoneRep(realm.bipedIndicatorStore)
+			)
+			: null
 	}
 
 	replicate(tick: number) {
@@ -69,10 +71,11 @@ export class BipedRep {
 				.setPosition(this.characteristics.coordinates.position())
 				.setRotation(Quat.rotate_(0, this.pimsley.displayRotation.x, 0))
 
-		this.attackZone.update(
-			this.characteristics.coordinates,
-			this.pimsley.displayRotation,
-		)
+		if (this.attackZone)
+			this.attackZone.update(
+				this.characteristics.coordinates,
+				this.pimsley.displayRotation,
+			)
 	}
 
 	dispose() {
