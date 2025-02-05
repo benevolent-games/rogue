@@ -63,32 +63,15 @@ export function splitBodyAnimations(scene: Scene, animationGroup: AnimationGroup
 	for (const {animation, target} of animationGroup.targetedAnimations) {
 		if (upperBones.has(target.name))
 			upper.addTargetedAnimation(animation, target)
+
 		if (lowerBones.has(target.name))
 			lower.addTargetedAnimation(animation, target)
 
-		if (!upperBones.has(target.name) && !lowerBones.has(target.name)) {
+		if (!upperBones.has(target.name) && !lowerBones.has(target.name))
 			console.error(`bone not accounted for! "${target.name}"`)
-		}
 	}
 
 	animationGroup.normalize()
 	return {upper, lower}
 }
-
-// export function splitBodyAnimations(_scene: Scene, animationGroup: AnimationGroup) {
-// 	const upper = animationGroup.clone("upper")
-// 	const lower = animationGroup.clone("lower")
-//
-// 	for (const {animation, target} of upper.targetedAnimations) {
-// 		if (!upperBones.has(target.name))
-// 			upper.removeTargetedAnimation(animation)
-// 	}
-//
-// 	for (const {animation, target} of lower.targetedAnimations) {
-// 		if (!lowerBones.has(target.name))
-// 			lower.removeTargetedAnimation(animation)
-// 	}
-//
-// 	return {upper, lower}
-// }
 

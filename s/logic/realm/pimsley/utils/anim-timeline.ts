@@ -1,6 +1,6 @@
 
-import { deferPromise } from "@benev/slate"
 import {Scalar} from "@benev/toolbox"
+import {deferPromise} from "@benev/slate"
 
 export type Animlike = {
 	to: number

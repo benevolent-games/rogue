@@ -19,7 +19,6 @@ export class Combatant {
 		this.#animateBlocking(state)
 	}
 
-
 	#animateAttacks(state: PimsleyAnimState) {
 		this.timeline.update()
 
