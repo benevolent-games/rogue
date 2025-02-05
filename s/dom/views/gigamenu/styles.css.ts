@@ -75,7 +75,7 @@ export default css`
 		background: var(--bgcolor2);
 		max-height: 32em;
 		max-height: calc(95vh - 4em);
-		overflow: auto;
+		overflow: hidden auto;
 	}
 
 	&:not([x-menu-open]) {
