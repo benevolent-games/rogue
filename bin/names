@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 
 import "@benev/slate/x/node.js"
-import {Bytename} from "@benev/slate"
+import {Urname, Base58, Bytes} from "@benev/slate"
 
-for (const _ of Array(50))
-	console.log(Bytename.random())
+for (const _ of Array(10)) {
+	const bytes = Bytes.random(32)
+	console.log([
+		Urname.string(bytes.slice(0, 4)),
+		"-",
+		Base58.string(bytes.slice(4)),
+	].join(""))
+}
 
