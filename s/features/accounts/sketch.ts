@@ -1,7 +1,7 @@
 
 import {secure} from "renraku"
 import {Map2, nap} from "@benev/slate"
-import {Future, Keypair, Proof, Token, TokenPayload} from "@authlocal/authlocal/x/server.js"
+import {Badge, Future, Keypair, Proof, Token, TokenPayload} from "@authlocal/authlocal/x/server.js"
 
 import {Avatar} from "./avatars.js"
 
@@ -67,11 +67,13 @@ export function isAvatarAllowed(avatar: Avatar, accountRecord: AccountRecord | u
 	return accountRecord.avatars.includes(avatar.id)
 }
 
+const badge = (badge: string) => Badge.parse(badge).hex
+
 export class AccountantDatabase {
 	#records = new Map2<string, AccountRecord>([
 
 		// chase
-		["670da5deea9ca8b5d472c6a1744c44b7238650103aeb2fbb8c99ed0605211753", {
+		[badge("magser-pinryl.3QxV42sns2JaGJZA14ChR3jZknLcokwjK3Y2Ycr"), {
 			tags: ["founder"],
 			avatars: [],
 		}],
