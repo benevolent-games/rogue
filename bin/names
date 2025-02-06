@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
 import "@benev/slate/x/node.js"
-import {Urname, Base58, Bytes} from "@benev/slate"
+import {Bytes, falryskNameGrammar} from "@benev/slate"
 
-for (const _ of Array(10)) {
+const names = falryskNameGrammar()
+
+for (const _ of Array(20)) {
 	const bytes = Bytes.random(32)
-	console.log([
-		Urname.string(bytes.slice(0, 4)),
-		"-",
-		Base58.string(bytes.slice(4)),
-	].join(""))
+	const n = names.generate(bytes)
+	console.log(n)
 }
 
