@@ -3,13 +3,15 @@ import {renderThumbprint} from "@authlocal/authlocal"
 import {deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
+import themeCss from "../../../dom/theme.css.js"
+
 import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
-import themeCss from "../../../dom/theme.css.js"
-import {Avatar} from "../../../features/accounts/avatars.js"
+import {Avatar} from "../../../server/avatars/avatar.js"
 import {Identity} from "../../../archimedes/net/multiplayer/types.js"
-import {AccountPayload, isAvatarAllowed} from "../../../features/accounts/sketch.js"
+import {isAvatarAllowed} from "../../../server/accounts/utils/is-avatar-allowed.js"
+import { AccountPayload } from "../../../server/accounts/types.js"
 
 type Info = {
 	loggedIn: boolean
@@ -34,8 +36,9 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 		}
 	}
 	else {
-		const pubkey = await context.accountingPubkey
-		const {data: account} = await pubkey.verify<AccountPayload>(identity.accountToken)
+		const {data: account} = await context
+			.pubkey
+			.verify<AccountPayload>(identity.accountToken)
 		return {
 			loggedIn: true,
 			id: account.thumbprint,

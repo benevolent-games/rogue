@@ -1,12 +1,14 @@
 
 import {Randy} from "@benev/toolbox"
-import {Auth, Login, Pubkey} from "@authlocal/authlocal"
+import {Auth, Login} from "@authlocal/authlocal"
 import {computed, Hex, opSignal, signal} from "@benev/slate"
 
+import {Server} from "../server/server.js"
+import {Avatar} from "../server/avatars/avatar.js"
+import {Keychain} from "../server/utils/keychain.js"
 import {JsonStorage} from "../tools/json-storage.js"
-import {Avatar} from "../features/accounts/avatars.js"
 import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
-import {Account, Accountant, accountingApi, AccountPreferences, AccountRecord} from "../features/accounts/sketch.js"
+import {Account, AccountPreferences, AccountRecord} from "../server/accounts/types.js"
 
 export type Session = {
 	login: Login
@@ -72,13 +74,14 @@ export class AccountRecollection {
 	}
 }
 
-export class Context {
-	randy = new Randy()
+const keychain = await Keychain.temp()
 
+export class Context {
 	auth = Auth.get()
-	accounting = accountingApi(new Accountant()).v1
-	accountingPubkey = this.accounting.pubkey()
-		.then(pubkey => Pubkey.fromData(pubkey))
+	randy = new Randy()
+	server = new Server(keychain)
+	api = this.server.api.v1
+	pubkey = this.server.keychain.pubkey
 
 	randoIdentity = randoIdentityStore.guarantee(() => ({
 		kind: "rando",
@@ -136,11 +139,11 @@ export class Context {
 		}
 
 		this.sessionOp.load(async() => {
-			const pubkey = await this.accountingPubkey
 			const proofToken = login.proof.token
-			const {accountToken, accountRecord} = await this
-				.accounting.authed.query(proofToken, preferences)
-			const account = (await pubkey.verify<{data: Account}>(accountToken)).data
+			const {accountToken, accountRecord} = (
+				await this.api.accounting.query(proofToken, preferences)
+			)
+			const account = (await this.pubkey.verify<{data: Account}>(accountToken)).data
 			const session: Session = {login, account, accountToken, accountRecord}
 			this.session.value = session
 			return session

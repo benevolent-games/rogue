@@ -1,10 +1,10 @@
 
 import {html, shadowView} from "@benev/slate"
+import {Avatar} from "../../../server/avatars/avatar.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../dom/theme.css.js"
 import lockSvg from "../../../dom/icons/tabler/lock.svg.js"
-import {Avatar} from "../../../features/accounts/avatars.js"
 import rotateClockwiseSvg from "../../../dom/icons/tabler/rotate-clockwise.svg.js"
 
 export type AvatarOptions = {
