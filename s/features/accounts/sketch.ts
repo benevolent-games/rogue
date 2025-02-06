@@ -73,7 +73,7 @@ export class AccountantDatabase {
 	#records = new Map2<string, AccountRecord>([
 
 		// chase
-		[badge("magser-pinryl.3QxV42sns2JaGJZA14ChR3jZknLcokwjK3Y2Ycr"), {
+		[badge("magser_pinryl.3QxV42sns2JaGJZA14ChR3jZknLcokwjK3Y2Ycr"), {
 			tags: ["founder"],
 			avatars: [],
 		}],
