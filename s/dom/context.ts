@@ -5,7 +5,7 @@ import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {Server} from "../server/server.js"
 import {Avatar} from "../server/avatars/avatar.js"
-import {JsonStorage} from "../tools/json-storage.js"
+import {JsonStore, onStorageEvent} from "../tools/store.js"
 import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
 import {Account, AccountPreferences, AccountRecord} from "../server/accounts/types.js"
 
@@ -16,11 +16,11 @@ export type Session = {
 	accountRecord: AccountRecord
 }
 
-const randoIdentityStore = new JsonStorage<RandoIdentity>("rogue_rando")
+const randoIdentityStore = new JsonStore<RandoIdentity>("rogue_rando")
 
 export class AccountRecollection {
 	map = new Map<string, AccountPreferences>()
-	store = new JsonStorage<[string, AccountPreferences][]>("rogue_account_recollection")
+	store = new JsonStore<[string, AccountPreferences][]>("rogue_account_recollection")
 
 	preferences: AccountPreferences | null = null
 
@@ -104,8 +104,7 @@ export class Context {
 	get isSessionLoading() { return !this.sessionOp.isReady() }
 
 	constructor() {
-
-		this.accountRecollection.store.onChangeFromOutside(() => {
+		onStorageEvent(() => {
 			this.accountRecollection.load()
 			this.refreshSession()
 		})

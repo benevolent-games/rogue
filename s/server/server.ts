@@ -3,6 +3,8 @@ import {Keychain} from "./utils/keychain.js"
 import {Accountant} from "./accounts/accountant.js"
 import {Characters} from "./characters/characters.js"
 
+export type Api = ReturnType<Server["makeApi"]>["v1"]
+
 export class Server {
 	constructor(
 		public keychain: Keychain,

@@ -3,13 +3,16 @@ import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import {Server} from "../../../server/server.js"
+import {CharacterList} from "../../../ui/characters/views/character-list/view.js"
+
+const server = await Server.make()
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
 
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
-		["home", () => html`home`],
-		["characters", () => html`characters`],
+		["characters", () => CharacterList([])],
 	]))
 
 	const currentTab = use.signal([...tabs.keys()][0])
