@@ -1,33 +1,26 @@
 
-import {secure, Service} from "renraku"
-import {Proof} from "@authlocal/authlocal"
 import {Keychain} from "./utils/keychain.js"
 import {Accountant} from "./accounts/accountant.js"
 import {Characters} from "./characters/characters.js"
 
 export class Server {
-	accountant = new Accountant()
-	characters = new Characters()
-	constructor(public keychain: Keychain) {}
+	constructor(
+		public keychain: Keychain,
+		public accountant: Accountant,
+		public characters: Characters,
+	) {}
 
-	#secure<S extends Service>(fn: (proof: Proof) => S) {
-		return secure(async(proofToken: string) => {
-			const options = {allowedAudiences: [window.origin]}
-			const proof = await Proof.verify(proofToken, options)
-			return fn(proof)
-		})
+	static async make() {
+		const keychain = await Keychain.temp()
+		const accountant = new Accountant(keychain)
+		const characters = new Characters(keychain)
+		return new this(keychain, accountant, characters)
 	}
 
-	api = ({v1: {
+	makeApi = () => ({v1: {
 		pubkey: async() => this.keychain.pubkeyJson,
-
-		accounting: this.#secure(proof =>
-			this.accountant.api(this.keychain, proof)
-		),
-
-		characters: this.#secure(proof =>
-			this.characters.api(this.keychain, proof)
-		),
+		accounting: this.accountant.api(),
+		characters: this.characters.api(),
 	}})
 }
 

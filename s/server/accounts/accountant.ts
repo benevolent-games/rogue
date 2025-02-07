@@ -1,15 +1,17 @@
 
-import {Proof} from "@authlocal/authlocal"
+import {Future, Proof} from "@authlocal/authlocal"
 import {Avatar} from "../avatars/avatar.js"
 import {Keychain} from "../utils/keychain.js"
 import {AccountantDatabase} from "./database.js"
+import {secureLogin} from "../utils/secure-login.js"
 import {Account, AccountPreferences} from "./types.js"
 import {isAvatarAllowed} from "./utils/is-avatar-allowed.js"
 
 export class Accountant {
 	database = new AccountantDatabase()
+	constructor(public keychain: Keychain) {}
 
-	api = (keychain: Keychain, proof: Proof) => ({
+	api = () => secureLogin((proof: Proof) => ({
 		query: async(preferences: AccountPreferences) => {
 			const accountRecord = await this.database.getRecord(proof.thumbprint)
 			const avatarRequested = Avatar.library.get(preferences.avatarId) ?? Avatar.default
@@ -25,9 +27,9 @@ export class Accountant {
 				name: preferences.name,
 			}
 
-			const accountToken = await keychain.sign(account)
+			const accountToken = await this.keychain.sign(account, Future.days(7))
 			return {accountToken, accountRecord}
 		},
-	})
+	}))
 }
 

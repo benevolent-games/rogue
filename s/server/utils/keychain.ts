@@ -1,5 +1,7 @@
 
-import {Future, Keypair, Pubkey, PubkeyData, Token, TokenPayload} from "@authlocal/authlocal"
+import {Keypair, Pubkey, PubkeyData, Token, TokenPayload} from "@authlocal/authlocal"
+
+export type License<D> = {data: D} & TokenPayload
 
 export class Keychain {
 	constructor(
@@ -8,11 +10,16 @@ export class Keychain {
 		public pubkeyJson: PubkeyData,
 	) {}
 
-	async sign<D>(data: D) {
-		return this.keypair.sign<{data: D} & TokenPayload>({
-			...Token.params({expiresAt: Future.hours(24)}),
+	async sign<D>(data: D, expiresAt: number) {
+		return this.keypair.sign<License<D>>({
+			...Token.params({expiresAt: expiresAt}),
 			data,
 		})
+	}
+
+	async verify<D>(token: string) {
+		const {data} = await this.keypair.verify<License<D>>(token)
+		return data
 	}
 
 	static async temp() {

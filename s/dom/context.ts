@@ -5,7 +5,6 @@ import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {Server} from "../server/server.js"
 import {Avatar} from "../server/avatars/avatar.js"
-import {Keychain} from "../server/utils/keychain.js"
 import {JsonStorage} from "../tools/json-storage.js"
 import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
 import {Account, AccountPreferences, AccountRecord} from "../server/accounts/types.js"
@@ -74,13 +73,14 @@ export class AccountRecollection {
 	}
 }
 
-const keychain = await Keychain.temp()
+const server = await Server.make()
 
 export class Context {
 	auth = Auth.get()
 	randy = new Randy()
-	server = new Server(keychain)
-	api = this.server.api.v1
+
+	server = server
+	api = this.server.makeApi().v1
 	pubkey = this.server.keychain.pubkey
 
 	randoIdentity = randoIdentityStore.guarantee(() => ({
