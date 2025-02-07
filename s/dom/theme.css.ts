@@ -68,6 +68,11 @@ button:not(.std, .naked) {
 	&.authlocal {
 		background: #80f;
 	}
+
+	&[disabled] {
+		opacity: 0.3;
+		text-decoration: line-through;
+	}
 }
 
 button.naked {
