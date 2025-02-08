@@ -10,7 +10,7 @@ import {CharacterList} from "../../../ui/characters/views/character-list/view.js
 
 const kv = new Kv()
 const api = (await makeApi(kv)).v1
-const pubkey = api.pubkey().then(data => Pubkey.fromData(data))
+const pubkey = await api.pubkey().then(data => Pubkey.fromData(data))
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
