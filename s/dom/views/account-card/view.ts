@@ -9,7 +9,7 @@ import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import {Avatar} from "../../../server/avatars/avatar.js"
-import {AccountPayload} from "../../../server/accounts/types.js"
+import {AccountToken} from "../../../server/accounts/types.js"
 import {Identity} from "../../../archimedes/net/multiplayer/types.js"
 import {isAvatarAllowed} from "../../../server/accounts/utils/is-avatar-allowed.js"
 
@@ -37,7 +37,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 	}
 	else {
 		const pubkey = await context.pubkey
-		const {data: account} = await pubkey.verify<AccountPayload>(
+		const {data: account} = await pubkey.verify<AccountToken>(
 			identity.accountToken
 		)
 		return {

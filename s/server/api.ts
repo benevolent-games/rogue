@@ -16,7 +16,7 @@ export async function makeApi(kv: Kv) {
 
 	return {
 		v1: {
-			pubkey: async() => keychain.pubkeyJson,
+			pubkey: async() => keychain.pubkeyData,
 			accounting: accountant.api(),
 			characters: characters.api(),
 		}

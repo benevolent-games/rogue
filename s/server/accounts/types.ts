@@ -1,9 +1,9 @@
 
 import {TokenPayload} from "@authlocal/authlocal"
 
-export type AccountTag = "founder" | "blessed" | "knighted" | "premium"
+export type AccountToken = {data: Account} & TokenPayload
 
-export type AccountPayload = {data: Account} & TokenPayload
+export type AccountTag = "founder" | "blessed" | "knighted" | "premium"
 
 export type Account = {
 	thumbprint: string
