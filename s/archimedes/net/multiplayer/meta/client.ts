@@ -4,14 +4,14 @@ import {Lobby} from "../../relay/cathedral.js"
 
 export type MetaClient = ReturnType<typeof metaClientApi>
 
-export function metaClientApi({lobby}: {
-		lobby: Signal<Lobby>
+export function metaClientApi<Identity>({lobby}: {
+		lobby: Signal<Lobby<Identity>>
 	}) {
 
 	return {
 		async ping() {},
 
-		async updateLobby(data: Lobby) {
+		async updateLobby(data: Lobby<Identity>) {
 			lobby.value = data
 		},
 	}

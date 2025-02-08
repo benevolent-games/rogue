@@ -12,6 +12,7 @@ import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
 
+import {Identity} from "../../../ui/accounts/types.js"
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"
@@ -19,7 +20,7 @@ import {VirtualGamepad} from "../../../supercontrol/views/virtual-gamepad/view.j
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
-		multiplayerClient: MultiplayerClient
+		multiplayerClient: MultiplayerClient<Identity>
 		exitToMainMenu: () => void
 	}) => {
 

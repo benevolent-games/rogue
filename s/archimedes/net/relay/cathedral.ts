@@ -4,7 +4,6 @@ import Sparrow, {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
 import {Fiber} from "./fiber.js"
 import {Liaison} from "./liaison.js"
-import {Identity} from "../multiplayer/types.js"
 import {LagProfile} from "../../../tools/fake-lag.js"
 import {IdCounter} from "../../../tools/id-counter.js"
 import {MetaClient} from "../multiplayer/meta/client.js"
@@ -13,13 +12,13 @@ import {renrakuChannel} from "../multiplayer/utils/renraku-channel.js"
 import {InputPayload, Snapshot, SnapshotPayload} from "../../framework/parts/types.js"
 import {MultiplayerFibers, multiplayerFibers} from "../multiplayer/utils/multiplayer-fibers.js"
 
-export type Seat = {
+export type Seat<Identity> = {
 	kind: "local" | "remote"
 	agent: AgentInfo | undefined
-	bundle: Bundle | undefined
+	bundle: Bundle<Identity> | undefined
 }
 
-export type Bundle = {
+export type Bundle<Identity> = {
 	author: number
 	liaison: Liaison
 	metaClient: MetaClient
@@ -29,13 +28,13 @@ export type Bundle = {
 	dispose: () => void
 }
 
-export type Lobby = {
+export type Lobby<Identity> = {
 	invite: string | undefined
 	online: boolean
-	seats: LobbySeat[]
+	seats: LobbySeat<Identity>[]
 }
 
-export type LobbySeat = {
+export type LobbySeat<Identity> = {
 	kind: "local" | "remote"
 	author: number | undefined
 	agent: AgentInfo | undefined
@@ -48,25 +47,25 @@ export type LobbyConnectionStats = {
 	ping: number | undefined
 }
 
-export type CathedralOptions = {
+export type CathedralOptions<Identity> = {
 	lag: LagProfile | null
-	onBundle: (bundle: Bundle) => () => void
+	onBundle: (bundle: Bundle<Identity>) => () => void
 }
 
-export class Cathedral {
-	static emptyLobby(): Lobby {
+export class Cathedral<Identity> {
+	static emptyLobby<Identity>(): Lobby<Identity> {
 		return {invite: undefined, online: false, seats: []}
 	}
 
 	authorIds = new IdCounter(1)
-	seats = new Set<Seat>()
+	seats = new Set<Seat<Identity>>()
 
 	invite: string | undefined = undefined
 	online = false
 
-	constructor(private options: CathedralOptions) {}
+	constructor(private options: CathedralOptions<Identity>) {}
 
-	#computeLobby(): Lobby {
+	#computeLobby(): Lobby<Identity> {
 		return {
 			invite: this.invite,
 			online: this.online,
@@ -85,18 +84,18 @@ export class Cathedral {
 
 	makeLocalSeat(fibers: MultiplayerFibers) {
 		const bundle = this.#bundlize(fibers, undefined)
-		const seat: Seat = {kind: "local", agent: undefined, bundle}
+		const seat: Seat<Identity> = {kind: "local", agent: undefined, bundle}
 		this.seats.add(seat)
 		return {seat, bundle}
 	}
 
 	reserveRemoteSeat(agent: AgentInfo) {
-		const seat: Seat = {kind: "remote", agent, bundle: undefined}
+		const seat: Seat<Identity> = {kind: "remote", agent, bundle: undefined}
 		this.seats.add(seat)
 		return seat
 	}
 
-	attachRemoteBundle(seat: Seat, connection: Connection) {
+	attachRemoteBundle(seat: Seat<Identity>, connection: Connection) {
 		const fibers = multiplayerFibers()
 		const megafiber = Fiber.multiplex(fibers)
 		megafiber.proxyCable(connection.cable)
@@ -104,7 +103,7 @@ export class Cathedral {
 		return seat.bundle
 	}
 
-	deleteSeat(seat: Seat) {
+	deleteSeat(seat: Seat<Identity>) {
 		const {bundle} = seat
 		if (this.seats.has(seat)) {
 			this.seats.delete(seat)
@@ -116,7 +115,7 @@ export class Cathedral {
 	getBundles() {
 		return [...this.seats]
 			.filter(seat => seat.bundle)
-			.map(seat => seat.bundle) as Bundle[]
+			.map(seat => seat.bundle) as Bundle<Identity>[]
 	}
 
 	collectivize() {
@@ -141,7 +140,7 @@ export class Cathedral {
 			bundle.liaison.sendInputs(inputPayload)
 	}
 
-	distributeTailoredSnapshots(tick: number, fn: (bundle: Bundle) => Snapshot) {
+	distributeTailoredSnapshots(tick: number, fn: (bundle: Bundle<Identity>) => Snapshot) {
 		for (const bundle of this.getBundles())
 			bundle.liaison.sendSnapshot({tick, data: fn(bundle)})
 	}
@@ -181,7 +180,7 @@ export class Cathedral {
 			connectionStats.ping = Date.now() - alpha
 		})
 
-		const bundle: Bundle = {
+		const bundle: Bundle<Identity> = {
 			connection,
 			author,
 			liaison,

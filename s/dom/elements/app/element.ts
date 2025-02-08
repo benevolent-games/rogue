@@ -1,5 +1,5 @@
 
-import {html, opSignal, requestAnimationFrameLoop, shadowComponent} from "@benev/slate"
+import {html, opSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
 import stylesCss from "./styles.css.js"
@@ -16,6 +16,7 @@ import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
 import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
 import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
+import { Identity } from "../../../ui/accounts/types.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -106,7 +107,7 @@ export const GameApp = shadowComponent(use => {
 				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
 				const flow = await playerHostFlow({lag: null, identity})
 				const {host, multiplayerClient, client, dispose} = flow
-				const multiplayerOp = opSignal<MultiplayerHost>()
+				const multiplayerOp = opSignal<MultiplayerHost<Identity>>()
 
 				multiplayerOp.load(async() => {
 					const multiplayer = await host.startMultiplayer()

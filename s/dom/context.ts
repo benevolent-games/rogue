@@ -7,7 +7,7 @@ import {Kv} from "../tools/kv/kv.js"
 import {makeApi} from "../server/api.js"
 import {Avatar} from "../server/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
-import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
+import {Identity, RandoIdentity} from "../ui/accounts/types.js"
 import {Account, AccountPreferences, AccountRecord} from "../server/accounts/types.js"
 
 export type Session = {

@@ -31,8 +31,8 @@ export default template(async basic => {
 			})}
 
 			${headScripts({
-				devModulePath: await path.version.local("index.bundle.js"),
-				prodModulePath: await path.version.local("index.bundle.min.js"),
+				devModulePath: await path.version.local("index.js"),
+				prodModulePath: await path.version.local("index.js"),
 				importmapContent: await read_file("x/importmap.json"),
 			})}
 		`,

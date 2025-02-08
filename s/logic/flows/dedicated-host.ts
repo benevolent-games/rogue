@@ -10,6 +10,7 @@ import {dungeonStartup} from "../dungeons/startup.js"
 import {Cathedral} from "../../archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../archimedes/net/multiplayer/multiplayer-host.js"
+import { Identity } from "../../ui/accounts/types.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const dungeonStore = new DungeonStore()
@@ -18,7 +19,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	dungeonStartup(simtron, dungeonLayout)
 
-	const cathedral = new Cathedral({
+	const cathedral = new Cathedral<Identity>({
 		lag,
 		onBundle: ({author}) => {
 			return simtron.spawnCrusader(author)
@@ -43,7 +44,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	})
 
 	async function startMultiplayer() {
-		return MultiplayerHost.host(cathedral)
+		return MultiplayerHost.host<Identity>(cathedral)
 	}
 
 	const dispose = () => {

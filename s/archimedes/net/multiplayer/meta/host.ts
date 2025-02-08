@@ -1,9 +1,7 @@
 
-import {Identity} from "../types.js"
-
 export type MetaHost = ReturnType<typeof metaHostApi>
 
-export function metaHostApi({author, updateIdentity}: {
+export function metaHostApi<Identity>({author, updateIdentity}: {
 		author: number
 		updateIdentity: (identity: Identity) => void
 	}) {

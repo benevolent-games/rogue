@@ -2,7 +2,6 @@
 import Sparrow from "sparrow-rtc"
 import {pubsub, Signal, signal} from "@benev/slate"
 
-import {Identity} from "./types.js"
 import {Fiber} from "../relay/fiber.js"
 import {MetaHost} from "./meta/host.js"
 import {Parcel} from "../relay/inbox-outbox.js"
@@ -13,25 +12,25 @@ import {renrakuChannel} from "./utils/renraku-channel.js"
 import {MetaClient, metaClientApi} from "./meta/client.js"
 import {MultiplayerFibers, multiplayerFibers} from "./utils/multiplayer-fibers.js"
 
-export class MultiplayerClient extends Multiplayer {
+export class MultiplayerClient<Identity> extends Multiplayer {
 	constructor(
 			public author: number,
 			public gameFiber: Fiber<Parcel<GameMessage>>,
 			public identity: Signal<Identity>,
-			public lobby: Signal<Lobby>,
+			public lobby: Signal<Lobby<Identity>>,
 			public dispose: () => void,
 			public disconnected: () => void,
 		) {
 		super()
 	}
 
-	static async make({fibers, identity, dispose, disconnected}: {
+	static async make<Identity>({fibers, identity, dispose, disconnected}: {
 			fibers: MultiplayerFibers,
 			identity: Signal<Identity>,
 			dispose: () => void,
 			disconnected: () => void,
 		}) {
-		const lobby = signal<Lobby>(Cathedral.emptyLobby())
+		const lobby = signal<Lobby<Identity>>(Cathedral.emptyLobby())
 		const metaHost = renrakuChannel<MetaClient, MetaHost>({
 			timeout: 20_000,
 			bicomm: fibers.meta.reliable,
@@ -42,7 +41,7 @@ export class MultiplayerClient extends Multiplayer {
 		return new this(author, fibers.game, identity, lobby, dispose, disconnected)
 	}
 
-	static async join(invite: string, identity: Signal<Identity>, disconnected: () => void) {
+	static async join<Identity>(invite: string, identity: Signal<Identity>, disconnected: () => void) {
 		const onDisconnected = pubsub()
 		onDisconnected(disconnected)
 

@@ -5,17 +5,18 @@ import {renderThumbprint} from "@authlocal/authlocal"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
 import {Invites} from "../../../../utils/invites.js"
+import {Identity} from "../../../../../ui/accounts/types.js"
 import {AccountCardView} from "../../../account-card/view.js"
 import {LobbySeat} from "../../../../../archimedes/net/relay/cathedral.js"
 import {MultiplayerClient} from "../../../../../archimedes/net/multiplayer/multiplayer-client.js"
 
-export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient) => {
+export const LobbyView = shadowView(use => (multiplayer: MultiplayerClient<Identity>) => {
 	use.styles(themeCss, stylesCss)
 
 	const lobby = multiplayer.lobby.value
 	const inviteUrl = lobby.invite && Invites.url(lobby.invite)
 
-	const renderLobbySeat = (seat: LobbySeat) => html`
+	const renderLobbySeat = (seat: LobbySeat<Identity>) => html`
 		<li data-id="${seat.author}">
 			<div x-card>
 				${seat.identity && AccountCardView([seat.identity, false])}

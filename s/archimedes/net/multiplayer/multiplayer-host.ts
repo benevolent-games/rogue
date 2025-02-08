@@ -4,14 +4,14 @@ import Sparrow, {AgentInfo} from "sparrow-rtc"
 import {Cathedral} from "../relay/cathedral.js"
 import {Multiplayer} from "./utils/multiplayer.js"
 
-export class MultiplayerHost extends Multiplayer {
+export class MultiplayerHost<Identity> extends Multiplayer {
 	constructor(
-		public cathedral: Cathedral,
+		public cathedral: Cathedral<Identity>,
 		public self: AgentInfo,
 		public dispose: () => void,
 	) { super() }
 
-	static async host(cathedral: Cathedral) {
+	static async host<Identity>(cathedral: Cathedral<Identity>) {
 		const sparrow = await Sparrow.host({
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 

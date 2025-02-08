@@ -7,6 +7,7 @@ import {Simtron} from "../station/simtron.js"
 import {replicas} from "../entities/replicas.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
+import {Identity} from "../../ui/accounts/types.js"
 import {RogueEntities} from "../entities/entities.js"
 import {Liaison} from "../../archimedes/net/relay/liaison.js"
 import {InputShell} from "../../archimedes/framework/parts/types.js"
@@ -15,7 +16,7 @@ import {Replicator} from "../../archimedes/framework/replication/replicator.js"
 import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
 
 export async function clientFlow(
-		multiplayer: MultiplayerClient,
+		multiplayer: MultiplayerClient<Identity>,
 		dungeonStore: DungeonStore,
 		smartloop = new Smartloop(constants.sim.tickRate),
 	) {
