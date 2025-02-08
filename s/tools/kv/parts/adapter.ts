@@ -29,15 +29,24 @@ export class Adapter<V> {
 		)
 	}
 
+	async get(key: FlexKey) {
+		const bytes = await this.#core.get(this.#bytekey(key))
+		return bytes && this.#toValue(bytes)
+	}
+
 	async require(key: FlexKey) {
 		return this.#toValue(
 			await this.#core.require(this.#bytekey(key))
 		)
 	}
 
-	async get(key: FlexKey) {
-		const bytes = await this.#core.get(this.#bytekey(key))
-		return bytes && this.#toValue(bytes)
+	async guarantee(key: FlexKey, make: () => V) {
+		let value: V | undefined = await this.get(key)
+		if (value === undefined) {
+			value = make()
+			this.put(key, value)
+		}
+		return value
 	}
 
 	async del(key: FlexKey) {

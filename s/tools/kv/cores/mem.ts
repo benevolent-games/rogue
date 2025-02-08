@@ -13,12 +13,16 @@ export class MemCore implements ByteCore {
 		this.#map.set(this.#stringkey(key), value)
 	}
 
+	async get(key: Uint8Array) {
+		return this.#map.get(this.#stringkey(key))
+	}
+
 	async require(key: Uint8Array) {
 		return this.#map.require(this.#stringkey(key))
 	}
 
-	async get(key: Uint8Array) {
-		return this.#map.get(this.#stringkey(key))
+	async guarantee(key: Uint8Array, make: () => Uint8Array) {
+		return this.#map.guarantee(this.#stringkey(key), make)
 	}
 
 	async del(key: Uint8Array) {

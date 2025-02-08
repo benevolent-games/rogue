@@ -11,12 +11,16 @@ export class JsonAdapter extends Adapter<any> {
 		})
 	}
 
+	async get<V = any>(key: FlexKey): Promise<V | undefined> {
+		return super.get(key)
+	}
+
 	async require<V = any>(key: FlexKey): Promise<V> {
 		return super.require(key)
 	}
 
-	async get<V = any>(key: FlexKey): Promise<V | undefined> {
-		return super.get(key)
+	async guarantee<V>(key: FlexKey, make: () => V): Promise<V> {
+		return super.guarantee(key, make)
 	}
 }
 

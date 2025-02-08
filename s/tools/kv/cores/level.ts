@@ -13,10 +13,6 @@ export class LevelCore implements ByteCore {
 		return this.#db.put(key, value)
 	}
 
-	async require(key: Uint8Array) {
-		return this.#db.get(key)
-	}
-
 	async get(key: Uint8Array) {
 		try {
 			return this.#db.get(key)
@@ -24,6 +20,19 @@ export class LevelCore implements ByteCore {
 		catch (error) {
 			return undefined
 		}
+	}
+
+	async require(key: Uint8Array) {
+		return this.#db.get(key)
+	}
+
+	async guarantee(key: Uint8Array, make: () => Uint8Array) {
+		let value: Uint8Array | undefined = await this.get(key)
+		if (value === undefined) {
+			value = make()
+			this.put(key, value)
+		}
+		return value
 	}
 
 	async del(key: Uint8Array) {

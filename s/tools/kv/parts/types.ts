@@ -8,6 +8,7 @@ export type ByteCore = {
 	put(key: Uint8Array, value: Uint8Array): Promise<void>
 	get(key: Uint8Array): Promise<Uint8Array | undefined>
 	require(key: FlexKey): Promise<Uint8Array>
+	guarantee(key: FlexKey, make: () => Uint8Array): Promise<Uint8Array>
 	del(key: Uint8Array): Promise<void>
 }
 
