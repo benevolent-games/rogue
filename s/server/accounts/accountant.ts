@@ -17,9 +17,7 @@ export class Accountant {
 
 	api = () => secureLogin((proof: Proof) => ({
 		query: async(preferences: AccountPreferences) => {
-			const accountRecord = (await this.database.getRecord(proof.thumbprint))
-				?? {tags: [], avatars: []}
-
+			const accountRecord = await this.database.load(proof.thumbprint)
 			const avatarRequested = Avatar.library.get(preferences.avatarId) ?? Avatar.default
 
 			const avatarActual = isAvatarAllowed(avatarRequested, accountRecord)

@@ -18,6 +18,8 @@ export type AccountPreferences = {
 }
 
 export type AccountRecord = {
+	thumbprint: string
+	avatarId: string | null
 	tags: AccountTag[]
 	avatars: string[]
 }
