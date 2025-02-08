@@ -1,12 +1,16 @@
 
+import {Pubkey} from "@authlocal/authlocal"
 import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
-import {Server} from "../../../server/server.js"
+import {Kv} from "../../../tools/kv/kv.js"
+import {makeApi} from "../../../server/api.js"
 import {CharacterList} from "../../../ui/characters/views/character-list/view.js"
 
-const server = await Server.make()
+const kv = new Kv()
+const api = (await makeApi(kv)).v1
+const pubkey = api.pubkey().then(data => Pubkey.fromData(data))
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)

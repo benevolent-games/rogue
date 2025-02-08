@@ -1,9 +1,10 @@
 
 import {Randy} from "@benev/toolbox"
-import {Auth, Login} from "@authlocal/authlocal"
+import {Auth, Login, Pubkey} from "@authlocal/authlocal"
 import {computed, Hex, opSignal, signal} from "@benev/slate"
 
-import {Server} from "../server/server.js"
+import {Kv} from "../tools/kv/kv.js"
+import {makeApi} from "../server/api.js"
 import {Avatar} from "../server/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
 import {Identity, RandoIdentity} from "../archimedes/net/multiplayer/types.js"
@@ -73,15 +74,15 @@ export class AccountRecollection {
 	}
 }
 
-const server = await Server.make()
+const kv = new Kv()
+const api = (await makeApi(kv)).v1
 
 export class Context {
+	api = api
+	pubkey = api.pubkey().then(data => Pubkey.fromData(data))
+
 	auth = Auth.get()
 	randy = new Randy()
-
-	server = server
-	api = this.server.makeApi().v1
-	pubkey = this.server.keychain.pubkey
 
 	randoIdentity = randoIdentityStore.guarantee(() => ({
 		kind: "rando",
@@ -142,7 +143,8 @@ export class Context {
 			const {accountToken, accountRecord} = (
 				await this.api.accounting.query(proofToken, preferences)
 			)
-			const account = (await this.pubkey.verify<{data: Account}>(accountToken)).data
+			const pubkey = await this.pubkey
+			const account = (await pubkey.verify<{data: Account}>(accountToken)).data
 			const session: Session = {login, account, accountToken, accountRecord}
 			this.session.value = session
 			return session

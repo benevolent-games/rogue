@@ -9,9 +9,9 @@ import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import {Avatar} from "../../../server/avatars/avatar.js"
+import {AccountPayload} from "../../../server/accounts/types.js"
 import {Identity} from "../../../archimedes/net/multiplayer/types.js"
 import {isAvatarAllowed} from "../../../server/accounts/utils/is-avatar-allowed.js"
-import { AccountPayload } from "../../../server/accounts/types.js"
 
 type Info = {
 	loggedIn: boolean
@@ -36,9 +36,10 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 		}
 	}
 	else {
-		const {data: account} = await context
-			.pubkey
-			.verify<AccountPayload>(identity.accountToken)
+		const pubkey = await context.pubkey
+		const {data: account} = await pubkey.verify<AccountPayload>(
+			identity.accountToken
+		)
 		return {
 			loggedIn: true,
 			id: account.thumbprint,
