@@ -30,7 +30,7 @@ export class LevelCore implements ByteCore {
 		let value: Uint8Array | undefined = await this.get(key)
 		if (value === undefined) {
 			value = make()
-			this.put(key, value)
+			await this.put(key, value)
 		}
 		return value
 	}

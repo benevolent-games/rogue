@@ -44,7 +44,7 @@ export class Adapter<V> {
 		let value: V | undefined = await this.get(key)
 		if (value === undefined) {
 			value = make()
-			this.put(key, value)
+			await this.put(key, value)
 		}
 		return value
 	}
