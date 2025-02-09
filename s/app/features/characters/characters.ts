@@ -25,7 +25,7 @@ export function makeCharacterApi({keychain, database}: {
 	}) {
 
 	const signToken = (character: Character, scope: CharacterScope, days: number) =>
-		keychain.sign<CharacterAccess>(
+		keychain.signLicense<CharacterAccess>(
 			{character, scope},
 			Future.days(days),
 		)

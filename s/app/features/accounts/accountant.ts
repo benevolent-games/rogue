@@ -31,7 +31,7 @@ export class Accountant {
 				name: preferences.name,
 			}
 
-			const accountToken = await this.keychain.sign(account, Future.days(7))
+			const accountToken = await this.keychain.signLicense(account, Future.days(7))
 			return {accountToken, accountRecord}
 		},
 	}))

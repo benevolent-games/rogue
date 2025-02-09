@@ -9,7 +9,7 @@ export const secureCharacterAccess = <S extends Service>(
 		fn: (character: Character) => S,
 	) => secure(async(token: string) => {
 
-	const access = await keychain.verify<CharacterAccess>(token)
+	const access = await keychain.verifyLicense<CharacterAccess>(token)
 
 	if (access.scope !== scope)
 		throw new Error(`character access scope "${scope}" required (got "${access.scope}")`)

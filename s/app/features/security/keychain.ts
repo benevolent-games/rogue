@@ -10,14 +10,14 @@ export class Keychain {
 		public pubkeyData: PubkeyData,
 	) {}
 
-	async sign<D>(data: D, expiresAt: number) {
+	async signLicense<D>(data: D, expiresAt: number) {
 		return this.keypair.sign<License<D>>({
 			...Token.params({expiresAt: expiresAt}),
 			data,
 		})
 	}
 
-	async verify<D>(token: string) {
+	async verifyLicense<D>(token: string) {
 		const {data} = await this.keypair.verify<License<D>>(token)
 		return data
 	}
