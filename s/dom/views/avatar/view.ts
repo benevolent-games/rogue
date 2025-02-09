@@ -4,8 +4,8 @@ import {Avatar} from "../../../app/features/accounts/avatars/avatar.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../dom/theme.css.js"
-import lockSvg from "../../../dom/icons/tabler/lock.svg.js"
-import rotateClockwiseSvg from "../../../dom/icons/tabler/rotate-clockwise.svg.js"
+import lockSvg from "../../../app/icons/tabler/lock.svg.js"
+import rotateClockwiseSvg from "../../../app/icons/tabler/rotate-clockwise.svg.js"
 
 export type AvatarOptions = {
 	selected?: boolean
