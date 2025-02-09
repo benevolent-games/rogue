@@ -1,6 +1,6 @@
 
 import {secure, Service} from "renraku"
-import {Keychain} from "../../utils/keychain.js"
+import {Keychain} from "../../../../server/utils/keychain.js"
 import {Character, CharacterAccess, CharacterScope} from "../types.js"
 
 export const secureCharacterAccess = <S extends Service>(

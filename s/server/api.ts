@@ -2,7 +2,7 @@
 import {Kv} from "../packs/kv/kv.js"
 import {Keychain} from "./utils/keychain.js"
 import {Accountant} from "../app/features/accounts/accountant.js"
-import {Characters} from "./characters/characters.js"
+import {Characters} from "../app/features/characters/characters.js"
 import {enhanceHardcodedAccounts} from "../app/features/accounts/hardcoded.js"
 
 export type Api = ReturnType<typeof makeApi>

@@ -3,10 +3,10 @@ import {Hex} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
 import {Future, Proof} from "@authlocal/authlocal"
 
-import {Keychain} from "../utils/keychain.js"
+import {Keychain} from "../../../server/utils/keychain.js"
 import {CharacterDatabase} from "./database.js"
-import {secureLogin} from "../utils/secure-login.js"
-import {randyBuffer} from "../../tools/temp/randy-bytes.js"
+import {secureLogin} from "../../../server/utils/secure-login.js"
+import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
