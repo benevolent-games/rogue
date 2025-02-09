@@ -1,8 +1,8 @@
 
 import {Map2} from "@benev/slate"
 import {Vec2} from "@benev/toolbox"
-import {Box2} from "../../logic/physics/shapes/box2.js"
-import {Collisions2} from "../../logic/physics/facilities/collisions2.js"
+import {Box2} from "../../game/physics/shapes/box2.js"
+import {Collisions2} from "../../game/physics/facilities/collisions2.js"
 
 export class Zen<X> {
 	zones = new Set<ZenZone<X>>()

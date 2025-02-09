@@ -3,8 +3,8 @@ import {loggers} from "renraku"
 import {register_to_dom} from "@benev/slate"
 import {components} from "@authlocal/authlocal"
 
-import {context} from "./dom/context.js"
-import {GameApp} from "./dom/elements/app/element.js"
+import {context} from "./app/context.js"
+import {GameApp} from "./app/elements/app/element.js"
 
 void context
 
