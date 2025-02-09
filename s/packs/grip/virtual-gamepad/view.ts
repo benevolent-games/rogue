@@ -3,11 +3,11 @@ import {ev, html, Map2, shadowView} from "@benev/slate"
 import {NubStick} from "@benev/toolbox/x/tact/nubs/stick/view.js"
 
 import stylesCss from "./styles.css.js"
-import themeCss from "../../theme.css.js"
+import themeCss from "../supercontrol/theme.css.js"
 import {VirtualGamepadDevice} from "./device.js"
 import {GamepadInputs} from "./utils/gamepad-inputs.js"
-import {touchTracking} from "../../utils/touch-tracking.js"
-import {preventDefaultTouchShenanigans} from "../../utils/prevent-default-touch-shenanigans.js"
+import {touchTracking} from "./utils/touch-tracking.js"
+import {preventDefaultTouchShenanigans} from "./utils/prevent-default-touch-shenanigans.js"
 
 export const VirtualGamepad = shadowView(use => (device: VirtualGamepadDevice) => {
 	use.name("virtual-gamepad")

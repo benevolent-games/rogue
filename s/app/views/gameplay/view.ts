@@ -16,7 +16,7 @@ import {Identity} from "../../features/accounts/ui/types.js"
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"
-import {VirtualGamepad} from "../../../packs/grip/supercontrol/views/virtual-gamepad/view.js"
+import {VirtualGamepad} from "../../../packs/grip/virtual-gamepad/view.js"
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm

@@ -1,7 +1,7 @@
 
 import {css, shadowComponent} from "@benev/slate"
 
-import themeCss from "../../theme.css.js"
+import themeCss from "./theme.css.js"
 import {VirtualGamepad} from "../virtual-gamepad/view.js"
 import {VirtualGamepadDevice} from "../virtual-gamepad/device.js"
 
