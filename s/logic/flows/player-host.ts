@@ -2,7 +2,7 @@
 import {Signal} from "@benev/slate"
 import {clientFlow} from "./client.js"
 import {LagProfile} from "../../tools/fake-lag.js"
-import {Identity} from "../../ui/accounts/types.js"
+import {Identity} from "../../app/features/accounts/ui/types.js"
 import {dedicatedHostFlow} from "./dedicated-host.js"
 import {MultiplayerClient} from "../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 import {MultiplayerFibers, multiplayerFibers} from "../../packs/archimedes/net/multiplayer/utils/multiplayer-fibers.js"

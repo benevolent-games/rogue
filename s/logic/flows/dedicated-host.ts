@@ -10,7 +10,7 @@ import {dungeonStartup} from "../dungeons/startup.js"
 import {Cathedral} from "../../packs/archimedes/net/relay/cathedral.js"
 import {stdDungeonOptions} from "../dungeons/layouting/options.js"
 import {MultiplayerHost} from "../../packs/archimedes/net/multiplayer/multiplayer-host.js"
-import { Identity } from "../../ui/accounts/types.js"
+import { Identity } from "../../app/features/accounts/ui/types.js"
 
 export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 	const dungeonStore = new DungeonStore()

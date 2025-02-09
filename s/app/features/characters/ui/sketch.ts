@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
-import {Api} from "../../app/api.js"
-import {Character} from "../../app/features/characters/types.js"
+import {Api} from "../../../api.js"
+import {Character} from "../types.js"
 
 export type CharacterSource = {
 	token: string

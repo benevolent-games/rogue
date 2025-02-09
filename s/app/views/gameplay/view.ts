@@ -12,7 +12,7 @@ import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
 import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 
-import {Identity} from "../../../ui/accounts/types.js"
+import {Identity} from "../../features/accounts/ui/types.js"
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"

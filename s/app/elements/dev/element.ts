@@ -6,7 +6,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Kv} from "../../../packs/kv/kv.js"
 import {makeApi} from "../../api.js"
-import {CharacterList} from "../../../ui/characters/views/character-list/view.js"
+import {CharacterList} from "../../features/characters/ui/view.js"
 
 const kv = new Kv()
 const api = (await makeApi(kv)).v1

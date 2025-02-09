@@ -7,7 +7,7 @@ import {Kv} from "../packs/kv/kv.js"
 import {makeApi} from "./api.js"
 import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
-import {Identity, RandoIdentity} from "../ui/accounts/types.js"
+import {Identity, RandoIdentity} from "./features/accounts/ui/types.js"
 import {Account, AccountPreferences, AccountRecord} from "./features/accounts/types.js"
 
 export type Session = {

@@ -16,7 +16,7 @@ import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {lagProfiles} from "../../../packs/archimedes/net/multiplayer/utils/lag-profiles.js"
 import {MultiplayerHost} from "../../../packs/archimedes/net/multiplayer/multiplayer-host.js"
 import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
-import { Identity } from "../../../ui/accounts/types.js"
+import { Identity } from "../../features/accounts/ui/types.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
