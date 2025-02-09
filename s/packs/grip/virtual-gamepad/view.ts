@@ -3,7 +3,7 @@ import {ev, html, Map2, shadowView} from "@benev/slate"
 import {NubStick} from "@benev/toolbox/x/tact/nubs/stick/view.js"
 
 import stylesCss from "./styles.css.js"
-import themeCss from "../supercontrol/theme.css.js"
+import themeCss from "../../../dev/supercontrol/theme.css.js"
 import {VirtualGamepadDevice} from "./device.js"
 import {GamepadInputs} from "./utils/gamepad-inputs.js"
 import {touchTracking} from "./utils/touch-tracking.js"

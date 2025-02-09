@@ -2,8 +2,8 @@
 import {css, shadowComponent} from "@benev/slate"
 
 import themeCss from "./theme.css.js"
-import {VirtualGamepad} from "../virtual-gamepad/view.js"
-import {VirtualGamepadDevice} from "../virtual-gamepad/device.js"
+import {VirtualGamepad} from "../../packs/grip/virtual-gamepad/view.js"
+import {VirtualGamepadDevice} from "../../packs/grip/virtual-gamepad/device.js"
 
 export const SuperControl = shadowComponent(use => {
 	use.styles(themeCss, css`
