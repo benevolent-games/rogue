@@ -4,11 +4,11 @@ import {Auth, Login, Pubkey} from "@authlocal/authlocal"
 import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {Kv} from "../packs/kv/kv.js"
-import {makeApi} from "../app/api.js"
-import {Avatar} from "../app/features/accounts/avatars/avatar.js"
+import {makeApi} from "./api.js"
+import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
 import {Identity, RandoIdentity} from "../ui/accounts/types.js"
-import {Account, AccountPreferences, AccountRecord} from "../app/features/accounts/types.js"
+import {Account, AccountPreferences, AccountRecord} from "./features/accounts/types.js"
 
 export type Session = {
 	login: Login

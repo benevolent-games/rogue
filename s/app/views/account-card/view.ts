@@ -3,15 +3,15 @@ import {renderThumbprint} from "@authlocal/authlocal"
 import {deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import themeCss from "../../../dom/theme.css.js"
+import themeCss from "../../theme.css.js"
 
 import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import {Identity} from "../../../ui/accounts/types.js"
-import {Avatar} from "../../../app/features/accounts/avatars/avatar.js"
-import {AccountToken} from "../../../app/features/accounts/types.js"
-import {isAvatarAllowed} from "../../../app/features/accounts/utils/is-avatar-allowed.js"
+import {Avatar} from "../../features/accounts/avatars/avatar.js"
+import {AccountToken} from "../../features/accounts/types.js"
+import {isAvatarAllowed} from "../../features/accounts/utils/is-avatar-allowed.js"
 
 type Info = {
 	loggedIn: boolean

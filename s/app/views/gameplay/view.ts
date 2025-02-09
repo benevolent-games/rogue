@@ -14,8 +14,8 @@ import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multi
 
 import {Identity} from "../../../ui/accounts/types.js"
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
-import maximizeSvg from "../../../app/icons/tabler/maximize.svg.js"
-import componentsSvg from "../../../app/icons/tabler/components.svg.js"
+import maximizeSvg from "../../icons/tabler/maximize.svg.js"
+import componentsSvg from "../../icons/tabler/components.svg.js"
 import {VirtualGamepad} from "../../../packs/grip/supercontrol/views/virtual-gamepad/view.js"
 
 export const Gameplay = shadowView(use => (o: {

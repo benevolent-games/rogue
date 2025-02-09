@@ -4,7 +4,7 @@ import {ev, html, shadowView, Signal} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Gigapanel} from "./utils/gigapanel.js"
-import benevolent2Svg from "../../../app/icons/benev/benevolent2.svg.js"
+import benevolent2Svg from "../../icons/benev/benevolent2.svg.js"
 
 export const Gigamenu = shadowView(use => (menuOpen: Signal<boolean>, panels: Gigapanel[]) => {
 	use.name("gigamenu")

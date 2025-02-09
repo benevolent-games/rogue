@@ -5,7 +5,7 @@ import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Kv} from "../../../packs/kv/kv.js"
-import {makeApi} from "../../../app/api.js"
+import {makeApi} from "../../api.js"
 import {CharacterList} from "../../../ui/characters/views/character-list/view.js"
 
 const kv = new Kv()

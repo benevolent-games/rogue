@@ -4,7 +4,7 @@ import {gigapanel} from "../../utils/gigapanel.js"
 import {Identity} from "../../../../../ui/accounts/types.js"
 import {MultiplayerClient} from "../../../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 
-import usersGroupSvg from "../../../../../app/icons/tabler/users-group.svg.js"
+import usersGroupSvg from "../../../../icons/tabler/users-group.svg.js"
 
 export const LobbyPanel = gigapanel((multiplayerClient: MultiplayerClient<Identity>) => ({
 	label: "Lobby",

@@ -3,9 +3,9 @@ import {AccountView} from "./view.js"
 import {context} from "../../../../context.js"
 import {gigapanel} from "../../utils/gigapanel.js"
 import {AvatarView} from "../../../avatar/view.js"
-import {Avatar} from "../../../../../app/features/accounts/avatars/avatar.js"
-import userCheckSvg from "../../../../../app/icons/tabler/user-check.svg.js"
-import userQuestionSvg from "../../../../../app/icons/tabler/user-question.svg.js"
+import {Avatar} from "../../../../features/accounts/avatars/avatar.js"
+import userCheckSvg from "../../../../icons/tabler/user-check.svg.js"
+import userQuestionSvg from "../../../../icons/tabler/user-question.svg.js"
 
 export const AccountPanel = gigapanel(() => ({
 	label: "Account",

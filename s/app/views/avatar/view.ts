@@ -1,11 +1,11 @@
 
 import {html, shadowView} from "@benev/slate"
-import {Avatar} from "../../../app/features/accounts/avatars/avatar.js"
+import {Avatar} from "../../features/accounts/avatars/avatar.js"
 
 import stylesCss from "./styles.css.js"
-import themeCss from "../../../dom/theme.css.js"
-import lockSvg from "../../../app/icons/tabler/lock.svg.js"
-import rotateClockwiseSvg from "../../../app/icons/tabler/rotate-clockwise.svg.js"
+import themeCss from "../../theme.css.js"
+import lockSvg from "../../icons/tabler/lock.svg.js"
+import rotateClockwiseSvg from "../../icons/tabler/rotate-clockwise.svg.js"
 
 export type AvatarOptions = {
 	selected?: boolean
