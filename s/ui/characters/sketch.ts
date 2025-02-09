@@ -1,6 +1,6 @@
 
 import {Map2} from "@benev/slate"
-import {Api} from "../../server/api.js"
+import {Api} from "../../app/api.js"
 import {Character} from "../../app/features/characters/types.js"
 
 export type CharacterSource = {
