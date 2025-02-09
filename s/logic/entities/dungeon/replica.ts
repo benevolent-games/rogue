@@ -5,7 +5,7 @@ import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
 import {Box2} from "../../physics/shapes/box2.js"
 import {DungeonRenderer} from "../../dungeons/renderer.js"
-import {replica} from "../../../archimedes/framework/replication/types.js"
+import {replica} from "../../../packs/archimedes/framework/replication/types.js"
 import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(

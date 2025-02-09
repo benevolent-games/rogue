@@ -1,6 +1,6 @@
 
 import {RogueEntities} from "./entities.js"
-import {Simulas} from "../../archimedes/exports.js"
+import {Simulas} from "../../packs/archimedes/exports.js"
 
 import {botSimula} from "./bot/simula.js"
 import {Station} from "../station/station.js"

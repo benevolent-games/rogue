@@ -13,9 +13,9 @@ import {DungeonStore} from "../../../logic/dungeons/store.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
-import {lagProfiles} from "../../../archimedes/net/multiplayer/utils/lag-profiles.js"
-import {MultiplayerHost} from "../../../archimedes/net/multiplayer/multiplayer-host.js"
-import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
+import {lagProfiles} from "../../../packs/archimedes/net/multiplayer/utils/lag-profiles.js"
+import {MultiplayerHost} from "../../../packs/archimedes/net/multiplayer/multiplayer-host.js"
+import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 import { Identity } from "../../../ui/accounts/types.js"
 
 export const GameApp = shadowComponent(use => {

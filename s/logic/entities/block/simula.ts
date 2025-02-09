@@ -4,7 +4,7 @@ import {RogueEntities} from "../entities.js"
 import {Station} from "../../station/station.js"
 import {Box2} from "../../physics/shapes/box2.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
-import {simula} from "../../../archimedes/framework/simulation/types.js"
+import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 const density = 100
 

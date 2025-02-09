@@ -6,7 +6,7 @@ import {RogueEntities} from "../entities.js"
 import {constants} from "../../../constants.js"
 import {BipedRep} from "../../commons/biped/rep.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
-import {replica} from "../../../archimedes/framework/replication/types.js"
+import {replica} from "../../../packs/archimedes/framework/replication/types.js"
 
 const debug = false
 const {crusader} = constants

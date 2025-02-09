@@ -7,7 +7,7 @@ import {Station} from "../../station/station.js"
 import {Box2} from "../../physics/shapes/box2.js"
 import {BipedSim} from "../../commons/biped/sim.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
-import {simula} from "../../../archimedes/framework/simulation/types.js"
+import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 	({id, station, getState, fromAuthor}) => {

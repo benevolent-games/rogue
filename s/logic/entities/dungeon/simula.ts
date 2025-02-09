@@ -2,7 +2,7 @@
 import {RogueEntities} from "../entities.js"
 import {Station} from "../../station/station.js"
 import {Dungeon} from "../../dungeons/dungeon.js"
-import {simula} from "../../../archimedes/framework/simulation/types.js"
+import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 export const dungeonSimula = simula<RogueEntities, Station>()<"dungeon">(
 	({id, station, getState}) => {

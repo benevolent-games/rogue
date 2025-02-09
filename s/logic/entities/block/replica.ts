@@ -2,7 +2,7 @@
 import {readBlock} from "./state.js"
 import {Realm} from "../../realm/realm.js"
 import {RogueEntities} from "../entities.js"
-import {replica} from "../../../archimedes/framework/replication/types.js"
+import {replica} from "../../../packs/archimedes/framework/replication/types.js"
 
 export const blockReplica = replica<RogueEntities, Realm>()<"block">(
 	({realm, getState}) => {

@@ -1,8 +1,8 @@
 
 import {pubsub} from "@benev/slate"
 import {Ping, Pong} from "./messages.js"
-import {Averager} from "../../../tools/averager.js"
-import {IdCounter} from "../../../tools/id-counter.js"
+import {Averager} from "../../../../tools/averager.js"
+import {IdCounter} from "../../../../tools/id-counter.js"
 
 type PingId = number
 type Timestamp = number

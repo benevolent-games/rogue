@@ -9,11 +9,11 @@ import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
 import {Identity} from "../../ui/accounts/types.js"
 import {RogueEntities} from "../entities/entities.js"
-import {Liaison} from "../../archimedes/net/relay/liaison.js"
-import {InputShell} from "../../archimedes/framework/parts/types.js"
-import {Chronicle} from "../../archimedes/framework/parts/chronicle.js"
-import {Replicator} from "../../archimedes/framework/replication/replicator.js"
-import {MultiplayerClient} from "../../archimedes/net/multiplayer/multiplayer-client.js"
+import {Liaison} from "../../packs/archimedes/net/relay/liaison.js"
+import {InputShell} from "../../packs/archimedes/framework/parts/types.js"
+import {Chronicle} from "../../packs/archimedes/framework/parts/chronicle.js"
+import {Replicator} from "../../packs/archimedes/framework/replication/replicator.js"
+import {MultiplayerClient} from "../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 
 export async function clientFlow(
 		multiplayer: MultiplayerClient<Identity>,

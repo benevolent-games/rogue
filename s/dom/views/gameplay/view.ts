@@ -10,7 +10,7 @@ import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
 import {toggleFullscreen} from "./utils/toggle-fullscreen.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {dungeonDropper} from "../../../logic/dungeons/ui/dropper.js"
-import {MultiplayerClient} from "../../../archimedes/net/multiplayer/multiplayer-client.js"
+import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 
 import {Identity} from "../../../ui/accounts/types.js"
 import {StatsPanel} from "../gigamenu/panels/stats/panel.js"

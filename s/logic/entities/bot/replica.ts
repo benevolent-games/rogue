@@ -8,7 +8,7 @@ import {constants} from "../../../constants.js"
 import {BipedRep} from "../../commons/biped/rep.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
-import {replica} from "../../../archimedes/framework/replication/types.js"
+import {replica} from "../../../packs/archimedes/framework/replication/types.js"
 
 const debug = false
 const {crusader} = constants

@@ -1,7 +1,7 @@
 
 import {StdCable} from "sparrow-rtc"
-import {pub} from "../../../tools/pub.js"
-import {disposers} from "../../../tools/disposers.js"
+import {pub} from "../../../../tools/pub.js"
+import {disposers} from "../../../../tools/disposers.js"
 import {onChannelMessage} from "./on-channel-message.js"
 
 /** an arbitrary data channel */
