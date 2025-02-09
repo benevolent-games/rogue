@@ -4,7 +4,7 @@ import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
-import {Kv} from "../../../tools/kv/kv.js"
+import {Kv} from "../../../packs/kv/kv.js"
 import {makeApi} from "../../../server/api.js"
 import {CharacterList} from "../../../ui/characters/views/character-list/view.js"
 

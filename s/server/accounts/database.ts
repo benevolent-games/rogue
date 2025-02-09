@@ -1,7 +1,7 @@
 
-import {Kv} from "../../tools/kv/kv.js"
+import {Kv} from "../../packs/kv/kv.js"
 import {AccountRecord} from "./types.js"
-import {idkey} from "../../tools/kv/utils/idkey.js"
+import {idkey} from "../../packs/kv/utils/idkey.js"
 
 export class AccountantDatabase {
 	constructor(public kv: Kv) {}

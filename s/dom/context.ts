@@ -3,7 +3,7 @@ import {Randy} from "@benev/toolbox"
 import {Auth, Login, Pubkey} from "@authlocal/authlocal"
 import {computed, Hex, opSignal, signal} from "@benev/slate"
 
-import {Kv} from "../tools/kv/kv.js"
+import {Kv} from "../packs/kv/kv.js"
 import {makeApi} from "../server/api.js"
 import {Avatar} from "../server/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
