@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
 
-import {FloorSegment} from "../floors/types.js"
+import {FloorSegment} from "./types.js"
 import {DungeonPlacer} from "../utils/placer.js"
 import {constants} from "../../../../constants.js"
 import {Box2} from "../../../physics/shapes/box2.js"

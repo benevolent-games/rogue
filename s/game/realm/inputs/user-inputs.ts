@@ -3,7 +3,7 @@ import {ev, signal, Trashbin} from "@benev/slate"
 import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 
 import {Grip} from "../../../packs/grip/grip.js"
-import {gameBindings, GameBindings} from "../inputs/game-bindings.js"
+import {gameBindings, GameBindings} from "./game-bindings.js"
 import {PointerDevice} from "../../../packs/grip/devices/pointer-device.js"
 import {KeyboardDevice} from "../../../packs/grip/devices/keyboard-device.js"
 import {VirtualGamepadDevice} from "../../../packs/grip/supercontrol/views/virtual-gamepad/device.js"

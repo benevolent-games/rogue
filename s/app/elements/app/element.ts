@@ -9,7 +9,7 @@ import {Invites} from "../../features/invites/invites.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
-import {DungeonStore} from "../../../logic/dungeons/store.js"
+import {DungeonStore} from "../../../game/dungeons/store.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
 import {handleExhibitErrors} from "../../views/error-screen/view.js"
@@ -68,7 +68,7 @@ export const GameApp = shadowComponent(use => {
 			mainMenu: makeNav(async() => mainMenu),
 
 			lag: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
+				const {playerHostFlow} = await import("../../../game/flows/player-host.js")
 				const lag = lagProfiles.bad
 				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
@@ -86,7 +86,7 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			offline: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
+				const {playerHostFlow} = await import("../../../game/flows/player-host.js")
 				const lag = lagProfiles.none
 				const flow = await playerHostFlow({lag, identity})
 				const {client, multiplayerClient, dispose} = flow
@@ -104,7 +104,7 @@ export const GameApp = shadowComponent(use => {
 			}),
 
 			host: makeNav(async() => {
-				const {playerHostFlow} = await import("../../../logic/flows/player-host.js")
+				const {playerHostFlow} = await import("../../../game/flows/player-host.js")
 				const flow = await playerHostFlow({lag: null, identity})
 				const {host, multiplayerClient, client, dispose} = flow
 				const multiplayerOp = opSignal<MultiplayerHost<Identity>>()
@@ -136,7 +136,7 @@ export const GameApp = shadowComponent(use => {
 					identity,
 					() => { goExhibit.mainMenu() },
 				)
-				const {clientFlow} = await import("../../../logic/flows/client.js")
+				const {clientFlow} = await import("../../../game/flows/client.js")
 				const dungeonStore = new DungeonStore()
 				const {realm, dispose} = await clientFlow(multiplayerClient, dungeonStore)
 

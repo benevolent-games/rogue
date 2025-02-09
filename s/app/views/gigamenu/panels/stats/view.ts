@@ -3,7 +3,7 @@ import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
-import {Realm} from "../../../../../logic/realm/realm.js"
+import {Realm} from "../../../../../game/realm/realm.js"
 
 export const StatsView = shadowView(use => (realm: Realm) => {
 	use.styles(themeCss, stylesCss)

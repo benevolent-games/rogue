@@ -1,5 +1,5 @@
 
-import {Health} from "../mortal/health.js"
+import {Health} from "./health.js"
 import {constants} from "../../../constants.js"
 import {PhysShape} from "../../physics/parts/types.js"
 import {ZenGrid} from "../../../tools/hash/zen-grid.js"

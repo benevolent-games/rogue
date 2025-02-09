@@ -8,7 +8,7 @@ import {constants} from "../../../constants.js"
 import {loadImage2} from "../../../tools/loading/load-image.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {getMetaVersion} from "../../../tools/get-meta-version.js"
-import {UserInputs} from "../../../logic/realm/inputs/user-inputs.js"
+import {UserInputs} from "../../../game/realm/inputs/user-inputs.js"
 
 export const MainMenu = shadowView(use => ({nav}: {
 		nav: {play: () => void}
