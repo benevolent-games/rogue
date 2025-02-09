@@ -2,9 +2,9 @@
 import {Future, Proof} from "@authlocal/authlocal"
 import {Kv} from "../../../packs/kv/kv.js"
 import {Avatar} from "./avatars/avatar.js"
-import {Keychain} from "../../../server/utils/keychain.js"
+import {Keychain} from "../security/keychain.js"
 import {AccountantDatabase} from "./database.js"
-import {secureLogin} from "../../../server/utils/secure-login.js"
+import {secureLogin} from "../security/secure-login.js"
 import {Account, AccountPreferences} from "./types.js"
 import {isAvatarAllowed} from "./utils/is-avatar-allowed.js"
 
