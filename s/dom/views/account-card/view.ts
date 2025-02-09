@@ -10,8 +10,8 @@ import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import {Identity} from "../../../ui/accounts/types.js"
 import {Avatar} from "../../../server/avatars/avatar.js"
-import {AccountToken} from "../../../server/accounts/types.js"
-import {isAvatarAllowed} from "../../../server/accounts/utils/is-avatar-allowed.js"
+import {AccountToken} from "../../../app/features/accounts/types.js"
+import {isAvatarAllowed} from "../../../app/features/accounts/utils/is-avatar-allowed.js"
 
 type Info = {
 	loggedIn: boolean

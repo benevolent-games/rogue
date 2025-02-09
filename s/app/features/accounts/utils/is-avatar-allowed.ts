@@ -1,6 +1,6 @@
 
 import {AccountRecord} from "../types.js"
-import {Avatar} from "../../avatars/avatar.js"
+import {Avatar} from "../../../../server/avatars/avatar.js"
 import {AccountTiers} from "./account-tiers.js"
 
 export function isAvatarAllowed(

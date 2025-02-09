@@ -7,9 +7,9 @@ import themeCss from "../../../dom/theme.css.js"
 import {AvatarView} from "../avatar/view.js"
 import {context} from "../../../dom/context.js"
 import {Avatar} from "../../../server/avatars/avatar.js"
-import {Account, AccountRecord} from "../../../server/accounts/types.js"
-import {AccountTiers} from "../../../server/accounts/utils/account-tiers.js"
-import {isAvatarAllowed} from "../../../server/accounts/utils/is-avatar-allowed.js"
+import {Account, AccountRecord} from "../../../app/features/accounts/types.js"
+import {AccountTiers} from "../../../app/features/accounts/utils/account-tiers.js"
+import {isAvatarAllowed} from "../../../app/features/accounts/utils/is-avatar-allowed.js"
 
 export const AvatarSelectorView = shadowView(use => (options: {
 		account: Account
