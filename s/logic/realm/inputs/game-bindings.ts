@@ -1,5 +1,5 @@
 
-import {Grip} from "../../../supercontrol/grip/grip.js"
+import {Grip} from "../../../packs/grip/grip.js"
 import {apd, dps, mps} from "./utils/sensitivity-units.js"
 
 export type GameBindings = ReturnType<typeof gameBindings>

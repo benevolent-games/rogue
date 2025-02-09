@@ -5,7 +5,7 @@ import {AmbleState} from "../types.js"
 import {AnimTimeline} from "./anim-timeline.js"
 import {constants} from "../../../../constants.js"
 import {PimsleyAnims} from "./choose-pimsley-anims.js"
-import {splitAxis} from "../../../../supercontrol/grip/utils/split-axis.js"
+import {splitAxis} from "../../../../packs/grip/utils/split-axis.js"
 
 const {crusader} = constants
 

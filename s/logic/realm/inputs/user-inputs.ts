@@ -2,10 +2,10 @@
 import {ev, signal, Trashbin} from "@benev/slate"
 import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 
-import {Grip} from "../../../supercontrol/grip/grip.js"
+import {Grip} from "../../../packs/grip/grip.js"
 import {gameBindings, GameBindings} from "../inputs/game-bindings.js"
-import {PointerDevice} from "../../../supercontrol/grip/devices/pointer-device.js"
-import {KeyboardDevice} from "../../../supercontrol/grip/devices/keyboard-device.js"
+import {PointerDevice} from "../../../packs/grip/devices/pointer-device.js"
+import {KeyboardDevice} from "../../../packs/grip/devices/keyboard-device.js"
 import {VirtualGamepadDevice} from "../../../supercontrol/views/virtual-gamepad/device.js"
 
 export type InputPredilection = "touch" | "keyboard" | "gamepad"
