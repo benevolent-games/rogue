@@ -4,7 +4,7 @@ import {renderThumbprint} from "@authlocal/authlocal"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../theme.css.js"
-import {Invites} from "../../../../utils/invites.js"
+import {Invites} from "../../../../../app/features/invites/invites.js"
 import {Identity} from "../../../../../ui/accounts/types.js"
 import {AccountCardView} from "../../../account-card/view.js"
 import {LobbySeat} from "../../../../../packs/archimedes/net/relay/cathedral.js"

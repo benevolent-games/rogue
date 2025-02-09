@@ -5,7 +5,7 @@ import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@be
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
 import themeCss from "../../theme.css.js"
-import {Invites} from "../../utils/invites.js"
+import {Invites} from "../../../app/features/invites/invites.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
