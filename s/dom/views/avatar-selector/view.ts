@@ -6,7 +6,7 @@ import themeCss from "../../../dom/theme.css.js"
 
 import {AvatarView} from "../avatar/view.js"
 import {context} from "../../../dom/context.js"
-import {Avatar} from "../../../server/avatars/avatar.js"
+import {Avatar} from "../../../app/features/accounts/avatars/avatar.js"
 import {Account, AccountRecord} from "../../../app/features/accounts/types.js"
 import {AccountTiers} from "../../../app/features/accounts/utils/account-tiers.js"
 import {isAvatarAllowed} from "../../../app/features/accounts/utils/is-avatar-allowed.js"

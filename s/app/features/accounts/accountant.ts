@@ -1,7 +1,7 @@
 
 import {Future, Proof} from "@authlocal/authlocal"
 import {Kv} from "../../../packs/kv/kv.js"
-import {Avatar} from "../../../server/avatars/avatar.js"
+import {Avatar} from "./avatars/avatar.js"
 import {Keychain} from "../../../server/utils/keychain.js"
 import {AccountantDatabase} from "./database.js"
 import {secureLogin} from "../../../server/utils/secure-login.js"

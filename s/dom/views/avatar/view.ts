@@ -1,6 +1,6 @@
 
 import {html, shadowView} from "@benev/slate"
-import {Avatar} from "../../../server/avatars/avatar.js"
+import {Avatar} from "../../../app/features/accounts/avatars/avatar.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../dom/theme.css.js"

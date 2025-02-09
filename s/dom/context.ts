@@ -5,7 +5,7 @@ import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {Kv} from "../packs/kv/kv.js"
 import {makeApi} from "../server/api.js"
-import {Avatar} from "../server/avatars/avatar.js"
+import {Avatar} from "../app/features/accounts/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
 import {Identity, RandoIdentity} from "../ui/accounts/types.js"
 import {Account, AccountPreferences, AccountRecord} from "../app/features/accounts/types.js"
