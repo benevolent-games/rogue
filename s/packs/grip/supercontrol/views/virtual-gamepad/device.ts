@@ -1,7 +1,7 @@
 
 import {Stick} from "@benev/toolbox/x/tact/nubs/stick/device.js"
 
-import {GamepadDevice} from "../../../packs/grip/devices/gamepad-device.js"
+import {GamepadDevice} from "../../../devices/gamepad-device.js"
 import {breakupStickInputs} from "../../utils/breakup-stick-inputs.js"
 import {GamepadInputs, gamepadInputs} from "./utils/gamepad-inputs.js"
 

@@ -1,5 +1,5 @@
 
-import {splitAxis} from "../../packs/grip/utils/split-axis.js"
+import {splitAxis} from "../../utils/split-axis.js"
 
 export function breakupStickInputs(x: number, y: number) {
 	const [down, up] = splitAxis(y)
