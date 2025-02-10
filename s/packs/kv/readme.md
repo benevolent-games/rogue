@@ -41,10 +41,13 @@ We just wanted to interact with a damn simple database.
 - `put` to set something
   ```ts
   await kv.put("hello", "world")
+
+  // values are in json by default
+  await kv.put("hello", {data: "world", count: 123})
   ```
 - `puts` to set many things
   ```ts
-  await kv.puts(["alpha", "bravo"], ["charlie", "delta"])
+  await kv.puts(["101", "alpha"], ["102", "bravo"])
   ```
 - `get` to read something
   ```ts
@@ -52,7 +55,7 @@ We just wanted to interact with a damn simple database.
   ```
 - `gets` to get many things
   ```ts
-  const values = await kv.gets("alpha", "bravo")
+  const values = await kv.gets("101", "102")
   ```
 - `del` to delete something
   ```ts
@@ -60,7 +63,7 @@ We just wanted to interact with a damn simple database.
   ```
 - `del` can also delete many things
   ```ts
-  await kv.del("alpha", "bravo")
+  await kv.del("101", "102")
   ```
 - `has` to check if a key exists
   ```ts
@@ -68,7 +71,7 @@ We just wanted to interact with a damn simple database.
   ```
 - `has` can also check many things
   ```ts
-  await kv.has("alpha", "bravo")
+  await kv.has("101", "102")
   ```
 - `require` gets a thing, and if the key is missing it throws an error
   ```ts
@@ -76,7 +79,7 @@ We just wanted to interact with a damn simple database.
   ```
 - `requires` gets many things, and if any key is missing it throws an error
   ```ts
-  const values = await kv.require("alpha", "bravo")
+  const values = await kv.require("101", "102")
   ```
 - `guarantee` gets or creates a thing
   ```ts
@@ -120,21 +123,24 @@ We just wanted to interact with a damn simple database.
   ```
 
 ### Atomic transactional writes make you cool and incredible
-- make a transaction, which supposedly happen all-or-nothing, to avoid corruption
+- make a transaction, which happen all-or-nothing, to avoid corruption
   ```ts
-  // all these must succeed together or corruption could happen
+  // all these succeed or fail together
   await kv.write(tn => [
-    tn.put("owner:5", {records: [101, 102]}),
-    tn.put("record:101", {data: "alpha", owner: 5}),
-    tn.put("record:102", {data: "bravo", owner: 5}),
+    tn.del("obsolete:99"),
+    tn.put("owners:4", [101, 102]),
+    tn.puts(
+      ["records:101", {msg: "lol", owner: 4}],
+      ["records:102", {msg: "lel", owner: 4}],
+    ),
   ])
   ```
-- transactions are used for batching write operations, eg, `put`, `puts`, and `del`
+  - you can use `tn.put`, `tn.puts`, and `tn.del` to schedule write operations into the transaction
+- you can borrow the `tn` from the format adapters, like `kv.string` or `kv.bytes`, like this:
   ```ts
-  await kv.write(tn => [
-    tn.put("alpha", 123),
-    tn.puts(["bravo", 234], ["charlie", 345]),
-    tn.del("delta"),
+  await kv.write(() => [
+    kv.string.tn.put("alpha", "123"),
+    kv.bytes.tn.put("bravo", Uint8Array.from([0xde, 0xad])),
   ])
   ```
 
@@ -176,7 +182,7 @@ We just wanted to interact with a damn simple database.
   const {count} = records.get("123")
   ```
 
-### Transactions across multiple namespaces
+### Transactional writes across multiple namespaces
 - yep, i even thought of this
   ```ts
   const records = kv.namespace("records")
@@ -202,7 +208,7 @@ We just wanted to interact with a damn simple database.
     // note, the hex ids do not need to be 64 characters long,
     // hexspace will accept any even number of characters here
 
-  // writes to key "records:" plus 32 bytes
+  // writes to key "accounting.users:" plus 32 bytes
   await users.put(id, {userData: 123})
   ```
 - i use hexspaces a lot because most of my records have hexadecimal identifiers
@@ -221,7 +227,7 @@ We just wanted to interact with a damn simple database.
   - all of the functionality of Kv is sugar around these three core methods
   - `transaction` only has to support two kinds of Write objects, `put` and `del`
 - see [mem.ts](./cores/mem.ts), which implements the MemCore very tersely
-- see [level.ts](./cores/mem.ts) which implements the LevelCore very tersely
+- see [level.ts](./cores/level.ts) which implements the LevelCore very tersely
 - you can do it!
 
 <br/>
