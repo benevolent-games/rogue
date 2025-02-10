@@ -4,7 +4,7 @@ import {Flex} from "./types.js"
 import {makeKeyFn, KeyFn} from "./keys.js"
 import {AdapterOptions} from "./adapter.js"
 
-export class Transaction<V, K extends Flex> {
+export class Writer<V, K extends Flex> {
 	#key: KeyFn
 	#options: AdapterOptions<V, K>
 

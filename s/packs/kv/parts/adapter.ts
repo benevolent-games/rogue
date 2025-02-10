@@ -1,7 +1,7 @@
 
+import {Writer} from "./writer.js"
 import {Core, Write} from "./core.js"
 import {makeKeyFn, KeyFn} from "./keys.js"
-import {Transaction} from "./transaction.js"
 import {Flex, KeyOptions, ValueOptions} from "./types.js"
 
 export type AdapterOptions<V, K extends Flex> = (
@@ -12,12 +12,12 @@ export type AdapterOptions<V, K extends Flex> = (
 export class Adapter<V, K extends Flex> {
 	#key: KeyFn
 	#options: AdapterOptions<V, K>
-	tn: Transaction<V, K>
+	tn: Writer<V, K>
 
 	constructor(public core: Core, options: AdapterOptions<V, K>) {
 		this.#options = options
 		this.#key = makeKeyFn(options)
-		this.tn = new Transaction(options)
+		this.tn = new Writer(options)
 	}
 
 	async gets(...keys: Flex[]) {
@@ -50,28 +50,28 @@ export class Adapter<V, K extends Flex> {
 		return this.core.has(...keys)
 	}
 
-	async write(fn: (transaction: Transaction<V, K>) => Write[][]) {
+	async transaction(fn: (write: Writer<V, K>) => Write[][]) {
 		const writes = fn(this.tn).flat()
 		return this.core.transaction(...writes)
 	}
 
 	async put(key: Flex, value: V) {
-		return this.write(t => [t.put(key, value)])
+		return this.transaction(t => [t.put(key, value)])
 	}
 
 	async puts(...entries: [Flex, V][]) {
-		return this.write(t => [t.puts(...entries)])
+		return this.transaction(t => [t.puts(...entries)])
 	}
 
 	async del(...keys: Flex[]) {
-		return this.write(t => [t.del(...keys)])
+		return this.transaction(t => [t.del(...keys)])
 	}
 
 	async guarantee(key: Flex, make: () => V) {
 		let value: V | undefined = await this.get(key)
 		if (value === undefined) {
 			value = make()
-			await this.write(t => [t.put(key, value!)])
+			await this.transaction(t => [t.put(key, value!)])
 		}
 		return value
 	}

@@ -44,7 +44,7 @@ export default <Suite>{
 	async "write transaction"() {
 		const kv = new Kv()
 		await kv.put("hello", "world")
-		await kv.write(tn => [
+		await kv.transaction(tn => [
 			tn.put("alpha", "bravo"),
 			tn.del("hello"),
 		])
@@ -55,7 +55,7 @@ export default <Suite>{
 	async "multi-tier transaction"() {
 		const kv = new Kv()
 		const subsub = kv.namespace("a.b").namespace("c")
-		await kv.write(tn => [
+		await kv.transaction(tn => [
 			tn.put("alpha", "bravo"),
 			subsub.tn.put("charlie", "delta"),
 		])

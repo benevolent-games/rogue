@@ -7,8 +7,8 @@ export * from "./parts/adapters/string.js"
 export * from "./parts/core.js"
 export * from "./parts/defaults.js"
 export * from "./parts/keys.js"
-export * from "./parts/transaction.js"
 export * from "./parts/types.js"
+export * from "./parts/writer.js"
 
 export * from "./kv.js"
 

@@ -122,25 +122,25 @@ We just wanted to interact with a damn simple database.
   await kv.del(key)
   ```
 
-### Atomic transactional writes make you cool and incredible
-- make a transaction, which happen all-or-nothing, to avoid corruption
+### Transactions make you cool and incredible
+- make an atomic transaction, where the writes happen all-or-nothing to avoid corruption
   ```ts
   // all these succeed or fail together
-  await kv.write(tn => [
-    tn.del("obsolete:99"),
-    tn.put("owners:4", [101, 102]),
-    tn.puts(
+  await kv.transaction(write => [
+    write.del("obsolete:99"),
+    write.put("owners:4", [101, 102]),
+    write.puts(
       ["records:101", {msg: "lol", owner: 4}],
       ["records:102", {msg: "lel", owner: 4}],
     ),
   ])
   ```
-  - you can use `tn.put`, `tn.puts`, and `tn.del` to schedule write operations into the transaction
-- you can borrow the `tn` from the format adapters, like `kv.string` or `kv.bytes`, like this:
+  - you can use `write.put`, `write.puts`, and `write.del` to schedule write operations into the transaction
+- you can borrow the `write` from the format adapters, like `kv.string.write` or `kv.bytes.write`, like this:
   ```ts
-  await kv.write(() => [
-    kv.string.tn.put("alpha", "123"),
-    kv.bytes.tn.put("bravo", Uint8Array.from([0xde, 0xad])),
+  await kv.transaction(() => [
+    kv.string.write.put("alpha", "123"),
+    kv.bytes.write.put("bravo", Uint8Array.from([0xde, 0xad])),
   ])
   ```
 
@@ -156,7 +156,7 @@ We just wanted to interact with a damn simple database.
   ```ts
   const records = kv.namespace("records")
   await records.bytes.put("124", Uint8Array.from([0xde, 0xad]))
-  await records.write(tn => [tn.del("124")])
+  await records.transaction(write => [write.del("124")])
   ```
 - yes, you can namespace a namespace -- it's turtles all the way down
   ```ts
@@ -189,10 +189,10 @@ We just wanted to interact with a damn simple database.
   const owners = records.namespace("owners")
   const accounts = records.namespace("accounts")
 
-  await kv.write(() => [
-    owners.tn.put("5", {records: [101, 102]}),
-    accounts.tn.put("101", {data: "alpha", owner: 5}),
-    accounts.tn.put("102", {data: "bravo", owner: 5}),
+  await kv.transaction(() => [
+    owners.write.put("5", {records: [101, 102]}),
+    accounts.write.put("101", {data: "alpha", owner: 5}),
+    accounts.write.put("102", {data: "bravo", owner: 5}),
   ])
   ```
 
