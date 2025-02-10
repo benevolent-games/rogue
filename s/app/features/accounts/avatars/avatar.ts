@@ -69,8 +69,10 @@ export class Avatar {
 
 	static default = this.library.require("cLZcTnPDhh8")
 
-	static get(id: string) {
-		return this.library.get(id) ?? this.default
+	static get(id: string | null) {
+		return id
+			? (this.library.get(id) ?? this.default)
+			: this.default
 	}
 
 	static selectKind(kind: AvatarKind) {

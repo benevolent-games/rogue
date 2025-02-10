@@ -1,7 +1,17 @@
 
+export type CharacterRecord = {
+	id: string
+}
+
+export type CharacterOwnershipRecord = {
+	characterIds: string[]
+}
+
+///////////////////////////////
+
 export type Character = {
 	id: string
-	owner: string
+	ownerId: string
 }
 
 export type CharacterScope = "custodian" | "arbiter"

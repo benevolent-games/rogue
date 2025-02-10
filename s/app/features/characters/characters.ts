@@ -10,16 +10,7 @@ import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
-export class Characters {
-	database = new CharacterDatabase()
-	constructor(public keychain: Keychain) {}
-	api = () => makeCharacterApi({
-		database: this.database,
-		keychain: this.keychain,
-	})
-}
-
-export function makeCharacterApi({keychain, database}: {
+export async function makeCharacterApi({keychain, database}: {
 		keychain: Keychain,
 		database: CharacterDatabase,
 	}) {
@@ -37,14 +28,21 @@ export function makeCharacterApi({keychain, database}: {
 		signToken(character, "arbiter", 1)
 
 	return {
+
+		// characters belong to an owner
 		owner: secureLogin((proof: Proof) => ({
 
 			/** list all characters owned by this user, and return character custodian tokens */
 			async list() {
-				const list = await database.listForOwner(proof.thumbprint)
-				return Promise.all(
-					list.map(character => signCustodianToken(character))
-				)
+				const owner = proof.thumbprint
+				return (await database.list(owner)).map((record): Character => ({
+					id: record,
+				}))
+
+				// const list = await database.listForOwner(proof.thumbprint)
+				// return Promise.all(
+				// 	list.map(character => signCustodianToken(character))
+				// )
 			},
 
 			/** create a character based on a seed */
@@ -69,6 +67,7 @@ export function makeCharacterApi({keychain, database}: {
 			},
 		})),
 
+		// a custodian has the ability to change the ownership of a character
 		custodian: secureCharacterAccess(keychain, "custodian", character => ({
 
 			/** transfer a character to be owned by a new account */
@@ -80,6 +79,8 @@ export function makeCharacterApi({keychain, database}: {
 			},
 		})),
 
+		// an arbiter has the ability to report gameplay changes to characters,
+		// like the gains of skills and equipment, or death
 		arbiter: secureCharacterAccess(keychain, "arbiter", character => ({
 
 			/** report a player as dead */
