@@ -29,6 +29,7 @@
 		"devlinks-renraku": "rm -rf node_modules/renraku && ln -s \"$(realpath ../../renraku)\" node_modules/renraku",
 		"devlinks-authlocal": "rm -rf node_modules/@authlocal/authlocal && ln -s \"$(realpath ../../authlocal/authlocal)\" node_modules/@authlocal/authlocal",
 		"test": "cynic node x/tests.test.js",
+		"test-kv": "cynic node x/packs/kv/kv.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\"",
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},

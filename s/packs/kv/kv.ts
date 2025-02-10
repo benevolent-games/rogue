@@ -37,12 +37,12 @@ export class Kv<V = any, K extends Flex = Flex> extends JsonAdapter<V, K> {
 	}
 
 	/** create a kv where all keys are given a certain prefix */
-	namespace<X>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}) {
+	namespace<X = V>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}) {
 		return new Kv<X, K>(this.core, this.#subsection(key, options))
 	}
 
 	/** create a namespace where you use hex encoded ids as keys */
-	hexStore<X>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}): HexStore<X> {
+	hexStore<X = V>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}): HexStore<X> {
 		return new Kv<X, string>(this.core, {
 			...this.#subsection(key, options),
 			toKey: key => Hex.bytes(key),

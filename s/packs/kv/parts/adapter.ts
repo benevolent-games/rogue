@@ -12,12 +12,12 @@ export type AdapterOptions<V, K extends Flex> = (
 export class Adapter<V, K extends Flex> {
 	#key: KeyFn
 	#options: AdapterOptions<V, K>
-	transaction: Transaction<V, K>
+	tn: Transaction<V, K>
 
 	constructor(public core: Core, options: AdapterOptions<V, K>) {
 		this.#options = options
 		this.#key = makeKeyFn(options)
-		this.transaction = new Transaction(options)
+		this.tn = new Transaction(options)
 	}
 
 	async gets(...keys: Flex[]) {
@@ -51,7 +51,7 @@ export class Adapter<V, K extends Flex> {
 	}
 
 	async write(fn: (transaction: Transaction<V, K>) => Write[][]) {
-		const writes = fn(this.transaction).flat()
+		const writes = fn(this.tn).flat()
 		return this.core.transaction(...writes)
 	}
 
