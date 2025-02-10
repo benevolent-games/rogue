@@ -1,7 +1,4 @@
 
-import {JsonAdapter} from "./json.js"
-import {StringAdapter} from "./string.js"
-
 export type FlexKey = string | Uint8Array
 
 export type ByteCore = {
@@ -15,13 +12,9 @@ export type ByteCore = {
 	requires(...keys: FlexKey[]): Promise<Uint8Array[]>
 
 	guarantee(key: FlexKey, make: () => Uint8Array): Promise<Uint8Array>
-	del(...key: FlexKey[]): Promise<void>
-}
 
-export type Kv = {
-	bytes: ByteCore
-	string: StringAdapter
-	json: JsonAdapter
+	has(...keys: FlexKey[]): Promise<boolean>
+	del(...keys: FlexKey[]): Promise<void>
 }
 
 export type ToValue<V> = (bytes: Uint8Array) => V

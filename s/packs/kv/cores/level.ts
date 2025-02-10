@@ -53,6 +53,20 @@ export class LevelCore implements ByteCore {
 		return value
 	}
 
+	async has(...keys: FlexKey[]) {
+
+		// TODO when it's released, use level's upcoming .has and .hasMany
+		//  - currently we're using a hack, using .get
+		//  - see https://github.com/Level/community/issues/142
+
+		if (keys.length === 0)
+			return true
+
+		return (keys.length === 1)
+			? ((await this.get(keys[0])) !== undefined)
+			: (await this.gets(...keys)).every(value => value !== undefined)
+	}
+
 	async del(...keys: FlexKey[]) {
 		if (keys.length === 0)
 			return undefined

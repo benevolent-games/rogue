@@ -35,6 +35,10 @@ export class MemCore implements ByteCore {
 		return this.#map.guarantee(stringkey(key), make)
 	}
 
+	async has(...keys: FlexKey[]) {
+		return keys.every(key => this.#map.has(stringkey(key)))
+	}
+
 	async del(...keys: FlexKey[]) {
 		for (const key of keys)
 			this.#map.delete(stringkey(key))

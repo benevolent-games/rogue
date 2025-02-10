@@ -51,6 +51,12 @@ export class KvStore<X> {
 		return this.kv.json.guarantee<X>(key, make)
 	}
 
+	async has(...hexIds: string[]) {
+		return this.kv.json.has(
+			...hexIds.map(hexId => this.#key(hexId))
+		)
+	}
+
 	async del(...hexIds: string[]) {
 		return this.kv.json.del(
 			...hexIds.map(hexId => this.#key(hexId))

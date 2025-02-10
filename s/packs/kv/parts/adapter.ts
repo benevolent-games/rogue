@@ -59,6 +59,10 @@ export class Adapter<V> {
 		return value
 	}
 
+	async has(...keys: FlexKey[]) {
+		return this.#core.has(...keys)
+	}
+
 	async del(...keys: FlexKey[]) {
 		return this.#core.del(...keys)
 	}
