@@ -1,6 +1,18 @@
 
 export type FlexKey = string | Uint8Array
 
+export type PutWrite = {type: "put", key: Uint8Array, value: Uint8Array}
+export type DelWrite = {type: "del", key: Uint8Array, value: Uint8Array}
+export type Write = PutWrite | DelWrite
+
+export type Core = {
+	gets(...keys: Uint8Array[]): Promise<(Uint8Array | undefined)[]>
+	has(...keys: Uint8Array[]): Promise<boolean>
+	transaction(...writes: Write[]): Promise<void>
+}
+
+/////////////////////////
+
 export type ByteCore = {
 	put(key: FlexKey, value: Uint8Array): Promise<void>
 	puts(...entries: [FlexKey, Uint8Array][]): Promise<void>

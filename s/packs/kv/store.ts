@@ -1,22 +1,26 @@
 
-import {Kv} from "./kv.js"
-import {idkey} from "./utils/idkey.js"
 import {FlexKey} from "./parts/types.js"
+import {JsonAdapter} from "./parts/json.js"
+import {concatkey} from "./utils/concatkey.js"
 
 export class KvStore<X> {
-	constructor(public kv: Kv, public prefix: string) {}
+	constructor(
+		public json: JsonAdapter,
+		public prefix: FlexKey,
+		public delimiter = ":",
+	) {}
 
 	#key(hexId: string) {
-		return idkey(this.prefix, hexId)
+		return concatkey(this.prefix + this.delimiter, hexId)
 	}
 
 	async put(hexId: string, value: X) {
 		const key = this.#key(hexId)
-		await this.kv.json.put(key, value)
+		await this.json.put(key, value)
 	}
 
 	async puts(...entries: [string, X][]) {
-		await this.kv.json.puts(
+		await this.json.puts(
 			...entries.map(
 				([hexId, value]) =>
 					[this.#key(hexId), value] as [FlexKey, X]
@@ -26,39 +30,39 @@ export class KvStore<X> {
 
 	async get(hexId: string) {
 		const key = this.#key(hexId)
-		return this.kv.json.get<X>(key)
+		return this.json.get<X>(key)
 	}
 
 	async gets(...hexIds: string[]) {
-		return this.kv.json.gets<X>(
+		return this.json.gets<X>(
 			...hexIds.map(hexId => this.#key(hexId))
 		)
 	}
 
 	async require(hexId: string) {
 		const key = this.#key(hexId)
-		return this.kv.json.require<X>(key)
+		return this.json.require<X>(key)
 	}
 
 	async requires(...hexIds: string[]) {
-		return this.kv.json.requires<X>(
+		return this.json.requires<X>(
 			...hexIds.map(hexId => this.#key(hexId))
 		)
 	}
 
 	async guarantee(hexId: string, make: () => X) {
 		const key = this.#key(hexId)
-		return this.kv.json.guarantee<X>(key, make)
+		return this.json.guarantee<X>(key, make)
 	}
 
 	async has(...hexIds: string[]) {
-		return this.kv.json.has(
+		return this.json.has(
 			...hexIds.map(hexId => this.#key(hexId))
 		)
 	}
 
 	async del(...hexIds: string[]) {
-		return this.kv.json.del(
+		return this.json.del(
 			...hexIds.map(hexId => this.#key(hexId))
 		)
 	}
