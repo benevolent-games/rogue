@@ -83,7 +83,7 @@ We just wanted to interact with a damn simple database.
   const value = await kv.guarantee("hello", () => "world")
   ```
 
-### Values in json, or strings, or bytes
+### Values in json, strings, or bytes
 - the normal kv methods read and write in `json` format
   ```ts
   // write json
@@ -100,7 +100,7 @@ We just wanted to interact with a damn simple database.
   ```
 - use `kv.bytes` to interact with bytes instead of json
   ```ts
-  await kv.bytes.put("hello", Uint8Aray.from([0xde, 0xad, 0xbe, 0xef]))
+  await kv.bytes.put("hello", Uint8Array.from([0xde, 0xad, 0xbe, 0xef]))
   ```
 
 ### Keys can be strings or bytes
@@ -111,11 +111,11 @@ We just wanted to interact with a damn simple database.
   ```
 - use bytes for keys
   ```ts
-  await kv.del(Uint8Aray.from([0xde, 0xad, 0xbe, 0xef]))
+  await kv.del(Uint8Array.from([0xde, 0xad, 0xbe, 0xef]))
   ```
 - convert/concatenate them together into byte form
   ```ts
-  const key = Kv.byteify("hello:", Uint8Aray.from([0xde, 0xad, 0xbe, 0xef]))
+  const key = Kv.byteify("hello:", Uint8Array.from([0xde, 0xad, 0xbe, 0xef]))
   await kv.del(key)
   ```
 
@@ -149,7 +149,7 @@ We just wanted to interact with a damn simple database.
 - a namespace can do everything a Kv can do, transactions, .bytes, whatever
   ```ts
   const records = kv.namespace("records")
-  await records.bytes.put("124", Uint8Aray.from([0xde, 0xad]))
+  await records.bytes.put("124", Uint8Array.from([0xde, 0xad]))
   await records.write(tn => [tn.del("124")])
   ```
 - yes, you can namespace a namespace -- it's turtles all the way down
