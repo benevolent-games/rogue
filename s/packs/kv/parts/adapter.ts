@@ -1,5 +1,4 @@
 
-import {Text} from "@benev/slate"
 import {ByteCore, FlexKey, ToBytes, ToValue} from "./types.js"
 
 export class Adapter<V> {
@@ -16,28 +15,39 @@ export class Adapter<V> {
 		this.#toBytes = options.toBytes
 	}
 
-	#bytekey(key: FlexKey): Uint8Array {
-		return (typeof key === "string")
-			? Text.bytes(key)
-			: key
-	}
-
 	async put(key: FlexKey, value: V) {
 		return this.#core.put(
-			this.#bytekey(key),
+			key,
 			this.#toBytes(value),
 		)
 	}
 
+	async puts(...entries: [FlexKey, V][]) {
+		return this.#core.puts(...entries.map(([key, value]) => [
+			key,
+			this.#toBytes(value),
+		] as [Uint8Array, Uint8Array]))
+	}
+
 	async get(key: FlexKey) {
-		const bytes = await this.#core.get(this.#bytekey(key))
+		const bytes = await this.#core.get(key)
 		return bytes && this.#toValue(bytes)
+	}
+
+	async gets(...keys: FlexKey[]) {
+		return (await this.#core.gets(...keys))
+			.map(bytes => (bytes && this.#toValue(bytes)))
 	}
 
 	async require(key: FlexKey) {
 		return this.#toValue(
-			await this.#core.require(this.#bytekey(key))
+			await this.#core.require(key)
 		)
+	}
+
+	async requires(...keys: FlexKey[]) {
+		return (await this.#core.requires(...keys))
+			.map(bytes => this.#toValue(bytes))
 	}
 
 	async guarantee(key: FlexKey, make: () => V) {
@@ -49,8 +59,8 @@ export class Adapter<V> {
 		return value
 	}
 
-	async del(key: FlexKey) {
-		return this.#core.del(this.#bytekey(key))
+	async del(...keys: FlexKey[]) {
+		return this.#core.del(...keys)
 	}
 }
 

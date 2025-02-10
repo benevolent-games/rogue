@@ -14,17 +14,34 @@ export class LevelCore implements ByteCore {
 		return this.#db.put(bytekey(key), value)
 	}
 
-	async get(key: FlexKey) {
-		try {
-			return this.#db.get(bytekey(key))
-		}
-		catch (error) {
-			return undefined
-		}
+	async puts(...entries: [FlexKey, Uint8Array][]) {
+		return this.#db.batch(
+			entries.map(([key, value]) =>
+				({type: "put", key: bytekey(key), value}))
+		)
+	}
+
+	async get(key: FlexKey): Promise<Uint8Array | undefined> {
+		return this.#db.get(bytekey(key))
+	}
+
+	async gets(...keys: FlexKey[]): Promise<(Uint8Array | undefined)[]> {
+		return this.#db.getMany(keys.map(bytekey))
 	}
 
 	async require(key: FlexKey) {
-		return this.#db.get(bytekey(key))
+		const value = await this.#db.get(bytekey(key))
+		if (value === undefined)
+			throw new Error(`required key not found`)
+		return value
+	}
+
+	async requires(...keys: FlexKey[]) {
+		const values = await this.gets(...keys)
+		for (const value of values)
+			if (value === undefined)
+				throw new Error(`required key not found`)
+		return values as any as Promise<Uint8Array[]>
 	}
 
 	async guarantee(key: FlexKey, make: () => Uint8Array) {
@@ -36,8 +53,16 @@ export class LevelCore implements ByteCore {
 		return value
 	}
 
-	async del(key: FlexKey) {
-		return this.#db.del(bytekey(key))
+	async del(...keys: FlexKey[]) {
+		if (keys.length === 0)
+			return undefined
+
+		return (keys.length === 1)
+			? this.#db.del(bytekey(keys[0]))
+			: this.#db.batch(keys.map(key => ({
+				type: "del",
+				key: bytekey(key),
+			})))
 	}
 }
 

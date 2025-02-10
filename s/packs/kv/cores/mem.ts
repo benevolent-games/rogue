@@ -10,20 +10,34 @@ export class MemCore implements ByteCore {
 		this.#map.set(stringkey(key), value)
 	}
 
+	async puts(...entries: [FlexKey, Uint8Array][]) {
+		for (const [key, value] of entries)
+			this.put(key, value)
+	}
+
 	async get(key: FlexKey) {
 		return this.#map.get(stringkey(key))
+	}
+
+	async gets(...keys: FlexKey[]) {
+		return Promise.all(keys.map(key => this.get(key)))
 	}
 
 	async require(key: FlexKey) {
 		return this.#map.require(stringkey(key))
 	}
 
+	async requires(...keys: FlexKey[]) {
+		return Promise.all(keys.map(key => this.require(key)))
+	}
+
 	async guarantee(key: FlexKey, make: () => Uint8Array) {
 		return this.#map.guarantee(stringkey(key), make)
 	}
 
-	async del(key: FlexKey) {
-		this.#map.delete(stringkey(key))
+	async del(...keys: FlexKey[]) {
+		for (const key of keys)
+			this.#map.delete(stringkey(key))
 	}
 }
 

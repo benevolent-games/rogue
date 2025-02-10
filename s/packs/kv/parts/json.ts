@@ -15,8 +15,16 @@ export class JsonAdapter extends Adapter<any> {
 		return super.get(key)
 	}
 
+	async gets<V = any>(...keys: FlexKey[]): Promise<(V | undefined)[]> {
+		return super.gets(...keys)
+	}
+
 	async require<V = any>(key: FlexKey): Promise<V> {
 		return super.require(key)
+	}
+
+	async requires<V = any>(...keys: FlexKey[]): Promise<V[]> {
+		return super.requires(...keys)
 	}
 
 	async guarantee<V>(key: FlexKey, make: () => V): Promise<V> {
