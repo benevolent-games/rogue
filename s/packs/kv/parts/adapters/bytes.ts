@@ -1,13 +1,14 @@
 
 import {Core} from "../core.js"
-import {Adapter, FlexKey} from "../adapter.js"
+import {Adapter} from "../adapter.js"
+import {Flex, KeyOptions} from "../types.js"
 
-export class BytesAdapter extends Adapter<Uint8Array> {
-	constructor(core: Core, prefix?: FlexKey) {
+export class BytesAdapter<K extends Flex = Flex> extends Adapter<Uint8Array, K> {
+	constructor(core: Core, options: KeyOptions<K>) {
 		super(core, {
-			prefix,
 			toBytes: b => b,
 			toValue: b => b,
+			...options,
 		})
 	}
 }

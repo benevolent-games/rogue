@@ -1,77 +1,74 @@
 
 import {Core, Write} from "./core.js"
+import {makeKeyFn, KeyFn} from "./keys.js"
 import {Transaction} from "./transaction.js"
-import {makePrefixFn, PrefixFn} from "../utils/keys.js"
+import {Flex, KeyOptions, ValueOptions} from "./types.js"
 
-export type FlexKey = string | Uint8Array
-export type ToBytes<V> = (value: V) => Uint8Array
-export type ToValue<V> = (bytes: Uint8Array) => V
+export type AdapterOptions<V, K extends Flex> = (
+	& KeyOptions<K>
+	& ValueOptions<V>
+)
 
-export type AdapterOptions<V> = {
-	toBytes: ToBytes<V>
-	toValue: ToValue<V>
-	prefix?: FlexKey
-}
+export class Adapter<V, K extends Flex> {
+	#key: KeyFn
+	#options: AdapterOptions<V, K>
+	transaction: Transaction<V, K>
 
-export class Adapter<V> {
-	transaction: Transaction<V>
-	#prefix: PrefixFn
-
-	constructor(public core: Core, public options: AdapterOptions<V>) {
+	constructor(public core: Core, options: AdapterOptions<V, K>) {
+		this.#options = options
+		this.#key = makeKeyFn(options)
 		this.transaction = new Transaction(options)
-		this.#prefix = makePrefixFn(options.prefix)
 	}
 
-
-	async gets<X extends V = V>(...keys: FlexKey[]) {
+	async gets(...keys: Flex[]) {
 		return (
-			(await this.core.gets(...keys.map(f => this.#prefix(f))))
-				.map(bytes => (bytes && this.options.toValue(bytes)))
-		) as (X | undefined)[]
+			(await this.core.gets(...keys.map(f => this.#key(f))))
+				.map(bytes => (bytes && this.#options.toValue(bytes)))
+		) as (V | undefined)[]
 	}
 
-	async get<X extends V = V>(key: FlexKey) {
+	async get(key: Flex) {
 		const [value] = await this.gets(key)
-		return value as X | undefined
+		return value as V | undefined
 	}
 
-	async requires<X extends V = V>(...keys: FlexKey[]) {
+	async requires(...keys: Flex[]) {
 		const values = await this.gets(...keys)
 		for (const value of values)
 			if (value === undefined)
 				throw new Error("required key not found")
-		return values as X[]
+		return values as V[]
 	}
 
-	async require<X extends V = V>(key: FlexKey) {
+	async require(key: Flex) {
 		const [value] = await this.requires(key)
-		return value as X
+		return value as V
 	}
 
-	async has(...flexkeys: FlexKey[]) {
-		const keys = flexkeys.map(f => this.#prefix(f))
+	async has(...flexkeys: Flex[]) {
+		const keys = flexkeys.map(f => this.#key(f))
 		return this.core.has(...keys)
 	}
 
-	async write(fn: (transaction: Transaction<V>) => Write[][]) {
+	async write(fn: (transaction: Transaction<V, K>) => Write[][]) {
 		const writes = fn(this.transaction).flat()
 		return this.core.transaction(...writes)
 	}
 
-	async put(key: FlexKey, value: V) {
+	async put(key: Flex, value: V) {
 		return this.write(t => [t.put(key, value)])
 	}
 
-	async puts(...entries: [FlexKey, V][]) {
+	async puts(...entries: [Flex, V][]) {
 		return this.write(t => [t.puts(...entries)])
 	}
 
-	async del(...keys: FlexKey[]) {
+	async del(...keys: Flex[]) {
 		return this.write(t => [t.del(...keys)])
 	}
 
-	async guarantee<X extends V = V>(key: FlexKey, make: () => X) {
-		let value: X | undefined = await this.get(key)
+	async guarantee(key: Flex, make: () => V) {
+		let value: V | undefined = await this.get(key)
 		if (value === undefined) {
 			value = make()
 			await this.write(t => [t.put(key, value!)])

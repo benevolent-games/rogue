@@ -2,21 +2,20 @@
 import {Badge} from "@benev/slate"
 import {AccountRecord} from "./types.js"
 import {Kv} from "../../../packs/kv/kv.js"
-import {idkey} from "../../../packs/kv/utils/idkey.js"
 
 export class AccountantDatabase {
-	constructor(public kv: Kv) {}
+	#records: HexStore<AccountRecord>
 
-	#key(thumbprint: string) {
-		return idkey("accounts.records.", thumbprint)
+	constructor(kv: Kv) {
+		this.#records = kv.hexStore<AccountRecord>("accounts.records")
 	}
 
 	async save(record: AccountRecord) {
-		await this.kv.json.put(this.#key(record.thumbprint), record)
+		await this.#records.put(record.thumbprint, record)
 	}
 
 	async load(thumbprint: string) {
-		return this.kv.json.guarantee<AccountRecord>(this.#key(thumbprint), () => ({
+		return this.#records.guarantee(thumbprint, () => ({
 			thumbprint,
 			privileges: {
 				tags: [],

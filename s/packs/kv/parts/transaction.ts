@@ -1,33 +1,34 @@
 
 import {Write} from "./core.js"
-import {AdapterOptions, FlexKey} from "./adapter.js"
-import {makePrefixFn, PrefixFn} from "../utils/keys.js"
+import {Flex} from "./types.js"
+import {makeKeyFn, KeyFn} from "./keys.js"
+import {AdapterOptions} from "./adapter.js"
 
-export class Transaction<V> {
-	#options: AdapterOptions<V>
-	#prefix: PrefixFn
+export class Transaction<V, K extends Flex> {
+	#key: KeyFn
+	#options: AdapterOptions<V, K>
 
-	constructor(options: AdapterOptions<V>) {
+	constructor(options: AdapterOptions<V, K>) {
 		this.#options = options
-		this.#prefix = makePrefixFn(options.prefix)
+		this.#key = makeKeyFn(options)
 	}
 
-	puts(...entries: [FlexKey, V][]): Write[] {
+	puts(...entries: [Flex, V][]): Write[] {
 		return entries.map(([key, value]) => ({
 			kind: "put",
-			key: this.#prefix(key),
+			key: this.#key(key),
 			value: this.#options.toBytes(value),
 		}))
 	}
 
-	put(key: FlexKey, value: V): Write[] {
+	put(key: Flex, value: V): Write[] {
 		return this.puts([key, value])
 	}
 
-	del(...keys: FlexKey[]): Write[] {
+	del(...keys: Flex[]): Write[] {
 		return keys.map(key => ({
 			kind: "del",
-			key: this.#prefix(key),
+			key: this.#key(key),
 		}))
 	}
 }

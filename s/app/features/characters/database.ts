@@ -1,6 +1,5 @@
 
 import {Kv} from "../../../packs/kv/kv.js"
-import {KvStore} from "../../../packs/kv/store.js"
 import {CharacterOwnershipRecord, CharacterRecord} from "./types.js"
 
 export class CharacterDatabase {
@@ -8,8 +7,8 @@ export class CharacterDatabase {
 	#ownership: KvStore<CharacterOwnershipRecord>
 
 	constructor(public kv: Kv) {
-		this.#characters = kv.store("characters.records")
-		this.#ownership = kv.store("characters.ownership")
+		this.#characters = kv.hexStore("characters.records")
+		this.#ownership = kv.hexStore("characters.ownership")
 	}
 
 	async list(owner: string) {
