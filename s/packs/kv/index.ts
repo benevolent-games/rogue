@@ -1,5 +1,4 @@
 
-export * from "./cores/level.js"
 export * from "./cores/mem.js"
 
 export * from "./parts/adapters/bytes.js"

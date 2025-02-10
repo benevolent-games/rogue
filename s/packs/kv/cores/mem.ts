@@ -1,11 +1,11 @@
 
-import {Hex, Map2} from "@benev/slate"
+import {Hex} from "@benev/slate"
 import {Core, Write} from "../parts/core.js"
 
 const mapkey = (bytes: Uint8Array) => Hex.string(bytes)
 
 export class MemCore extends Core {
-	#map = new Map2<string, Uint8Array>()
+	#map = new Map<string, Uint8Array>()
 
 	async gets(...keys: Uint8Array[]) {
 		return keys.map(key => this.#map.get(mapkey(key)))

@@ -2,14 +2,16 @@
 import {Hex} from "@benev/slate"
 import {Core} from "./parts/core.js"
 import {MemCore} from "./cores/mem.js"
-import {bytekey} from "./parts/keys.js"
+import {byteify} from "./parts/keys.js"
 import {JsonAdapter} from "./parts/adapters/json.js"
 import {defaultKeyOptions} from "./parts/defaults.js"
 import {BytesAdapter} from "./parts/adapters/bytes.js"
 import {StringAdapter} from "./parts/adapters/string.js"
-import {Flex, HexStore, KeyOptions} from "./parts/types.js"
+import {Flex, Hexspace, KeyOptions} from "./parts/types.js"
 
 export class Kv<V = any, K extends Flex = Flex> extends JsonAdapter<V, K> {
+	static byteify = byteify
+
 	options: KeyOptions<K>
 	bytes: BytesAdapter<K>
 	string: StringAdapter<K>
@@ -30,8 +32,8 @@ export class Kv<V = any, K extends Flex = Flex> extends JsonAdapter<V, K> {
 			...this.options,
 			...options,
 			prefix: key && (this.options.prefix
-				? bytekey(this.options.prefix, this.options.divisor, key)
-				: bytekey(key)
+				? byteify(this.options.prefix, this.options.divisor, key)
+				: byteify(key)
 			),
 		}
 	}
@@ -42,7 +44,7 @@ export class Kv<V = any, K extends Flex = Flex> extends JsonAdapter<V, K> {
 	}
 
 	/** create a namespace where you use hex encoded ids as keys */
-	hexStore<X = V>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}): HexStore<X> {
+	hexspace<X = V>(key?: Flex, options: Partial<Omit<KeyOptions<K>, "prefix">> = {}): Hexspace<X> {
 		return new Kv<X, string>(this.core, {
 			...this.#subsection(key, options),
 			toKey: key => Hex.bytes(key),

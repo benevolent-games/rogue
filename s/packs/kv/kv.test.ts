@@ -2,10 +2,9 @@
 import "@benev/slate/x/node.js"
 import {Hex} from "@benev/slate"
 import {Suite, expect} from "cynic"
-import {bytekey, Kv} from "./index.js"
+import {byteify, Kv} from "./index.js"
 
 export default <Suite>{
-
 	async "access string"() {
 		const kv = new Kv()
 		await kv.put("hello", "world")
@@ -36,10 +35,10 @@ export default <Suite>{
 
 	async "hex store"() {
 		const kv = new Kv()
-		const sub = kv.hexStore("a.b")
+		const sub = kv.hexspace("a.b")
 		await sub.put("deadbeef", 123)
 		expect(await sub.get("deadbeef")).equals(123)
-		expect(await kv.get(bytekey("a.b:", Hex.bytes("deadbeef")))).equals(123)
+		expect(await kv.get(byteify("a.b:", Hex.bytes("deadbeef")))).equals(123)
 	},
 
 	async "write transaction"() {

@@ -1,6 +1,6 @@
 
 import {Level} from "level"
-import {bytekey} from "../parts/keys.js"
+import {byteify} from "../parts/keys.js"
 import {Core, Write} from "../parts/core.js"
 
 export class LevelCore extends Core {
@@ -12,7 +12,7 @@ export class LevelCore extends Core {
 	}
 
 	async gets(...keys: Uint8Array[]) {
-		return this.#db.getMany(keys.map(key => bytekey(key)))
+		return this.#db.getMany(keys.map(key => byteify(key)))
 	}
 
 	async has(...keys: Uint8Array[]) {
@@ -31,8 +31,8 @@ export class LevelCore extends Core {
 	async transaction(...writes: Write[]) {
 		return this.#db.batch(
 			writes.map(write => (write.kind === "put"
-				? {type: "put", key: bytekey(write.key), value: write.value}
-				: {type: "del", key: bytekey(write.key)}
+				? {type: "put", key: byteify(write.key), value: write.value}
+				: {type: "del", key: byteify(write.key)}
 			))
 		)
 	}

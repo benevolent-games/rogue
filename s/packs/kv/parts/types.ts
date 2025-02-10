@@ -1,7 +1,7 @@
 
 import {Kv} from "../kv.js"
 
-export type HexStore<V = any> = Kv<V, string>
+export type Hexspace<V = any> = Kv<V, string>
 
 export type Flex = string | Uint8Array
 
