@@ -17,6 +17,19 @@ export default <Suite>{
 		expect(await kv.get("hello")).equals(123)
 	},
 
+	async "key iteration"() {
+		const kv = new Kv()
+		await kv.puts(
+			["record:1", true],
+			["record:2", true],
+			["record:3", true],
+			["record:4", true],
+		)
+		const keys: string = []
+
+		expect(await kv.get("hello")).equals(123)
+	},
+
 	async "namespace"() {
 		const kv = new Kv()
 		const sub = kv.namespace("a.b")

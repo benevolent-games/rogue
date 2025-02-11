@@ -1,6 +1,6 @@
 
 import {Writer} from "./writer.js"
-import {Core, Write} from "./core.js"
+import {Core, Scan, Write} from "./core.js"
 import {makeKeyFn, KeyFn} from "./keys.js"
 import {Flex, KeyOptions, ValueOptions} from "./types.js"
 
@@ -23,7 +23,7 @@ export class Adapter<V, K extends Flex> {
 	async gets(...keys: Flex[]) {
 		return (
 			(await this.core.gets(...keys.map(f => this.#key(f))))
-				.map(bytes => (bytes && this.#options.toValue(bytes)))
+				.map(bytes => (bytes && this.#options.valueConverter.fromBytes(bytes)))
 		) as (V | undefined)[]
 	}
 
@@ -48,6 +48,19 @@ export class Adapter<V, K extends Flex> {
 	async has(...flexkeys: Flex[]) {
 		const keys = flexkeys.map(f => this.#key(f))
 		return this.core.has(...keys)
+	}
+
+	async *keys(scan: Scan = {}) {
+		for await (const key of this.core.keys(scan))
+			yield 
+	}
+
+	async *entries(scan: Scan = {}) {
+		for await (const [key, value] of this.core.entries(scan))
+			yield [
+				this.#options.keyConverter.fromBytes(key),
+				this.#options.valueConverter.fromBytes(value),
+			] as [K, V]
 	}
 
 	async transaction(fn: (write: Writer<V, K>) => Write[][]) {

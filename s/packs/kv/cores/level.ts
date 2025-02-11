@@ -1,7 +1,7 @@
 
 import {Level} from "level"
 import {byteify} from "../parts/keys.js"
-import {Core, Write} from "../parts/core.js"
+import {Core, Scan, Write} from "../parts/core.js"
 
 export class LevelCore extends Core {
 	#db: Level<Uint8Array, Uint8Array>
@@ -26,6 +26,26 @@ export class LevelCore extends Core {
 		return (keys.length === 1)
 			? (await this.gets(...keys))[0] !== undefined
 			: (await this.gets(...keys)).every(value => value !== undefined)
+	}
+
+	async *keys(scan: Scan = {}) {
+		const results = this.#db.keys({
+			gte: scan.start,
+			lte: scan.end,
+			limit: scan.limit,
+		})
+		for await (const key of results)
+			yield key
+	}
+
+	async *entries(scan: Scan = {}) {
+		const results = this.#db.iterator({
+			gte: scan.start,
+			lte: scan.end,
+			limit: scan.limit,
+		})
+		for await (const entry of results)
+			yield entry
 	}
 
 	async transaction(...writes: Write[]) {

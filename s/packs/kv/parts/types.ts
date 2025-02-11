@@ -5,14 +5,15 @@ export type Hexspace<V = any> = Kv<V, string>
 
 export type Flex = string | Uint8Array
 
-export type ToKey<K extends Flex> = (key: K) => Uint8Array
-export type ToBytes<V> = (value: V) => Uint8Array
-export type ToValue<V> = (bytes: Uint8Array) => V
+export type Converter<X> = {
+	toBytes: (x: X) => Uint8Array
+	fromBytes: (bytes: Uint8Array) => X
+}
 
 export type KeyOptions<K extends Flex> = {
 
-	/** function to convert keys into bytes */
-	toKey: ToKey<K>
+	/** conversions of keys to bytes */
+	keyConverter: Converter<K>
 
 	/** prefix prepended onto keys for all operations */
 	prefix?: Flex
@@ -25,7 +26,6 @@ export type KeyOptions<K extends Flex> = {
 }
 
 export type ValueOptions<V> = {
-	toBytes: ToBytes<V>
-	toValue: ToValue<V>
+	valueConverter: Converter<V>
 }
 
