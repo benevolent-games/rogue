@@ -66,20 +66,30 @@ export default <Suite>{
 		},
 	},
 
-	async "namespace"() {
-		const kv = new Kv()
-		const sub = kv.namespace("a.b")
-		await sub.put("hello", 123)
-		expect(await sub.get("hello")).equals(123)
-		expect(await kv.get("a.b:hello")).equals(123)
-	},
+	"namespaces": {
+		async "namespace"() {
+			const kv = new Kv()
+			const sub = kv.namespace("a.b")
+			await sub.put("hello", 123)
+			expect(await sub.get("hello")).equals(123)
+			expect(await kv.get("a.b:hello")).equals(123)
+		},
 
-	async "sub namespace"() {
-		const kv = new Kv()
-		const subsub = kv.namespace("a.b").namespace("c")
-		await subsub.put("hello", 123)
-		expect(await subsub.get("hello")).equals(123)
-		expect(await kv.get("a.b.c:hello")).equals(123)
+		async "sub namespace"() {
+			const kv = new Kv()
+			const subsub = kv.namespace("a.b").namespace("c")
+			await subsub.put("hello", 123)
+			expect(await subsub.get("hello")).equals(123)
+			expect(await kv.get("a.b.c:hello")).equals(123)
+		},
+
+		async "sub namespace key iteration"() {
+			const kv = new Kv()
+			const subsub = kv.namespace("a.b").namespace("c")
+			await subsub.put("123", true)
+			const [key] = await collect(subsub.keys())
+			expect(key).equals("123")
+		},
 	},
 
 	async "write transaction"() {
