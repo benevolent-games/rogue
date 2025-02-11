@@ -6,8 +6,10 @@ import {Flex, KeyOptions} from "../types.js"
 export class BytesAdapter<K extends Flex = Flex> extends Adapter<Uint8Array, K> {
 	constructor(core: Core, options: KeyOptions<K>) {
 		super(core, {
-			toBytes: b => b,
-			toValue: b => b,
+			valueConverter: {
+				toBytes: b => b,
+				fromBytes: b => b,
+			},
 			...options,
 		})
 	}

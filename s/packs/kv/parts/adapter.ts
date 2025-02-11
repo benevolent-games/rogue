@@ -1,7 +1,7 @@
 
 import {Writer} from "./writer.js"
-import {Core, Scan, Write} from "./core.js"
 import {makeKeyFn, KeyFn} from "./keys.js"
+import {Core, Scan, Write} from "./core.js"
 import {Flex, KeyOptions, ValueOptions} from "./types.js"
 
 export type AdapterOptions<V, K extends Flex> = (
@@ -12,12 +12,12 @@ export type AdapterOptions<V, K extends Flex> = (
 export class Adapter<V, K extends Flex> {
 	#key: KeyFn
 	#options: AdapterOptions<V, K>
-	tn: Writer<V, K>
+	write: Writer<V, K>
 
 	constructor(public core: Core, options: AdapterOptions<V, K>) {
 		this.#options = options
 		this.#key = makeKeyFn(options)
-		this.tn = new Writer(options)
+		this.write = new Writer(options)
 	}
 
 	async gets(...keys: Flex[]) {
@@ -52,7 +52,7 @@ export class Adapter<V, K extends Flex> {
 
 	async *keys(scan: Scan = {}) {
 		for await (const key of this.core.keys(scan))
-			yield 
+			yield this.#options.keyConverter.fromBytes(key)
 	}
 
 	async *entries(scan: Scan = {}) {
@@ -64,7 +64,7 @@ export class Adapter<V, K extends Flex> {
 	}
 
 	async transaction(fn: (write: Writer<V, K>) => Write[][]) {
-		const writes = fn(this.tn).flat()
+		const writes = fn(this.write).flat()
 		return this.core.transaction(...writes)
 	}
 

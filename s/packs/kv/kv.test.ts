@@ -3,6 +3,7 @@ import "@benev/slate/x/node.js"
 import {Hex} from "@benev/slate"
 import {Suite, expect} from "cynic"
 import {byteify, Kv} from "./index.js"
+import { collect } from "./utils/collect.js"
 
 export default <Suite>{
 	async "access string"() {
@@ -25,9 +26,8 @@ export default <Suite>{
 			["record:3", true],
 			["record:4", true],
 		)
-		const keys: string = []
-
-		expect(await kv.get("hello")).equals(123)
+		const keys = await collect(kv.keys())
+		expect(keys.length).equals(4)
 	},
 
 	async "namespace"() {
@@ -70,7 +70,7 @@ export default <Suite>{
 		const subsub = kv.namespace("a.b").namespace("c")
 		await kv.transaction(tn => [
 			tn.put("alpha", "bravo"),
-			subsub.tn.put("charlie", "delta"),
+			subsub.write.put("charlie", "delta"),
 		])
 		expect(await kv.get("alpha")).equals("bravo")
 		expect(await subsub.get("charlie")).equals("delta")

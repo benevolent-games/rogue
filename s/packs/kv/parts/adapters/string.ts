@@ -7,8 +7,10 @@ import {Flex, KeyOptions} from "../types.js"
 export class StringAdapter<K extends Flex = Flex> extends Adapter<string, K> {
 	constructor(core: Core, options: KeyOptions<K>) {
 		super(core, {
-			toBytes: value => Text.bytes(value),
-			toValue: bytes => Text.string(bytes),
+			valueConverter: {
+				toBytes: value => Text.bytes(value),
+				fromBytes: bytes => Text.string(bytes),
+			},
 			...options,
 		})
 	}

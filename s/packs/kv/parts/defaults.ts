@@ -5,6 +5,9 @@ import {Flex, KeyOptions} from "./types.js"
 export const defaultKeyOptions: KeyOptions<Flex> = {
 	divisor: ".",
 	delimiter: ":",
-	toKey: key => byteify(key),
+	keyConverter: {
+		toBytes: key => byteify(key),
+		fromBytes: key => byteify(key),
+	},
 }
 

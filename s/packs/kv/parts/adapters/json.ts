@@ -7,8 +7,10 @@ import {Flex, KeyOptions} from "../types.js"
 export class JsonAdapter<V, K extends Flex = Flex> extends Adapter<V, K> {
 	constructor(core: Core, options: KeyOptions<K>) {
 		super(core, {
-			toBytes: value => Text.bytes(JSON.stringify(value)),
-			toValue: bytes => JSON.parse(Text.string(bytes)),
+			valueConverter: {
+				toBytes: value => Text.bytes(JSON.stringify(value)),
+				fromBytes: bytes => JSON.parse(Text.string(bytes)),
+			},
 			...options,
 		})
 	}

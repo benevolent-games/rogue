@@ -1,6 +1,6 @@
 
 import {Hex} from "@benev/slate"
-import {byteMatch} from "../parts/byte-match.js"
+import {byteMatch} from "../utils/byte-match.js"
 import {Core, Scan, Write} from "../parts/core.js"
 
 const mapkey = (bytes: Uint8Array) => Hex.string(bytes)
