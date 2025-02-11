@@ -1,6 +1,7 @@
 
 import {Core} from "./parts/core.js"
 import {Data} from "./parts/data.js"
+import {MemCore} from "./cores/mem.js"
 import {Writer} from "./parts/writer.js"
 import {Prefixer} from "./parts/prefixer.js"
 import {Options, Scan, Write} from "./parts/types.js"
@@ -10,7 +11,7 @@ export class Kv<V = any> {
 	#options: Options
 	#prefixer: Prefixer
 
-	constructor(public core: Core, options: Partial<Options> = {}) {
+	constructor(public core: Core = new MemCore(), options: Partial<Options> = {}) {
 		this.#options = {
 			prefix: [],
 			divisor: ".",
@@ -46,8 +47,13 @@ export class Kv<V = any> {
 		return value
 	}
 
-	async has(...keys: string[]) {
-		return this.core.has(...keys.map(this.#prefixer.prefix))
+	async hasKeys(...keys: string[]) {
+		return this.core.hasKeys(...keys.map(this.#prefixer.prefix))
+	}
+
+	async has(key: string) {
+		const [value] = await this.hasKeys(key)
+		return value
 	}
 
 	async *keys(scan: Scan = {}) {
@@ -90,7 +96,7 @@ export class Kv<V = any> {
 	namespace<X = V>(prefix: string) {
 		return new Kv<X>(this.core, {
 			...this.#options,
-			prefix: [prefix, ...this.#options.prefix],
+			prefix: [...this.#options.prefix, prefix],
 		})
 	}
 }

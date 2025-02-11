@@ -10,8 +10,8 @@ export class MemCore extends Core {
 		return keys.map(key => this.#map.get(key))
 	}
 
-	async has(...keys: string[]) {
-		return keys.every(key => this.#map.has(key))
+	async hasKeys(...keys: string[]) {
+		return keys.map(key => this.#map.has(key))
 	}
 
 	async *keys(scan: Scan = {}) {
@@ -21,9 +21,11 @@ export class MemCore extends Core {
 		let count = 0
 
 		for (const key of this.#map.keys()) {
-			if (scanMatch(key, scan))
+			if (scanMatch(key, scan)) {
 				yield key
-			if (++count >= (scan.limit ?? Infinity))
+				count += 1
+			}
+			if (count >= (scan.limit ?? Infinity))
 				break
 		}
 	}
@@ -35,9 +37,11 @@ export class MemCore extends Core {
 		let count = 0
 
 		for (const [key, value] of this.#map.entries()) {
-			if (scanMatch(key, scan))
+			if (scanMatch(key, scan)) {
 				yield [key, value] as [string, string]
-			if (++count >= (scan.limit ?? Infinity))
+				count += 1
+			}
+			if (count >= (scan.limit ?? Infinity))
 				break
 		}
 	}
