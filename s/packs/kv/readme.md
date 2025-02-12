@@ -63,15 +63,15 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
   const kv = new Kv()
 
   // creating some typed namespaces for which i'll insert records
-  const accountRecords = kv.namespace<AccountRecord>("accounts")
-  const characterRecords = kv.namespace<CharacterRecord>("characters")
+  const accounts = kv.namespace<Account>("accounts")
+  const characters = kv.namespace<Character>("characters")
 
   // my app's function for adding a character to an account
-  async function addCharacter(accountId: string, character: CharacterRecord) {
+  async function addCharacter(accountId: string, character: Character) {
 
     // obtain the account
-    const account = await accountRecords.require(accountId)
-      // this fetches key `accounts:${accountId}` because of the namespace prefix
+    const account = await accounts.require(accountId)
+      // actually uses key `accounts:${accountId}` because of the namespace prefix
 
     // modifying the data
     character.ownerId = account.id
@@ -79,15 +79,15 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
 
     // create an atomic write transaction to save the data
     await kv.transaction(() => [
-      accountRecords.write.put(account.id, account),
-      characterRecords.write.put(character.id, character),
+      accounts.write.put(account.id, account),
+      characters.write.put(character.id, character),
     ])
   }
 
-  // my function for listing all characters owned by an account
+  // my app's function for listing all characters
   async function listCharacters(accountId: string) {
-    const account = await accountRecords.require(accountId)
-    return characterRecords.requires(...account.characterIds)
+    const account = await accounts.require(accountId)
+    return characters.requires(...account.characterIds)
   }
   ```
 
