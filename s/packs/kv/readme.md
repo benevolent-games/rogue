@@ -156,7 +156,7 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
   ```
   - you can use `write.put`, `write.puts`, and `write.del` to schedule write operations into the transaction
 
-### Namespaces
+### Namespaces keep things tidy
 - a namespace is just a Kv instance that has a key prefix assigned
   ```ts
   const records = kv.namespace("records")
@@ -204,6 +204,16 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
     accounts.write.put("101", {data: "alpha", owner: 5}),
     accounts.write.put("102", {data: "bravo", owner: 5}),
   ])
+  ```
+
+### Stores keep you focused
+- a store is an object that focuses on reading/writing the value of a single key
+  ```ts
+  const login = kv.store<Login>("login")
+
+  await login.put({token: "lol"})
+
+  const {token} = await login.get()
   ```
 
 <br/>

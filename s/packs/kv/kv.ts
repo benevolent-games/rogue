@@ -5,6 +5,7 @@ import {MemCore} from "./cores/mem.js"
 import {Writer} from "./parts/writer.js"
 import {Prefixer} from "./parts/prefixer.js"
 import {Options, Scan, Write} from "./parts/types.js"
+import { Store } from "./parts/store.js"
 
 export class Kv<V = any> {
 	write: Writer<V>
@@ -90,6 +91,11 @@ export class Kv<V = any> {
 			await this.transaction(w => [w.put(key, value!)])
 		}
 		return value
+	}
+
+	/** create a store which can put or get on a single key */
+	store<X = V>(key: string) {
+		return new Store<X>(this, key)
 	}
 
 	/** create a kv where all keys are given a certain prefix */
