@@ -3,17 +3,16 @@ import {Hex} from "@benev/slate"
 import {Randy} from "@benev/toolbox"
 import {Future, Proof} from "@authlocal/authlocal"
 
-import {Keychain} from "../security/keychain.js"
+import {Kv} from "../../../packs/kv/kv.js"
 import {CharacterDatabase} from "./database.js"
+import {Keychain} from "../security/keychain.js"
 import {secureLogin} from "../security/secure-login.js"
 import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
-export async function makeCharacterApi({keychain, database}: {
-		keychain: Keychain,
-		database: CharacterDatabase,
-	}) {
+export async function makeCharacterApi(kv: Kv, keychain: Keychain) {
+	const database = new CharacterDatabase(kv)
 
 	const signToken = (character: Character, scope: CharacterScope, days: number) =>
 		keychain.signLicense<CharacterAccess>(
@@ -29,20 +28,16 @@ export async function makeCharacterApi({keychain, database}: {
 
 	return {
 
-		// characters belong to an owner
+		/** an owner has a list of characters they can manage */
 		owner: secureLogin((proof: Proof) => ({
 
 			/** list all characters owned by this user, and return character custodian tokens */
 			async list() {
-				const owner = proof.thumbprint
-				return (await database.list(owner)).map((record): Character => ({
-					id: record,
-				}))
-
-				// const list = await database.listForOwner(proof.thumbprint)
-				// return Promise.all(
-				// 	list.map(character => signCustodianToken(character))
-				// )
+				const ownerId = proof.thumbprint
+				const characters = await database.list(ownerId)
+				return Promise.all(
+					characters.map(character => signCustodianToken(character))
+				)
 			},
 
 			/** create a character based on a seed */
@@ -50,7 +45,7 @@ export async function makeCharacterApi({keychain, database}: {
 				const randy = new Randy(draft.seed)
 				const bytes = randyBuffer(randy, 32)
 				const id = Hex.string(bytes)
-				const character: Character = {id, owner: proof.thumbprint}
+				const character: Character = {id, ownerId: proof.thumbprint}
 				await database.add(character)
 				return signCustodianToken(character)
 			},
@@ -67,25 +62,24 @@ export async function makeCharacterApi({keychain, database}: {
 			},
 		})),
 
-		// a custodian has the ability to change the ownership of a character
+		/** a custodian has the ability to change the ownership of a character **/
 		custodian: secureCharacterAccess(keychain, "custodian", character => ({
 
 			/** transfer a character to be owned by a new account */
-			async changeOwnership(newOwner: string) {
-				const bytes = Hex.bytes(newOwner)
+			async changeOwnership(newOwnerId: string) {
+				const bytes = Hex.bytes(newOwnerId)
 				if (bytes.length !== 32) throw new Error("invalid newOwner id")
-				const updatedCharacter = await database.updateOwner(character.id, newOwner)
+				const updatedCharacter = await database.changeOwnership(character.id, newOwnerId)
 				return signCustodianToken(updatedCharacter)
 			},
 		})),
 
-		// an arbiter has the ability to report gameplay changes to characters,
-		// like the gains of skills and equipment, or death
+		/** an arbiter has the ability to report gameplay changes to characters, like the gains of skills and equipment, or death **/
 		arbiter: secureCharacterAccess(keychain, "arbiter", character => ({
 
 			/** report a player as dead */
 			async kill() {
-				database.delete(character.id)
+				await database.delete(character.id)
 			},
 		})),
 	}

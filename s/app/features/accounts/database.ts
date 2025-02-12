@@ -4,10 +4,10 @@ import {AccountRecord} from "./types.js"
 import {Kv} from "../../../packs/kv/kv.js"
 
 export class AccountantDatabase {
-	#records: HexStore<AccountRecord>
+	#records: Kv<AccountRecord>
 
 	constructor(kv: Kv) {
-		this.#records = kv.hexStore<AccountRecord>("accounts.records")
+		this.#records = kv.namespace<AccountRecord>("accounts.records")
 	}
 
 	async save(record: AccountRecord) {

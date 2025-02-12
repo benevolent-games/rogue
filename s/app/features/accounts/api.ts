@@ -11,7 +11,6 @@ import {normalizePreferences, normalizeRecord} from "./utils/normalize.js"
 export async function makeAccountantApi(kv: Kv, keychain: Keychain) {
 	const database = new AccountantDatabase(kv)
 	await enhanceHardcodedAccounts(database)
-
 	return secureLogin(proof => ({
 
 		async saveAccount(preferences: AccountPreferences) {
