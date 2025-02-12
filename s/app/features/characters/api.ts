@@ -5,19 +5,19 @@ import {Future, Proof} from "@authlocal/authlocal"
 
 import {Kv} from "../../../packs/kv/kv.js"
 import {CharacterDatabase} from "./database.js"
-import {Keychain} from "../security/keychain.js"
 import {secureLogin} from "../security/secure-login.js"
+import {DecreeSigner} from "../security/decree/signer.js"
 import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
-export async function makeCharacterApi(kv: Kv, keychain: Keychain) {
+export async function makeCharacterApi(kv: Kv, signer: DecreeSigner) {
 	const database = new CharacterDatabase(kv)
 
 	const signToken = (character: Character, scope: CharacterScope, days: number) =>
-		keychain.signLicense<CharacterAccess>(
+		signer.sign<CharacterAccess>(
 			{character, scope},
-			Future.days(days),
+			{expiresAt: Future.days(days)},
 		)
 
 	const signCustodianToken = (character: Character) =>
@@ -63,7 +63,7 @@ export async function makeCharacterApi(kv: Kv, keychain: Keychain) {
 		})),
 
 		/** a custodian has the ability to change the ownership of a character **/
-		custodian: secureCharacterAccess(keychain, "custodian", character => ({
+		custodian: secureCharacterAccess(signer, "custodian", character => ({
 
 			/** transfer a character to be owned by a new account */
 			async changeOwnership(newOwnerId: string) {
@@ -75,7 +75,7 @@ export async function makeCharacterApi(kv: Kv, keychain: Keychain) {
 		})),
 
 		/** an arbiter has the ability to report gameplay changes to characters, like the gains of skills and equipment, or death **/
-		arbiter: secureCharacterAccess(keychain, "arbiter", character => ({
+		arbiter: secureCharacterAccess(signer, "arbiter", character => ({
 
 			/** report a player as dead */
 			async kill() {

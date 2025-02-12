@@ -1,8 +1,4 @@
 
-import {License} from "../security/keychain.js"
-
-export type AccountLicense = License<Account>
-
 /** publicly-visible roles */
 export type AccountTag = "founder" | "blessed" | "knighted" | "premium" | "banned"
 
@@ -18,18 +14,18 @@ export type AccountPrivileges = {
 	avatars: string[]
 }
 
+/** database record about a user's account */
+export type AccountRecord = {
+	thumbprint: string
+	privileges: AccountPrivileges
+	preferences: AccountPreferences
+}
+
 /** publicly-visible and queryable info about a user */
 export type Account = {
 	thumbprint: string
 	name: string
 	avatarId: string | null
 	tags: AccountTag[]
-}
-
-/** database record about a user's account */
-export type AccountRecord = {
-	thumbprint: string
-	privileges: AccountPrivileges
-	preferences: AccountPreferences
 }
 

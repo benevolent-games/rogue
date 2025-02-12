@@ -5,8 +5,8 @@ import {computed, Hex, opSignal, signal} from "@benev/slate"
 
 import {makeApi} from "./api.js"
 import {Kv} from "../packs/kv/kv.js"
-import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {JsonStore, onStorageEvent} from "../tools/store.js"
+import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {Identity, RandoIdentity} from "./features/accounts/ui/types.js"
 import {Account, AccountPreferences, AccountRecord} from "./features/accounts/types.js"
 
@@ -138,17 +138,17 @@ export class Context {
 			return
 		}
 
-		this.sessionOp.load(async() => {
-			const proofToken = login.proof.token
-			const {accountToken, accountRecord} = (
-				await this.api.accounting.query(proofToken, preferences)
-			)
-			const pubkey = await this.pubkey
-			const account = (await pubkey.verify<{data: Account}>(accountToken)).data
-			const session: Session = {login, account, accountToken, accountRecord}
-			this.session.value = session
-			return session
-		})
+		// this.sessionOp.load(async() => {
+		// 	const proofToken = login.proof.token
+		// 	const {accountToken, accountRecord} = (
+		// 		await this.api.accounting.query(proofToken, preferences)
+		// 	)
+		// 	const pubkey = await this.pubkey
+		// 	const account = (await pubkey.verify<{data: Account}>(accountToken)).data
+		// 	const session: Session = {login, account, accountToken, accountRecord}
+		// 	this.session.value = session
+		// 	return session
+		// })
 	}
 }
 

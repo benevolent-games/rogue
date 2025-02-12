@@ -3,10 +3,10 @@ import {Future, Proof} from "@authlocal/authlocal"
 
 import {normalizeRecord} from "./normalize.js"
 import {Account, AccountRecord} from "../types.js"
-import {Keychain} from "../../security/keychain.js"
+import {DecreeSigner} from "../../security/decree/signer.js"
 
-export async function signAccountLicense(
-		keychain: Keychain,
+export async function signAccountDecree(
+		signer: DecreeSigner,
 		proof: Proof,
 		record: AccountRecord,
 	) {
@@ -20,6 +20,9 @@ export async function signAccountLicense(
 		avatarId: record.preferences.avatarId,
 	}
 
-	return keychain.signLicense<Account>(account, Future.days(7))
+	return {
+		accountRecord: record,
+		accountDecree: await signer.sign<Account>(account, {expiresAt: Future.days(7)}),
+	}
 }
 

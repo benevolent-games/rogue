@@ -10,7 +10,6 @@ import {AvatarView} from "../avatar/view.js"
 import {Names} from "../../../tools/names.js"
 import {Identity} from "../../features/accounts/ui/types.js"
 import {Avatar} from "../../features/accounts/avatars/avatar.js"
-import {AccountToken} from "../../features/accounts/types.js"
 import {isAvatarAllowed} from "../../features/accounts/utils/is-avatar-allowed.js"
 
 type Info = {

@@ -1,15 +1,15 @@
 
 import {secure, Service} from "renraku"
-import {Keychain} from "../../security/keychain.js"
+import {DecreeSigner} from "../../security/decree/signer.js"
 import {Character, CharacterAccess, CharacterScope} from "../types.js"
 
 export const secureCharacterAccess = <S extends Service>(
-		keychain: Keychain,
+		signer: DecreeSigner,
 		scope: CharacterScope,
 		fn: (character: Character) => S,
 	) => secure(async(token: string) => {
 
-	const access = await keychain.verifyLicense<CharacterAccess>(token)
+	const access = await signer.verify<CharacterAccess>(token)
 
 	if (access.scope !== scope)
 		throw new Error(`character access scope "${scope}" required (got "${access.scope}")`)
