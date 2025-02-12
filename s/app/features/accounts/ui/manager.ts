@@ -4,11 +4,12 @@ import {Hex, signal} from "@benev/slate"
 import {Auth, Login} from "@authlocal/authlocal"
 
 import {Account} from "../types.js"
+import {Commons} from "../../../types.js"
 import {Avatar} from "../avatars/avatar.js"
-import {AccountManagerOptions, RandoIdentity, Session} from "./types.js"
+import {RandoIdentity, Session} from "./types.js"
 
 export class AccountManager {
-	static async make(options: AccountManagerOptions) {
+	static async make(options: Commons) {
 		const rando = await options.kv.guarantee("rogue.rando", () => ({
 			kind: "rando",
 			id: Hex.random(32),
@@ -20,7 +21,7 @@ export class AccountManager {
 	auth = Auth.get()
 	session = signal<Session | null>(null)
 
-	constructor(public options: AccountManagerOptions, public rando: RandoIdentity) {
+	constructor(public options: Commons, public rando: RandoIdentity) {
 		this.loadAccount(this.auth.login)
 		this.auth.onChange(login => void this.loadAccount(login))
 	}

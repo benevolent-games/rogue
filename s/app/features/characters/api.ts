@@ -1,13 +1,11 @@
 
 import {Hex} from "@benev/slate"
-import {Randy} from "@benev/toolbox"
 import {Future, Proof} from "@authlocal/authlocal"
 
 import {Kv} from "../../../packs/kv/kv.js"
 import {CharacterDatabase} from "./database.js"
 import {secureLogin} from "../security/secure-login.js"
 import {DecreeSigner} from "../security/decree/signer.js"
-import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
@@ -40,11 +38,9 @@ export async function makeCharacterApi(kv: Kv, signer: DecreeSigner) {
 				)
 			},
 
-			/** create a character based on a seed */
-			async create(draft: {seed: number}) {
-				const randy = new Randy(draft.seed)
-				const bytes = randyBuffer(randy, 32)
-				const id = Hex.string(bytes)
+			/** create a character */
+			async create() {
+				const id = Hex.random(32)
 				const character: Character = {id, ownerId: proof.thumbprint}
 				await database.add(character)
 				return signCustodianToken(character)
