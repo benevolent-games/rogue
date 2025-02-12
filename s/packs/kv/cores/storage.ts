@@ -1,9 +1,12 @@
 
+import {ev} from "@benev/slate"
 import {Core} from "../parts/core.js"
 import {Scan, Write} from "../parts/types.js"
 import {scanMatch} from "../parts/scan-match.js"
 
 export class StorageCore extends Core {
+	static onStorageEvent = (fn: () => void) => ev(window, {storage: fn})
+
 	constructor(public storage: Storage = window.localStorage) {
 		super()
 	}
