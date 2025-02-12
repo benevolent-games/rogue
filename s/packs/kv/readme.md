@@ -1,15 +1,15 @@
 
 > 🚨 ***not yet published*** -- this project has not yet been published as its own npm package, so this readme is a draft for when that happens
 
-# 🪇 `@benev/kv` — Key-value Json Database for TypeScript
+# 🪇 `@benev/kv` — Key-value Json Database
 
-I just wanted a damn simple database.
+I just wanted a damn simple typescript database.
 
-With Kv, the keys are strings, and the values are automatically serialized as json.
+String keys. Json values.
 
-Kv is an abstract database interface, where you jam in different "cores", like the `MemCore` for temporarily in-memory storage, or the [leveldb](https://github.com/Level/level) `LevelCore` for writing to disk on a server.
+Kv is an agnostic interface. You jam in different "cores" to write data in-memory, or to local storage, or to [leveldb](https://github.com/Level/level).
 
-Kv can do smart stuff, like namespacing, batch operations, and atomic write transactions.
+Kv does smart stuff, like namespacing, batch operations, and atomic write transactions.
 
 <br/>
 
@@ -106,11 +106,13 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
   ```
 - `get` loads a value (or undefined if the key's not found)
   ```ts
-  const value = await kv.get("hello")
+  await kv.get("101")
+    // "alpha" (or undefined)
   ```
-- `gets` loads many values at once
+- `gets` loads many values at once (undefined for not-found keys)
   ```ts
-  const values = await kv.gets("101", "102", "103")
+  await kv.gets("101", "102", "103")
+    // ["alpha", "bravo", undefined]
   ```
 - `del` deletes things
   ```ts
@@ -123,22 +125,27 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
 - `has` checks if a key exists
   ```ts
   await kv.has("hello")
+    // true (or false)
   ```
 - `hasKeys` checks many keys
   ```ts
   await kv.hasKeys("101", "102", "103")
+    // [true, true, false]
   ```
 - `require` gets a value, but throws an error if the key is missing
   ```ts
-  const value = await kv.require("hello")
+  await kv.require("101")
+    // "world" (or an error is thrown)
   ```
 - `requires` gets many things, throws an error if any keys are missing
   ```ts
-  const values = await kv.require("101", "102")
+  await kv.requires("101", "102")
+    // ["alpha", {data: 123.45}] (or an error is thrown)
   ```
 - `guarantee` gets or creates a thing
   ```ts
-  const value = await kv.guarantee("hello", () => "world")
+  await kv.guarantee("hello", () => "world")
+    // "world" (or an error is thrown)
   ```
 
 ### Transactions make you cool and incredible
@@ -211,8 +218,10 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
   ```ts
   const login = kv.store<Login>("login")
 
+  // save data to the store
   await login.put({token: "lol"})
 
+  // load data from the store
   const {token} = await login.get()
   ```
 
