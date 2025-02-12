@@ -33,8 +33,13 @@ Kv can do smart stuff, like namespacing, batch operations, and atomic write tran
   import {Kv} from "@benev/kv"
   import {LevelCore} from "@benev/kv/x/cores/level.js"
 
-  const core = new LevelCore("path/to/database")
-  const kv = new Kv(core)
+  const kv = new Kv(new LevelCore("path/to/database"))
+  ```
+- or alternatively, pop in a `StorageCore` to use browser localStorage
+  ```ts
+  import {Kv, Storage} from "@benev/kv"
+
+  const kv = new Kv(new StorageCore())
   ```
 
 ### Put/get some key-value pairs

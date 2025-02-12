@@ -1,5 +1,6 @@
 
 export * from "./cores/mem.js"
+export * from "./cores/storage.js"
 
 export * from "./parts/collect.js"
 export * from "./parts/core.js"
