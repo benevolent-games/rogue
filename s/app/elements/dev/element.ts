@@ -1,19 +1,23 @@
 
-import {Pubkey} from "@authlocal/authlocal"
-import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
+import {html, loading, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
+import {Mocks, prepareMocks} from "./mocks.js"
 import themeCss from "../../theme.css.js"
-import {Kv} from "../../../packs/kv/kv.js"
-import {makeApi} from "../../api.js"
-import {CharacterList} from "../../features/characters/ui/view.js"
-
-const kv = new Kv()
-const api = (await makeApi(kv)).v1
-const pubkey = await api.pubkey().then(data => Pubkey.fromData(data))
+import {CharacterManager} from "../../features/characters/ui/manager.js"
+import {CharacterList} from "../../features/characters/ui/views/character-list/view.js"
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
+
+	const mocksOp = use.load(async() => {
+		const mocks = await prepareMocks()
+		const characterManager = new CharacterManager()
+		return {
+			...mocks,
+			characterManager: new Charact
+		}
+	})
 
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
 		["characters", () => CharacterList([])],
@@ -35,6 +39,7 @@ export const GameDev = shadowComponent(use => {
 					</button>
 				`)}
 			</nav>
+			${loading.binary(mocksOp, mocks => html``)}
 			<div class=deck>
 				${tabs.require(currentTab.value)()}
 			</div>
