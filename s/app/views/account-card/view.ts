@@ -35,10 +35,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 		}
 	}
 	else {
-		const pubkey = await context.pubkey
-		const {data: account} = await pubkey.verify<AccountToken>(
-			identity.accountToken
-		)
+		const account = await context.accountManager.verifyAccountDecree(identity.accountDecree)
 		return {
 			loggedIn: true,
 			id: account.thumbprint,

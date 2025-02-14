@@ -1,16 +1,16 @@
 
 import {Randy} from "@benev/toolbox"
 import {Auth, Login} from "@authlocal/authlocal"
-import {Hex, Op, opSignal, pubsub} from "@benev/slate"
+import {computed, Hex, Op, opSignal, pubsub} from "@benev/slate"
 
 import {Account} from "../types.js"
 import {Commons} from "../../../types.js"
 import {Avatar} from "../avatars/avatar.js"
-import {RandoIdentity, Session} from "./types.js"
+import {Identity, RandoIdentity, Session} from "./types.js"
 
 export class AccountManager {
 	static async make(options: Commons) {
-		const rando = await options.kv.guarantee("rogue.rando", () => ({
+		const rando = await options.kv.guarantee("rando", () => ({
 			kind: "rando",
 			id: Hex.random(32),
 			avatarId: new Randy().choose(Avatar.selectKind("rando")).id,
@@ -22,13 +22,29 @@ export class AccountManager {
 	onSessionChange = pubsub<[Session | null]>()
 	sessionOpSignal = opSignal<Session | null>(Op.loading())
 
+	constructor(public options: Commons, public randoIdentity: RandoIdentity) {
+		this.load(this.auth.login)
+		this.auth.onChange(login => void this.load(login))
+	}
+
 	get session() {
 		return Op.payload(this.sessionOpSignal.value) ?? null
 	}
 
-	constructor(public options: Commons, public rando: RandoIdentity) {
-		this.load(this.auth.login)
-		this.auth.onChange(login => void this.load(login))
+	get isSessionLoading() {
+		return Op.is.loading(this.sessionOpSignal.value)
+	}
+
+	multiplayerIdentity = computed((): Identity => {
+		const session = this.session
+		const rando = this.randoIdentity
+		return session
+			? {kind: "account", accountDecree: session.accountDecree}
+			: {kind: "rando", id: rando.id, avatarId: rando.avatarId}
+	})
+
+	async verifyAccountDecree(decree: string) {
+		return this.options.verifier.verify<Account>(decree)
 	}
 
 	async load(login: Login | null) {

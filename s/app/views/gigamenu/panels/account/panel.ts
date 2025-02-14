@@ -11,15 +11,16 @@ export const AccountPanel = gigapanel(() => ({
 	label: "Account",
 
 	button: () => {
-		const session = context.session.value
+		const {accountManager} = context
+		const {session} = context.accountManager
 
 		if (session) {
-			const avatar = Avatar.library.get(session.account.avatarId)
+			const avatar = Avatar.get(session.account.avatarId)
 			if (avatar)
-				return AvatarView([avatar, {loading: context.isSessionLoading}])
+				return AvatarView([avatar, {loading: accountManager.isSessionLoading}])
 		}
 
-		return context.auth.login
+		return accountManager.auth.login
 			? userCheckSvg
 			: userQuestionSvg
 	},

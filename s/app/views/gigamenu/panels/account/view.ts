@@ -10,15 +10,16 @@ import {AvatarSelectorView} from "../../../avatar-selector/view.js"
 export const AccountView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
 
-	const session = context.session.value
-	const login = () => { context.auth.popup() }
-	const logout = () => { context.auth.login = null }
+	const {accountManager} = context
+	const session = accountManager.session
+	const login = () => { accountManager.auth.popup() }
+	const logout = () => { accountManager.auth.login = null }
 
 	return html`
 		<section>
 			${AccountCardView([
-				context.multiplayerIdentity.value,
-				context.isSessionLoading,
+				accountManager.multiplayerIdentity.value,
+				accountManager.isSessionLoading,
 			])}
 
 			${session ? html`
@@ -31,7 +32,7 @@ export const AccountView = shadowView(use => () => {
 					Logout
 				</button>
 
-			` : loading.binary(context.sessionOp, () => html`
+			` : loading.binary(accountManager.sessionOpSignal, () => html`
 				<p>You're currently logged out</p>
 
 				<button class=authlocal @click="${login}">
@@ -39,7 +40,7 @@ export const AccountView = shadowView(use => () => {
 				</button>
 			`)}
 
-			${context.sessionOp.isError() ? html`
+			${accountManager.sessionOpSignal.isError() ? html`
 				<button @click="${logout}">
 					Logout
 				</button>

@@ -12,7 +12,7 @@ export class CharacterManager {
 	#sources = new Map2<string, CharacterSource>()
 
 	constructor(public options: Commons) {
-		this.#custodyStore = options.kv.store("rogue.characters.custody")
+		this.#custodyStore = options.kv.store("characters.custody")
 	}
 
 	#updateCharactersSignal() {

@@ -4,8 +4,8 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 
-import {AvatarView} from "../avatar/view.js"
 import {context} from "../../context.js"
+import {AvatarView} from "../avatar/view.js"
 import {Avatar} from "../../features/accounts/avatars/avatar.js"
 import {Account, AccountRecord} from "../../features/accounts/types.js"
 import {AccountTiers} from "../../features/accounts/utils/account-tiers.js"
@@ -21,12 +21,12 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	const {account, accountRecord} = options
 
-	const onClick = context.isSessionLoading
+	const onClick = context.accountManager.isSessionLoading
 		? undefined
 		: (avatar: Avatar) => {
-			const unlocked = isAvatarAllowed(avatar, accountRecord)
+			const unlocked = isAvatarAllowed(avatar, accountRecord.privileges)
 			if (unlocked)
-				context.changeAvatar(avatar.id)
+				context.accountManager.savePreferences(avatar.id)
 		}
 
 	const avatars = [...Avatar.library.values()]
@@ -40,7 +40,7 @@ export const AvatarSelectorView = shadowView(use => (options: {
 		<ol>
 			${avatars.map(avatar => {
 				const selected = account.avatarId === avatar.id
-				const locked = !isAvatarAllowed(avatar, accountRecord)
+				const locked = !isAvatarAllowed(avatar, accountRecord.privileges)
 				return html`
 					<li>
 						${AvatarView([avatar, {selected, locked, onClick}])}

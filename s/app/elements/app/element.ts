@@ -5,10 +5,11 @@ import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@be
 import stylesCss from "./styles.css.js"
 import {context} from "../../context.js"
 import themeCss from "../../theme.css.js"
-import {Invites} from "../../features/invites/invites.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
 import {MainMenu} from "../../views/main-menu/view.js"
+import {Invites} from "../../features/invites/invites.js"
+import {Identity} from "../../features/accounts/ui/types.js"
 import {DungeonStore} from "../../../game/dungeons/store.js"
 import {loadImage} from "../../../tools/loading/load-image.js"
 import {LoadingScreen} from "../../views/loading-screen/view.js"
@@ -16,7 +17,6 @@ import {handleExhibitErrors} from "../../views/error-screen/view.js"
 import {lagProfiles} from "../../../packs/archimedes/net/multiplayer/utils/lag-profiles.js"
 import {MultiplayerHost} from "../../../packs/archimedes/net/multiplayer/multiplayer-host.js"
 import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
-import { Identity } from "../../features/accounts/ui/types.js"
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -62,7 +62,7 @@ export const GameApp = shadowComponent(use => {
 			return orchestrator.makeNavFn(loadingScreen, exhibitor)
 		}
 
-		const identity = context.multiplayerIdentity
+		const identity = context.accountManager.multiplayerIdentity
 
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),

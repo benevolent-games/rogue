@@ -2,7 +2,7 @@
 import {html, loading, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {Mocks, prepareMocks} from "./mocks.js"
+import {prepareMocks} from "./mocks.js"
 import themeCss from "../../theme.css.js"
 import {CharacterManager} from "../../features/characters/ui/manager.js"
 import {CharacterList} from "../../features/characters/ui/views/character-list/view.js"
