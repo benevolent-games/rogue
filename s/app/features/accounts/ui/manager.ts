@@ -1,7 +1,7 @@
 
 import {Randy} from "@benev/toolbox"
-import {Hex, signal} from "@benev/slate"
 import {Auth, Login} from "@authlocal/authlocal"
+import {Hex, Op, opSignal, pubsub} from "@benev/slate"
 
 import {Account} from "../types.js"
 import {Commons} from "../../../types.js"
@@ -19,24 +19,53 @@ export class AccountManager {
 	}
 
 	auth = Auth.get()
-	session = signal<Session | null>(null)
+	onSessionChange = pubsub<[Session | null]>()
+	sessionOpSignal = opSignal<Session | null>(Op.loading())
 
-	constructor(public options: Commons, public rando: RandoIdentity) {
-		this.loadAccount(this.auth.login)
-		this.auth.onChange(login => void this.loadAccount(login))
+	get session() {
+		return Op.payload(this.sessionOpSignal.value) ?? null
 	}
 
-	async loadAccount(login: Login | null) {
+	constructor(public options: Commons, public rando: RandoIdentity) {
+		this.load(this.auth.login)
+		this.auth.onChange(login => void this.load(login))
+	}
+
+	async load(login: Login | null) {
 		if (login === null) {
-			this.session.value = null
-			return
+			this.sessionOpSignal.setReady(null)
+			this.onSessionChange.publish(null)
+			return null
 		}
-		const proofToken = login.proof.token
-		const {accountDecree, accountRecord} = await this.options.api.v1.accountant.loadAccount({proofToken})
-		const account = await this.options.verifier.verify<Account>(accountDecree)
-		const session: Session = {login, account, accountRecord, accountDecree}
-		this.session.value = session
-		return session
+		return this.sessionOpSignal.load(async() => {
+			const proofToken = login.proof.token
+			const {decree, record} = await this.options
+				.api.v1.accountant.loadAccount({proofToken})
+			const account = await this.options.verifier.verify<Account>(decree)
+			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
+			this.onSessionChange.publish(session)
+			return session
+		})
+	}
+
+	async savePreferences(avatarId: string) {
+		if (this.session) {
+			const {login} = this.session
+			const proofToken = login.proof.token
+			const {decree, record} = await this.options
+				.api.v1.accountant.saveAccount({proofToken}, {
+					avatarId,
+					name: login.name,
+				})
+			const account = await this.#verifyAccountDecree(decree)
+			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
+			this.sessionOpSignal.setReady(session)
+			this.onSessionChange.publish(session)
+		}
+	}
+
+	async #verifyAccountDecree(decree: string) {
+		return this.options.verifier.verify<Account>(decree)
 	}
 }
 

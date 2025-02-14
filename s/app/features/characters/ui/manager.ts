@@ -1,9 +1,9 @@
 
 import {Map2, signal} from "@benev/slate"
-import {Character, CharacterAccess} from "../types.js"
 import {Commons} from "../../../types.js"
 import {CharacterSource} from "./types.js"
 import {Session} from "../../accounts/ui/types.js"
+import {Character, CharacterAccess} from "../types.js"
 import {Store} from "../../../../packs/kv/parts/store.js"
 
 export class CharacterManager {

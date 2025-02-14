@@ -29,3 +29,8 @@ export type Account = {
 	tags: AccountTag[]
 }
 
+export type AccountReport = {
+	decree: string
+	record: AccountRecord
+}
+

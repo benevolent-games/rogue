@@ -26,7 +26,7 @@ export class Context {
 			public characterManager: CharacterManager,
 		) {
 
-		accountManager.session.on(session => {
+		accountManager.onSessionChange(session => {
 			if (session)
 				characterManager.download(session)
 		})
