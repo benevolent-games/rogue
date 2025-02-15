@@ -4,6 +4,7 @@
 /notes
 /temp
 /mount
+/database
 
 /node_modules
 /yarn.lock
