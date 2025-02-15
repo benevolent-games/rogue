@@ -1,13 +1,13 @@
 
 import {renderThumbprint} from "@authlocal/authlocal"
-import {deep, Hex, html, shadowView} from "@benev/slate"
+import {Barname, deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 
 import {context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
-import {Names} from "../../../tools/names.js"
+import {capitalize} from "../../../tools/capitalize.js"
 import {Identity} from "../../features/accounts/ui/types.js"
 import {Avatar} from "../../features/accounts/avatars/avatar.js"
 import {isAvatarAllowed} from "../../features/accounts/utils/is-avatar-allowed.js"
@@ -26,11 +26,12 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 		const avatar = isAvatarAllowed(avatarPref, undefined)
 			? avatarPref
 			: Avatar.default
+		const idBytes = Hex.bytes(identity.id)
 		return {
-			loggedIn: false,
 			avatar,
+			loggedIn: false,
 			id: identity.id,
-			name: Names.falrysk.generate(Hex.bytes(identity.id)),
+			name: `Rando ${capitalize(Barname.string(idBytes.slice(0, 2)))}`,
 			tags: ["rando"],
 		}
 	}

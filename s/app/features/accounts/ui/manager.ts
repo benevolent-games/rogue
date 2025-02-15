@@ -1,7 +1,7 @@
 
 import {Randy} from "@benev/toolbox"
 import {Auth, Login} from "@authlocal/authlocal"
-import {computed, Hex, Op, opSignal, pubsub} from "@benev/slate"
+import {computed, Hex, Op, opSignal, pubsub, Signal} from "@benev/slate"
 
 import {Account} from "../types.js"
 import {Commons} from "../../../types.js"
@@ -21,8 +21,15 @@ export class AccountManager {
 	auth = Auth.get()
 	onSessionChange = pubsub<[Session | null]>()
 	sessionOpSignal = opSignal<Session | null>(Op.loading())
+	multiplayerIdentity: Signal<Identity>
 
 	constructor(public options: Commons, public randoIdentity: RandoIdentity) {
+		this.multiplayerIdentity = computed((): Identity => {
+			const {session, randoIdentity} = this
+			return session
+				? {kind: "account", accountDecree: session.accountDecree}
+				: {kind: "rando", id: randoIdentity.id, avatarId: randoIdentity.avatarId}
+		})
 		this.load(this.auth.login)
 		this.auth.onChange(login => void this.load(login))
 	}
@@ -35,16 +42,25 @@ export class AccountManager {
 		return Op.is.loading(this.sessionOpSignal.value)
 	}
 
-	multiplayerIdentity = computed((): Identity => {
-		const session = this.session
-		const rando = this.randoIdentity
-		return session
-			? {kind: "account", accountDecree: session.accountDecree}
-			: {kind: "rando", id: rando.id, avatarId: rando.avatarId}
-	})
-
 	async verifyAccountDecree(decree: string) {
 		return this.options.verifier.verify<Account>(decree)
+	}
+
+	async #loadAccountAndMaybeSave(login: Login) {
+		const proofToken = login.proof.token
+		const accountReport = await this.options
+			.api.v1.accountant.loadAccount({proofToken})
+
+		// update name upon login
+		if (accountReport.record.preferences.name !== login.name) {
+			const savedReport = await this.options.api.v1.accountant.saveAccount(
+				{proofToken},
+				{...accountReport.record.preferences, name: login.name},
+			)
+			return savedReport
+		}
+
+		return accountReport
 	}
 
 	async load(login: Login | null) {
@@ -54,9 +70,7 @@ export class AccountManager {
 			return null
 		}
 		return this.sessionOpSignal.load(async() => {
-			const proofToken = login.proof.token
-			const {decree, record} = await this.options
-				.api.v1.accountant.loadAccount({proofToken})
+			const {decree, record} = await this.#loadAccountAndMaybeSave(login)
 			const account = await this.options.verifier.verify<Account>(decree)
 			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
 			this.onSessionChange.publish(session)
@@ -65,19 +79,22 @@ export class AccountManager {
 	}
 
 	async savePreferences(avatarId: string) {
-		if (this.session) {
-			const {login} = this.session
-			const proofToken = login.proof.token
-			const {decree, record} = await this.options
-				.api.v1.accountant.saveAccount({proofToken}, {
-					avatarId,
-					name: login.name,
-				})
-			const account = await this.#verifyAccountDecree(decree)
-			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
-			this.sessionOpSignal.setReady(session)
-			this.onSessionChange.publish(session)
+		const session = this.session
+		if (session) {
+			await this.sessionOpSignal.load(async() => {
+				const {login} = session
+				const proofToken = login.proof.token
+				const {decree, record} = await this.options
+					.api.v1.accountant.saveAccount({proofToken}, {
+						avatarId,
+						name: login.name,
+					})
+				const account = await this.#verifyAccountDecree(decree)
+				const newSession: Session = {login, account, accountRecord: record, accountDecree: decree}
+				return newSession
+			})
 		}
+		this.onSessionChange.publish(this.session!)
 	}
 
 	async #verifyAccountDecree(decree: string) {
