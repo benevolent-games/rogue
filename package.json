@@ -34,7 +34,7 @@
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +"
 	},
 	"dependencies": {
-		"@authlocal/authlocal": "^0.2.0-15",
+		"@authlocal/authlocal": "^0.2.0-16",
 		"@babylonjs/core": "^7.49.0",
 		"@babylonjs/inspector": "^7.49.0",
 		"@babylonjs/loaders": "^7.49.0",
@@ -42,7 +42,7 @@
 		"@benev/slate": "^0.3.0-10",
 		"@benev/toolbox": "^0.8.0-19",
 		"level": "^9.0.0",
-		"renraku": "^0.4.4",
+		"renraku": "^0.4.5",
 		"sparrow-rtc": "^0.2.5",
 		"zx": "^8.3.2"
 	},
