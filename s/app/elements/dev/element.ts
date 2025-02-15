@@ -1,34 +1,28 @@
 
-import {html, loading, Map2, RenderResult, shadowComponent} from "@benev/slate"
+import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {prepareMocks} from "./mocks.js"
 import themeCss from "../../theme.css.js"
-import {CharacterManager} from "../../features/characters/ui/manager.js"
+import {HashRouter} from "../../../tools/hash-router.js"
+import {AccountView} from "../../views/gigamenu/panels/account/view.js"
 import {CharacterList} from "../../features/characters/ui/views/character-list/view.js"
-
-type Stuff = Awaited<ReturnType<typeof prepareStuff>>
-
-async function prepareStuff() {
-	const mocks = await prepareMocks()
-	const characterManager = new CharacterManager(mocks)
-	return {...mocks, characterManager}
-}
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
 
-	const stuffOp = use.load(async() => {
-		const mocks = await prepareMocks()
-		const characterManager = new CharacterManager(mocks)
-		return {...mocks, characterManager}
-	})
+	const router = use.once(() => new HashRouter())
 
-	const tabs = use.once(() => new Map2<string, (stuff: Stuff) => RenderResult>([
-		["characters", stuff => CharacterList([stuff.characterManager])],
+	const tabs = use.once(() => new Map2<string, () => RenderResult>([
+		["/account", () => AccountView([])],
+		["/characters", () => CharacterList([])],
 	]))
 
-	const currentTab = use.signal([...tabs.keys()][0])
+	const renderer = tabs.get(router.path.value)
+
+	use.once(() => {
+		if (!renderer)
+			router.goto([...tabs.keys()][0])
+	})
 
 	return html`
 		<slot></slot>
@@ -38,17 +32,17 @@ export const GameDev = shadowComponent(use => {
 				${[...tabs.keys()].map(tab => html`
 					<button
 						class="play"
-						?x-current="${tab === currentTab.value}"
-						@click="${() => { currentTab.value = tab }}">
+						?x-current="${tab === router.path.value}"
+						@click="${() => { router.goto(tab) }}">
 							${tab}
 					</button>
 				`)}
 			</nav>
-			${loading.binary(stuffOp, stuff => html`
-				<div class=deck>
-					${tabs.require(currentTab.value)(stuff)}
-				</div>
-			`)}
+			<div class=deck>
+				${renderer
+					? renderer()
+					: html`404 not found "${router.path.value}"`}
+			</div>
 		</div>
 	`
 })

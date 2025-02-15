@@ -5,7 +5,7 @@ import {Barname, deep, Hex, html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 
-import {context} from "../../context.js"
+import {Context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {capitalize} from "../../../tools/capitalize.js"
 import {Identity} from "../../features/accounts/ui/types.js"
@@ -36,7 +36,7 @@ async function ascertainPersonInfo(identity: Identity): Promise<Info> {
 		}
 	}
 	else {
-		const account = await context.accountManager.verifyAccountDecree(identity.accountDecree)
+		const account = await Context.context.accountManager.verifyAccountDecree(identity.accountDecree)
 		return {
 			loggedIn: true,
 			id: account.thumbprint,

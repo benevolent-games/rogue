@@ -4,7 +4,7 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 
-import {context} from "../../context.js"
+import {Context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
 import {Avatar} from "../../features/accounts/avatars/avatar.js"
 import {Account, AccountRecord} from "../../features/accounts/types.js"
@@ -18,6 +18,7 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	use.name("avatar-selector")
 	use.styles(themeCss, stylesCss)
+	const {context} = Context
 
 	const {account, accountRecord} = options
 

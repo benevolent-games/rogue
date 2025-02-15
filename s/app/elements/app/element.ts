@@ -3,7 +3,7 @@ import {html, opSignal, shadowComponent} from "@benev/slate"
 import {ExhibitFn, Orchestrator, orchestratorStyles, OrchestratorView} from "@benev/toolbox/x/ui/orchestrator/exports.js"
 
 import stylesCss from "./styles.css.js"
-import {context} from "../../context.js"
+import {Context} from "../../context.js"
 import themeCss from "../../theme.css.js"
 import {constants} from "../../../constants.js"
 import {Gameplay} from "../../views/gameplay/view.js"
@@ -20,6 +20,8 @@ import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multi
 
 export const GameApp = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
+
+	const {context} = Context
 
 	// preload the benev logo
 	use.load(async() => await loadImage(constants.urls.benevLogo))
