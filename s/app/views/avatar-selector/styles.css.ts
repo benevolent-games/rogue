@@ -8,11 +8,6 @@ ol {
 	width: 100%;
 	flex-wrap: wrap;
 	gap: 0.5em;
-
-	> li {
-
-
-	}
 }
 
 `

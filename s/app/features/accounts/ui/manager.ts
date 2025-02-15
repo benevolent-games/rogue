@@ -20,26 +20,22 @@ export class AccountManager {
 
 	auth = Auth.get()
 	onSessionChange = pubsub<[Session | null]>()
-	sessionOpSignal = opSignal<Session | null>(Op.loading())
+	sessionOp = opSignal<Session | null>(Op.loading())
+	session = computed(() => Op.payload(this.sessionOp.value) ?? null)
+	isSessionLoading = computed(() => Op.is.loading(this.sessionOp.value))
+
 	multiplayerIdentity: Signal<Identity>
 
 	constructor(public options: Commons, public randoIdentity: RandoIdentity) {
 		this.multiplayerIdentity = computed((): Identity => {
-			const {session, randoIdentity} = this
+			const {randoIdentity} = this
+			const session = this.session.value
 			return session
 				? {kind: "account", accountDecree: session.accountDecree}
 				: {kind: "rando", id: randoIdentity.id, avatarId: randoIdentity.avatarId}
 		})
 		this.load(this.auth.login)
 		this.auth.onChange(login => void this.load(login))
-	}
-
-	get session() {
-		return Op.payload(this.sessionOpSignal.value) ?? null
-	}
-
-	get isSessionLoading() {
-		return Op.is.loading(this.sessionOpSignal.value)
 	}
 
 	async verifyAccountDecree(decree: string) {
@@ -65,11 +61,11 @@ export class AccountManager {
 
 	async load(login: Login | null) {
 		if (login === null) {
-			this.sessionOpSignal.setReady(null)
+			this.sessionOp.setReady(null)
 			this.onSessionChange.publish(null)
 			return null
 		}
-		return this.sessionOpSignal.load(async() => {
+		return this.sessionOp.load(async() => {
 			const {decree, record} = await this.#loadAccountAndMaybeSave(login)
 			const account = await this.options.verifier.verify<Account>(decree)
 			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
@@ -79,9 +75,9 @@ export class AccountManager {
 	}
 
 	async savePreferences(avatarId: string) {
-		const session = this.session
+		const session = this.session.value
 		if (session) {
-			await this.sessionOpSignal.load(async() => {
+			await this.sessionOp.load(async() => {
 				const {login} = session
 				const proofToken = login.proof.token
 				const {decree, record} = await this.options
@@ -94,7 +90,7 @@ export class AccountManager {
 				return newSession
 			})
 		}
-		this.onSessionChange.publish(this.session!)
+		this.onSessionChange.publish(this.session.value!)
 	}
 
 	async #verifyAccountDecree(decree: string) {

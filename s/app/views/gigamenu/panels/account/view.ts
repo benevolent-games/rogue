@@ -12,7 +12,10 @@ export const AccountView = shadowView(use => () => {
 
 	const {context} = Context
 	const {accountManager} = context
-	const session = accountManager.session
+
+	const session = accountManager.session.value
+	const isSessionLoading = accountManager.isSessionLoading.value
+
 	const login = () => { accountManager.auth.popup() }
 	const logout = () => { accountManager.auth.login = null }
 
@@ -20,7 +23,7 @@ export const AccountView = shadowView(use => () => {
 		<section>
 			${AccountCardView([
 				accountManager.multiplayerIdentity.value,
-				accountManager.isSessionLoading,
+				isSessionLoading,
 			])}
 
 			${session ? html`
@@ -33,7 +36,7 @@ export const AccountView = shadowView(use => () => {
 					Logout
 				</button>
 
-			` : loading.binary(accountManager.sessionOpSignal, () => html`
+			` : loading.binary(accountManager.sessionOp, () => html`
 				<p>You're currently logged out</p>
 
 				<button class=authlocal @click="${login}">
@@ -41,7 +44,7 @@ export const AccountView = shadowView(use => () => {
 				</button>
 			`)}
 
-			${accountManager.sessionOpSignal.isError() ? html`
+			${accountManager.sessionOp.isError() ? html`
 				<button @click="${logout}">
 					Logout
 				</button>

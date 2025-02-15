@@ -44,9 +44,9 @@ export class Context {
 			public characterManager: CharacterManager,
 		) {
 
-		accountManager.onSessionChange(session => {
+		accountManager.onSessionChange(async session => {
 			if (session)
-				characterManager.download(session)
+				await characterManager.downloadFromApi(session)
 		})
 	}
 }

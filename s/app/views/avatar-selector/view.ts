@@ -22,7 +22,7 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	const {account, accountRecord} = options
 
-	const onClick = context.accountManager.isSessionLoading
+	const onClick = context.accountManager.isSessionLoading.value
 		? undefined
 		: (avatar: Avatar) => {
 			const unlocked = isAvatarAllowed(avatar, accountRecord.privileges)
