@@ -1,18 +1,18 @@
 
-import Sparrow from "sparrow-rtc"
 import {Badge} from "@authlocal/authlocal"
 
 /** for presenting sparrow invites to users in base58 format (sparrow natively uses hex) */
 export const Invites = {
 
 	obtainFromWindow() {
-		const code = Sparrow.invites.parse(window.location.hash)
-		return code && Badge.parse(code).hex
+		const hash = window.location.hash.replace(/^#/, "")
+		const result = hash.match(/^\/invite\/(.+)$/i)
+		return result && Badge.parse(result.at(1)!).hex
 	},
 
 	url(hex: string) {
 		const code = Badge.fromHex(hex, 2).string
-		return Sparrow.invites.url(code)
+		return `#/invite/${code}`
 	},
 
 	writeInviteToWindowHash(invite: string) {
