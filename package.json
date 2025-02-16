@@ -20,6 +20,7 @@
 		"http": "http-server x",
 		"watch": "turtle watch --in=s,x --out=x --exclude=bin -v",
 		"start": "run-p http watch",
+		"server": "node x/server.js",
 		"director": "node x/director/plumbing/server.js",
 		"devlinks": "run-s devlinks-toolbox devlinks-turtle devlinks-slate devlinks-renraku",
 		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",

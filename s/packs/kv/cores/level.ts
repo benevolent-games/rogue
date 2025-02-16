@@ -8,7 +8,7 @@ export class LevelCore extends Core {
 
 	constructor(path: string) {
 		super()
-		this.#db = new Level(path, {keyEncoding: "string", valueEncoding: "string"})
+		this.#db = new Level(path)
 	}
 
 	async gets(...keys: string[]) {
