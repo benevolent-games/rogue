@@ -1,32 +1,67 @@
 
-import {Map2, Text} from "@benev/slate"
-import {ByteCore} from "../parts/types.js"
+import {Core} from "../parts/core.js"
+import {Scan, Write} from "../parts/types.js"
+import {scanMatch} from "../parts/scan-match.js"
 
-export class MemCore implements ByteCore {
-	#map = new Map2<string, Uint8Array>()
+export class MemCore extends Core {
+	#map = new Map<string, string>()
 
-	#stringkey(bytes: Uint8Array) {
-		return Text.string(bytes)
+	async gets(...keys: string[]) {
+		return keys.map(key => this.#map.get(key))
 	}
 
-	async put(key: Uint8Array, value: Uint8Array) {
-		this.#map.set(this.#stringkey(key), value)
+	async hasKeys(...keys: string[]) {
+		return keys.map(key => this.#map.has(key))
 	}
 
-	async get(key: Uint8Array) {
-		return this.#map.get(this.#stringkey(key))
+	async *keys(scan: Scan = {}) {
+		if (scan.limit === 0)
+			return
+
+		let count = 0
+
+		for (const key of this.#map.keys()) {
+			if (scanMatch(key, scan)) {
+				yield key
+				count += 1
+			}
+			if (count >= (scan.limit ?? Infinity))
+				break
+		}
 	}
 
-	async require(key: Uint8Array) {
-		return this.#map.require(this.#stringkey(key))
+	async *entries(scan: Scan = {}) {
+		if (scan.limit === 0)
+			return
+
+		let count = 0
+
+		for (const [key, value] of this.#map.entries()) {
+			if (scanMatch(key, scan)) {
+				yield [key, value] as [string, string]
+				count += 1
+			}
+			if (count >= (scan.limit ?? Infinity))
+				break
+		}
 	}
 
-	async guarantee(key: Uint8Array, make: () => Uint8Array) {
-		return this.#map.guarantee(this.#stringkey(key), make)
-	}
+	async transaction(...writes: Write[]) {
+		for (const write of writes) {
+			switch (write.kind) {
 
-	async del(key: Uint8Array) {
-		this.#map.delete(this.#stringkey(key))
+				case "put":
+					this.#map.set(write.key, write.value)
+					break
+
+				case "del":
+					this.#map.delete(write.key)
+					break
+
+				default:
+					throw new Error(`unknown write kind`)
+			}
+		}
 	}
 }
 

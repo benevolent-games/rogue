@@ -1,6 +1,6 @@
 
 import {AccountView} from "./view.js"
-import {context} from "../../../../context.js"
+import {Context} from "../../../../context.js"
 import {gigapanel} from "../../utils/gigapanel.js"
 import {AvatarView} from "../../../avatar/view.js"
 import {Avatar} from "../../../../features/accounts/avatars/avatar.js"
@@ -11,15 +11,18 @@ export const AccountPanel = gigapanel(() => ({
 	label: "Account",
 
 	button: () => {
-		const session = context.session.value
+		const {context} = Context
+		const {accountManager} = context
+		const session = context.accountManager.session.value
+		const isSessionLoading = context.accountManager.isSessionLoading.value
 
 		if (session) {
-			const avatar = Avatar.library.get(session.account.avatarId)
+			const avatar = Avatar.get(session.account.avatarId)
 			if (avatar)
-				return AvatarView([avatar, {loading: context.isSessionLoading}])
+				return AvatarView([avatar, {loading: isSessionLoading}])
 		}
 
-		return context.auth.login
+		return accountManager.auth.login
 			? userCheckSvg
 			: userQuestionSvg
 	},

@@ -1,23 +1,30 @@
 
-import {Kv} from "../../../packs/kv/kv.js"
+import {Badge} from "@benev/slate"
 import {AccountRecord} from "./types.js"
-import {idkey} from "../../../packs/kv/utils/idkey.js"
+import {Kv} from "../../../packs/kv/kv.js"
 
 export class AccountantDatabase {
-	constructor(public kv: Kv) {}
+	#records: Kv<AccountRecord>
+
+	constructor(kv: Kv) {
+		this.#records = kv.namespace<AccountRecord>("accounts.records")
+	}
 
 	async save(record: AccountRecord) {
-		const key = idkey("accounts.records.", record.thumbprint)
-		await this.kv.json.put(key, record)
+		await this.#records.put(record.thumbprint, record)
 	}
 
 	async load(thumbprint: string) {
-		const key = idkey("accounts.records.", thumbprint)
-		return this.kv.json.guarantee<AccountRecord>(key, () => ({
+		return this.#records.guarantee(thumbprint, () => ({
 			thumbprint,
-			tags: [],
-			avatars: [],
-			avatarId: null,
+			privileges: {
+				tags: [],
+				avatars: [],
+			},
+			preferences: {
+				avatarId: null,
+				name: Badge.fromHex(thumbprint).preview,
+			},
 		}))
 	}
 }

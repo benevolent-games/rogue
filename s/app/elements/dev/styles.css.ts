@@ -22,7 +22,7 @@ slot {
 	gap: 0.5em;
 
 	> * {
-		background: #0002;
+		background: #0008;
 		padding: 0.5em;
 		border-radius: 0.5em;
 	}
@@ -30,6 +30,7 @@ slot {
 	> nav {
 		display: flex;
 		flex-direction: column;
+		min-width: 12em;
 		gap: 0.5em;
 
 		> button {

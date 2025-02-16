@@ -6,5 +6,9 @@ export default css`
 	display: block;
 }
 
+ol {
+	padding-left: 1.5em;
+}
+
 `
 

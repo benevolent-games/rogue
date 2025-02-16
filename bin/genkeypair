@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+import "@benev/slate/x/node.js"
+import {Keypair} from "@authlocal/authlocal"
+import {crunch} from "../x/tools/crunch.js"
+
+const keypair = await Keypair.generate()
+const data = await keypair.toData()
+console.log(crunch(data))
+

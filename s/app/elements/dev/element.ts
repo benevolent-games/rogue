@@ -1,25 +1,28 @@
 
-import {Pubkey} from "@authlocal/authlocal"
 import {html, Map2, RenderResult, shadowComponent} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
-import {Kv} from "../../../packs/kv/kv.js"
-import {makeApi} from "../../api.js"
-import {CharacterList} from "../../features/characters/ui/view.js"
-
-const kv = new Kv()
-const api = (await makeApi(kv)).v1
-const pubkey = await api.pubkey().then(data => Pubkey.fromData(data))
+import {HashRouter} from "../../../tools/hash-router.js"
+import {AccountView} from "../../views/gigamenu/panels/account/view.js"
+import {CharacterList} from "../../features/characters/ui/views/character-list/view.js"
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
 
+	const router = use.once(() => new HashRouter())
+
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
-		["characters", () => CharacterList([])],
+		["/account", () => AccountView([])],
+		["/characters", () => CharacterList([])],
 	]))
 
-	const currentTab = use.signal([...tabs.keys()][0])
+	const renderer = tabs.get(router.path.value)
+
+	use.once(() => {
+		if (!renderer)
+			router.goto([...tabs.keys()][0])
+	})
 
 	return html`
 		<slot></slot>
@@ -29,14 +32,16 @@ export const GameDev = shadowComponent(use => {
 				${[...tabs.keys()].map(tab => html`
 					<button
 						class="play"
-						?x-current="${tab === currentTab.value}"
-						@click="${() => { currentTab.value = tab }}">
+						?x-current="${tab === router.path.value}"
+						@click="${() => { router.goto(tab) }}">
 							${tab}
 					</button>
 				`)}
 			</nav>
 			<div class=deck>
-				${tabs.require(currentTab.value)()}
+				${renderer
+					? renderer()
+					: html`404 not found "${router.path.value}"`}
 			</div>
 		</div>
 	`

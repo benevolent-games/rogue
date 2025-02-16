@@ -1,8 +1,15 @@
 
 export type Character = {
 	id: string
-	owner: string
+	ownerId: string
 }
+
+export type Owner = {
+	id: string
+	characterIds: string[]
+}
+
+///////////////////////////////
 
 export type CharacterScope = "custodian" | "arbiter"
 

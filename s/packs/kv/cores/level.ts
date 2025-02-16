@@ -1,42 +1,55 @@
 
 import {Level} from "level"
-import {ByteCore} from "../parts/types.js"
+import {Core} from "../parts/core.js"
+import {Scan, Write} from "../parts/types.js"
 
-export class LevelCore implements ByteCore {
-	#db: Level<Uint8Array, Uint8Array>
+export class LevelCore extends Core {
+	#db: Level<string, string>
 
 	constructor(path: string) {
-		this.#db = new Level(path, {keyEncoding: "view", valueEncoding: "view"})
+		super()
+		this.#db = new Level(path)
 	}
 
-	async put(key: Uint8Array, value: Uint8Array) {
-		return this.#db.put(key, value)
+	async gets(...keys: string[]) {
+		return this.#db.getMany(keys)
 	}
 
-	async get(key: Uint8Array) {
-		try {
-			return this.#db.get(key)
-		}
-		catch (error) {
-			return undefined
-		}
+	// TODO when it's released, use level's upcoming .has and .hasMany
+	//  - currently we're using a hack, using .get
+	//  - see https://github.com/Level/community/issues/142
+	async hasKeys(...keys: string[]) {
+		if (keys.length === 0) return []
+		const values = await this.gets(...keys)
+		return values.map(value => value !== undefined)
 	}
 
-	async require(key: Uint8Array) {
-		return this.#db.get(key)
+	async *keys(scan: Scan = {}) {
+		const results = this.#db.keys({
+			gte: scan.start,
+			lte: scan.end,
+			limit: scan.limit,
+		})
+		for await (const key of results)
+			yield key
 	}
 
-	async guarantee(key: Uint8Array, make: () => Uint8Array) {
-		let value: Uint8Array | undefined = await this.get(key)
-		if (value === undefined) {
-			value = make()
-			this.put(key, value)
-		}
-		return value
+	async *entries(scan: Scan = {}) {
+		const results = this.#db.iterator({
+			gte: scan.start,
+			lte: scan.end,
+			limit: scan.limit,
+		})
+		for await (const entry of results)
+			yield entry
 	}
 
-	async del(key: Uint8Array) {
-		return this.#db.del(key)
+	async transaction(...writes: Write[]) {
+		return this.#db.batch(
+			writes.map(write => (write.kind === "put"
+				? {type: "put", key: write.key, value: write.value}
+				: {type: "del", key: write.key}
+			))
+		)
 	}
 }
-

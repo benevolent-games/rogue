@@ -6,7 +6,7 @@ import {AccountantDatabase} from "./database.js"
 export async function enhanceHardcodedAccounts(database: AccountantDatabase) {
 	const badge = (badge: string) => Badge.hex(badge)
 
-	const prejudices: {
+	const hardcodes: {
 			label: string,
 			thumbprint: string,
 			tags: AccountTag[],
@@ -93,13 +93,14 @@ export async function enhanceHardcodedAccounts(database: AccountantDatabase) {
 
 
 	const accounts = await Promise.all(
-		prejudices.map(prejudice => database.load(prejudice.thumbprint)
-			.then(record => ({prejudice, record})))
+		hardcodes.map(hard => database.load(hard.thumbprint)
+			.then(record => ({hard, record})))
 	)
 
-	for (const {prejudice, record} of accounts) {
-		record.tags = dedupe([...record.tags, ...prejudice.tags])
-		record.avatars = dedupe([...record.avatars, ...prejudice.avatars])
+	for (const {hard, record} of accounts) {
+		const {privileges} = record
+		privileges.tags = dedupe([...privileges.tags, ...hard.tags])
+		privileges.avatars = dedupe([...privileges.avatars, ...hard.avatars])
 		await database.save(record)
 	}
 }

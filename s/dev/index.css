@@ -49,7 +49,8 @@ body {
 	font-family: sans-serif;
 
 	color: #fffc;
-	background: #1d2222;
+	xxx-background: #1d2222;
+	background: #111;
 
 	scrollbar-gutter: stable;
 	scrollbar-width: thin;

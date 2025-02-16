@@ -1,33 +1,21 @@
 
 import {Hex} from "@benev/slate"
-import {Randy} from "@benev/toolbox"
 import {Future, Proof} from "@authlocal/authlocal"
 
-import {Keychain} from "../security/keychain.js"
+import {Kv} from "../../../packs/kv/kv.js"
 import {CharacterDatabase} from "./database.js"
 import {secureLogin} from "../security/secure-login.js"
-import {randyBuffer} from "../../../tools/temp/randy-bytes.js"
+import {DecreeSigner} from "../security/decree/signer.js"
 import {Character, CharacterAccess, CharacterScope} from "./types.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 
-export class Characters {
-	database = new CharacterDatabase()
-	constructor(public keychain: Keychain) {}
-	api = () => makeCharacterApi({
-		database: this.database,
-		keychain: this.keychain,
-	})
-}
-
-export function makeCharacterApi({keychain, database}: {
-		keychain: Keychain,
-		database: CharacterDatabase,
-	}) {
+export async function makeCharacterApi(kv: Kv, signer: DecreeSigner) {
+	const database = new CharacterDatabase(kv)
 
 	const signToken = (character: Character, scope: CharacterScope, days: number) =>
-		keychain.sign<CharacterAccess>(
+		signer.sign<CharacterAccess>(
 			{character, scope},
-			Future.days(days),
+			{expiresAt: Future.days(days)},
 		)
 
 	const signCustodianToken = (character: Character) =>
@@ -37,22 +25,23 @@ export function makeCharacterApi({keychain, database}: {
 		signToken(character, "arbiter", 1)
 
 	return {
+
+		/** an owner has a list of characters they can manage */
 		owner: secureLogin((proof: Proof) => ({
 
 			/** list all characters owned by this user, and return character custodian tokens */
 			async list() {
-				const list = await database.listForOwner(proof.thumbprint)
+				const ownerId = proof.thumbprint
+				const characters = await database.list(ownerId)
 				return Promise.all(
-					list.map(character => signCustodianToken(character))
+					characters.map(character => signCustodianToken(character))
 				)
 			},
 
-			/** create a character based on a seed */
-			async create(draft: {seed: number}) {
-				const randy = new Randy(draft.seed)
-				const bytes = randyBuffer(randy, 32)
-				const id = Hex.string(bytes)
-				const character: Character = {id, owner: proof.thumbprint}
+			/** create a character */
+			async create() {
+				const id = Hex.random(32)
+				const character: Character = {id, ownerId: proof.thumbprint}
 				await database.add(character)
 				return signCustodianToken(character)
 			},
@@ -69,22 +58,24 @@ export function makeCharacterApi({keychain, database}: {
 			},
 		})),
 
-		custodian: secureCharacterAccess(keychain, "custodian", character => ({
+		/** a custodian has the ability to change the ownership of a character **/
+		custodian: secureCharacterAccess(signer, "custodian", character => ({
 
 			/** transfer a character to be owned by a new account */
-			async changeOwnership(newOwner: string) {
-				const bytes = Hex.bytes(newOwner)
+			async changeOwnership(newOwnerId: string) {
+				const bytes = Hex.bytes(newOwnerId)
 				if (bytes.length !== 32) throw new Error("invalid newOwner id")
-				const updatedCharacter = await database.updateOwner(character.id, newOwner)
+				const updatedCharacter = await database.changeOwnership(character.id, newOwnerId)
 				return signCustodianToken(updatedCharacter)
 			},
 		})),
 
-		arbiter: secureCharacterAccess(keychain, "arbiter", character => ({
+		/** an arbiter has the ability to report gameplay changes to characters, like the gains of skills and equipment, or death **/
+		arbiter: secureCharacterAccess(signer, "arbiter", character => ({
 
 			/** report a player as dead */
 			async kill() {
-				database.delete(character.id)
+				await database.delete(character.id)
 			},
 		})),
 	}

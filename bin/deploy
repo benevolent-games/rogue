@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# don't run this locally on your dev machine,
+# it's supposed to be run on the signaller server in the cloud
+
+source $HOME/.nvm/nvm.sh
+
+export FORCE_COLOR=1
+export NODE_ENV=production
+
+cp $HOME/.env.prod $HOME/app/.env.prod
+cd $HOME/app
+npm ci --omit=dev
+
+set -a # export all vars
+source ./.env.prod
+set +a # stop exporting all vars
+
+pm2 reload app --update-env || pm2 start x/server.js --name app
+

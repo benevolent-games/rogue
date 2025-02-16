@@ -1,17 +1,34 @@
 
-import {Map2} from "@benev/slate"
-import {Character} from "./types.js"
+import {dedupe} from "@benev/slate"
+import {Kv} from "../../../packs/kv/kv.js"
+import {Character, Owner} from "./types.js"
 
 export class CharacterDatabase {
-	#characters = new Map2<string, Character>()
-	#owners = new Map2<string, Set<Character>>()
+	#owners: Kv<Owner>
+	#characters: Kv<Character>
 
-	#getOwnerSet(owner: string) {
-		return this.#owners.guarantee(owner, () => new Set())
+	constructor(public kv: Kv) {
+		this.#characters = kv.namespace("characters.records")
+		this.#owners = kv.namespace("characters.ownership")
 	}
 
-	async listForOwner(owner: string) {
-		return [...this.#getOwnerSet(owner)]
+	#helpers = {
+		addCharacterIdToOwner(owner: Owner, characterId: string) {
+			owner.characterIds = dedupe([...owner.characterIds, characterId])
+		},
+		removeCharacterIdFromOwner(owner: Owner, characterId: string) {
+			owner.characterIds = owner.characterIds.filter(id => id !== characterId)
+		},
+	}
+
+	async #getOwner(id: string) {
+		return this.#owners
+			.guarantee(id, () => ({id, characterIds: []}))
+	}
+
+	async list(ownerId: string) {
+		const owner = await this.#getOwner(ownerId)
+		return this.#characters.requires(...owner.characterIds)
 	}
 
 	async get(id: string) {
@@ -23,28 +40,59 @@ export class CharacterDatabase {
 	}
 
 	async add(character: Character) {
-		this.#characters.set(character.id, character)
-		this.#getOwnerSet(character.owner).add(character)
+		if (await this.#characters.has(character.id))
+			throw new Error("character record already exists for this id")
+
+		// update owner
+		const owner = await this.#getOwner(character.ownerId)
+		this.#helpers.addCharacterIdToOwner(owner, character.id)
+
+		// write to database
+		await this.kv.transaction(() => [
+			this.#owners.write.put(owner.id, owner),
+			this.#characters.write.put(character.id, character),
+		])
 	}
 
 	async delete(id: string) {
-		const character = this.#characters.get(id)
+		const character = await this.#characters.get(id)
 		if (character) {
-			this.#characters.delete(id)
-			this.#getOwnerSet(character.owner).delete(character)
+
+			// update owner
+			const owner = await this.#getOwner(character.ownerId)
+			this.#helpers.removeCharacterIdFromOwner(owner, character.id)
+
+			// write to database
+			await this.kv.transaction(() => [
+				this.#owners.write.put(owner.id, owner),
+				this.#characters.write.del(character.id),
+			])
 		}
 	}
 
-	async updateOwner(id: string, newOwner: string) {
-		const character = this.#characters.require(id)
+	async changeOwnership(id: string, newOwnerId: string) {
+		const character = await this.#characters.require(id)
+		const previousOwnerId = character.ownerId
 
-		// delete old ownership
-		this.#getOwnerSet(character.owner).delete(character)
+		// assign owner to character
+		character.ownerId = newOwnerId
 
-		// establish new ownership
-		character.owner = newOwner
-		this.#getOwnerSet(newOwner).add(character)
+		// add character to new owner
+		const newOwner = await this.#getOwner(newOwnerId)
+		this.#helpers.addCharacterIdToOwner(newOwner, character.id)
 
+		// remove character from old owner
+		const previousOwner = await this.#getOwner(previousOwnerId)
+		this.#helpers.removeCharacterIdFromOwner(previousOwner, character.id)
+
+		// write to database
+		await this.kv.transaction(() => [
+			this.#owners.write.put(newOwner.id, newOwner),
+			this.#owners.write.put(previousOwner.id, previousOwner),
+			this.#characters.write.put(character.id, character),
+		])
+
+		// return the updated character
 		return character
 	}
 }
