@@ -41,6 +41,25 @@ jobs:
         rm x/node_modules
         rm x/s
 
+    - uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+
+    - name: upload to server
+      run: |
+        rsync --delete -hamz \
+          --exclude ".git" \
+          --exclude "node_modules" \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          ./ deployer@api.rogue.benevolent.games:/home/deployer/app/
+
+    - name: serverside deployment script
+      run: |
+        ssh \
+          -o StrictHostKeyChecking=no \
+          deployer@api.rogue.benevolent.games \
+          "~/app/bin/deploy"
+
     - name: 🌎 download assets sources
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

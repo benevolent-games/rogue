@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+import "@benev/slate/x/node.js"
+import {Text, Base58} from "@benev/slate"
+import {Keypair} from "@authlocal/authlocal"
+
+const keypair = await Keypair.generate()
+const data = await keypair.toData()
+const json = JSON.stringify(data)
+const bytes = Text.bytes(json)
+const b58 = Base58.string(bytes)
+
+console.log(b58)
+
