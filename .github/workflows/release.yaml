@@ -50,6 +50,7 @@ jobs:
         rsync --delete -hamz \
           --exclude ".git" \
           --exclude "node_modules" \
+          --exclude "database" \
           -e "ssh -o StrictHostKeyChecking=no" \
           ./ deployer@api.rogue.benevolent.games:/home/deployer/app/
 

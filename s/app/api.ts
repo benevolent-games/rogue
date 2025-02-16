@@ -1,4 +1,5 @@
 
+import {Keypair} from "@authlocal/authlocal"
 import {Kv} from "../packs/kv/kv.js"
 import {makeAccountantApi} from "./features/accounts/api.js"
 import {makeCharacterApi} from "./features/characters/api.js"
@@ -6,8 +7,8 @@ import {DecreeSigner} from "./features/security/decree/signer.js"
 
 export type Api = Awaited<ReturnType<typeof makeApi>>
 
-export async function makeApi(kv: Kv) {
-	const signer = await DecreeSigner.temp()
+export async function makeApi(kv: Kv, keypair: Keypair) {
+	const signer = new DecreeSigner(keypair)
 	const pubkeyData = await signer.pubkey.toData()
 
 	const accountant = await makeAccountantApi(kv, signer)

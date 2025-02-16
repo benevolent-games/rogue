@@ -7,6 +7,7 @@ import {Kv} from "../packs/kv/kv.js"
 import {Api, makeApi} from "./api.js"
 import {HashRouter} from "../tools/hash-router.js"
 import {StorageCore} from "../packs/kv/cores/storage.js"
+import {mockKeypair} from "./features/security/mock-keypair.js"
 import {AccountManager} from "./features/accounts/ui/manager.js"
 import {CharacterManager} from "./features/characters/ui/manager.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
@@ -33,7 +34,7 @@ export class Context {
 
 	static async mock() {
 		const mockServerKv = new Kv(new StorageCore).namespace("rogueMockServer.v1")
-		const api = await makeApi(mockServerKv)
+		const api = await makeApi(mockServerKv, await mockKeypair())
 		return this.#prepare(api)
 	}
 
