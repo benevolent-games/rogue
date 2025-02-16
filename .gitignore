@@ -5,6 +5,7 @@
 /temp
 /mount
 /database
+/.env.prod
 
 /node_modules
 /yarn.lock
