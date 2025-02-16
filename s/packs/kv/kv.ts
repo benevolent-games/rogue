@@ -2,10 +2,10 @@
 import {Core} from "./parts/core.js"
 import {Data} from "./parts/data.js"
 import {MemCore} from "./cores/mem.js"
+import {Store} from "./parts/store.js"
 import {Writer} from "./parts/writer.js"
 import {Prefixer} from "./parts/prefixer.js"
 import {Options, Scan, Write} from "./parts/types.js"
-import { Store } from "./parts/store.js"
 
 export class Kv<V = any> {
 	write: Writer<V>

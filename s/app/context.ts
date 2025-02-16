@@ -11,6 +11,7 @@ import {mockKeypair} from "./features/security/mock-keypair.js"
 import {AccountManager} from "./features/accounts/ui/manager.js"
 import {CharacterManager} from "./features/characters/ui/manager.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
+import {localStorageVersionMigration} from "./features/storage/version-migration.js"
 
 export class Context {
 	static #context: Context | null = null
@@ -21,7 +22,8 @@ export class Context {
 	}
 
 	static async #prepare(api: Api) {
-		const kv = new Kv(new StorageCore).namespace("rogue.v1")
+		const kv = new Kv(new StorageCore).namespace("rogue")
+		await localStorageVersionMigration(kv)
 		const pubkey = await Pubkey.fromData(await api.v1.pubkey())
 		const verifier = new DecreeVerifier(pubkey)
 		const commons: Commons = {kv, api, verifier}
@@ -33,7 +35,7 @@ export class Context {
 	}
 
 	static async mock() {
-		const mockServerKv = new Kv(new StorageCore).namespace("rogueMockServer.v1")
+		const mockServerKv = new Kv(new StorageCore).namespace("rogueMockServer")
 		const api = await makeApi(mockServerKv, await mockKeypair())
 		return this.#prepare(api)
 	}
