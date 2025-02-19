@@ -17,6 +17,7 @@ import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
+import { Material } from "@babylonjs/core/Materials/material.js"
 
 export class Walling {
 	#placer = new DungeonPlacer(1)
@@ -111,8 +112,15 @@ export class Walling {
 				if (diff < 0.05)
 					spec.currentOpacity = spec.targetOpacity
 				if (spec.currentOpacity !== previous) {
-					for (const mesh of meshes)
+					for (const mesh of meshes) {
+
+						// ensure the material uses alpha blending
+						if (mesh.material && mesh.material.transparencyMode !== Material.MATERIAL_ALPHABLEND)
+							mesh.material.transparencyMode = Material.MATERIAL_ALPHABLEND
+
+						// set the visibility
 						mesh.visibility = spec.currentOpacity
+					}
 				}
 			}
 		}
