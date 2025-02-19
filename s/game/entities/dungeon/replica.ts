@@ -6,14 +6,12 @@ import {RogueEntities} from "../entities.js"
 import {Box2} from "../../physics/shapes/box2.js"
 import {DungeonRenderer} from "../../dungeons/renderer.js"
 import {replica} from "../../../packs/archimedes/framework/replication/types.js"
-import {WallDetector} from "../../dungeons/skinning/walls/wall-detector.js"
 
 export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 	({realm, getState}) => {
 
 	const state = getState()
 	const cullingRange = 20
-	const wallDetector = new WallDetector(realm)
 
 	const localArea = new Box2(
 		realm.cameraman.desired.pivot,
@@ -44,7 +42,6 @@ export const dungeonReplica = replica<RogueEntities, Realm>()<"dungeon">(
 			dungeonRenderer.render(realm.seconds, localArea)
 		},
 		dispose: () => {
-			wallDetector.dispose()
 			dungeonRenderer.dispose()
 			stopDrops()
 		},
