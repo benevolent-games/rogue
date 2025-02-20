@@ -14,10 +14,10 @@ import {constants} from "../../../../constants.js"
 import {Box2} from "../../../physics/shapes/box2.js"
 import {GlobalTileVec2} from "../../layouting/space.js"
 import {ZenGrid} from "../../../../tools/hash/zen-grid.js"
+import {Material} from "@babylonjs/core/Materials/material.js"
 import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
-import { Material } from "@babylonjs/core/Materials/material.js"
 
 export class Walling {
 	#placer = new DungeonPlacer(1)
