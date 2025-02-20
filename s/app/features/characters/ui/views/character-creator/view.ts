@@ -11,16 +11,19 @@ export const CharacterCreator = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
 
 	const {accountManager, characterManager} = Context.context
-	const characterDetails = use.once(() => signal(CharacterDetails.roll()))
+	const characters = use.once(() => signal(CharacterDetails.roll()))
 
 	function roll() {
-		characterDetails.value = CharacterDetails.roll()
+		characters.value = CharacterDetails.roll()
 	}
+
+	const height = characters.value.heightDisplay
 
 	return html`
 		<div>character-creator</div>
-		<p>${characterDetails.value.seed.slice(0, 8)}</p>
-		<p>${characterDetails.value.name}</p>
+		<p>${characters.value.seed.slice(0, 8)}</p>
+		<p>${characters.value.name}</p>
+		<p>${height.feetAndInches} (${height.centimeters}cm)</p>
 		<button @click="${roll}">roll</button>
 	`
 })
