@@ -12,7 +12,7 @@ export const CharacterList = shadowView(use => () => {
 
 	const {accountManager, characterManager} = Context.context
 
-	const login = use.computed(() => accountManager.session.value?.login)
+	// const login = use.computed(() => accountManager.session.value?.login)
 
 	use.load(async() => {
 		const session = accountManager.session.value
@@ -32,9 +32,10 @@ export const CharacterList = shadowView(use => () => {
 				<li>${Names.falrysk.generate(Hex.bytes(character.id))}</li>
 			`)}
 		</ol>
-		${login.value ? html`
-			<button @click="${() => characterManager.create(login.value!)}">add character</button>
-		` : null}
 	`
+
+	// ${login.value ? html`
+	// 	<button @click="${() => characterManager.create(login.value!)}">add character</button>
+	// ` : null}
 })
 

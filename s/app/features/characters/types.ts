@@ -1,7 +1,14 @@
 
-export type Character = {
+/** seeds the creation of a character */
+export type CharacterGenesis = {
+	seed: string
+}
+
+/** database record of a character */
+export type CharacterRecord = {
 	id: string
 	ownerId: string
+	genesis: CharacterGenesis
 }
 
 export type Owner = {
@@ -15,6 +22,6 @@ export type CharacterScope = "custodian" | "arbiter"
 
 export type CharacterAccess = {
 	scope: CharacterScope
-	character: Character
+	character: CharacterRecord
 }
 

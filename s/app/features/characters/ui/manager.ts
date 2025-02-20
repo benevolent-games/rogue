@@ -4,12 +4,12 @@ import {Login} from "@authlocal/authlocal"
 import {Commons} from "../../../types.js"
 import {CharacterSource} from "./types.js"
 import {Session} from "../../accounts/ui/types.js"
-import {Character, CharacterAccess} from "../types.js"
 import {Store} from "../../../../packs/kv/parts/store.js"
+import {CharacterRecord, CharacterAccess, CharacterGenesis} from "../types.js"
 import {StorageCore} from "../../../../packs/kv/cores/storage.js"
 
 export class CharacterManager {
-	characters = signal<Character[]>([])
+	characters = signal<CharacterRecord[]>([])
 
 	#custodyStore: Store<string[]>
 	#sources = new Map2<string, CharacterSource>()
@@ -65,9 +65,9 @@ export class CharacterManager {
 		await this.#saveToStore()
 	}
 
-	async create(login: Login) {
+	async create(login: Login, genesis: CharacterGenesis) {
 		const proofToken = login.proof.token
-		const decree = await this.options.api.v1.characters.owner.create({proofToken})
+		const decree = await this.options.api.v1.characters.owner.create({proofToken}, genesis)
 		const sources = await this.#verify([decree])
 		await this.#addSources(sources)
 		await this.#saveToStore()

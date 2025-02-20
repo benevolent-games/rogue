@@ -1,11 +1,11 @@
 
 import {dedupe} from "@benev/slate"
 import {Kv} from "../../../packs/kv/kv.js"
-import {Character, Owner} from "./types.js"
+import {CharacterRecord, Owner} from "./types.js"
 
 export class CharacterDatabase {
 	#owners: Kv<Owner>
-	#characters: Kv<Character>
+	#characters: Kv<CharacterRecord>
 
 	constructor(public kv: Kv) {
 		this.#characters = kv.namespace("characters.records")
@@ -39,7 +39,7 @@ export class CharacterDatabase {
 		return this.#characters.require(id)
 	}
 
-	async add(character: Character) {
+	async add(character: CharacterRecord) {
 		if (await this.#characters.has(character.id))
 			throw new Error("character record already exists for this id")
 
