@@ -14,6 +14,7 @@ import {AccountManager} from "./features/accounts/ui/manager.js"
 import {makeDatabaseSchema} from "./features/schema/database.js"
 import {CharacterManager} from "./features/characters/ui/manager.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
+import {migrateDatabase} from "./features/schema/migrate-database.js"
 import {migrateLocalStorage} from "./features/schema/migrate-local-storage.js"
 
 export class Context {
@@ -24,8 +25,7 @@ export class Context {
 		return this.#context
 	}
 
-	static async #prepare(api: Api) {
-		const kv = new Kv(new StorageCore).namespace("rogue")
+	static async #prepare(kv: Kv, api: Api) {
 		const schema = makeLocalSchema(kv)
 		await migrateLocalStorage(schema)
 		const pubkey = await Pubkey.fromData(await api.v1.pubkey())
@@ -39,15 +39,18 @@ export class Context {
 	}
 
 	static async mock() {
-		const mockServerKv = new Kv(new StorageCore).namespace("rogueMockServer")
-		const mockDatabaseSchema = makeDatabaseSchema(mockServerKv)
-		const api = await makeApi(mockDatabaseSchema, await mockKeypair())
-		return this.#prepare(api)
+		const kv = new Kv(new StorageCore).namespace("rogueMock")
+		const databaseKv = new Kv(new StorageCore).namespace("rogueMockDatabase")
+		const databaseSchema = makeDatabaseSchema(databaseKv)
+		await migrateDatabase(databaseSchema)
+		const api = await makeApi(databaseSchema, await mockKeypair())
+		return this.#prepare(kv, api)
 	}
 
 	static async make(url: string) {
 		const api = httpRemote<Api>(url)
-		return this.#prepare(api)
+		const localKv = new Kv(new StorageCore).namespace("rogue")
+		return this.#prepare(localKv, api)
 	}
 
 	static async auto() {

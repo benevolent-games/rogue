@@ -23,11 +23,15 @@ export const CharacterList = shadowView(use => (onSelect?: (character: Character
 		const isOwned = account && (account.thumbprint === character.ownerId)
 		const del = () => () => characterManager.delete(record.id)
 		const claim = () => () => characterManager.claim(record.id)
+		const click = () => {
+			if (onSelect)
+				onSelect(character)
+		}
 		return html`
 			<li id="${character.id}">
 				<div class=card
 					?data-selectable="${!!onSelect}"
-					@click="${onSelect}"
+					@click="${click}"
 					?data-owned="${isOwned}">
 
 					<div class=details>

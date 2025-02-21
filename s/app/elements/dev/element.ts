@@ -38,6 +38,7 @@ export const GameDev = shadowComponent(use => {
 					</button>
 				`)}
 			</nav>
+
 			<div class=deck>
 				${renderer
 					? renderer()
