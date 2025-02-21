@@ -4,8 +4,8 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../../../../theme.css.js"
 import {Character} from "../../../parts/character.js"
-import {CharacterList} from "../character-list/view.js"
-import {CharacterCreator} from "../character-creator/view.js"
+import {CharacterList} from "../list/view.js"
+import {CharacterCreator} from "../creator/view.js"
 
 export const CharacterSelector = shadowView(use => (
 		onSelect?: (character: Character) => void

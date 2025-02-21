@@ -5,7 +5,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {HashRouter} from "../../../tools/hash-router.js"
 import {AccountView} from "../../views/gigamenu/panels/account/view.js"
-import {CharacterSelector} from "../../features/characters/ui/views/character-selector/view.js"
+import {CharacterSelector} from "../../features/characters/ui/views/selector/view.js"
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)

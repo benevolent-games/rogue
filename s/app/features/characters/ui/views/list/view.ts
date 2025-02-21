@@ -1,6 +1,6 @@
 
+import {IdView} from "@authlocal/authlocal"
 import {html, shadowView} from "@benev/slate"
-import {IdView, Login} from "@authlocal/authlocal"
 
 import stylesCss from "./styles.css.js"
 import {CharacterRecord} from "../../../types.js"
