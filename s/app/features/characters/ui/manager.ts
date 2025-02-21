@@ -5,8 +5,8 @@ import {Commons} from "../../../types.js"
 import {CharacterSource} from "./types.js"
 import {Session} from "../../accounts/ui/types.js"
 import {Store} from "../../../../packs/kv/parts/store.js"
-import {CharacterRecord, CharacterAccess, CharacterGenesis} from "../types.js"
 import {StorageCore} from "../../../../packs/kv/cores/storage.js"
+import {CharacterRecord, CharacterAccess, CharacterGenesis} from "../types.js"
 
 export class CharacterManager {
 	characters = signal<CharacterRecord[]>([])

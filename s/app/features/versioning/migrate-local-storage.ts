@@ -1,12 +1,15 @@
 
 import {Kv} from "../../../packs/kv/kv.js"
 
-const latestVersion = 1
+const latestVersion = 2
 
 export async function migrateLocalStorage(kv: Kv) {
 	await kv.versionMigration("version", latestVersion, async version => {
-		localStorage.clear()
-		console.log(`cleared localStorage for migration, v${version} to v${latestVersion}`)
+
+		if (version < 2) {
+			await kv.clear()
+			console.log(`cleared localStorage for migration, v${version} to v${latestVersion}`)
+		}
 	})
 }
 
