@@ -11,7 +11,7 @@ import {mockKeypair} from "./features/security/mock-keypair.js"
 import {AccountManager} from "./features/accounts/ui/manager.js"
 import {CharacterManager} from "./features/characters/ui/manager.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
-import {localStorageVersionMigration} from "./features/storage/version-migration.js"
+import {migrateLocalStorage} from "./features/versioning/migrate-local-storage.js"
 
 export class Context {
 	static #context: Context | null = null
@@ -23,7 +23,7 @@ export class Context {
 
 	static async #prepare(api: Api) {
 		const kv = new Kv(new StorageCore).namespace("rogue")
-		await localStorageVersionMigration(kv)
+		await migrateLocalStorage(kv)
 		const pubkey = await Pubkey.fromData(await api.v1.pubkey())
 		const verifier = new DecreeVerifier(pubkey)
 		const commons: Commons = {kv, api, verifier}

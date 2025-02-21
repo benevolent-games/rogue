@@ -27,7 +27,8 @@ export class CharacterDetails {
 		const {feet, inches} = metersToFeetAndInches(meters)
 		const centimeters = Math.round(100 * this.height)
 		const feetAndInches = `${feet}'${inches}"`
-		return {meters, centimeters, feetAndInches, feet, inches}
+		const full = `${feetAndInches} (${centimeters}cm)`
+		return {full, meters, centimeters, feetAndInches, feet, inches}
 	}
 
 	static getRandomHeight(randy: Randy) {

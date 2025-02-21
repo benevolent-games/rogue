@@ -23,29 +23,30 @@ export class Kv<V = any> {
 		this.write = new Writer(this.#prefixer)
 	}
 
-	async gets(...keys: string[]) {
+	async gets<X extends V = V>(...keys: string[]) {
 		const strings = await this.core.gets(...keys.map(this.#prefixer.prefix))
-		return strings.map(string => string === undefined
+		return (strings.map(string => string === undefined
 			? string
 			: Data.parse<V>(string))
+		) as (X | undefined)[]
 	}
 
-	async get(key: string) {
+	async get<X extends V = V>(key: string) {
 		const [value] = await this.gets(key)
-		return value
+		return value as X | undefined
 	}
 
-	async requires(...keys: string[]) {
-		const values = await this.gets(...keys)
+	async requires<X extends V = V>(...keys: string[]) {
+		const values = await this.gets<X>(...keys)
 		for (const value of values)
 			if (value === undefined)
 				throw new Error("required key not found")
-		return values as V[]
+		return values as X[]
 	}
 
-	async require(key: string) {
+	async require<X extends V = V>(key: string) {
 		const [value] = await this.requires(key)
-		return value
+		return value as X
 	}
 
 	async hasKeys(...keys: string[]) {
@@ -62,9 +63,9 @@ export class Kv<V = any> {
 			yield this.#prefixer.unprefix(key)
 	}
 
-	async *entries(scan: Scan = {}) {
+	async *entries<X extends V = V>(scan: Scan = {}) {
 		for await (const [key, value] of this.core.entries(this.#prefixer.scan(scan)))
-			yield [this.#prefixer.unprefix(key), Data.parse<V>(value)] as [string, V]
+			yield [this.#prefixer.unprefix(key), Data.parse<V>(value)] as [string, X]
 	}
 
 	async transaction(fn: (write: Writer<V>) => Write[][]) {
@@ -72,11 +73,11 @@ export class Kv<V = any> {
 		return this.core.transaction(...writes)
 	}
 
-	async put(key: string, value: V) {
+	async put<X extends V = V>(key: string, value: X) {
 		return this.transaction(w => [w.put(key, value)])
 	}
 
-	async puts(...entries: [string, V][]) {
+	async puts<X extends V = V>(...entries: [string, X][]) {
 		return this.transaction(w => [w.puts(...entries)])
 	}
 
@@ -84,8 +85,8 @@ export class Kv<V = any> {
 		return this.transaction(w => [w.del(...keys)])
 	}
 
-	async guarantee(key: string, make: () => V) {
-		let value: V | undefined = await this.get(key)
+	async guarantee<X extends V = V>(key: string, make: () => X) {
+		let value: X | undefined = await this.get(key)
 		if (value === undefined) {
 			value = make()
 			await this.transaction(w => [w.put(key, value!)])
@@ -93,13 +94,29 @@ export class Kv<V = any> {
 		return value
 	}
 
+	/** helper for performing schema version migrations */
+	async versionMigration(
+			key: string,
+			latest: number,
+			fn: (version: number) => Promise<void>,
+		) {
+		const kv = this as Kv<any>
+		let version: number | undefined = (await kv.get<number>(key)) ?? 0
+		if (typeof version !== "number")
+			version = 0
+		if (version === latest)
+			return
+		await fn(version)
+		await kv.put(key, latest)
+	}
+
 	/** create a store which can put or get on a single key */
-	store<X = V>(key: string) {
+	store<X extends V = V>(key: string) {
 		return new Store<X>(this, key)
 	}
 
 	/** create a kv where all keys are given a certain prefix */
-	namespace<X = V>(prefix: string) {
+	namespace<X extends V = V>(prefix: string) {
 		return new Kv<X>(this.core, {
 			...this.#options,
 			prefix: [...this.#options.prefix, prefix],

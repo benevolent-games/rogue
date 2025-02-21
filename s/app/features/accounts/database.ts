@@ -15,7 +15,7 @@ export class AccountantDatabase {
 	}
 
 	async load(thumbprint: string) {
-		return this.#records.guarantee(thumbprint, () => ({
+		return this.#records.guarantee<AccountRecord>(thumbprint, () => ({
 			thumbprint,
 			privileges: {
 				tags: [],
