@@ -3,6 +3,7 @@ export type Options = {
 	prefix: string[]
 	divisor: string
 	delimiter: string
+	chunkSize: number
 }
 
 export type Scan = {

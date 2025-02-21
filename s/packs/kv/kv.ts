@@ -4,6 +4,7 @@ import {Data} from "./parts/data.js"
 import {MemCore} from "./cores/mem.js"
 import {Store} from "./parts/store.js"
 import {Writer} from "./parts/writer.js"
+import {chunks} from "./parts/chunks.js"
 import {Prefixer} from "./parts/prefixer.js"
 import {Options, Scan, Write} from "./parts/types.js"
 
@@ -17,6 +18,7 @@ export class Kv<V = any> {
 			prefix: [],
 			divisor: ".",
 			delimiter: ":",
+			chunkSize: 10_000,
 			...options,
 		}
 		this.#prefixer = new Prefixer(this.#options)
@@ -61,6 +63,14 @@ export class Kv<V = any> {
 	async *keys(scan: Scan = {}) {
 		for await (const key of this.core.keys(this.#prefixer.scan(scan)))
 			yield this.#prefixer.unprefix(key)
+	}
+
+	async clear(scan: Scan = {}) {
+		const keys: string[] = []
+		for await (const key of this.keys(scan))
+			keys.push(key)
+		for (const chunk of chunks(this.#options.chunkSize, keys))
+			await this.del(...chunk)
 	}
 
 	async *entries<X extends V = V>(scan: Scan = {}) {

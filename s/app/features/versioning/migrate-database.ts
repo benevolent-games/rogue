@@ -8,7 +8,6 @@ export async function migrateDatabase(kv: Kv) {
 
 		if (version < 1) {
 		}
-
 	})
 }
 
