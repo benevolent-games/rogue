@@ -20,7 +20,7 @@ export async function makeAccountantApi(schema: DatabaseSchema, signer: DecreeSi
 			record = normalizeRecord(record)
 			if (kind === "rando") addAccountTags(record, "rando")
 			await database.save(record)
-			return AccountDecrees.sign(signer, proof, record)
+			return AccountDecrees.signAccountReport(signer, proof, record)
 		},
 
 		async loadAccount() {
@@ -29,7 +29,7 @@ export async function makeAccountantApi(schema: DatabaseSchema, signer: DecreeSi
 				addAccountTags(record, "rando")
 				await database.save(record)
 			}
-			return AccountDecrees.sign(signer, proof, record)
+			return AccountDecrees.signAccountReport(signer, proof, record)
 		},
 	}))
 }

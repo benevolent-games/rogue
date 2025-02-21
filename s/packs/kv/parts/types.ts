@@ -1,4 +1,6 @@
 
+export type Maker<V> = () => (V | Promise<V>)
+
 export type Options = {
 	prefix: string[]
 	divisor: string

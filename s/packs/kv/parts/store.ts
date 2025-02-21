@@ -1,5 +1,6 @@
 
 import {Kv} from "../kv.js"
+import {Maker} from "./types.js"
 
 export class Store<V = any> {
 	constructor(public kv: Kv, public key: string) {}
@@ -16,10 +17,10 @@ export class Store<V = any> {
 		return this.kv.require(this.key)
 	}
 
-	async guarantee(make: () => V): Promise<V> {
+	async guarantee(make: Maker<V>): Promise<V> {
 		let value: V | undefined = await this.get()
 		if (value === undefined) {
-			value = make()
+			value = await make()
 			await this.put(value)
 		}
 		return value

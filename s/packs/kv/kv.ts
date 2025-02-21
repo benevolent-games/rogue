@@ -6,7 +6,7 @@ import {Store} from "./parts/store.js"
 import {Writer} from "./parts/writer.js"
 import {chunks} from "./parts/chunks.js"
 import {Prefixer} from "./parts/prefixer.js"
-import {Options, Scan, Write} from "./parts/types.js"
+import {Maker, Options, Scan, Write} from "./parts/types.js"
 
 export class Kv<V = any> {
 	write: Writer<V>
@@ -95,10 +95,10 @@ export class Kv<V = any> {
 		return this.transaction(w => [w.del(...keys)])
 	}
 
-	async guarantee<X extends V = V>(key: string, make: () => X) {
+	async guarantee<X extends V = V>(key: string, make: Maker<X>) {
 		let value: X | undefined = await this.get(key)
 		if (value === undefined) {
-			value = make()
+			value = await make()
 			await this.transaction(w => [w.put(key, value!)])
 		}
 		return value

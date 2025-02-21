@@ -33,7 +33,7 @@ export type Account = {
 }
 
 export type AccountReport = {
-	decree: string
-	record: AccountRecord
+	accountDecree: string
+	accountRecord: AccountRecord
 }
 

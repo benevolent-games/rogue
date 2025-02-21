@@ -1,23 +1,21 @@
 
 import {Kv} from "../../../packs/kv/kv.js"
-import {RandoIdentity} from "../accounts/ui/types.js"
+import {LoginTokens, PassportData} from "@authlocal/authlocal"
 
 export type LocalSchema = ReturnType<typeof makeLocalSchema>
 
 export function makeLocalSchema(root: Kv) {
-	const accountsRoot = root.namespace("accounts")
-	const charactersRoot = root.namespace("characters")
-
 	return {
 		root,
 		version: root.store<number>("version"),
 		accounts: {
-			root: accountsRoot,
-			rando: accountsRoot.store<RandoIdentity>("rando"),
+			rando: {
+				passport: root.store<PassportData>("accounts.rando.passport"),
+				login: root.store<LoginTokens>("accounts.rando.login"),
+			},
 		},
 		characters: {
-			root: charactersRoot,
-			custody: charactersRoot.store<string[]>("custody"),
+			custody: root.store<string[]>("characters.custody"),
 		},
 	}
 }
