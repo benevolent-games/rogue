@@ -1,6 +1,9 @@
 
 /** publicly-visible roles */
-export type AccountTag = "founder" | "blessed" | "knighted" | "premium" | "banned"
+export type AccountTag = "rando" | "founder" | "blessed" | "knighted" | "premium" | "banned"
+
+/** there's a difference between a temporary 'rando' account versus a permanent 'authlocal' account */
+export type AccountKind = "rando" | "authlocal"
 
 /** user-provided preferences about their account */
 export type AccountPreferences = {
