@@ -5,8 +5,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {HashRouter} from "../../../tools/hash-router.js"
 import {AccountView} from "../../views/gigamenu/panels/account/view.js"
-import {CharacterList} from "../../features/characters/ui/views/character-list/view.js"
-import {CharacterCreator} from "../../features/characters/ui/views/character-creator/view.js"
+import {CharacterSelector} from "../../features/characters/ui/views/character-selector/view.js"
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -15,10 +14,7 @@ export const GameDev = shadowComponent(use => {
 
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
 		["/account", () => AccountView([])],
-		["/characters", () => html`
-			${CharacterList([])}
-			${CharacterCreator([])}
-		`],
+		["/characters", () => CharacterSelector([character => console.log(character)])],
 	]))
 
 	const renderer = tabs.get(router.path.value)

@@ -1,7 +1,7 @@
 
 import {Randy} from "@benev/toolbox"
 import {Auth, Login} from "@authlocal/authlocal"
-import {computed, Hex, Op, opSignal, pubsub, Signal} from "@benev/slate"
+import {computed, Hex, Op, opSignal, pubsub, Signal, signals} from "@benev/slate"
 
 import {Account} from "../types.js"
 import {Commons} from "../../../types.js"
@@ -23,7 +23,6 @@ export class AccountManager {
 	sessionOp = opSignal<Session | null>(Op.loading())
 	session = computed(() => Op.payload(this.sessionOp.value) ?? null)
 	isSessionLoading = computed(() => Op.is.loading(this.sessionOp.value))
-
 	multiplayerIdentity: Signal<Identity>
 
 	constructor(public options: Commons, public randoIdentity: RandoIdentity) {
@@ -62,6 +61,7 @@ export class AccountManager {
 	async load(login: Login | null) {
 		if (login === null) {
 			this.sessionOp.setReady(null)
+			await signals.wait
 			this.onSessionChange.publish(null)
 			return null
 		}
@@ -69,6 +69,9 @@ export class AccountManager {
 			const {decree, record} = await this.#loadAccountAndMaybeSave(login)
 			const account = await this.options.verifier.verify<Account>(decree)
 			const session: Session = {login, account, accountRecord: record, accountDecree: decree}
+			return session
+		}).then(async session => {
+			await signals.wait
 			this.onSessionChange.publish(session)
 			return session
 		})
@@ -85,16 +88,13 @@ export class AccountManager {
 						avatarId,
 						name: login.name,
 					})
-				const account = await this.#verifyAccountDecree(decree)
+				const account = await this.verifyAccountDecree(decree)
 				const newSession: Session = {login, account, accountRecord: record, accountDecree: decree}
 				return newSession
 			})
 		}
+		await signals.wait
 		this.onSessionChange.publish(this.session.value!)
-	}
-
-	async #verifyAccountDecree(decree: string) {
-		return this.options.verifier.verify<Account>(decree)
 	}
 }
 

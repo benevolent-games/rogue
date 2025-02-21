@@ -5,7 +5,7 @@ import {DatabaseSchema} from "../schema/database.js"
 import {secureLogin} from "../security/secure-login.js"
 import {enhanceHardcodedAccounts} from "./hardcoded.js"
 import {DecreeSigner} from "../security/decree/signer.js"
-import {signAccountDecree} from "./utils/sign-account-decree.js"
+import {AccountDecrees} from "./utils/account-decrees.js"
 import {normalizePreferences, normalizeRecord} from "./utils/normalize.js"
 
 export async function makeAccountantApi(schema: DatabaseSchema, signer: DecreeSigner) {
@@ -18,12 +18,12 @@ export async function makeAccountantApi(schema: DatabaseSchema, signer: DecreeSi
 			record.preferences = normalizePreferences(preferences, record.privileges)
 			record = normalizeRecord(record)
 			await database.save(record)
-			return signAccountDecree(signer, proof, record)
+			return AccountDecrees.sign(signer, proof, record)
 		},
 
 		async loadAccount() {
 			const record = normalizeRecord(await database.load(proof.thumbprint))
-			return signAccountDecree(signer, proof, record)
+			return AccountDecrees.sign(signer, proof, record)
 		},
 	}))
 }

@@ -31,7 +31,7 @@ export class Context {
 		const verifier = new DecreeVerifier(pubkey)
 		const commons: Commons = {schema, api, verifier}
 		const accountManager = await AccountManager.make(commons)
-		const characterManager = new CharacterManager(commons)
+		const characterManager = new CharacterManager(commons, accountManager.session)
 		const context = new this(accountManager, characterManager)
 		this.#context = context
 		return context
@@ -72,10 +72,9 @@ export class Context {
 			public accountManager: AccountManager,
 			public characterManager: CharacterManager,
 		) {
-
 		accountManager.onSessionChange(async session => {
 			if (session)
-				await characterManager.downloadFromApi(session)
+				await characterManager.downloadFromApi()
 		})
 	}
 }
