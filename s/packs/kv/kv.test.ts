@@ -39,6 +39,19 @@ export default <Suite>{
 			expect(keys.length).equals(2)
 			expect(keys[0]).equals("record:1")
 		},
+		async "iterate on namespace"() {
+			const kv = new Kv()
+			await kv.put("bad", true)
+			const sub = kv.namespace("good")
+			await sub.put("1", true)
+			await sub.put("2", true)
+			const keys = await collect(sub.keys())
+			console.log(keys)
+			expect(keys.length).equals(2)
+			expect(keys.includes("1")).ok()
+			expect(keys.includes("2")).ok()
+			expect(keys.includes("bad")).not.ok()
+		},
 	},
 
 	"entry iterations": {

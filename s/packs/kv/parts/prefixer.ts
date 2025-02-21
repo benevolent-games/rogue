@@ -22,12 +22,15 @@ export class Prefixer {
 		return fullkey.slice(start)
 	}
 
-	scan = ({start, end, limit}: Scan) => {
-		return {
-			limit,
-			end: end && this.prefix(end),
-			start: start && this.prefix(start),
-		}
+	scan = (scan: Scan) => {
+		const {limit} = scan
+		const start = this.#prefix
+			? this.#prefix + (scan.start ?? "")
+			: scan.start
+		const end = this.#prefix
+			? this.#prefix + (scan.end ?? "\xFF")
+			: scan.end
+		return {limit, start, end}
 	}
 }
 
