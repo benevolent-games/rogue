@@ -8,6 +8,7 @@ import {Api, makeApi} from "./api.js"
 import {HashRouter} from "../tools/hash-router.js"
 import {StorageCore} from "../packs/kv/cores/storage.js"
 import {makeLocalSchema} from "./features/schema/local.js"
+import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {mockKeypair} from "./features/security/mock-keypair.js"
 import {AccountManager} from "./features/accounts/ui/manager.js"
 import {makeDatabaseSchema} from "./features/schema/database.js"
@@ -68,10 +69,13 @@ export class Context {
 		return this.make("https://api.rogue.benevolent.games/")
 	}
 
+	avatarImages = Avatar.preloadAll()
+
 	constructor(
 			public accountManager: AccountManager,
 			public characterManager: CharacterManager,
 		) {
+
 		accountManager.onSessionChange(async session => {
 			if (session)
 				await characterManager.downloadFromApi()

@@ -18,7 +18,7 @@ export function isAvatarAllowed(
 		if (AccountTiers.isPremium(privileges.tags))
 			return true
 
-	if (avatar.kind === "rare")
+	if (avatar.kind === "rare" || avatar.kind === "special")
 		if (AccountTiers.isAdmin(privileges.tags))
 			return true
 

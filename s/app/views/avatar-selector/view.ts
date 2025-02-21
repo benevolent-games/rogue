@@ -30,12 +30,11 @@ export const AvatarSelectorView = shadowView(use => (options: {
 				context.accountManager.savePreferences(avatar.id)
 		}
 
-	const avatars = [...Avatar.library.values()]
-		.filter(avatar => {
-			if (!AccountTiers.isAdmin(account.tags))
-				return avatar.kind !== "rare"
-			return true
-		})
+	const avatars = [...Avatar.library.values()].filter(avatar => {
+		if (!AccountTiers.isAdmin(account.tags))
+			return avatar.kind !== "rare" && avatar.kind !== "special"
+		return true
+	})
 
 	return html`
 		<ol>

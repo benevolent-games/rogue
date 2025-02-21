@@ -1,7 +1,7 @@
 
 import {Map2} from "@benev/slate"
 
-export type AvatarKind = "rando" | "free" | "premium" | "rare"
+export type AvatarKind = "special" | "rando" | "free" | "premium" | "rare"
 
 export class Avatar {
 	constructor(public id: string, public kind: AvatarKind) {}
@@ -65,6 +65,10 @@ export class Avatar {
 			"bWp3Wx9spam",
 			"UVwF6C786kd",
 		]),
+
+		...this.#group("special", [
+			"CnccjEJgWJp",
+		]),
 	])
 
 	static default = this.library.require("cLZcTnPDhh8")
@@ -77,6 +81,17 @@ export class Avatar {
 
 	static selectKind(kind: AvatarKind) {
 		return [...this.library.values()].filter(a => a.kind === kind)
+	}
+
+	static preloadAll() {
+		return new Map2(
+			[...this.library.values()].map(avatar => {
+				const image = new Image()
+				image.src = avatar.url
+				image.alt = ""
+				return [avatar.id, avatar]
+			})
+		)
 	}
 }
 
