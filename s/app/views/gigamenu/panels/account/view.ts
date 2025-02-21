@@ -1,5 +1,5 @@
 
-import {html, loading, shadowView} from "@benev/slate"
+import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {Context} from "../../../../context.js"
@@ -14,41 +14,45 @@ export const AccountView = shadowView(use => () => {
 	const {accountManager} = context
 
 	const session = accountManager.session.value
-	const isSessionLoading = accountManager.isSessionLoading.value
+	const isSessionLoading = accountManager.loadingOp.isLoading()
+	const isRando = session.account.tags.includes("rando")
 
 	const login = () => { accountManager.auth.popup() }
 	const logout = () => { accountManager.auth.login = null }
 
+	function renderRealAccount() {
+		return html`
+			${AvatarSelectorView([{
+				account: session.account,
+				accountRecord: session.accountRecord,
+			}])}
+
+			<button @click="${logout}">
+				Logout
+			</button>
+		`
+	}
+
+	function renderRando() {
+		return html`
+			<p>You're currently logged out</p>
+
+			<button class=authlocal @click="${login}">
+				Login
+			</button>
+		`
+	}
+
 	return html`
 		<section>
 			${AccountCardView([
-				accountManager.multiplayerIdentity.value,
+				accountManager.identity.value,
 				isSessionLoading,
 			])}
 
-			${session ? html`
-				${AvatarSelectorView([{
-					account: session.account,
-					accountRecord: session.accountRecord,
-				}])}
-
-				<button @click="${logout}">
-					Logout
-				</button>
-
-			` : loading.binary(accountManager.sessionOp, () => html`
-				<p>You're currently logged out</p>
-
-				<button class=authlocal @click="${login}">
-					Login
-				</button>
-			`)}
-
-			${accountManager.sessionOp.isError() ? html`
-				<button @click="${logout}">
-					Logout
-				</button>
-			` : null}
+			${isRando
+				? renderRando()
+				: renderRealAccount()}
 		</section>
 	`
 })

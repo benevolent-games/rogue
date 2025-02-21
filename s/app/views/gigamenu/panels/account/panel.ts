@@ -14,7 +14,7 @@ export const AccountPanel = gigapanel(() => ({
 		const {context} = Context
 		const {accountManager} = context
 		const session = context.accountManager.session.value
-		const isSessionLoading = context.accountManager.isSessionLoading.value
+		const isSessionLoading = context.accountManager.loadingOp.isLoading()
 
 		if (session) {
 			const avatar = Avatar.get(session.account.avatarId)

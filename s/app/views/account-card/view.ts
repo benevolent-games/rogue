@@ -1,16 +1,15 @@
 
+import {deep, html, shadowView} from "@benev/slate"
 import {renderThumbprint} from "@authlocal/authlocal"
-import {Barname, deep, Hex, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 
 import {Context} from "../../context.js"
 import {AvatarView} from "../avatar/view.js"
-import {capitalize} from "../../../tools/capitalize.js"
 import {Identity} from "../../features/accounts/ui/types.js"
 import {Avatar} from "../../features/accounts/avatars/avatar.js"
-import {isAvatarAllowed} from "../../features/accounts/utils/is-avatar-allowed.js"
+import {AccountDecrees} from "../../features/accounts/utils/account-decrees.js"
 
 type Info = {
 	loggedIn: boolean
@@ -21,29 +20,14 @@ type Info = {
 }
 
 async function ascertainPersonInfo(identity: Identity): Promise<Info> {
-	if (identity.kind === "rando") {
-		const avatarPref = Avatar.get(identity.avatarId)
-		const avatar = isAvatarAllowed(avatarPref, undefined)
-			? avatarPref
-			: Avatar.default
-		const idBytes = Hex.bytes(identity.id)
-		return {
-			avatar,
-			loggedIn: false,
-			id: identity.id,
-			name: `Rando ${capitalize(Barname.string(idBytes.slice(0, 2)))}`,
-			tags: ["rando"],
-		}
-	}
-	else {
-		const account = await Context.context.accountManager.verifyAccountDecree(identity.accountDecree)
-		return {
-			loggedIn: true,
+	const account = await AccountDecrees.verify(Context.context.commons.verifier, identity.accountDecree)
+	const isRando = account.tags.includes("rando")
+	return {
+			loggedIn: !isRando,
 			id: account.thumbprint,
 			name: account.name,
 			avatar: Avatar.get(account.avatarId),
 			tags: account.tags,
-		}
 	}
 }
 

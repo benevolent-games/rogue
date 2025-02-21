@@ -33,7 +33,7 @@ export class Context {
 		const commons: Commons = {schema, api, verifier}
 		const accountManager = await AccountManager.make(commons)
 		const characterManager = new CharacterManager(commons, accountManager.session)
-		const context = new this(accountManager, characterManager)
+		const context = new this(commons, accountManager, characterManager)
 		this.#context = context
 		return context
 	}
@@ -72,11 +72,12 @@ export class Context {
 	avatarImages = Avatar.preloadAll()
 
 	constructor(
+			public commons: Commons,
 			public accountManager: AccountManager,
 			public characterManager: CharacterManager,
 		) {
 
-		accountManager.onSessionChange(async session => {
+		accountManager.session.on(async session => {
 			if (session)
 				await characterManager.downloadFromApi()
 		})

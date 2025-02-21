@@ -1,7 +1,7 @@
 
 import {authorize} from "renraku"
 import {Auth} from "@authlocal/authlocal"
-import {opSignal, Signal} from "@benev/slate"
+import {computed, opSignal, Signal} from "@benev/slate"
 
 import {AccountKind} from "../types.js"
 import {Commons} from "../../../types.js"
@@ -13,21 +13,23 @@ export class AccountManager {
 	static async make(commons: Commons) {
 		const auth = Auth.get()
 		const sessionLoader = await makeSessionLoader(commons, auth)
-		return new this(commons, auth, sessionLoader)
+		return new this(auth, commons, sessionLoader)
 	}
 
 	session: Signal<Session>
 	loadingOp = opSignal<void>()
+	identity: Signal<Identity>
 
 	constructor(
+			public auth: Auth,
 			private commons: Commons,
-			private auth: Auth,
 			private sessionLoader: SessionLoader,
 		) {
 
 		this.session = sessionLoader.session
 		this.loadingOp.setReady(undefined)
 		this.auth.onChange(() => void this.reload())
+		this.identity = computed(() => ({accountDecree: this.session.value.accountDecree}))
 	}
 
 	async obtain() {
@@ -43,10 +45,6 @@ export class AccountManager {
 			kind: "authlocal" as AccountKind,
 			proofToken: (await this.obtain()).login.proof.token,
 		}))
-	}
-
-	get identity(): Identity {
-		return {accountDecree: this.session.value.accountDecree}
 	}
 
 	async savePreferences(avatarId: string) {

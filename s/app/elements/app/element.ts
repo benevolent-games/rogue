@@ -64,7 +64,7 @@ export const GameApp = shadowComponent(use => {
 			return orchestrator.makeNavFn(loadingScreen, exhibitor)
 		}
 
-		const identity = context.accountManager.multiplayerIdentity
+		const identity = context.accountManager.identity
 
 		const goExhibit = {
 			mainMenu: makeNav(async() => mainMenu),
