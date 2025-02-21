@@ -2,15 +2,15 @@
 import {Hex} from "@benev/slate"
 import {Future, Proof} from "@authlocal/authlocal"
 
-import {Kv} from "../../../packs/kv/kv.js"
 import {CharacterDatabase} from "./database.js"
+import {DatabaseSchema} from "../schema/database.js"
 import {secureLogin} from "../security/secure-login.js"
 import {DecreeSigner} from "../security/decree/signer.js"
 import {secureCharacterAccess} from "./utils/secure-character-access.js"
 import {CharacterRecord, CharacterAccess, CharacterScope, CharacterGenesis} from "./types.js"
 
-export async function makeCharacterApi(kv: Kv, signer: DecreeSigner) {
-	const database = new CharacterDatabase(kv)
+export async function makeCharacterApi(schema: DatabaseSchema, signer: DecreeSigner) {
+	const database = new CharacterDatabase(schema)
 
 	const signToken = (character: CharacterRecord, scope: CharacterScope, days: number) =>
 		signer.sign<CharacterAccess>(

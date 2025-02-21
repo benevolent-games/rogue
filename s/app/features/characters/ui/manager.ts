@@ -17,7 +17,7 @@ export class CharacterManager {
 	dispose = StorageCore.onStorageEvent(() => void this.#rememberFromStore())
 
 	constructor(public options: Commons) {
-		this.#custodyStore = options.kv.store("characters.custody")
+		this.#custodyStore = options.schema.characters.custody
 	}
 
 	#updateCharactersSignal() {

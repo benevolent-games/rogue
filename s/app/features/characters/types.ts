@@ -11,7 +11,7 @@ export type CharacterRecord = {
 	genesis: CharacterGenesis
 }
 
-export type Owner = {
+export type CharacterOwner = {
 	id: string
 	characterIds: string[]
 }

@@ -1,46 +1,40 @@
 
 import {dedupe} from "@benev/slate"
-import {Kv} from "../../../packs/kv/kv.js"
-import {CharacterRecord, Owner} from "./types.js"
+import {DatabaseSchema} from "../schema/database.js"
+import {CharacterRecord, CharacterOwner} from "./types.js"
 
 export class CharacterDatabase {
-	#owners: Kv<Owner>
-	#characters: Kv<CharacterRecord>
-
-	constructor(public kv: Kv) {
-		this.#characters = kv.namespace("characters.records")
-		this.#owners = kv.namespace("characters.ownership")
-	}
+	constructor(public schema: DatabaseSchema) {}
 
 	#helpers = {
-		addCharacterIdToOwner(owner: Owner, characterId: string) {
+		addCharacterIdToOwner(owner: CharacterOwner, characterId: string) {
 			owner.characterIds = dedupe([...owner.characterIds, characterId])
 		},
-		removeCharacterIdFromOwner(owner: Owner, characterId: string) {
+		removeCharacterIdFromOwner(owner: CharacterOwner, characterId: string) {
 			owner.characterIds = owner.characterIds.filter(id => id !== characterId)
 		},
 	}
 
 	async #getOwner(id: string) {
-		return this.#owners
+		return this.schema.characters.owners
 			.guarantee(id, () => ({id, characterIds: []}))
 	}
 
 	async list(ownerId: string) {
 		const owner = await this.#getOwner(ownerId)
-		return this.#characters.requires(...owner.characterIds)
+		return this.schema.characters.records.requires(...owner.characterIds)
 	}
 
 	async get(id: string) {
-		return this.#characters.get(id)
+		return this.schema.characters.records.get(id)
 	}
 
 	async require(id: string) {
-		return this.#characters.require(id)
+		return this.schema.characters.records.require(id)
 	}
 
 	async add(character: CharacterRecord) {
-		if (await this.#characters.has(character.id))
+		if (await this.schema.characters.records.has(character.id))
 			throw new Error("character record already exists for this id")
 
 		// update owner
@@ -48,14 +42,14 @@ export class CharacterDatabase {
 		this.#helpers.addCharacterIdToOwner(owner, character.id)
 
 		// write to database
-		await this.kv.transaction(() => [
-			this.#owners.write.put(owner.id, owner),
-			this.#characters.write.put(character.id, character),
+		await this.schema.root.transaction(() => [
+			this.schema.characters.owners.write.put(owner.id, owner),
+			this.schema.characters.records.write.put(character.id, character),
 		])
 	}
 
 	async delete(id: string) {
-		const character = await this.#characters.get(id)
+		const character = await this.schema.characters.records.get(id)
 		if (character) {
 
 			// update owner
@@ -63,15 +57,15 @@ export class CharacterDatabase {
 			this.#helpers.removeCharacterIdFromOwner(owner, character.id)
 
 			// write to database
-			await this.kv.transaction(() => [
-				this.#owners.write.put(owner.id, owner),
-				this.#characters.write.del(character.id),
+			await this.schema.root.transaction(() => [
+				this.schema.characters.owners.write.put(owner.id, owner),
+				this.schema.characters.records.write.del(character.id),
 			])
 		}
 	}
 
 	async changeOwnership(id: string, newOwnerId: string) {
-		const character = await this.#characters.require(id)
+		const character = await this.schema.characters.records.require(id)
 		const previousOwnerId = character.ownerId
 
 		// assign owner to character
@@ -86,10 +80,10 @@ export class CharacterDatabase {
 		this.#helpers.removeCharacterIdFromOwner(previousOwner, character.id)
 
 		// write to database
-		await this.kv.transaction(() => [
-			this.#owners.write.put(newOwner.id, newOwner),
-			this.#owners.write.put(previousOwner.id, previousOwner),
-			this.#characters.write.put(character.id, character),
+		await this.schema.root.transaction(() => [
+			this.schema.characters.owners.write.put(newOwner.id, newOwner),
+			this.schema.characters.owners.write.put(previousOwner.id, previousOwner),
+			this.schema.characters.records.write.put(character.id, character),
 		])
 
 		// return the updated character

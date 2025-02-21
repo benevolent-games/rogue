@@ -7,12 +7,14 @@ import {Kv} from "./packs/kv/kv.js"
 import {makeApi} from "./app/api.js"
 import {readEnv} from "./app/env.js"
 import {LevelCore} from "./packs/kv/cores/level.js"
-import {migrateDatabase} from "./app/features/versioning/migrate-database.js"
+import {migrateDatabase} from "./app/features/schema/migrate-database.js"
+import { makeDatabaseSchema } from "./app/features/schema/database.js"
 
 const env = await readEnv()
 const kv = new Kv(new LevelCore(env.databasePath))
-const api = await makeApi(kv, env.keypair)
-await migrateDatabase(kv)
+const schema = makeDatabaseSchema(kv)
+const api = await makeApi(schema, env.keypair)
+await migrateDatabase(schema)
 
 new HttpServer(() => endpoint(api)).listen(8000)
 

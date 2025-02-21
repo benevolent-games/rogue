@@ -10,7 +10,7 @@ import {Identity, RandoIdentity, Session} from "./types.js"
 
 export class AccountManager {
 	static async make(options: Commons) {
-		const rando = await options.kv.guarantee<RandoIdentity>("rando", () => ({
+		const rando = await options.schema.accounts.rando.guarantee(() => ({
 			kind: "rando",
 			id: Hex.random(32),
 			avatarId: new Randy().choose(Avatar.selectKind("rando")).id,

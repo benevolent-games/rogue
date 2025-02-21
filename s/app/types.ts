@@ -1,10 +1,10 @@
 
 import {Api} from "./api.js"
-import {Kv} from "../packs/kv/kv.js"
+import {LocalSchema} from "./features/schema/local.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
 
 export type Commons = {
-	kv: Kv
+	schema: LocalSchema
 	api: Api
 	verifier: DecreeVerifier
 }
