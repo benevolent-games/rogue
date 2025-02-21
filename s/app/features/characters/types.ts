@@ -8,6 +8,7 @@ export type CharacterGenesis = {
 export type CharacterRecord = {
 	id: string
 	ownerId: string
+	created: number
 	genesis: CharacterGenesis
 }
 

@@ -26,7 +26,8 @@ export async function makeCharacterApi(schema: DatabaseSchema, signer: DecreeSig
 		/** create a character */
 		async create(genesis: CharacterGenesis) {
 			const id = Hex.random(32)
-			const character: CharacterRecord = {id, ownerId: account.thumbprint, genesis}
+			const created = Date.now()
+			const character: CharacterRecord = {id, ownerId: account.thumbprint, created, genesis}
 			await database.add(character)
 			return CharacterDecrees.signForCustodian(signer, character)
 		},

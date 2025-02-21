@@ -7,6 +7,7 @@ import {CharacterRecord} from "../../../types.js"
 import {Context} from "../../../../../context.js"
 import themeCss from "../../../../../theme.css.js"
 import {Character} from "../../../parts/character.js"
+import {trueDate} from "../../../../../../tools/true-date.js"
 import {AvatarView} from "../../../../../views/avatar/view.js"
 
 export const CharacterList = shadowView(use => (onSelect?: (character: Character) => void) => {
@@ -32,6 +33,7 @@ export const CharacterList = shadowView(use => (onSelect?: (character: Character
 					<div class=details>
 						<h3>${character.name}</h3>
 						<div class=infos>
+							<div>${trueDate(character.created)}</div>
 							<div>${IdView([character.id, character.id.slice(0, 8)])}</div>
 							<div>${character.heightDisplay.full}</div>
 						</div>

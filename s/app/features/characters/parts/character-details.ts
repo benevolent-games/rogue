@@ -9,6 +9,7 @@ import {metersToFeetAndInches} from "../../../../tools/feet-and-inches.js"
 
 export class CharacterDetails {
 	readonly seed: string
+
 	readonly name: string
 	readonly height: number
 	readonly avatar: Avatar
