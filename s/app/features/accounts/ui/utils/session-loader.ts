@@ -1,19 +1,59 @@
 
-import {Hex} from "@benev/slate"
+import {Hex, Op, opSignal, signal} from "@benev/slate"
 import {authorize} from "renraku"
 import {Randy} from "@benev/toolbox"
-import {Future, Login, Passport} from "@authlocal/authlocal"
+import {Auth, Future, Login, Passport} from "@authlocal/authlocal"
 
 import {Session} from "../types.js"
 import {Commons} from "../../../../types.js"
 import {Avatar} from "../../avatars/avatar.js"
 import {Names} from "../../../../../tools/names.js"
 import {LocalSchema} from "../../../schema/local.js"
+import {OpWaiter} from "../../../../../tools/op-waiter.js"
 import {AccountDecrees} from "../../utils/account-decrees.js"
 import {AccountKind, AccountPreferences} from "../../types.js"
 import {bytesToInteger} from "../../../../../tools/temp/bytes-to-integer.js"
 
-export async function loadSession(commons: Commons, login: Login | null): Promise<Session> {
+export type SessionLoader = Awaited<ReturnType<typeof makeSessionLoader>>
+
+export async function makeSessionLoader(commons: Commons, auth: Auth) {
+	const sessionOp = opSignal<Session>()
+	const waiter = new OpWaiter(sessionOp)
+
+	async function reload() {
+		return await sessionOp.load(async() => await loadSession(commons, auth.login))
+	}
+
+	async function obtain() {
+		let session = await waiter.wait
+		try { await AccountDecrees.verify(commons.verifier, session.accountDecree) }
+		catch (_) { session = await reload() }
+		return session
+	}
+
+	const session = await reload()
+	const sessionSignal = signal<Session>(session)
+
+	sessionOp.setReady(session)
+
+	sessionOp.on(op => {
+		const session = Op.payload(op)
+		if (session)
+			sessionSignal.value = session
+	})
+
+	return {
+		session: sessionSignal,
+		sessionOp,
+		reload,
+		obtain,
+	}
+}
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+
+async function loadSession(commons: Commons, login: Login | null): Promise<Session> {
 	if (!login) return obtainRandoSession(commons)
 
 	const accountant = authorize(commons.api.v1.accountant, async() => ({
@@ -36,9 +76,6 @@ export async function loadSession(commons: Commons, login: Login | null): Promis
 		accountDecree,
 	}
 }
-
-///////////////////////////////////////////
-///////////////////////////////////////////
 
 async function obtainRandoSession(commons: Commons): Promise<Session> {
 	const login = await obtainLogin(commons.schema)
