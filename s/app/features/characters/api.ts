@@ -1,13 +1,12 @@
 
 import {Hex} from "@benev/slate"
-import {Future} from "@authlocal/authlocal"
 
 import {CharacterDatabase} from "./database.js"
 import {DatabaseSchema} from "../schema/database.js"
 import {DecreeSigner} from "../security/decree/signer.js"
 import {secureAccount} from "../security/secure-account.js"
-import {CharacterRecord, CharacterAccess, CharacterScope, CharacterGenesis} from "./types.js"
-import { CharacterDecrees } from "./utils/character-decrees.js"
+import {CharacterRecord, CharacterGenesis} from "./types.js"
+import {CharacterDecrees} from "./utils/character-decrees.js"
 
 export async function makeCharacterApi(schema: DatabaseSchema, signer: DecreeSigner) {
 	const database = new CharacterDatabase(schema)

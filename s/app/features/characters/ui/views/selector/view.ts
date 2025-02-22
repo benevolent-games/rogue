@@ -13,6 +13,7 @@ export const CharacterSelector = shadowView(use => (
 
 	use.name("character-list")
 	use.styles(themeCss, stylesCss)
+
 	const mode = use.signal<"list" | "create">("list")
 
 	if (mode.value === "list") return html`

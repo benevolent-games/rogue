@@ -16,8 +16,41 @@ export class CharacterManager {
 	#custodyStore: Store<string[]>
 	#sources = new Map2<string, CharacterSource>()
 
-	constructor(public options: Commons, public session: Signal<Session | null>) {
+	constructor(public options: Commons, public session: Signal<Session>) {
 		this.#custodyStore = options.schema.characters.custody
+	}
+
+	async load() {
+		const api = this.#requireApi()
+		await this.#rememberFromStore()
+		const decrees = await api.list()
+		const sources = await this.#verify(decrees)
+		await this.#addSources(sources)
+		await this.#saveToStore()
+	}
+
+	async create(genesis: CharacterGenesis) {
+		const api = this.#requireApi()
+		const decree = await api.create(genesis)
+		const sources = await this.#verify([decree])
+		await this.#addSources(sources)
+		await this.#saveToStore()
+	}
+
+	async delete(id: string) {
+		const api = this.#requireApi()
+		await api.delete(id)
+		await this.#removeSources(id)
+		await this.#saveToStore()
+	}
+
+	async claim(id: string) {
+		const api = this.#requireApi()
+		const source = this.#sources.require(id)
+		const decree = await api.claim(source.decree)
+		const sources = await this.#verify([decree])
+		await this.#addSources(sources)
+		await this.#saveToStore()
 	}
 
 	#requireApi() {
@@ -69,39 +102,6 @@ export class CharacterManager {
 		await this.#custodyStore.put(
 			[...this.#sources.values()].map(source => source.decree)
 		)
-	}
-
-	async downloadFromApi() {
-		const api = this.#requireApi()
-		await this.#rememberFromStore()
-		const decrees = await api.list()
-		const sources = await this.#verify(decrees)
-		await this.#addSources(sources)
-		await this.#saveToStore()
-	}
-
-	async create(genesis: CharacterGenesis) {
-		const api = this.#requireApi()
-		const decree = await api.create(genesis)
-		const sources = await this.#verify([decree])
-		await this.#addSources(sources)
-		await this.#saveToStore()
-	}
-
-	async delete(id: string) {
-		const api = this.#requireApi()
-		await api.delete(id)
-		await this.#removeSources(id)
-		await this.#saveToStore()
-	}
-
-	async claim(id: string) {
-		const api = this.#requireApi()
-		const source = this.#sources.require(id)
-		const decree = await api.claim(source.decree)
-		const sources = await this.#verify([decree])
-		await this.#addSources(sources)
-		await this.#saveToStore()
 	}
 }
 

@@ -82,8 +82,10 @@ export class Context {
 
 		accountManager.session.on(async session => {
 			if (session)
-				await characterManager.downloadFromApi()
+				await characterManager.load()
 		})
+
+		characterManager.load()
 	}
 }
 
