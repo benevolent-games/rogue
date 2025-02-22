@@ -1,24 +1,25 @@
 
-import {html, shadowView, signal} from "@benev/slate"
+import {shadowView, signal} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
+import {CharacterCard} from "../card/view.js"
 import {Context} from "../../../../../context.js"
 import themeCss from "../../../../../theme.css.js"
 import {CharacterGenesis} from "../../../types.js"
-import {AvatarView} from "../../../../../views/avatar/view.js"
 import {CharacterDetails} from "../../../parts/character-details.js"
 
 export const CharacterCreator = shadowView(use => (options: {
-		onDone: () => void,
+		onDone?: () => void,
 	}) => {
 
 	use.name("character-creator")
 	use.styles(themeCss, stylesCss)
 
+	const onDone = options.onDone ?? (() => {})
 	const {accountManager, characterManager} = Context.context
+	const account = accountManager.session.value.account
 	const characterSignal = use.once(() => signal(CharacterDetails.roll()))
-	const session = use.computed(() => accountManager.session.value)
-	const height = characterSignal.value.heightDisplay.full
+	const character = characterSignal.value
 
 	function roll() {
 		characterSignal.value = CharacterDetails.roll()
@@ -27,24 +28,17 @@ export const CharacterCreator = shadowView(use => (options: {
 	function create(genesis: CharacterGenesis) {
 		return async() => {
 			await characterManager.create(genesis)
-			options.onDone()
+			onDone()
 		}
 	}
 
-	if (!session.value) return html`
-		<button @click="${options.onDone}">Cancel</button>
-	`
-
-	const character = characterSignal.value
-
-	return html`
-		<p>${AvatarView([character.avatar])}</p>
-		<p>${character.seed.slice(0, 8)}</p>
-		<p>${character.name}</p>
-		<p>${height}</p>
-		<button @click="${options.onDone}">Cancel</button>
-		<button @click="${roll}">Randomize</button>
-		<button @click="${create(character.genesis)}">Create</button>
-	`
+	return CharacterCard([{
+		character,
+		account,
+		controlbar: {
+			randomize: roll,
+			create: create(character.genesis),
+		},
+	}])
 })
 

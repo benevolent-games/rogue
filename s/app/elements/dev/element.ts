@@ -5,7 +5,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {HashRouter} from "../../../tools/hash-router.js"
 import {AccountView} from "../../views/gigamenu/panels/account/view.js"
-import {CharacterSelector} from "../../features/characters/ui/views/selector/view.js"
+import {CharacterList} from "../../features/characters/ui/views/list/view.js"
 
 export const GameDev = shadowComponent(use => {
 	use.styles(themeCss, stylesCss)
@@ -14,7 +14,9 @@ export const GameDev = shadowComponent(use => {
 
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
 		["/account", () => AccountView([])],
-		["/characters", () => CharacterSelector([character => console.log(character)])],
+		["/characters", () => CharacterList([{
+			onSelect: character => console.log(character)
+		}])],
 	]))
 
 	const renderer = tabs.get(router.path.value)
@@ -34,7 +36,7 @@ export const GameDev = shadowComponent(use => {
 						class="play"
 						?x-current="${tab === router.path.value}"
 						@click="${() => { router.goto(tab) }}">
-							${tab}
+							${tab.slice(1)}
 					</button>
 				`)}
 			</nav>

@@ -3,24 +3,24 @@ import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {CharacterCard} from "../card/view.js"
+import {CharacterRecord} from "../../../types.js"
 import {Context} from "../../../../../context.js"
 import themeCss from "../../../../../theme.css.js"
+import {CharacterCreator} from "../creator/view.js"
 import {Character} from "../../../parts/character.js"
-import { CharacterRecord } from "../../../types.js"
 
-export const CharacterList = shadowView(use => (
+export const CharacterList = shadowView(use => (options: {
 		onSelect?: (character: Character) => void
-	) => {
+	}) => {
 
 	use.name("character-list")
 	use.styles(themeCss, stylesCss)
 
+	const {onSelect} = options
 	const {accountManager, characterManager} = Context.context
 	const session = accountManager.session.value
 	const account = session?.account
-
 	const isRando = account.tags.includes("rando")
-
 	const characters = [...characterManager.characters.value]
 
 	const yourCharacters = characters
@@ -52,14 +52,28 @@ export const CharacterList = shadowView(use => (
 	}
 
 	return html`
-		<h2>Your characters</h2>
-		<div class=cardlist>
-			${yourCharacters.map(renderCharacterCard)}
-		</div>
-		<h2>Characters on your other accounts</h2>
-		<div class=cardlist>
-			${otherCharacters.map(renderCharacterCard)}
-		</div>
+		<section class=plate>
+			<section>
+				<h2>Your characters</h2>
+				<div>
+					${yourCharacters.map(renderCharacterCard)}
+				</div>
+			</section>
+
+			<section>
+				<h2>Characters on your other accounts</h2>
+				<div>
+					${otherCharacters.map(renderCharacterCard)}
+				</div>
+			</section>
+
+			<section>
+				<h2>Create a new character</h2>
+				<div>
+					${CharacterCreator([{}])}
+				</div>
+			</section>
+		</section>
 	`
 })
 

@@ -26,9 +26,24 @@ export const CharacterCard = shadowView(use => (options: {
 
 	use.name("character-card")
 	use.styles(themeCss, stylesCss)
-	const {character, controlbar} = options
 
-	function renderControlbar({claim, del}: Controlbar) {
+	const {character, controlbar, account, onSelect} = options
+
+	const id = (character instanceof Character)
+		? character.id
+		: undefined
+
+	const isOwned = (character instanceof Character)
+		? character.ownerId === account.thumbprint
+		: true
+
+	const isSelectable = (character instanceof Character)
+		? !!onSelect
+		: false
+
+	const click = onSelect ?? (() => {})
+
+	function renderControlbar({claim, del, randomize, create}: Controlbar) {
 		return html`
 			<div class=controlbar>
 
@@ -37,64 +52,39 @@ export const CharacterCard = shadowView(use => (options: {
 
 				${del &&
 					html`<button @click="${() => del()}">Delete</button>`}
+
+				${randomize &&
+					html`<button @click="${() => randomize()}">Randomize</button>`}
+
+				${create &&
+					html`<button @click="${() => create()}">Create</button>`}
 			</div>
 		`
 	}
 
-	function renderFullCharacter(character: Character) {
-		const isOwned = character.ownerId === options.account.thumbprint
-		const isSelectable = !!options.onSelect
-		const click = () => {
-			if (options.onSelect)
-				options.onSelect()
-		}
-		return html`
-			<div class=card data-seed="${character.seed}">
-				<div class=saucer
-					@click="${click}"
-					?data-owned="${isOwned}"
-					?data-selectable="${isSelectable}">
+	return html`
+		<div class=card data-seed="${character.seed}" data-id="${id}">
+			<div class=saucer
+				@click="${click}"
+				?data-owned="${isOwned}"
+				?data-selectable="${isSelectable}">
 
-					<div class=details>
-						<h3>${character.name}</h3>
-						<div class=infos>
+				<div class=details>
+					<h3>${character.name}</h3>
+					<div class=infos>
+						${(character instanceof Character) ? html`
+							<div>${IdView([character.id, character.id.slice(0, 8)])}</div>
 							<div>${trueDate(character.created)}</div>
-							<div>${IdView([character.seed, character.seed.slice(0, 8)])}</div>
-							<div>${character.heightDisplay.full}</div>
-						</div>
+						` : null}
+						<div>${character.heightDisplay.full}</div>
 					</div>
-
-					<div>${AvatarView([character.avatar])}</div>
 				</div>
 
-				${controlbar && renderControlbar(controlbar)}
+				<div>${AvatarView([character.avatar])}</div>
 			</div>
-		`
-	}
 
-	function renderDraftCharacter(character: CharacterDetails) {
-		return html`
-			<div class=card data-seed="${character.seed}">
-				<div class=saucer>
-
-					<div class=details>
-						<h3>${character.name}</h3>
-						<div class=infos>
-							<div>${IdView([character.seed, character.seed.slice(0, 8)])}</div>
-							<div>${character.heightDisplay.full}</div>
-						</div>
-					</div>
-
-					<div>${AvatarView([character.avatar])}</div>
-				</div>
-
-				${controlbar && renderControlbar(controlbar)}
-			</div>
-		`
-	}
-
-	return (character instanceof Character)
-		? renderFullCharacter(character)
-		: renderDraftCharacter(character)
+			${controlbar && renderControlbar(controlbar)}
+		</div>
+	`
 })
 
