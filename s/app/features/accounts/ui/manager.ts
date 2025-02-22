@@ -12,6 +12,7 @@ import {makeSessionLoader, SessionLoader} from "./utils/session-loader.js"
 export class AccountManager {
 	static async make(commons: Commons) {
 		const auth = Auth.get()
+		await auth.wait
 		const sessionLoader = await makeSessionLoader(commons, auth)
 		return new this(auth, commons, sessionLoader)
 	}

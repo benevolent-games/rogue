@@ -1,7 +1,7 @@
 
-import {Hex, Op, opSignal, signal} from "@benev/slate"
 import {authorize} from "renraku"
 import {Randy} from "@benev/toolbox"
+import {Hex, Op, opSignal, signal} from "@benev/slate"
 import {Auth, Future, Login, Passport} from "@authlocal/authlocal"
 
 import {Session} from "../types.js"
@@ -54,7 +54,8 @@ export async function makeSessionLoader(commons: Commons, auth: Auth) {
 ///////////////////////////////////////////
 
 async function loadSession(commons: Commons, login: Login | null): Promise<Session> {
-	if (!login) return obtainRandoSession(commons)
+	if (!login)
+		return obtainRandoSession(commons)
 
 	const accountant = authorize(commons.api.v1.accountant, async() => ({
 		kind: "authlocal" as AccountKind,
