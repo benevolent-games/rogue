@@ -46,18 +46,21 @@ export const CharacterCard = shadowView(use => (options: {
 	function renderControlbar({claim, del, randomize, create}: Controlbar) {
 		return html`
 			<div class=controlbar>
-
-				${claim &&
-					html`<button @click="${() => claim()}">Claim</button>`}
-
-				${del &&
-					html`<button @click="${() => del()}">Delete</button>`}
+				${(onSelect && !claim)
+					? html`<button class="naked" @click="${() => onSelect()}">Select</button>`
+					: null}
 
 				${randomize &&
-					html`<button @click="${() => randomize()}">Randomize</button>`}
+					html`<button class="naked" @click="${() => randomize()}">Randomize</button>`}
 
 				${create &&
-					html`<button @click="${() => create()}">Create</button>`}
+					html`<button class="naked happy" @click="${() => create()}">Create</button>`}
+
+				${claim &&
+					html`<button class="naked" @click="${() => claim()}">Claim</button>`}
+
+				${del &&
+					html`<button class="naked angry" @click="${() => del()}">Delete</button>`}
 			</div>
 		`
 	}
@@ -70,13 +73,13 @@ export const CharacterCard = shadowView(use => (options: {
 				?data-selectable="${isSelectable}">
 
 				<div class=details>
-					<h3>${character.name}</h3>
+					<h3 class=font-fancy>${character.name}</h3>
 					<div class=infos>
-						${(character instanceof Character) ? html`
-							<div>${IdView([character.id, character.id.slice(0, 8)])}</div>
-							<div>${trueDate(character.created)}</div>
-						` : null}
 						<div>${character.heightDisplay.full}</div>
+						${(character instanceof Character) ? html`
+							<div>${trueDate(character.created)}</div>
+							<div hidden>${IdView([character.id, character.id.slice(0, 8)])}</div>
+						` : null}
 					</div>
 				</div>
 

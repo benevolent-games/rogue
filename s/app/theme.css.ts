@@ -16,6 +16,10 @@ export default css`@layer theme, component; @layer theme {
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 1em; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
 
+.font-fancy {
+	font-family: Metamorphous, serif;
+}
+
 a {
 	color: var(--link);
 	text-decoration: none;
@@ -57,7 +61,7 @@ button:not(.std, .naked) {
 		&:active { filter: brightness(80%); }
 	}
 
-	&.play {
+	&:is(.play, .happy) {
 		background: linear-gradient(to bottom, #44ff44, #008800);
 	}
 

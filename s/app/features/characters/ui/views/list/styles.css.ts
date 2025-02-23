@@ -23,9 +23,11 @@ export default css`
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
+			gap: 0.5em;
+			padding: 1em;
+
 			> * {
 				flex: 0 0 auto;
-				padding: 0.5em;
 			}
 		}
 	}
