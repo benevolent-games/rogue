@@ -9,18 +9,20 @@ export default css`
 .card {
 	display: flex;
 	flex-direction: column;
-	gap: 0.3em;
 	cursor: default;
 
 	.saucer {
 		display: flex;
 		flex-wrap: wrap;
-		color: #aaa;
-		background: #6668;
-		border-radius: 0.5em;
-		box-shadow: .1em .2em .3em #0006;
+		align-items: center;
 		padding: 0.5em;
 		gap: 0.67em;
+
+		color: #fff8;
+		text-shadow: .1em .1em 0 #0004;
+		background: #444;
+		border-radius: 0.5em;
+		box-shadow: .1em .2em .3em #0006;
 
 		> * {
 			flex: 0 1 auto;
@@ -35,7 +37,6 @@ export default css`
 			h3 {
 				font-size: 1.1em;
 				color: white;
-				text-shadow: .1em .1em .1em #0008;
 			}
 
 			.infos {
@@ -51,19 +52,20 @@ export default css`
 	.controlbar {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
+		justify-content: end;
+		padding: 0 5%;
 		gap: 1em;
 
 		button {
 			font-size: 0.8em;
 			font-style: italic;
-			padding: .2em;
 			background: transparent;
 			box-shadow: none;
-			color: #888;
+			color: #aaa6;
 			cursor: pointer;
+			text-transform: lowercase;
 
-			&.happy {
+			&.xxx-happy {
 				background: green;
 				color: white;
 				border-radius: 0.4em;

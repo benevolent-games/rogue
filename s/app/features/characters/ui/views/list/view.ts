@@ -72,19 +72,6 @@ export const CharacterList = shadowView(use => (options: {
 
 	return html`
 		<section class=plate>
-			${(yourCharacters.length > 0) ? html`
-				<section>
-					<header>
-						${onSelect
-							? html`<h2>Choose a character:</h2>`
-							: html`<h2>Your characters:</h2>`}
-					</header>
-					<div>
-						${yourCharacters.map(renderCharacterCard)}
-					</div>
-				</section>
-			` : null}
-
 			${isOverCapacity ? html`
 				<section>
 					<header>
@@ -99,13 +86,26 @@ export const CharacterList = shadowView(use => (options: {
 			` : html`
 				<section>
 					<header>
-						<h2>Create a new character:</h2>
+						<h2>Create a new character</h2>
 					</header>
 					<div>
 						${CharacterCreator([{onCreated: onSelect}])}
 					</div>
 				</section>
 			`}
+
+			${(yourCharacters.length > 0) ? html`
+				<section>
+					<header>
+						${onSelect
+							? html`<h2>Choose a character</h2>`
+							: html`<h2>Your characters</h2>`}
+					</header>
+					<div>
+						${yourCharacters.map(renderCharacterCard)}
+					</div>
+				</section>
+			` : null}
 
 			${(otherCharacters.length > 0) ? html`
 				<section>
