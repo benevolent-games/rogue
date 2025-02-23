@@ -4,8 +4,9 @@ export default css`
 
 :host {
 	--avatar-size: 5em;
+}
 
-	width: 100%;
+.card {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1em;

@@ -55,22 +55,24 @@ export const AccountCardView = shadowView(use => (
 	})
 
 	return html`
-		${AvatarView([
-			info?.avatar ?? Avatar.default,
-			{loading: info ? isLoading : true},
-		])}
+		<div class=card>
+			${AvatarView([
+				info?.avatar ?? Avatar.default,
+				{loading: info ? isLoading : true},
+			])}
 
-		<div x-info>
-			<span x-name>${info?.name ?? "~"}</span>
+			<div x-info>
+				<span x-name>${info?.name ?? "~"}</span>
 
-			<ul x-features>
-				<li x-thumbprint>${info ? renderThumbprint(info.id) : "~"}</li>
+				<ul x-features>
+					<li x-thumbprint>${info ? renderThumbprint(info.id) : "~"}</li>
 
-				${info && info.tags.map(tag => html`
-					<span>~</span>
-					<li x-tag>${tag}</li>
-				`)}
-			</ul>
+					${info?.tags.map(tag => html`
+						<span>~</span>
+						<li x-tag>${tag}</li>
+					`)}
+				</ul>
+			</div>
 		</div>
 	`
 })
