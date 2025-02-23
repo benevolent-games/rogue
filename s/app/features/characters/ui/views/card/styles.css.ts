@@ -14,7 +14,7 @@ export default css`
 	cursor: default;
 	user-select: none;
 
-	.mainline {
+	.brick {
 		display: flex;
 		flex-direction: column;
 	}
@@ -24,7 +24,7 @@ export default css`
 		flex-wrap: wrap;
 		align-items: center;
 		padding: 0.5em;
-		gap: 0.67em;
+		gap: 1em;
 
 		color: #fff8;
 		text-shadow: .1em .1em 0 #0004;
@@ -39,12 +39,15 @@ export default css`
 		.details {
 			display: flex;
 			flex-direction: column;
-			padding: 0.5em;
+			align-items: start;
+			padding-left: 0.5em;
 
 			h3 {
 				flex: 1 0 auto;
-				font-size: 1.1em;
+				font-size: 1em;
+				text-align: start;
 				color: white;
+				min-width: 13em;
 			}
 
 			.infos {

@@ -22,6 +22,7 @@ export const CharacterCard = shadowView(use => (options: {
 		character: Character | CharacterDetails
 		situation: CharacterSituation
 		account: Account
+		showOwner: boolean
 		controlbar?: Controlbar
 		onClick?: () => void
 	}) => {
@@ -29,7 +30,7 @@ export const CharacterCard = shadowView(use => (options: {
 	use.name("character-card")
 	use.styles(themeCss, stylesCss)
 
-	const {character, situation, controlbar, account, onClick} = options
+	const {character, situation, controlbar, account, showOwner, onClick} = options
 
 	const id = (character instanceof Character)
 		? character.id
@@ -70,10 +71,11 @@ export const CharacterCard = shadowView(use => (options: {
 	function renderCharacterInfo(character: Character) {
 		return html`
 			<div hidden>${trueDate(character.created)}</div>
-			<div>owned by ${character.ownerBadge.preview}</div>
+			${showOwner
+				? html`<div>owned by ${character.ownerBadge.preview}</div>`
+				: null}
 		`
 	}
-
 
 	return html`
 		<div class=card

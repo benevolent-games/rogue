@@ -65,6 +65,7 @@ export const CharacterList = shadowView(use => (options: {
 			character,
 			situation,
 			account,
+			showOwner: situation === "foreign",
 			controlbar: {select, del, claim},
 			onClick: select,
 		}])

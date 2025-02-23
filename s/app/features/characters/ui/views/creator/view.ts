@@ -38,6 +38,7 @@ export const CharacterCreator = shadowView(use => (options: {
 		character,
 		situation: "creatable",
 		account,
+		showOwner: false,
 		onClick: create(character.genesis),
 		controlbar: {
 			randomize: roll,
