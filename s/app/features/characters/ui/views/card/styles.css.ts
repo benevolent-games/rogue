@@ -41,6 +41,7 @@ export default css`
 			.infos {
 				font-size: 0.8em;
 				display: flex;
+				padding: 0 1em;
 				gap: 1em;
 				flex-wrap: wrap;
 			}
@@ -69,12 +70,31 @@ export default css`
 				box-shadow: .1em .2em .3em #0006;
 			}
 
-			&:is(:focus, :hover) {
+			&:hover {
 				filter: brightness(120%);
 				&.angry { color: red; }
 			}
 		}
 	}
+}
+
+.card {
+	user-select: none;
+}
+
+.saucer[data-clickable] {
+	cursor: pointer;
+	&:hover { filter: brightness(120%); }
+	&:active { filter: brightness(80%); }
+}
+
+.card[data-situation="creatable"] .saucer {
+	background: #007a00;
+	background: linear-gradient(rgb(36, 199, 36), rgb(0, 117, 0));
+}
+
+.card[data-situation="foreign"] .saucer {
+	background: #4b1818;
 }
 
 `

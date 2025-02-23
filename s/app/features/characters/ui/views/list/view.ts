@@ -19,27 +19,34 @@ export const CharacterList = shadowView(use => (options: {
 
 	const {onSelect} = options
 	const {accountManager, characterManager} = Context.context
+	const isRando = accountManager.isRando()
 	const account = accountManager.session.value.account
-	const isRando = account.tags.includes("rando")
 	const characters = [...characterManager.characters.value]
 
 	const yourCharacters = characters
 		.filter(character => character.ownerId === account.thumbprint)
-		.sort((a, b) => b.created - a.created)
+		.sort((a, b) => a.created - b.created)
 
 	const otherCharacters = characters
 		.filter(character => character.ownerId !== account.thumbprint)
-		.sort((a, b) => b.created - a.created)
+		.sort((a, b) => a.created - b.created)
+
+	const maxCapacity = isRando
+		? 2
+		: 10
+
+	const isOverCapacity = (yourCharacters.length >= maxCapacity)
 
 	function renderCharacterCard(record: CharacterRecord) {
 		const character = new Character(record)
 		const isOwned = account.thumbprint === character.ownerId
+
 		const situation: CharacterSituation = (
 			(isOwned && onSelect) ?
 				"selectable" :
 			(isOwned) ?
 				"manageable" :
-				"claimable"
+				"foreign"
 		)
 
 		const select = (situation === "selectable" && onSelect)
@@ -58,8 +65,8 @@ export const CharacterList = shadowView(use => (options: {
 			character,
 			situation,
 			account,
-			onClick: select,
 			controlbar: {select, del, claim},
+			onClick: select,
 		}])
 	}
 
@@ -69,7 +76,7 @@ export const CharacterList = shadowView(use => (options: {
 				<section>
 					<header>
 						${onSelect
-							? html`<h2>Select a character:</h2>`
+							? html`<h2>Choose a character:</h2>`
 							: html`<h2>Your characters:</h2>`}
 					</header>
 					<div>
@@ -78,23 +85,35 @@ export const CharacterList = shadowView(use => (options: {
 				</section>
 			` : null}
 
-			<section>
-				<header>
-					<h2>Create a new character:</h2>
-				</header>
-				<div>
-					${CharacterCreator([{onCreated: onSelect}])}
-				</div>
-			</section>
+			${isOverCapacity ? html`
+				<section>
+					<header>
+						<h2>You've used all your character slots</h2>
+						${isRando ? html`
+							<p>You're on a rando account, which has only ${maxCapacity} slots.</p>
+						` : html`
+							<p>Your account has ${maxCapacity} slots.</p>
+						`}
+					</header>
+				</section>
+			` : html`
+				<section>
+					<header>
+						<h2>Create a new character:</h2>
+					</header>
+					<div>
+						${CharacterCreator([{onCreated: onSelect}])}
+					</div>
+				</section>
+			`}
 
 			${(otherCharacters.length > 0) ? html`
 				<section>
 					<header>
+						<h2>Characters from your other accounts</h2>
 						${accountManager.isRando() ? html`
-							<h2>Characters from your other accounts</h2>
-							<p>You're on a rando account, which cannot steal from legit accounts.</p>
+							<p>You're on a rando account. Login to a legit account and you can steal these characters.</p>
 						` : html`
-							<h2>Characters from your other accounts</h2>
 							<p>You can steal these characters, transferring them to your current account.</p>
 						`}
 					</header>

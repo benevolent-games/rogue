@@ -9,13 +9,13 @@ export default css`
 .plate {
 	display: flex;
 	flex-direction: column;
-	gap: 2em;
+	gap: 0.5em;
 
 	> section {
 		text-align: center;
 
 		> header {
-			padding: 0.5em;
+			padding: 0.2em;
 			color: #fff4;
 
 			> h2 {

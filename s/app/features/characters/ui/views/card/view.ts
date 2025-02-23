@@ -40,10 +40,6 @@ export const CharacterCard = shadowView(use => (options: {
 		? character.ownerId === account.thumbprint
 		: true
 
-	const isClickable = (character instanceof Character)
-		? !!onClick
-		: false
-
 	const click = onClick ?? (() => {})
 
 	function renderControlbar({select, claim, del, randomize, create}: Controlbar) {
@@ -76,7 +72,7 @@ export const CharacterCard = shadowView(use => (options: {
 			<div class=saucer
 				@click="${click}"
 				?data-owned="${isOwned}"
-				?data-clickable="${isClickable}">
+				?data-clickable="${!!onClick}">
 
 				<div class=details>
 					<h3 class=font-fancy>${character.name}</h3>

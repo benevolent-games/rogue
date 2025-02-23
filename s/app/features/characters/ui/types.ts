@@ -10,6 +10,6 @@ export type CharacterSituation = (
 	| "creatable"
 	| "selectable"
 	| "manageable"
-	| "claimable"
+	| "foreign"
 )
 
