@@ -33,7 +33,6 @@ export const GameDev = shadowComponent(use => {
 			<nav>
 				${[...tabs.keys()].map(tab => html`
 					<button
-						class="play"
 						?x-current="${tab === router.path.value}"
 						@click="${() => { router.goto(tab) }}">
 							${tab.slice(1)}

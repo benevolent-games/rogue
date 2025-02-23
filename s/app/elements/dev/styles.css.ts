@@ -25,11 +25,8 @@ slot {
 		justify-content: center;
 		gap: 0.5em;
 
-		> button {
-			background: linear-gradient(to bottom, #44b7ff, #005888);
-			&[x-current] {
-				background: linear-gradient(to bottom, #44ff44, #008800);
-			}
+		> button[x-current] {
+			background: #aaa;
 		}
 	}
 
