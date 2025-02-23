@@ -35,10 +35,10 @@ export class CharacterDetails {
 	}
 
 	static getRandomHeight(randy: Randy) {
-		const sampleCount = 4
+		const sampleCount = 2
 		let total = 0
 		for (const _ of Array(sampleCount))
-			total += randy.range(1.60, 2.0)
+			total += randy.range(1.55, 1.90)
 		return total / sampleCount
 	}
 
