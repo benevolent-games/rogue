@@ -6,3 +6,10 @@ export type CharacterSource = {
 	access: CharacterAccess
 }
 
+export type CharacterSituation = (
+	| "creatable"
+	| "selectable"
+	| "manageable"
+	| "claimable"
+)
+

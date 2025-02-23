@@ -9,21 +9,27 @@ export default css`
 .plate {
 	display: flex;
 	flex-direction: column;
-	gap: 1em;
+	gap: 2em;
 
 	> section {
-		background: #1118;
+		text-align: center;
 
-		> h2 {
+		> header {
 			padding: 0.5em;
-			background: #1118;
+			color: #fff4;
+
+			> h2 {
+				font-size: 1.5em;
+				font-weight: normal;
+				font-style: italic;
+			}
 		}
 
 		> div {
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
-			gap: 0.5em;
+			gap: 0.5em 1em;
 			padding: 1em;
 
 			> * {

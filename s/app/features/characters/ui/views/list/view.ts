@@ -4,6 +4,7 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import {CharacterCard} from "../card/view.js"
 import {CharacterRecord} from "../../../types.js"
+import {CharacterSituation} from "../../types.js"
 import {Context} from "../../../../../context.js"
 import themeCss from "../../../../../theme.css.js"
 import {CharacterCreator} from "../creator/view.js"
@@ -18,8 +19,7 @@ export const CharacterList = shadowView(use => (options: {
 
 	const {onSelect} = options
 	const {accountManager, characterManager} = Context.context
-	const session = accountManager.session.value
-	const account = session?.account
+	const account = accountManager.session.value.account
 	const isRando = account.tags.includes("rando")
 	const characters = [...characterManager.characters.value]
 
@@ -34,45 +34,75 @@ export const CharacterList = shadowView(use => (options: {
 	function renderCharacterCard(record: CharacterRecord) {
 		const character = new Character(record)
 		const isOwned = account.thumbprint === character.ownerId
-		const canClaim = !isRando && !isOwned
-		const canDelete = isOwned
+		const situation: CharacterSituation = (
+			(isOwned && onSelect) ?
+				"selectable" :
+			(isOwned) ?
+				"manageable" :
+				"claimable"
+		)
+
+		const select = (situation === "selectable" && onSelect)
+			? (() => onSelect(character))
+			: undefined
+
+		const del = isOwned
+			? (() => characterManager.delete(character.id))
+			: undefined
+
+		const claim = (!isRando && !isOwned)
+			? (() => characterManager.claim(character.id))
+			: undefined
+
 		return CharacterCard([{
-			account,
 			character,
-			onSelect: onSelect && (() => onSelect(character)),
-			controlbar: {
-				del: canDelete
-					? () => characterManager.delete(character.id)
-					: undefined,
-				claim: canClaim
-					? () => characterManager.claim(character.id)
-					: undefined,
-			},
+			situation,
+			account,
+			onClick: select,
+			controlbar: {select, del, claim},
 		}])
 	}
 
 	return html`
 		<section class=plate>
+			${(yourCharacters.length > 0) ? html`
+				<section>
+					<header>
+						${onSelect
+							? html`<h2>Select a character:</h2>`
+							: html`<h2>Your characters:</h2>`}
+					</header>
+					<div>
+						${yourCharacters.map(renderCharacterCard)}
+					</div>
+				</section>
+			` : null}
+
 			<section>
-				<h2>Your characters</h2>
+				<header>
+					<h2>Create a new character:</h2>
+				</header>
 				<div>
-					${yourCharacters.map(renderCharacterCard)}
+					${CharacterCreator([{onCreated: onSelect}])}
 				</div>
 			</section>
 
-			<section>
-				<h2>Characters on your other accounts</h2>
-				<div>
-					${otherCharacters.map(renderCharacterCard)}
-				</div>
-			</section>
-
-			<section>
-				<h2>Create a new character</h2>
-				<div>
-					${CharacterCreator([{}])}
-				</div>
-			</section>
+			${(otherCharacters.length > 0) ? html`
+				<section>
+					<header>
+						${accountManager.isRando() ? html`
+							<h2>Characters from your other accounts</h2>
+							<p>You're on a rando account, which cannot steal from legit accounts.</p>
+						` : html`
+							<h2>Characters from your other accounts</h2>
+							<p>You can steal these characters, transferring them to your current account.</p>
+						`}
+					</header>
+					<div>
+						${otherCharacters.map(renderCharacterCard)}
+					</div>
+				</section>
+			` : null}
 		</section>
 	`
 })

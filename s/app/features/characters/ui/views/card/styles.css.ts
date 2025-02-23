@@ -10,6 +10,7 @@ export default css`
 	display: flex;
 	flex-direction: column;
 	gap: 0.3em;
+	cursor: default;
 
 	.saucer {
 		display: flex;
@@ -32,12 +33,13 @@ export default css`
 			gap: 0.5em;
 
 			h3 {
-				font-size: 1em;
+				font-size: 1.1em;
 				color: white;
 				text-shadow: .1em .1em .1em #0008;
 			}
 
 			.infos {
+				font-size: 0.8em;
 				display: flex;
 				gap: 1em;
 				flex-wrap: wrap;

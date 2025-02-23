@@ -32,9 +32,10 @@ export class CharacterManager {
 	async create(genesis: CharacterGenesis) {
 		const api = this.#requireApi()
 		const decree = await api.create(genesis)
-		const sources = await this.#verify([decree])
-		await this.#addSources(sources)
+		const [source] = await this.#verify([decree])
+		await this.#addSources([source])
 		await this.#saveToStore()
+		return source.access.character
 	}
 
 	async delete(id: string) {

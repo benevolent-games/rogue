@@ -33,6 +33,10 @@ export class AccountManager {
 		this.identity = computed(() => ({accountDecree: this.session.value.accountDecree}))
 	}
 
+	isRando() {
+		return this.session.value.account.tags.includes("rando")
+	}
+
 	async obtain() {
 		return this.sessionLoader.obtain()
 	}
