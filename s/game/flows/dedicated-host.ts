@@ -1,5 +1,5 @@
 
-import {repeat} from "@benev/slate"
+import {repeating} from "@benev/slate"
 
 import {constants} from "../../constants.js"
 import {Simtron} from "../station/simtron.js"
@@ -28,7 +28,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const smartloop = new Smartloop(constants.sim.tickRate)
 
-	const stopSnapshots = repeat.hz(constants.sim.snapshotRate, async() => {
+	const stopSnapshots = repeating.hz(constants.sim.snapshotRate, async() => {
 		cathedral.distributeTailoredSnapshots(
 			smartloop.tick,
 			bundle => simtron.getTailoredSnapshot(bundle.author),

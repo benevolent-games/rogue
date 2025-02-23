@@ -1,5 +1,5 @@
 
-import {repeat} from "@benev/slate"
+import {repeating} from "@benev/slate"
 import Sparrow, {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
 import {Fiber} from "./fiber.js"
@@ -167,14 +167,14 @@ export class Cathedral<Identity> {
 			ping: undefined,
 		}
 
-		const stopStats = repeat(1_000, async() => {
+		const stopStats = repeating(1_000, async() => {
 			if (connection?.peer) {
 				const report = await Sparrow.reportConnectivity(connection.peer)
 				connectionStats.kind = report.kind
 			}
 		})
 
-		const stopLobbyUpdates = repeat(1_000, async() => {
+		const stopLobbyUpdates = repeating(1_000, async() => {
 			const alpha = Date.now()
 			await metaClient.updateLobby(this.#computeLobby())
 			connectionStats.ping = Date.now() - alpha
