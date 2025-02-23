@@ -1,5 +1,4 @@
 
-import {IdView} from "@authlocal/authlocal"
 import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
@@ -42,26 +41,39 @@ export const CharacterCard = shadowView(use => (options: {
 
 	const click = onClick ?? (() => {})
 
-	function renderControlbar({select, claim, del, randomize, create}: Controlbar) {
+	function renderControlbar({claim, del, randomize}: Controlbar) {
 		return html`
 			<div class=controlbar>
-				${select &&
-					html`<button class="naked" @click="${() => select()}">Select</button>`}
+				${randomize && html`
+					<button class="naked" @click="${() => randomize()}">
+						Randomize
+					</button>
+				`}
 
-				${randomize &&
-					html`<button class="naked" @click="${() => randomize()}">Randomize</button>`}
+				${claim && html`
+					<button class="naked" @click="${() => claim()}">
+						Steal ${(character instanceof Character)
+							? `from ${character.ownerBadge.preview}`
+							: null}
+					</button>
+				`}
 
-				${create &&
-					html`<button class="naked happy" @click="${() => create()}">Create</button>`}
-
-				${claim &&
-					html`<button class="naked" @click="${() => claim()}">Steal</button>`}
-
-				${del &&
-					html`<button class="naked angry" @click="${() => del()}">Delete</button>`}
+				${del && html`
+					<button class="naked angry" @click="${() => del()}">
+						Delete
+					</button>
+				`}
 			</div>
 		`
 	}
+
+	function renderCharacterInfo(character: Character) {
+		return html`
+			<div hidden>${trueDate(character.created)}</div>
+			<div>owned by ${character.ownerBadge.preview}</div>
+		`
+	}
+
 
 	return html`
 		<div class=card
@@ -69,26 +81,37 @@ export const CharacterCard = shadowView(use => (options: {
 			data-seed="${character.seed}"
 			data-id="${id}">
 
-			<div class=saucer
-				@click="${click}"
-				?data-owned="${isOwned}"
-				?data-clickable="${!!onClick}">
+			<div class=brick>
+				<div class=saucer
+					@click="${click}"
+					?data-owned="${isOwned}"
+					?data-clickable="${!!onClick}">
 
-				<div class=details>
-					<h3 class=font-fancy>${character.name}</h3>
-					<div class=infos>
-						<div>${character.heightDisplay.full}</div>
-						${(character instanceof Character) ? html`
-							<div>${trueDate(character.created)}</div>
-							<div hidden>${IdView([character.id, character.id.slice(0, 8)])}</div>
-						` : null}
+					<div class=details>
+						<h3 class=font-fancy>${character.name}</h3>
+						<div class=infos>
+							<div>${character.heightDisplay.full}</div>
+							${(character instanceof Character)
+								? renderCharacterInfo(character)
+								: null}
+						</div>
+					</div>
+
+					<div class=avatar>
+						${AvatarView([character.avatar])}
 					</div>
 				</div>
 
-				<div>${AvatarView([character.avatar])}</div>
+				${controlbar && renderControlbar(controlbar)}
 			</div>
 
-			${controlbar && renderControlbar(controlbar)}
+			${controlbar?.create && html`
+				<div class=action>
+					<button class=happy @click="${controlbar.create}">
+						Create
+					</button>
+				</div>
+			`}
 		</div>
 	`
 })

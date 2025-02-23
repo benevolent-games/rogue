@@ -25,11 +25,11 @@ export const CharacterList = shadowView(use => (options: {
 
 	const yourCharacters = characters
 		.filter(character => character.ownerId === account.thumbprint)
-		.sort((a, b) => a.created - b.created)
+		.sort((a, b) => b.created - a.created)
 
 	const otherCharacters = characters
 		.filter(character => character.ownerId !== account.thumbprint)
-		.sort((a, b) => a.created - b.created)
+		.sort((a, b) => b.created - a.created)
 
 	const maxCapacity = isRando
 		? 2
@@ -85,9 +85,6 @@ export const CharacterList = shadowView(use => (options: {
 				</section>
 			` : html`
 				<section>
-					<header>
-						<h2>Create a new character</h2>
-					</header>
 					<div>
 						${CharacterCreator([{onCreated: onSelect}])}
 					</div>
@@ -96,11 +93,6 @@ export const CharacterList = shadowView(use => (options: {
 
 			${(yourCharacters.length > 0) ? html`
 				<section>
-					<header>
-						${onSelect
-							? html`<h2>Choose a character</h2>`
-							: html`<h2>Your characters</h2>`}
-					</header>
 					<div>
 						${yourCharacters.map(renderCharacterCard)}
 					</div>
@@ -110,12 +102,10 @@ export const CharacterList = shadowView(use => (options: {
 			${(otherCharacters.length > 0) ? html`
 				<section>
 					<header>
-						<h2>Characters from your other accounts</h2>
-						${accountManager.isRando() ? html`
-							<p>You're on a rando account. Login to a legit account and you can steal these characters.</p>
-						` : html`
-							<p>You can steal these characters, transferring them to your current account.</p>
-						`}
+						<h2>Transfer from your other accounts</h2>
+						${isRando
+							? html`<p>You must login to steal characters.</p>`
+							: null}
 					</header>
 					<div>
 						${otherCharacters.map(renderCharacterCard)}
