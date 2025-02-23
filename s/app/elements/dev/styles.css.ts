@@ -15,22 +15,14 @@ slot {
 
 .battleship {
 	display: flex;
-	background: #3c596c;
-	border-radius: 0.5em;
-	box-shadow: 0.3em .5em .2em #0002;
-	padding: 1em;
-	gap: 0.5em;
+	flex-direction: column;
 
-	> * {
-		background: #0008;
-		padding: 0.5em;
-		border-radius: 0.5em;
-	}
+	gap: 0.5em;
 
 	> nav {
 		display: flex;
-		flex-direction: column;
 		min-width: 12em;
+		justify-content: center;
 		gap: 0.5em;
 
 		> button {
@@ -43,6 +35,11 @@ slot {
 
 	> .deck {
 		flex: 1 1 auto;
+		padding: 1em;
+		background: #111;
+		box-shadow: 0.3em .5em .2em #0004;
+		border-radius: 0.5em;
+		border-top: 1px solid #fff2;
 	}
 }
 
