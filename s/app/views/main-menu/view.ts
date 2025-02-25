@@ -9,6 +9,7 @@ import {loadImage2} from "../../../tools/loading/load-image.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {getMetaVersion} from "../../../tools/get-meta-version.js"
 import {UserInputs} from "../../../game/realm/inputs/user-inputs.js"
+import { CharactersPanel } from "../gigamenu/panels/characters/panel.js"
 
 export const MainMenu = shadowView(use => ({nav}: {
 		nav: {play: () => void}
@@ -47,7 +48,7 @@ export const MainMenu = shadowView(use => ({nav}: {
 	return html`
 		<section class=plate>
 			<div class=overlay>
-				${Gigamenu([menuOpen, [AccountPanel()]])}
+				${Gigamenu([menuOpen, [AccountPanel(), CharactersPanel()]])}
 			</div>
 
 			<figure>

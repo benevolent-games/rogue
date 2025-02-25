@@ -4,27 +4,16 @@ import {Context} from "../../../../context.js"
 import {gigapanel} from "../../utils/gigapanel.js"
 import {AvatarView} from "../../../avatar/view.js"
 import {Avatar} from "../../../../features/accounts/avatars/avatar.js"
-import userCheckSvg from "../../../../icons/tabler/user-check.svg.js"
-import userQuestionSvg from "../../../../icons/tabler/user-question.svg.js"
 
 export const AccountPanel = gigapanel(() => ({
 	label: "Account",
 
 	button: () => {
 		const {context} = Context
-		const {accountManager} = context
 		const session = context.accountManager.session.value
 		const isSessionLoading = context.accountManager.loadingOp.isLoading()
-
-		if (session) {
-			const avatar = Avatar.get(session.account.avatarId)
-			if (avatar)
-				return AvatarView([avatar, {loading: isSessionLoading}])
-		}
-
-		return accountManager.auth.login
-			? userCheckSvg
-			: userQuestionSvg
+		const avatar = Avatar.get(session.account.avatarId)
+		return AvatarView([avatar, {loading: isSessionLoading}])
 	},
 
 	content: () => AccountView([]),
