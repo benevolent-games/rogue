@@ -39,6 +39,7 @@ export class Indicators {
 			}, scene)
 
 			cylinder.material = materials.cyan
+			scene.removeMesh(cylinder)
 
 			this.cursor = new Crate(scene, cylinder)
 		}
