@@ -159,10 +159,10 @@ export const GameApp = shadowComponent(use => {
 		if (invite)
 			goExhibit.client(invite)
 
-		if (location.hash.includes("offline"))
+		else if (location.hash.includes("offline"))
 			goExhibit.offline()
 
-		if (location.hash.includes("lag"))
+		else if (location.hash.includes("lag"))
 			goExhibit.lag()
 
 		else if (location.hash.includes("play"))

@@ -1,6 +1,5 @@
 
 import {Randy, Vec2} from "@benev/toolbox"
-
 import {Phys} from "../physics/phys.js"
 import {DungeonLayout} from "./layout.js"
 import {constants} from "../../constants.js"

@@ -7,8 +7,8 @@ import {Simtron} from "../station/simtron.js"
 import {replicas} from "../entities/replicas.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {Smartloop} from "../../tools/smartloop.js"
-import {Identity} from "../../app/features/accounts/ui/types.js"
 import {RogueEntities} from "../entities/entities.js"
+import {Identity} from "../../app/features/accounts/ui/types.js"
 import {Liaison} from "../../packs/archimedes/net/relay/liaison.js"
 import {InputShell} from "../../packs/archimedes/framework/parts/types.js"
 import {Chronicle} from "../../packs/archimedes/framework/parts/chronicle.js"
@@ -137,7 +137,7 @@ export async function clientFlow(
 	}
 
 	await Promise.all([
-		baseSimtron.station.ready,
+		// baseSimtron.station.ready,
 		realm.ready.promise,
 	])
 

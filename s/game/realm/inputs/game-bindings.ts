@@ -19,6 +19,7 @@ const sens = {
 
 export const gameBindings = () => Grip.bindings({
 	normal: {
+		spawn: [["Space"]],
 		menu: [["KeyB"], ["g.alpha"], ["g.gamma"]],
 
 		attack: [["LMB"], ["g.trigger.right"]],

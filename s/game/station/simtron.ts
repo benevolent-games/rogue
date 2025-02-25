@@ -6,7 +6,6 @@ import {Box2} from "../physics/shapes/box2.js"
 import {Watchman} from "../../tools/watchman.js"
 import {DungeonStore} from "../dungeons/store.js"
 import {RogueEntities} from "../entities/entities.js"
-import {Coordinates} from "../realm/utils/coordinates.js"
 import {TimingReport} from "../realm/parts/game-stats.js"
 import {InputShell} from "../../packs/archimedes/framework/parts/types.js"
 import {GameState} from "../../packs/archimedes/framework/parts/game-state.js"
@@ -39,38 +38,24 @@ export class Simtron {
 		}
 	}
 
-	spawnCrusader(author: number) {
-		const dungeon = this.station.dungeon
-		const spawnpoint = dungeon.getSpawnpoint()
-
-		if (!spawnpoint) {
-			console.error("no available space to spawn player")
-			return () => {}
-		}
-
-		const playerId = this.simulator.create("crusader", {
+	createParticipant(author: number) {
+		const playerId = this.simulator.create("participant", {
 			author,
-			biped: {
-				health: 1,
-				rotation: 0,
-				coordinates: Coordinates.import(spawnpoint).array(),
-				attack: null,
-				block: 0,
-			},
+			alive: null,
 		})
-
-		console.log("SPAWN PLAYER", spawnpoint)
 		return () => this.simulator.delete(playerId)
 	}
 
 	getTailoredSnapshot(author: number) {
-		const aware = this.station.awareness.awares.require(author)
-		const coordinates = aware.area.center
+		const aware = this.station.awareness.awares.get(author)
+		const entitiesInAwareness = aware
+			? this.station.entityHashgrid.queryItems(
+				new Box2(aware.area.center, constants.sim.localSnapshotArea)
+			)
+			: []
 		const entityIds = new Set([
 			...this.station.importantEntities,
-			...this.station.entityHashgrid.queryItems(
-				new Box2(coordinates, constants.sim.localSnapshotArea)
-			)
+			...entitiesInAwareness,
 		])
 		const snapshot = this.gameState.snapshot()
 		snapshot.entities = snapshot.entities.filter(([id]) => entityIds.has(id))

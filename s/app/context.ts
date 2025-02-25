@@ -65,7 +65,7 @@ export class Context {
 				hostname.startsWith("10.") ||
 				hostname.startsWith("192.")
 			)
-			return (/^\/?mock/.test(HashRouter.hash))
+			return (HashRouter.hash.includes("mock"))
 				? this.mock()
 				: this.make("http://localhost:8000/")
 

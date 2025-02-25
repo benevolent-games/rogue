@@ -7,11 +7,13 @@ import {Station} from "../station/station.js"
 import {blockSimula} from "./block/simula.js"
 import {dungeonSimula} from "./dungeon/simula.js"
 import {crusaderSimula} from "./crusader/simula.js"
+import {participantSimula} from "./participant/simula.js"
 
 export const simulas: Simulas<RogueEntities, Station> = {
 	bot: botSimula,
 	block: blockSimula,
 	dungeon: dungeonSimula,
 	crusader: crusaderSimula,
+	participant: participantSimula,
 }
 

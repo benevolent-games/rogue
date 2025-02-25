@@ -21,9 +21,7 @@ export async function dedicatedHostFlow({lag}: {lag: LagProfile | null}) {
 
 	const cathedral = new Cathedral<Identity>({
 		lag,
-		onBundle: ({author}) => {
-			return simtron.spawnCrusader(author)
-		},
+		onBundle: ({author}) => simtron.createParticipant(author),
 	})
 
 	const smartloop = new Smartloop(constants.sim.tickRate)
