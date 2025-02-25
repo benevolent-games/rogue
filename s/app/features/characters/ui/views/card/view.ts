@@ -110,7 +110,7 @@ export const CharacterCard = shadowView(use => (options: {
 			${controlbar?.create && html`
 				<div class=action>
 					<button class=happy @click="${controlbar.create}">
-						Create
+						Create New
 					</button>
 				</div>
 			`}
