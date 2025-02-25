@@ -7,7 +7,6 @@ import {CharacterRecord} from "../../../types.js"
 import {Context} from "../../../../../context.js"
 import themeCss from "../../../../../theme.css.js"
 import {CharacterCreator} from "../creator/view.js"
-import {CharacterCardVariety} from "../../types.js"
 import {Character} from "../../../parts/character.js"
 
 export const CharacterList = shadowView(use => (options: {
