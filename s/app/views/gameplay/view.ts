@@ -67,6 +67,8 @@ export const Gameplay = shadowView(use => (o: {
 			QuitPanel(o.exitToMainMenu),
 		]
 
+	const chooseCharacter = o.realm.characterChooser.choose
+
 	return html`
 		<div class=container
 			?x-drop-hover="${dropper.indicator}"
@@ -96,21 +98,23 @@ export const Gameplay = shadowView(use => (o: {
 					`
 					: null}
 
-				<div class=plate>
-					<div class=saucer>
-						<div class=info>
-							<h2>Choose Your Character</h2>
-						</div>
-						${CharacterList([{
-							allowEditing: true,
-							showForeigners: true,
-							onSelect: character => console.log(character.name),
-						}])}
-						<div class=info>
-							<p><strong>🚨 Permadeath Warning:</strong> If you die, the character will be permanently deleted.</p>
+				${chooseCharacter ? html`
+					<div class=plate>
+						<div class=saucer>
+							<div class=info>
+								<h2>Choose Your Character</h2>
+							</div>
+							${CharacterList([{
+								allowEditing: true,
+								showForeigners: true,
+								onSelect: chooseCharacter,
+							}])}
+							<div class=info>
+								<p><strong>🚨 Permadeath Warning:</strong> If you die, the character will be permanently deleted.</p>
+							</div>
 						</div>
 					</div>
-				</div>
+				` : null}
 			</div>
 
 			${(dropper.indicator || null) && html`

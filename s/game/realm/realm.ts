@@ -24,6 +24,7 @@ import {CoolMaterials} from "./utils/cool-materials.js"
 import {InputControls} from "./inputs/input-controls.js"
 import {CapsuleBuddies} from "./utils/capsule-buddies.js"
 import {AnimOrchestrator} from "./parts/anim-orchestrator.js"
+import {CharacterChooser} from "./parts/character-chooser.js"
 import {BipedIndicatorStore} from "../commons/biped/utils/biped-indicators.js"
 
 const debug = false
@@ -48,6 +49,7 @@ export class Realm {
 	cursor: Cursor
 	animOrchestrator: AnimOrchestrator
 	bipedIndicatorStore: BipedIndicatorStore
+	characterChooser = new CharacterChooser()
 
 	#cursorGraphic: Prop | null
 	#trash = new Trashbin()

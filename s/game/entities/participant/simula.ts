@@ -5,10 +5,11 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 export const participantSimula = simula<RogueEntities, Station>()<"participant">(
-	({station, simulator, getState, fromAuthor}) => {
+	({id, station, simulator, getState, fromAuthor}) => {
 
 	const {author} = getState()
 	const dungeon = station.dungeon
+	station.importantEntities.add(id)
 
 	let latestInput: RogueEntities["participant"]["input"] = {
 		spawnRequest: null,
@@ -46,6 +47,7 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 		dispose: () => {
 			const state = getState()
 			if (state.alive) simulator.delete(state.alive.crusaderEntityId)
+			station.importantEntities.delete(id)
 		},
 	}
 })
