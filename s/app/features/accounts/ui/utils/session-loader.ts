@@ -57,15 +57,15 @@ async function loadSession(commons: Commons, login: Login | null): Promise<Sessi
 	if (!login)
 		return obtainRandoSession(commons)
 
-	const accountant = authorize(commons.api.v1.accountant, async() => ({
+	const accounting = authorize(commons.api.v1.accounting, async() => ({
 		kind: "authlocal" as AccountKind,
 		proofToken: login.proof.token,
 	}))
 
-	let report = await accountant.loadAccount()
+	let report = await accounting.loadAccount()
 
 	if (report.accountRecord.preferences.name !== login.name)
-		report = await accountant.saveAccount({...report.accountRecord.preferences, name: login.name})
+		report = await accounting.saveAccount({...report.accountRecord.preferences, name: login.name})
 
 	const {accountDecree, accountRecord} = report
 	const account = await AccountDecrees.verify(commons.verifier, accountDecree)
@@ -82,12 +82,12 @@ async function obtainRandoSession(commons: Commons): Promise<Session> {
 	const login = await obtainLogin(commons.schema)
 	const preferences = generatePreferences(login)
 
-	const accountant = authorize(commons.api.v1.accountant, async() => ({
+	const accounting = authorize(commons.api.v1.accounting, async() => ({
 		kind: "rando" as AccountKind,
 		proofToken: login.proof.token,
 	}))
 
-	const {accountRecord, accountDecree} = await accountant.saveAccount(preferences)
+	const {accountRecord, accountDecree} = await accounting.saveAccount(preferences)
 	const account = await AccountDecrees.verify(commons.verifier, accountDecree)
 
 	return {

@@ -1,9 +1,9 @@
 
 import {Badge, dedupe} from "@benev/slate"
 import {AccountTag} from "./types.js"
-import {AccountantDatabase} from "./database.js"
+import {AccountingDatabase} from "./database.js"
 
-export async function enhanceHardcodedAccounts(database: AccountantDatabase) {
+export async function enhanceHardcodedAccounts(database: AccountingDatabase) {
 	const badge = (badge: string) => Badge.hex(badge)
 
 	const hardcodes: {

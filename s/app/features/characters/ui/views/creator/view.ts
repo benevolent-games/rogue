@@ -17,8 +17,8 @@ export const CharacterCreator = shadowView(use => (options: {
 	use.styles(themeCss, stylesCss)
 
 	const onCreated = options.onCreated ?? (() => {})
-	const {accountManager, characterManager} = Context.context
-	const account = accountManager.session.value.account
+	const {accountant, roster: characterManager} = Context.context
+	const account = accountant.session.value.account
 	const characterSignal = use.once(() => signal(CharacterDetails.roll()))
 	const character = characterSignal.value
 

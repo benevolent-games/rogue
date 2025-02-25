@@ -3,7 +3,7 @@ import {Badge} from "@benev/slate"
 import {AccountRecord} from "./types.js"
 import {DatabaseSchema} from "../schema/database.js"
 
-export class AccountantDatabase {
+export class AccountingDatabase {
 	constructor(public schema: DatabaseSchema) {}
 
 	async save(record: AccountRecord) {

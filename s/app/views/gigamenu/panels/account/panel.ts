@@ -10,8 +10,8 @@ export const AccountPanel = gigapanel(() => ({
 
 	button: () => {
 		const {context} = Context
-		const session = context.accountManager.session.value
-		const isSessionLoading = context.accountManager.loadingOp.isLoading()
+		const session = context.accountant.session.value
+		const isSessionLoading = context.accountant.loadingOp.isLoading()
 		const avatar = Avatar.get(session.account.avatarId)
 		return AvatarView([avatar, {loading: isSessionLoading}])
 	},

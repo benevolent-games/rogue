@@ -10,9 +10,9 @@ import {StorageCore} from "../packs/kv/cores/storage.js"
 import {makeLocalSchema} from "./features/schema/local.js"
 import {Avatar} from "./features/accounts/avatars/avatar.js"
 import {mockKeypair} from "./features/security/mock-keypair.js"
-import {AccountManager} from "./features/accounts/ui/manager.js"
+import {Accountant} from "./features/accounts/ui/accountant.js"
 import {makeDatabaseSchema} from "./features/schema/database.js"
-import {CharacterManager} from "./features/characters/ui/manager.js"
+import {CharacterRoster} from "./features/characters/ui/roster.js"
 import {DecreeVerifier} from "./features/security/decree/verifier.js"
 import {migrateDatabase} from "./features/schema/migrate-database.js"
 import {migrateLocalStorage} from "./features/schema/migrate-local-storage.js"
@@ -31,9 +31,9 @@ export class Context {
 		const pubkey = await Pubkey.fromData(await api.v1.pubkey())
 		const verifier = new DecreeVerifier(pubkey)
 		const commons: Commons = {schema, api, verifier}
-		const accountManager = await AccountManager.make(commons)
-		const characterManager = new CharacterManager(commons, accountManager.session)
-		const context = new this(commons, accountManager, characterManager)
+		const accountant = await Accountant.make(commons)
+		const roster = new CharacterRoster(commons, accountant.session)
+		const context = new this(commons, accountant, roster)
 		this.#context = context
 		return context
 	}
@@ -76,16 +76,16 @@ export class Context {
 
 	constructor(
 			public commons: Commons,
-			public accountManager: AccountManager,
-			public characterManager: CharacterManager,
+			public accountant: Accountant,
+			public roster: CharacterRoster,
 		) {
 
-		accountManager.session.on(async session => {
+		accountant.session.on(async session => {
 			if (session)
-				await characterManager.load()
+				await roster.load()
 		})
 
-		characterManager.load()
+		roster.load()
 	}
 }
 

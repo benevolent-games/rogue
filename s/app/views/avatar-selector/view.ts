@@ -18,16 +18,15 @@ export const AvatarSelectorView = shadowView(use => (options: {
 
 	use.name("avatar-selector")
 	use.styles(themeCss, stylesCss)
-	const {context} = Context
-
+	const {accountant} = Context.context
 	const {account, accountRecord} = options
 
-	const onClick = context.accountManager.loadingOp.isLoading()
+	const onClick = accountant.loadingOp.isLoading()
 		? undefined
 		: (avatar: Avatar) => {
 			const unlocked = isAvatarAllowed(avatar, accountRecord.privileges)
 			if (unlocked)
-				context.accountManager.savePreferences(avatar.id)
+				accountant.savePreferences(avatar.id)
 		}
 
 	const avatars = [...Avatar.library.values()].filter(avatar => {

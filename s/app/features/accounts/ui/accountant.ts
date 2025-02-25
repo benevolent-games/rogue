@@ -9,7 +9,7 @@ import {Identity, Session} from "./types.js"
 import {assembleAccount} from "../utils/assemble-account.js"
 import {makeSessionLoader, SessionLoader} from "./utils/session-loader.js"
 
-export class AccountManager {
+export class Accountant {
 	static async make(commons: Commons) {
 		const auth = Auth.get()
 		await auth.wait
@@ -46,7 +46,7 @@ export class AccountManager {
 	}
 
 	get #api() {
-		return authorize(this.commons.api.v1.accountant, async() => ({
+		return authorize(this.commons.api.v1.accounting, async() => ({
 			kind: "authlocal" as AccountKind,
 			proofToken: (await this.obtain()).login.proof.token,
 		}))

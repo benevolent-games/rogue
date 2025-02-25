@@ -10,15 +10,13 @@ import {AvatarSelectorView} from "../../../avatar-selector/view.js"
 export const AccountView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
 
-	const {context} = Context
-	const {accountManager} = context
-
-	const session = accountManager.session.value
-	const isSessionLoading = accountManager.loadingOp.isLoading()
+	const {accountant} = Context.context
+	const session = accountant.session.value
+	const isSessionLoading = accountant.loadingOp.isLoading()
 	const isRando = session.account.tags.includes("rando")
 
-	const login = () => { accountManager.auth.popup() }
-	const logout = () => { accountManager.auth.login = null }
+	const login = () => { accountant.auth.popup() }
+	const logout = () => { accountant.auth.login = null }
 
 	function renderRealAccount() {
 		return html`
@@ -46,7 +44,7 @@ export const AccountView = shadowView(use => () => {
 	return html`
 		<section>
 			${AccountCardView([
-				accountManager.identity.value,
+				accountant.identity.value,
 				isSessionLoading,
 			])}
 

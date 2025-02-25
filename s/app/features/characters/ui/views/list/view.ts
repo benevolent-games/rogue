@@ -19,9 +19,9 @@ export const CharacterList = shadowView(use => (options: {
 	use.styles(themeCss, stylesCss)
 
 	const {allowEditing, showForeigners, onSelect} = options
-	const {accountManager, characterManager} = Context.context
-	const isRando = accountManager.isRando()
-	const account = accountManager.session.value.account
+	const {accountant, roster: characterManager} = Context.context
+	const isRando = accountant.isRando()
+	const account = accountant.session.value.account
 	const characters = [...characterManager.characters.value]
 
 	const locals = characters

@@ -9,7 +9,7 @@ import {Store} from "../../../../packs/kv/parts/store.js"
 import {StorageCore} from "../../../../packs/kv/cores/storage.js"
 import {CharacterRecord, CharacterAccess, CharacterGenesis} from "../types.js"
 
-export class CharacterManager {
+export class CharacterRoster {
 	characters = signal<CharacterRecord[]>([])
 	dispose = StorageCore.onStorageEvent(() => void this.#rememberFromStore())
 

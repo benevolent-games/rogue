@@ -1,6 +1,6 @@
 
 import {AccountPreferences} from "./types.js"
-import {AccountantDatabase} from "./database.js"
+import {AccountingDatabase} from "./database.js"
 import {DatabaseSchema} from "../schema/database.js"
 import {secureLogin} from "../security/secure-login.js"
 import {enhanceHardcodedAccounts} from "./hardcoded.js"
@@ -9,8 +9,8 @@ import {AccountDecrees} from "./utils/account-decrees.js"
 import {addAccountTags} from "./utils/add-account-tags.js"
 import {normalizePreferences, normalizeRecord} from "./utils/normalize.js"
 
-export async function makeAccountantApi(schema: DatabaseSchema, signer: DecreeSigner) {
-	const database = new AccountantDatabase(schema)
+export async function makeAccountingApi(schema: DatabaseSchema, signer: DecreeSigner) {
+	const database = new AccountingDatabase(schema)
 	await enhanceHardcodedAccounts(database)
 
 	return secureLogin((proof, kind) => ({
