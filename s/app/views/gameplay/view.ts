@@ -6,17 +6,18 @@ import themeCss from "../../theme.css.js"
 import {Gigamenu} from "../gigamenu/view.js"
 import {Realm} from "../../../game/realm/realm.js"
 import {QuitPanel} from "../gigamenu/panels/quit/panel.js"
+import {Identity} from "../../features/accounts/ui/types.js"
 import {LobbyPanel} from "../gigamenu/panels/lobby/panel.js"
+import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import {toggleFullscreen} from "./utils/toggle-fullscreen.js"
 import {AccountPanel} from "../gigamenu/panels/account/panel.js"
 import {dungeonDropper} from "../../../game/dungeons/ui/dropper.js"
+import {VirtualGamepad} from "../../../packs/grip/virtual-gamepad/view.js"
+import {CharacterList} from "../../features/characters/ui/views/list/view.js"
 import {MultiplayerClient} from "../../../packs/archimedes/net/multiplayer/multiplayer-client.js"
 
-import {Identity} from "../../features/accounts/ui/types.js"
-import {StatsPanel} from "../gigamenu/panels/stats/panel.js"
 import maximizeSvg from "../../icons/tabler/maximize.svg.js"
 import componentsSvg from "../../icons/tabler/components.svg.js"
-import {VirtualGamepad} from "../../../packs/grip/virtual-gamepad/view.js"
 
 export const Gameplay = shadowView(use => (o: {
 		realm: Realm
@@ -94,6 +95,22 @@ export const Gameplay = shadowView(use => (o: {
 						</div>
 					`
 					: null}
+
+				<div class=plate>
+					<div class=saucer>
+						<div class=info>
+							<h2>Choose Your Character</h2>
+						</div>
+						${CharacterList([{
+							allowEditing: true,
+							showForeigners: true,
+							onSelect: character => console.log(character.name),
+						}])}
+						<div class=info>
+							<p><strong>🚨 Permadeath Warning:</strong> If you die, the character will be permanently deleted.</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			${(dropper.indicator || null) && html`

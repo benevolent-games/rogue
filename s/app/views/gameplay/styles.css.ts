@@ -111,5 +111,37 @@ canvas {
 	border: 0.5em dashed;
 }
 
+.plate {
+	pointer-events: all;
+	position: absolute;
+	inset: 10%;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.saucer {
+		width: max-content;
+		padding: 1em;
+		background: #111e;
+		border-radius: 1em;
+		max-height: 100%;
+		overflow-y: auto;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1em;
+
+		.info {
+			display: flex;
+			flex-direction: column;
+			max-width: 20em;
+			gap: 0.5em;
+			text-align: center;
+		}
+	}
+}
+
 `
 
