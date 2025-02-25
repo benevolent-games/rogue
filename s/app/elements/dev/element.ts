@@ -15,7 +15,9 @@ export const GameDev = shadowComponent(use => {
 	const tabs = use.once(() => new Map2<string, () => RenderResult>([
 		["/account", () => AccountView([])],
 		["/characters", () => CharacterList([{
-			onSelect: character => console.log(character)
+			allowEditing: true,
+			showForeigners: true,
+			onSelect: character => console.log(character),
 		}])],
 	]))
 

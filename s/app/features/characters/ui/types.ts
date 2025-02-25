@@ -6,10 +6,9 @@ export type CharacterSource = {
 	access: CharacterAccess
 }
 
-export type CharacterSituation = (
-	| "creatable"
-	| "selectable"
-	| "manageable"
+export type CharacterCardVariety = (
+	| "standard"
+	| "creator"
 	| "foreign"
 )
 

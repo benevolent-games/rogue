@@ -87,9 +87,10 @@ export default css`
 }
 
 /*
- *************************************************
- ******** DYNAMICS AND ADJUSTERS *****************
- */
+=================================================
+==== DYNAMICS AND ADJUSTERS =====================
+=================================================
+*/
 
 .saucer[data-clickable] {
 	cursor: pointer;
@@ -97,12 +98,12 @@ export default css`
 	&:active { filter: brightness(80%); }
 }
 
-.card[data-situation="creatable"] .saucer {
+.card[data-variety="creator"] .saucer {
 	background: #007a00;
 	background: linear-gradient(rgb(36, 199, 36), rgb(0, 117, 0));
 }
 
-.card[data-situation="foreign"] .saucer {
+.card[data-variety="foreign"] .saucer {
 	background: #4b1818;
 }
 

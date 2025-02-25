@@ -2,8 +2,8 @@
 import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {CharacterSituation} from "../../types.js"
 import themeCss from "../../../../../theme.css.js"
+import {CharacterCardVariety} from "../../types.js"
 import {Account} from "../../../../accounts/types.js"
 import {Character} from "../../../parts/character.js"
 import {trueDate} from "../../../../../../tools/true-date.js"
@@ -20,7 +20,7 @@ export type Controlbar = {
 
 export const CharacterCard = shadowView(use => (options: {
 		character: Character | CharacterDetails
-		situation: CharacterSituation
+		variety: CharacterCardVariety
 		account: Account
 		showOwner: boolean
 		controlbar?: Controlbar
@@ -30,7 +30,7 @@ export const CharacterCard = shadowView(use => (options: {
 	use.name("character-card")
 	use.styles(themeCss, stylesCss)
 
-	const {character, situation, controlbar, account, showOwner, onClick} = options
+	const {character, variety, controlbar, account, showOwner, onClick} = options
 
 	const id = (character instanceof Character)
 		? character.id
@@ -68,7 +68,7 @@ export const CharacterCard = shadowView(use => (options: {
 		`
 	}
 
-	function renderCharacterInfo(character: Character) {
+	function renderInfo(character: Character) {
 		return html`
 			<div hidden>${trueDate(character.created)}</div>
 			${showOwner
@@ -79,7 +79,7 @@ export const CharacterCard = shadowView(use => (options: {
 
 	return html`
 		<div class=card
-			data-situation="${situation}"
+			data-variety="${variety}"
 			data-seed="${character.seed}"
 			data-id="${id}">
 
@@ -94,7 +94,7 @@ export const CharacterCard = shadowView(use => (options: {
 						<div class=infos>
 							<div>${character.heightDisplay.full}</div>
 							${(character instanceof Character)
-								? renderCharacterInfo(character)
+								? renderInfo(character)
 								: null}
 						</div>
 					</div>

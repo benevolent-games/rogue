@@ -7,6 +7,10 @@ import {CharacterList} from "../../../../features/characters/ui/views/list/view.
 
 export const CharactersView = shadowView(use => () => {
 	use.styles(themeCss, stylesCss)
-	return CharacterList([{onSelect: undefined}])
+	return CharacterList([{
+		onSelect: undefined,
+		allowEditing: true,
+		showForeigners: true,
+	}])
 })
 
