@@ -26,8 +26,8 @@ export class CoolMaterials {
 
 	create(r: number, g: number, b: number, a = 1) {
 		const m = new PBRMaterial("custom", this.scene)
-		m.backFaceCulling = true
 		if (a < 1) m.transparencyMode = Material.MATERIAL_ALPHABLEND
+		m.backFaceCulling = true
 		m.albedoColor = new Color3(r, g, b)
 		m.roughness = 0.9
 		m.metallic = 0

@@ -76,10 +76,10 @@ export const constants = {
 		pivotHeight: 1.2,
 		swivelSnappingIncrements: 0, // Degrees.toRadians(45),
 		distanceBounds: new Vec2(3, 25),
-		tiltBounds: new Vec2(Degrees.toRadians(0.1), Degrees.toRadians(60)),
+		tiltBounds: new Vec2(Degrees.toRadians(.1), Degrees.toRadians(60)),
 		initial: {
 			swivel: Degrees.toRadians(0),
-			tilt: Degrees.toRadians(10),
+			tilt: Degrees.toRadians(.1),
 			distanceFraction: 1 / 4,
 		},
 	},

@@ -17,7 +17,7 @@ export class Lifeguard {
 		return pools.guarantee(cargo, () => new PropPool(cargo, instance))
 	}
 
-	spawn(cargo: Cargo, instance: boolean = true) {
+	spawn(cargo: Cargo, instance = true) {
 		const pool = this.pool(cargo, instance)
 		const prop = pool.acquire()
 		const release = () => pool.release(prop)

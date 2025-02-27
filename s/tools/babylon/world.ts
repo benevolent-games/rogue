@@ -39,6 +39,7 @@ export class World {
 		})
 
 		const scene = Iron.scene({engine, background: [0, 0, 0, 1]})
+		// scene.useOrderIndependentTransparency = true
 		scene.performancePriority = ScenePerformancePriority.Intermediate
 		scene.skipPointerMovePicking = true
 		scene.skipPointerDownPicking = true

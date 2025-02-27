@@ -41,7 +41,10 @@ export class Flooring {
 	#spawning(floors: Set<FloorSpec>) {
 		for (const floor of floors) {
 			if (!this.#releasers.has(floor)) {
+
+				// spawning floors, as instances
 				const [prop, release] = this.lifeguard.spawn(floor.cargo)
+
 				prop.unfreezeWorldMatrix()
 				applySpatial(prop, floor.spatial)
 				prop.freezeWorldMatrix()

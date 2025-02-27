@@ -19,14 +19,15 @@ import {Cargo} from "../../../../tools/babylon/logistics/cargo.js"
 import {Lifeguard} from "../../../../tools/babylon/optimizers/lifeguard.js"
 import {applySpatial} from "../../../../tools/babylon/logistics/apply-spatial.js"
 
+const transparencyMode = Material.MATERIAL_ALPHABLEND
+
 export class Walling {
+	fadeSpeed = 3
+
 	#placer = new DungeonPlacer(1)
 	#hashgrid = new ZenGrid<WallSpec>(constants.sim.hashgridExtent)
 	#alive = new Map2<WallSpec, WallAlive>()
-
 	#detector: WallDetector
-
-	fadeSpeed = 3
 
 	constructor(
 			realm: Realm,
@@ -63,13 +64,18 @@ export class Walling {
 		const walls = new Set(this.#hashgrid.queryItems(area))
 		this.#spawning(walls)
 		this.#despawning(walls)
-		this.#fading(seconds)
+
+		// // TODO fading is disabled for now
+		// this.#fading(seconds)
 	}
 
 	#spawning(walls: Set<WallSpec>) {
 		for (const wall of walls) {
 			if (!this.#alive.has(wall)) {
-				const [prop, release] = this.lifeguard.spawn(wall.cargo, false)
+
+				// spawning walls, as instances
+				const [prop, release] = this.lifeguard.spawn(wall.cargo)
+
 				prop.unfreezeWorldMatrix()
 				applySpatial(prop, wall.spatial)
 				prop.freezeWorldMatrix()
@@ -115,8 +121,8 @@ export class Walling {
 					for (const mesh of meshes) {
 
 						// ensure the material uses alpha blending
-						if (mesh.material && mesh.material.transparencyMode !== Material.MATERIAL_ALPHABLEND)
-							mesh.material.transparencyMode = Material.MATERIAL_ALPHABLEND
+						if (mesh.material && mesh.material.transparencyMode !== transparencyMode)
+							mesh.material.transparencyMode = transparencyMode
 
 						// set the visibility
 						mesh.visibility = spec.currentOpacity
