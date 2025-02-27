@@ -7,6 +7,9 @@ export type CrusaderState = {
 	author: number
 	biped: BipedState
 	character: CharacterRecord
+	mortality: {
+		health: number
+	}
 }
 
 export type CrusaderInputData = {

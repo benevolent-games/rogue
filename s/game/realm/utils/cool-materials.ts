@@ -1,6 +1,7 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
 import {Color3} from "@babylonjs/core/Maths/math.color.js"
+import {Material} from "@babylonjs/core/Materials/material.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 
 export class CoolMaterials {
@@ -26,6 +27,7 @@ export class CoolMaterials {
 
 	create(r: number, g: number, b: number, a = 1) {
 		const m = new PBRMaterial("custom", this.scene)
+		m.transparencyMode = Material.MATERIAL_ALPHABLEND
 		m.albedoColor = new Color3(r, g, b)
 		m.roughness = 0.9
 		m.metallic = 0

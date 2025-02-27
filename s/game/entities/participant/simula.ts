@@ -37,6 +37,7 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 						attack: null,
 						block: 0,
 					},
+					mortality: {health: 1},
 				})
 				state.alive = {
 					character,

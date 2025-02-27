@@ -2,7 +2,7 @@
 import {Scalar} from "@benev/toolbox"
 
 export class Health {
-	value = 20
+	value = 1
 
 	hurt(damage: number) {
 		this.value = Scalar.clamp(this.value - damage)

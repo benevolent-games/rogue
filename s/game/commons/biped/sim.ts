@@ -56,8 +56,10 @@ export class BipedSim {
 				const state = getState()
 				state.coordinates = this.coordinates.array()
 				bounds.center.set(this.coordinates)
-				// this.entityZen.box.center.set(this.coordinates)
-				// this.mortalZen.box.center.set(this.coordinates)
+
+				this.entityZen.box.center.set(this.coordinates)
+				this.mortalZen.box.center.set(this.coordinates)
+
 				this.entityZen.update()
 				this.mortalZen.update()
 			},

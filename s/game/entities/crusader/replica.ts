@@ -8,7 +8,7 @@ import {BipedRep} from "../../commons/biped/rep.js"
 import {PlayerInputs} from "./utils/player-inputs.js"
 import {replica} from "../../../packs/archimedes/framework/replication/types.js"
 
-const debug = false
+const debug = true
 const {crusader} = constants
 
 export const crusaderReplica = replica<RogueEntities, Realm>()<"crusader">(

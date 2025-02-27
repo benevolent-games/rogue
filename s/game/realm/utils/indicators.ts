@@ -33,14 +33,13 @@ export class Indicators {
 
 		// cursor
 		{
-			const cylinder = MeshBuilder.CreateCylinder("cylinder", {
-				diameter: 0.5,
-				height: 0.5,
-			}, scene)
-
+			const cylinder = MeshBuilder.CreateCylinder(
+				"cylinder",
+				{diameter: 0.5, height: 0.5},
+				scene,
+			)
 			cylinder.material = materials.cyan
 			scene.removeMesh(cylinder)
-
 			this.cursor = new Crate(scene, cylinder)
 		}
 	}
