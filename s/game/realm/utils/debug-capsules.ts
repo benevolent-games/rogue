@@ -24,16 +24,17 @@ export class DebugCapsules {
 		const radius = baseRadius
 
 		const material = this.#trash.disposable(
-			materials.create(...color.array(), alpha)
+			materials.create(...color.array(), alpha, m => {
+				m.backFaceCulling = true
+				m.disableLighting = true
+				m.emissiveColor = m.albedoColor
+			})
 		)
-
-		material.backFaceCulling = true
-		material.disableLighting = true
-		material.emissiveColor = material.albedoColor
 
 		const mesh = this.#trash.disposable(
 			MeshBuilder.CreateCapsule("debugcapsule", {height, radius}, scene)
 		)
+
 		mesh.material = material
 		scene.removeMesh(mesh)
 

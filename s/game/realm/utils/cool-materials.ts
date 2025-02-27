@@ -24,7 +24,10 @@ export class CoolMaterials {
 		this.friendlyCapsule = this.create(.1, .7, .7, .2)
 	}
 
-	create(r: number, g: number, b: number, a = 1) {
+	create(
+			r: number, g: number, b: number, a = 1,
+			init: (material: PBRMaterial) => void = () => {}
+		) {
 		const m = new PBRMaterial("custom", this.scene)
 		if (a < 1) m.transparencyMode = Material.MATERIAL_ALPHABLEND
 		m.backFaceCulling = true
@@ -32,6 +35,8 @@ export class CoolMaterials {
 		m.roughness = 0.9
 		m.metallic = 0
 		m.alpha = a
+		init(m)
+		m.freeze()
 		return m
 	}
 }
