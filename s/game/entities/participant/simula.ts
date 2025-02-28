@@ -11,9 +11,11 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 	const dungeon = station.dungeon
 	station.importantEntities.add(id)
 
+	let state: RogueEntities["participant"]["state"] = getState()
+
 	return {
 		simulate: (_tick, inputs) => {
-			const state = getState()
+			state = getState()
 			const input = fromAuthor(state.author, inputs).at(-1)
 
 			if (input?.spawnRequest && !state.alive) {
@@ -49,7 +51,6 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 			}
 		},
 		dispose: () => {
-			const state = getState()
 			if (state.alive) simulator.delete(state.alive.crusaderEntityId)
 			station.importantEntities.delete(id)
 		},
