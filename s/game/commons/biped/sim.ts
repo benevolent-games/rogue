@@ -5,8 +5,8 @@ import {Mortal} from "../mortal/registry.js"
 import {Station} from "../../station/station.js"
 import {Zen} from "../../../tools/hash/zen-grid.js"
 import {PhysBody} from "../../physics/parts/body.js"
-import {AttackZoneSim} from "./utils/attack-zone.js"
 import {Circle} from "../../physics/shapes/circle.js"
+import {AttackZoneSim} from "./utils/attack-zone/sim.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {BipedActivity, BipedOptions, BipedState} from "./types.js"
 
@@ -37,6 +37,8 @@ export class BipedSim {
 			public id: number,
 			public station: Station,
 			public getState: () => BipedState,
+			public die: () => void,
+			public isPlayer: boolean,
 			public options: BipedOptions,
 		) {
 
@@ -112,7 +114,12 @@ export class BipedSim {
 			state.attack = null
 
 		if (activity.attack && !state.attack) {
-			state.attack = {expiresAtTick: tick + 76, rotation: activity.rotation}
+			state.attack = {
+				startTick: tick,
+				strikeTick: Math.floor(tick + (76 * 0.67)),
+				expiresAtTick: tick + 76,
+				rotation: activity.rotation,
+			}
 			if (options.combat.turnCapEnabled)
 				this.slowRotation.x = activity.rotation
 		}
@@ -122,7 +129,23 @@ export class BipedSim {
 		if (options.combat.turnCapEnabled && combative)
 			state.rotation = this.slowRotation.x
 
-		this.attackZone.update(this.coordinates, this.slowRotation)
+		this.attackZone.update(
+			Coordinates.from(state.coordinates),
+			new Circular(state.rotation + Degrees.toRadians(180)),
+		)
+
+		if (state.attack && tick === state.attack.strikeTick) {
+			const mortals = this.station.mortals.queryItems(this.attackZone.circle.boundingBox())
+			for (const mortal of mortals) {
+				if (mortal !== this.mortal) {
+					console.log("hurt!!")
+					mortal.health.hurt(0.34)
+				}
+			}
+		}
+
+		if (this.mortal.health.isDead())
+			this.die()
 	}
 
 	dispose() {

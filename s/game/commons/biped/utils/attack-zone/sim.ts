@@ -1,11 +1,11 @@
 
 import {Circular} from "@benev/toolbox"
-import {Coordinates} from "../../../realm/utils/coordinates.js"
+import {Circle} from "../../../../physics/shapes/circle.js"
+import {Coordinates} from "../../../../realm/utils/coordinates.js"
 
 export class AttackZoneSim {
-	radius = 0.8
 	distance = 1.3
-	attackCenter = Coordinates.zero()
+	circle = new Circle(Coordinates.zero(), 0.8)
 
 	update(
 			bipedCoordinates: Coordinates,
@@ -16,7 +16,7 @@ export class AttackZoneSim {
 			.new(0, this.distance)
 			.rotate(bipedRotation.x)
 
-		this.attackCenter.set(
+		this.circle.center.set(
 			bipedCoordinates
 				.clone()
 				.add(offset)

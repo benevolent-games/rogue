@@ -10,7 +10,7 @@ import {Coordinates} from "../../realm/utils/coordinates.js"
 import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
-	({id, station, getState, fromAuthor}) => {
+	({id, station, simulator, getState, fromAuthor}) => {
 
 	const {author} = getState()
 	const area = new Box2(
@@ -23,6 +23,8 @@ export const crusaderSimula = simula<RogueEntities, Station>()<"crusader">(
 		id,
 		station,
 		() => getState().biped,
+		() => { simulator.delete(id) },
+		true,
 		constants.crusader,
 	)
 

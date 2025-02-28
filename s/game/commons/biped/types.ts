@@ -32,6 +32,8 @@ export type BipedActivity = {
 }
 
 export type BipedAttackState = {
+	startTick: number
+	strikeTick: number
 	expiresAtTick: number
 	rotation: number
 }

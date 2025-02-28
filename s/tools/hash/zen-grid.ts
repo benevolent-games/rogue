@@ -35,6 +35,13 @@ export class ZenGrid<X> {
 
 	constructor(private zoneExtent: Vec2) {}
 
+	count() {
+		let n = 0
+		for (const zone of this.#zones.values())
+			n += zone.zens.size
+		return n
+	}
+
 	create(box: Box2, item: X) {
 		const zen = new Zen<X>(this, box, item)
 		this.update(zen)

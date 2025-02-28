@@ -1,21 +1,20 @@
 
 import {Trashbin} from "@benev/slate"
-import {Circular, Quat} from "@benev/toolbox"
+import {Circular, Degrees, Quat} from "@benev/toolbox"
 
 import {BipedState} from "./types.js"
 import {Realm} from "../../realm/realm.js"
-import {AttackZoneRep} from "./utils/attack-zone-rep.js"
+import {AttackZoneRep} from "./utils/attack-zone/rep.js"
 import {Coordinates} from "../../realm/utils/coordinates.js"
 import {DebugCapsule} from "../../realm/utils/debug-capsules.js"
 import {Pimsley, PimsleyCharacteristics} from "../../realm/pimsley/pimsley.js"
 
 export class BipedRep {
+	trash = new Trashbin()
 	pimsley: Pimsley
 	capsule: DebugCapsule | null
 	attackZone: AttackZoneRep | null
 	characteristics: PimsleyCharacteristics
-
-	trash = new Trashbin()
 
 	constructor(
 			public realm: Realm,
@@ -73,8 +72,8 @@ export class BipedRep {
 
 		if (this.attackZone)
 			this.attackZone.update(
-				this.characteristics.coordinates,
-				this.pimsley.displayRotation,
+				Coordinates.from(state.coordinates),
+				new Circular(state.rotation + Degrees.toRadians(180)),
 			)
 	}
 

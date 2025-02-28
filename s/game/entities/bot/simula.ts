@@ -7,12 +7,14 @@ import {BipedSim} from "../../commons/biped/sim.js"
 import {simula} from "../../../packs/archimedes/framework/simulation/types.js"
 
 export const botSimula = simula<RogueEntities, Station>()<"bot">(
-	({id, station, getState}) => {
+	({id, station, simulator, getState}) => {
 
 	const bipedSim = new BipedSim(
 		id,
 		station,
 		() => getState().biped,
+		() => { simulator.delete(id) },
+		false,
 		constants.crusader,
 	)
 
