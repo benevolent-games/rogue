@@ -6,7 +6,7 @@ export const Invites = {
 
 	obtainFromWindow() {
 		const hash = window.location.hash.replace(/^#/, "")
-		const result = hash.match(/^\/invite\/(.+)$/i)
+		const result = hash.match(/\/invite\/(.+)$/i)
 		return result && Badge.parse(result.at(1)!).hex
 	},
 
