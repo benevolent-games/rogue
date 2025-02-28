@@ -11,17 +11,13 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 	const dungeon = station.dungeon
 	station.importantEntities.add(id)
 
-	let latestInput: RogueEntities["participant"]["input"] = {
-		spawnRequest: null,
-	}
-
 	return {
 		simulate: (_tick, inputs) => {
 			const state = getState()
-			latestInput = fromAuthor(state.author, inputs).at(-1) ?? latestInput
+			const input = fromAuthor(state.author, inputs).at(-1)
 
-			if (latestInput.spawnRequest && !state.alive) {
-				const {character} = latestInput.spawnRequest
+			if (input?.spawnRequest && !state.alive) {
+				const {character} = input.spawnRequest
 				const spawnpoint = dungeon.getSpawnpoint()
 				if (!spawnpoint) {
 					console.error("no available space to spawn player")
@@ -42,6 +38,13 @@ export const participantSimula = simula<RogueEntities, Station>()<"participant">
 				state.alive = {
 					character,
 					crusaderEntityId,
+				}
+			}
+
+			if (state.alive) {
+				const died = !simulator.gameState.entities.has(state.alive.crusaderEntityId)
+				if (died) {
+					state.alive = null
 				}
 			}
 		},

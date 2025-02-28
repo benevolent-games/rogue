@@ -138,8 +138,7 @@ export class BipedSim {
 			const mortals = this.station.mortals.queryItems(this.attackZone.circle.boundingBox())
 			for (const mortal of mortals) {
 				if (mortal !== this.mortal) {
-					console.log("hurt!!")
-					mortal.health.hurt(0.34)
+					mortal.health.hurt(1)
 				}
 			}
 		}
