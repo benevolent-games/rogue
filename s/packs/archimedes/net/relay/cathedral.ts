@@ -1,6 +1,6 @@
 
 import {repeating} from "@benev/slate"
-import Sparrow, {AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
+import {Sparrow, AgentInfo, Connection, ConnectivityKind} from "sparrow-rtc"
 
 import {Fiber} from "./fiber.js"
 import {Liaison} from "./liaison.js"

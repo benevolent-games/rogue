@@ -1,5 +1,5 @@
 
-import Sparrow from "sparrow-rtc"
+import {Sparrow} from "sparrow-rtc"
 import {pubsub, Signal, signal} from "@benev/slate"
 
 import {Fiber} from "../relay/fiber.js"

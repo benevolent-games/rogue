@@ -1,6 +1,5 @@
 
-import Sparrow, {AgentInfo} from "sparrow-rtc"
-
+import {Sparrow, AgentInfo} from "sparrow-rtc"
 import {Cathedral} from "../relay/cathedral.js"
 import {Multiplayer} from "./utils/multiplayer.js"
 
