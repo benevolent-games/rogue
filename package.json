@@ -41,10 +41,10 @@
 		"@babylonjs/loaders": "^7.51.0",
 		"@benev/argv": "^0.3.8",
 		"@benev/slate": "^0.3.0-13",
-		"@benev/toolbox": "^0.8.0-20",
+		"@benev/toolbox": "^0.8.0-21",
 		"level": "^9.0.0",
 		"renraku": "^0.4.5",
-		"sparrow-rtc": "^0.2.5",
+		"sparrow-rtc": "^0.2.6",
 		"zx": "^8.3.2"
 	},
 	"devDependencies": {
